@@ -1,11 +1,11 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/ubFLs7Px)
-# [Projekttitel]
+# Stundennachweise für soziale Dienstleistungen
 
 ## Projektbeschreibung
 
 ### Projektziele
 
-[Beschreiben Sie hier in einer kurzen Zusammenfassung den Hintergrund und die Ziele Ihrer Anwendung.]
+Ziel ist es, ein System für soziale Dienstleistungsunternehmen zu entwickeln, dass die Stundennachweise effizenter gestaltet.
 
 ### Funktionen
 
@@ -15,12 +15,25 @@
 ## Team
 
 ### Vorstellung
-
-[Beschreiben Sie hier die einzelnen Teammitglieder mit Namen, E-Mail-Adresse und Github-Nutzernamen.]
+| Name | Email | Benutzername |
+| ----- | ----- | ----------- |
+| Jasmin Philipp | @ads.uni-passau.de | JasminPhil |
+| Korbinian Dietl | @ads.uni-passau.de | korbidietl |
+| Ludwig Dobner | dobner02@ads.uni-passau.de | Blackiups |
+| Melanie Asenkerschbaumer | @ads.uni-passau.de | MelanieAse |
+| Michael Weber | @ads.uni-passau.de | MichaelWeber45983 |
+| Stella Muratore | @ads.uni-passau.de | xy |
 
 ### Zuständigkeiten
 
-[Beschreiben Sie die Verteilung der Aufgaben und Zusändigkeiten innerhalb Ihres Teams.]
+| Name | Zuständigkeit |
+| ----- | ----- |
+| Jasmin Philipp | Projektleitung, Präsentation, Pflichtenheft(tbd) |
+| Korbinian Dietl | Programmierung, Präsentation |
+| Ludwig Dobner | Frontend (GUI), Server (SSH/FTP), Datenbank, Präsentation |
+| Melanie Asenkerschbaumer | Präsentationserstellung, Präsentation, Pflichtenheft(tbd) |
+| Michael Weber | stellvertretende Projektleitung, Pflichtenheft, Präsentation |
+| Stella Muratore | Zusammenfassung Szenario (+ Programmierung), Pflichtenheft(tbd) |
 
 ## Guidelines zur Nutzung dieses Repositorys
 
