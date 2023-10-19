@@ -5,7 +5,7 @@
 
 ### Projektziele
 
-Ziel ist es, ein System für soziale Dienstleistungsunternehmen zu entwickeln, dass die Stundennachweise effizenter gestaltet.
+Ziel ist es, ein System für soziale Dienstleistungsunternehmen zu entwickeln, das die Stundennachweise effizenter gestaltet.
 
 ### Funktionen
 
@@ -20,7 +20,7 @@ Ziel ist es, ein System für soziale Dienstleistungsunternehmen zu entwickeln, d
 | Jasmin Philipp | @ads.uni-passau.de | JasminPhil |
 | Korbinian Dietl | @ads.uni-passau.de | korbidietl |
 | Ludwig Dobner | dobner02@ads.uni-passau.de | Blackiups |
-| Melanie Asenkerschbaumer | @ads.uni-passau.de | MelanieAse |
+| Melanie Asenkerschbaumer | asenke04@ads.uni-passau.de | MelanieAse |
 | Michael Weber | @ads.uni-passau.de | MichaelWeber45983 |
 | Stella Muratore | @ads.uni-passau.de | xy |
 
