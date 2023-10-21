@@ -6,9 +6,13 @@
 ### Zusammenfassung
 
 Ein soziales Dienstleistungsunternehmen im Passauer Raum, das Klienten im Haushalt, bei Einkäufen, Arztterminen usw. unterstützt, benötigt ein System, das die Zeiten der Mitarbeiter aufzeichnet.
+
 Hier wird unterschieden zwischen direkten (Stunden beim Klienten, außertourliche größere Fahrten) und indirekten (interne Teambesprechungen, Fahrten zw. Klienten) Stunden. Der Mitarbeiter muss hierfür ein Protokoll ausfüllen, das die Unterschrift des Klienten verlangt. Wird daran etwas verändert, muss diese erneut eingefordert werden. 
+
 Der Kostenträger (aus dem sozialen Bereich, Privatperson) fordert diesen Zeitnachweis (inkl. Datum, Uhrzeit, Beschreibung Termin; Name, Qualifikation, Unterschrift Mitarbeiter; Unterschrift Klient) ein. Sie bezahlen die direkten Stunden der Mitarbeiter.
+
 Das Dienstleistungsunternehmen überprüft davor auf Überschneidungen der Termine und bucht dann erst die Zeiten der Mitarbeiter. Wichtig ist für sie auch die Reporting-Funktion, die einen schnellen Überblick über die Lage des Unternehmens mithilfe eines filterbaren Dashboards ermöglicht.
+
 Nur die interne Verwaltung kann neue Accounts im System erstellen. Passwörter ändern oder zurücksetzen kann aber jeder Nutzer selbst.
 
 ### Projektziele
