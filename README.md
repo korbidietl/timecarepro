@@ -33,7 +33,7 @@ Ziel ist es, ein System für soziale Dienstleistungsunternehmen zu entwickeln, d
 | Korbinian Dietl | dietl21@ads.uni-passau.de | korbidietl |
 | Ludwig Dobner | dobner02@ads.uni-passau.de | Blackiups |
 | Melanie Asenkerschbaumer | asenke04@ads.uni-passau.de | MelanieAse |
-| Michael Weber | @ads.uni-passau.de | MichaelWeber45983 |
+| Michael Weber | weber187@ads.uni-passau.de | MichaelWeber45983 |
 | Stella Muratore | murato03@ads.uni-passau.de | StellaMur |
 
 ### Zuständigkeiten
