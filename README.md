@@ -5,15 +5,18 @@
 
 ### Zusammenfassung
 
-Ein soziales Dienstleistungsunternehmen im Passauer Raum, das Klienten im Haushalt, bei Einkäufen, Arztterminen usw. unterstützt, benötigt ein System, das die Zeiten der Mitarbeiter aufzeichnet.
+Ein soziales Dienstleistungsunternehmen in Passau plant die Einführung eines digitalen Systems zur Verbesserung der Zeiterfassung und Abrechnung seiner Mitarbeitenden, um sowohl die Umwelt zu schonen als auch die Effizienz und Transparenz in der monatlichen Abrechnung für Klient*innen und Kostenträger zu steigern.
 
-Hier wird unterschieden zwischen direkten (Stunden beim Klienten, außertourliche größere Fahrten) und indirekten (interne Teambesprechungen, Fahrten zw. Klienten) Stunden. Der Mitarbeiter muss hierfür ein Protokoll ausfüllen, das die Unterschrift des Klienten verlangt. Wird daran etwas verändert, muss diese erneut eingefordert werden. 
+Die Kostenträger können öffentliche Institutionen wie der Bezirk Niederbayern oder das Jugendamt Passau sein, aber auch Privatpersonen, die die Dienstleistungen des Unternehmens in Anspruch nehmen. Die erbrachten Leistungen beziehen sich immer auf zu betreuende Klient*innen. Die Mitarbeitenden unterstützen mit ihrer Dienstleistung beispielsweise im Haushalt, bei Einkäufen oder Arztterminen. Die erbrachten Stunden und größere Fahrten werden den Kostenträgern in Rechnung gestellt. Um dies zu ermöglichen, müssen die Mitarbeitenden die erbrachten Tätigkeiten protokollieren und die Unterschriften des Mitarbeiters als auch des Klienten einholen. Bei Tippfehlern oder Änderungen in den Einträgen vor der Buchung verlieren die Unterschriften ihre Gültigkeit und müssen erneut erbracht werden. Die Abrechnung erfolgt monatlich, wobei der Kostenträger eine Aufschlüsselung der Zeitnachweise inklusive Datum, Uhrzeit und Beschreibung des Termins sowie den Namen, die Qualifikation und die Unterschrift des Mitarbeiters und des Klienten verlangt. 
 
-Der Kostenträger (aus dem sozialen Bereich, Privatperson) fordert diesen Zeitnachweis (inkl. Datum, Uhrzeit, Beschreibung Termin; Name, Qualifikation, Unterschrift Mitarbeiter; Unterschrift Klient) ein. Sie bezahlen die direkten Stunden der Mitarbeiter.
+Da öffentliche Kostenträger besonderen Wert auf den pädagogischen Sinn der erbrachten Maßnahmen legen und die Abrechnungen sehr genau überprüfen, erfolgt eine vorherige Kontrolle der Einträge durch die Verwaltung des Dienstleistungsunternehmens. Dabei muss die Genauigkeit der Terminbeschreibungen sichergestellt und mögliche Überschneidungen bei den Buchungen vermieden werden. Erst nach dieser Überprüfung können die Zeiten gebucht werden, sind nach diesem Schritt  keine Änderungen mehr möglich. Die Kostenträger können die Nachweise entsprechend einsehen. 
 
-Das Dienstleistungsunternehmen überprüft davor auf Überschneidungen der Termine und bucht dann erst die Zeiten der Mitarbeiter. Wichtig ist für sie auch die Reporting-Funktion, die einen schnellen Überblick über die Lage des Unternehmens mithilfe eines filterbaren Dashboards ermöglicht.
+Neben der Abrechnung auf Klient*innen gibt es auch andere Arbeitstermine für die Mitarbeitenden, wie interne Teambesprechungen und Fahrten zwischen den Klienten, die nicht direkt mit dem Kostenträger abgerechnet werden können. Diese indirekten Leistungen sollen ebenfalls im System erfasst werden, um die Gehaltsabrechnung der Mitarbeitenden am Monatsende zu erleichtern. 
 
-Nur die interne Verwaltung kann neue Accounts im System erstellen. Passwörter ändern oder zurücksetzen kann aber jeder Nutzer selbst.
+Das System ist nur für Nutzer mit eigenen Accounts zugänglich. Um den Support-Aufwand niedrig zu halten, können die Nutzenden ihre Passwörter selbst ändern oder bei Vergessen zurücksetzen.
+
+Zusätzlich zur effizienteren Abrechnung erhält die Geschäftsführung eine Reporting-Funktion, die es ermöglicht, schnell einen Überblick über die Situation des Unternehmens, seiner Mitarbeitenden und Klient*innen zu erhalten. Hierbei wird ein filterbares Dashboard gewünscht, das Informationen zu Zeiten, Mitarbeitenden, Klienten, Kostenträgern und mehr bereitstellt.
+
 
 ### Projektziele
 
