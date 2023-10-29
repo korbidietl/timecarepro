@@ -32,7 +32,7 @@ Ziel ist es, ein System für soziale Dienstleistungsunternehmen zu entwickeln, d
 ### Vorstellung
 | Name | Email | Benutzername |
 | ----- | ----- | ----------- |
-| Jasmin Philipp | @ads.uni-passau.de | JasminPhil |
+| Jasmin Philipp | philip26@ads.uni-passau.de | JasminPhil |
 | Korbinian Dietl | dietl21@ads.uni-passau.de | korbidietl |
 | Ludwig Dobner | dobner02@ads.uni-passau.de | Blackiups |
 | Melanie Asenkerschbaumer | asenke04@ads.uni-passau.de | MelanieAse |
@@ -43,12 +43,12 @@ Ziel ist es, ein System für soziale Dienstleistungsunternehmen zu entwickeln, d
 
 | Name | Zuständigkeit |
 | ----- | ----- |
-| Jasmin Philipp | Projektleitung, Präsentation, Pflichtenheft(tbd) |
-| Korbinian Dietl | Programmierung, Präsentation |
-| Ludwig Dobner | Frontend (GUI), Server (SSH/FTP), Datenbank, Präsentation |
-| Melanie Asenkerschbaumer | Präsentationserstellung, Präsentation, Pflichtenheft(tbd) |
-| Michael Weber | stellvertretende Projektleitung, Pflichtenheft, Präsentation |
-| Stella Muratore | Zusammenfassung Szenario (+ Programmierung), Pflichtenheft(tbd) |
+| Jasmin Philipp | Projektleitung |
+| Korbinian Dietl | Leitung Programmierung |
+| Ludwig Dobner | Frontend, Server, Datenbank |
+| Melanie Asenkerschbaumer | Präsentationen, Pflichtenheft |
+| Michael Weber | stellvertretende Projektleitung, Leitung Pflichtenheft |
+| Stella Muratore | Backend |
 
 ## Guidelines zur Nutzung dieses Repositorys
 
