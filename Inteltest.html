@@ -1,10 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Intellitest</title>
+    <title>Zeiterfassung</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        #clock {
+            font-size: 2em;
+            color: #007BFF;
+        }
+        #startButton, #stopButton {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <h1>Des is a Testseitn</h1>
+<h1>Zeiterfassung</h1>
+<div id="clock">00:00:00</div>
+<button id="startButton">Start</button>
+<button id="stopButton">Stop</button>
+
+<script>
+    let timer;
+    let seconds = 0;
+    let minutes = 0;
+    let hours = 0;
+    let isRunning = false;
+
+    function updateClock() {
+        seconds++;
+        if (seconds === 60) {
+            seconds = 0;
+            minutes++;
+            if (minutes === 60) {
+                minutes = 0;
+                hours++;
+            }
+        }
+        const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        document.getElementById('clock').textContent = timeString;
+    }
+
+    document.getElementById('startButton').addEventListener('click', () => {
+        if (!isRunning) {
+            timer = setInterval(updateClock, 1000);
+            isRunning = true;
+        }
+    });
+
+    document.getElementById('stopButton').addEventListener('click', () => {
+        if (isRunning) {
+            clearInterval(timer);
+            isRunning = false;
+        }
+    });
+</script>
 </body>
 </html>
