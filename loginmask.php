@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Anmeldeformular</title>
+    <title>Anmeldeformularva</title>
 </head>
 <body>
     <h2>Anmelden</h2>
