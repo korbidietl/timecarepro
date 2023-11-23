@@ -1,8 +1,8 @@
 <?php
 
-define('DB_NAME', 'test_company');
-define('DB_USER', 'test_user');
-define('DB_PASSWORD', 'PASSWORD');
+define('DB_NAME', 'timecarepro');
+define('DB_USER', 'grup3sql');
+define('DB_PASSWORD', 'skill59UP86VM');
 define('DB_HOST', 'localhost');
 
 $pdo = new PDO("mysql:host=" . DB_HOST . "; dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
