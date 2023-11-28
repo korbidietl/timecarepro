@@ -8,11 +8,11 @@ table {
 }
 
 th, td {
-    padding: 8px;
+    padding: 80px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
 th {
-    background-color: #f2f2f2;
+    background-color: #FFA500;
 }
