@@ -3,20 +3,20 @@ import mysql.connector
 def fetch_data():
     cnx = mysql.connector.connect(
         host="localhost",
-        user="username",
-        password="password",
-        database="dbname"
+        user="grup3sql",
+        password="skill59UP86VM",
+        database="timecarepro"
     )
     cursor = cnx.cursor()
 
     query = """
     SELECT
-        clients.client_id, clients.last_name,
-        employees.employee_id, employees.last_name
+        klient.ID, klient.nachname,
+        person.ID, person.nachname
     FROM
-        clients
+        klient
     INNER JOIN
-        employees ON clients.client_id = employees.employee_id
+        person ON klient.ID = person.ID
     """
     cursor.execute(query)
 
