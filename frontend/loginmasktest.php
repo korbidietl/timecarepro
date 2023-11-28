@@ -5,7 +5,7 @@
 </head>
 <body>
 <h1>Anmelden</h1>
-<form action="logintest.php" method="post">
+<form action="../backend/logintest.php" method="post">
     <label for="email">Email:</label>
     <input type="text" id="email" name="email" required>
     <br>
