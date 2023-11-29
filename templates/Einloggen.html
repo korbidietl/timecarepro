@@ -87,9 +87,19 @@ funktioniert. ChatGPT verwendet da anstelle von button einen "submit" inputtype
         </div>
     </div>
 
+    <div class="popup-container" id="successPopup">
+        <div class="popup-content">
+            <h2>Passwort zurücksetzen erfolgreich</h2>
+            <p> Ein neues Passwort wurde an die angegebene E-Mail-Adresse versendet. </p>
+            <button onclick="closePopup()">OK</button>
+        </div>
+    </div>
     <script>
         function openResetPopup(){
             document.querySelector('.reset-container').style.display = 'block';
+        }
+        function closePopup(){
+            document.getElementById('successPopup').style.display = 'none';
         }
     </script>
 </body>
