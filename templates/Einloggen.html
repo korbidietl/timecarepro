@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="../frontend/styles.css">
+</head>
+
+<body>
+
+    <div class="center-container">
+        <div class ="loginContainer">
+            <h2>Einloggen</h2>
+            <form action="/" method="post">
+
+                <label for="email">E-Mail:</label>
+                <input type="email" id="email" name="email" placeholder="E-Mail" required>
+
+                <label for="password">Passwort:</label>
+                <input type="password" id="password" name="password" placeholder="Passwort" required>
+
+
+            </form>
+            <button class=type="submit">Einloggen</button>
+            <br />
+            <button class="reset" onclick="resetPassword()">Passwort zurücksetzen</button>
+        </div>
+    </div>
+</body>
+</html>
