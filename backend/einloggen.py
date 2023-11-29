@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from databaseConnection import get_database_connection, close_database_connection
+from password_reset import reset_password_logic
 import hashlib
 
 
@@ -7,7 +8,6 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 conn = get_database_connection()
-
 logged_in_users = set()
 
 
@@ -29,6 +29,7 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+
 
         # Überprüfen ob alle Felder ausgefüllt wurden
         if not email or not password:
@@ -55,6 +56,9 @@ def login():
             # Nutzer nicht gefunden oder Passwort stimmt nicht
             error = "Die Zugangsdaten sind nicht korrekt."
             return render_template('Einloggen.html', error=error)
+
+
+
 
     return render_template('Einloggen.html')
 
