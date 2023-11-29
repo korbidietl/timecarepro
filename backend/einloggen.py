@@ -40,6 +40,10 @@ def login():
             # Nutzer gefunden und wird in Session hinzugefügt
             logged_in_users.add(email)
             session['user_id'] = email
+            # Rolle in der Session speichern
+            user = db_query.get_user_by_email(email)
+            if user:
+                session['user_role'] = user['rolle']
             return redirect(url_for('startseite.html'))
         elif user and email in logged_in_users:
             # Nutzer ist schon angemeldet
@@ -56,5 +60,8 @@ def login():
 
     return render_template('Einloggen.html')
 
+@app.route('/Menüleiste')
+def startseite():
+    return render_template('Menüleiste.html', role=session.get('user_role'))
 
 close_database_connection(conn)

@@ -1,5 +1,19 @@
 import mysql.connector
 
+def get_user_by_email(email):
+    cnx = get_database_connection()
+    cursor = cnx.cursor(dictionary=True)  # Aktiviere dictionary-based Cursor
+
+    query = "SELECT * FROM person WHERE email = %s"
+    cursor.execute(query, (email,))
+
+    user = cursor.fetchone()  # Hole nur den ersten Treffer
+
+    cursor.close()
+    cnx.close()
+    return user
+
+
 def fetch_data():
     cnx = mysql.connector.connect(
         host="localhost",
