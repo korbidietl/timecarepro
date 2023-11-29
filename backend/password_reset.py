@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import random
 import string
 import smtplib
-from einloggen import hash_password
+import hashlib
 from email.mime.text import MIMEText
 from databaseConnection import get_database_connection
 
@@ -23,6 +23,14 @@ def handle_password_reset():
 def generate_random_password(length=10):
     characters = string.ascii_letters + string.digits + string.punctuation
     return ''.join(random.choice(characters) for _ in range(length))
+
+
+def hash_password(password):
+    # Hash Verschlüsselung des Passwortes
+    sha1 = hashlib.sha1()
+    sha1.update(password.encode('utf-8'))
+    hashed_password = sha1.hexdigest()
+    return hashed_password
 
 
 def password_reset(email):
@@ -67,10 +75,9 @@ def password_reset(email):
                     smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
                     smtp.sendmail('resetyourpassword@timecarepro.de', [email], msg.as_string())
 
-                # Anzeigen des Popup fensters im Login
-                print("<script>openResetPopup();</script>")
-
-                return render_template('Einloggen.html', email=email)
+                return render_template('Einloggen.html', email=email, success_message="Ein neues Passwort wurde an die "
+                                                                                      "angegebene E-Mail-Adresse "
+                                                                                      "versendet.")
         else:
             # keine E-mail in der Datenbank gefunden
             return render_template('Einloggen.html')
