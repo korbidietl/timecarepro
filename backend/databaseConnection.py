@@ -1,8 +1,8 @@
 import mysql.connector
 
-servername = 'db'
+servername = 'localhost'
 username = 'grup3sql'
-password = 'skill59UP85VM'
+password = 'skill59UP86VM'
 dbname = 'timecarepro'
 
 
