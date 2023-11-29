@@ -48,7 +48,7 @@ funktioniert. ChatGPT verwendet da anstelle von button einen "submit" inputtype
             <input type="email" id="email" name="email" required>
             <label for="password">Passwort:</label>
             <input type="password" id="password" name="password" required>
-            <input type="submit" value="Einloggen">
+            <button type="submit" value="Einloggen"></button>
         </form>
          die passwort_reset funktion fehlt halt noch
         <a href="../backend/password_reset.py">Passwort zurücksetzen</a>
@@ -81,10 +81,16 @@ funktioniert. ChatGPT verwendet da anstelle von button einen "submit" inputtype
                 <button class=type="submit">Einloggen</button>
 
             </form>
-
-            <br />
-            <button class="reset" onclick="resetPassword()">Passwort zurücksetzen</button>
+            <form action="password_reset.html" method="post">
+                <button class="password_reset" onclick="openResetPopup()">Passwort zurücksetzen</button>
+            </form>
         </div>
     </div>
+
+    <script>
+        function openResetPopup(){
+            document.querySelector('.reset-container').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
