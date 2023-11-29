@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from databaseConnection import get_database_connection, close_database_connection
+from db_query import get_user_by_email # , get_password_for_user, get_role_for_user(email), get_locked_status(email)
 import hashlib
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 conn = get_database_connection()
+
 logged_in_users = set()
 
 
@@ -19,7 +21,8 @@ def hash_password(password):
 
 def verify_password(password, hashed_password):
     # Überprüfung ob Passwörter übereinstimmen
-    return hashlib.sha1(password.encode('utf-8')).hexdigest() == hashed_password
+    encripted_password = hash_password(password)
+    return encripted_password == hashed_password
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -34,14 +37,17 @@ def login():
             return render_template('Einloggen.html', error=error)
         else:
             # nach Nutzerdaten in Datenbank suchen
-            user = next((user for user in conn if user[email] == email), None)
+            user = get_user_by_email(email)
+            if user:
+                hashed_password = get_password_for_user(email)
+                role = get_role_for_user(email)
+                locked = get_locked_status(email)
 
-        if user and email not in logged_in_users and verify_password(password, conn.person.passwort):
+        if user and email not in logged_in_users and verify_password(password, hashed_password):
             # Nutzer gefunden und wird in Session hinzugefügt
             logged_in_users.add(email)
             session['user_id'] = email
             # Rolle in der Session speichern
-            user = db_query.get_user_by_email(email)
             if user:
                 session['user_role'] = user['rolle']
             return redirect(url_for('startseite.html'))
@@ -49,7 +55,7 @@ def login():
             # Nutzer ist schon angemeldet
             error = "Benutzer ist bereits eingeloggt"
             return render_template('Einloggen.html', error=error)
-        elif user and user['status'] == 'locked':
+        elif locked == 0:
             # Nutzer ist gesperrt
             error = "Anmeldung fehlgeschlagen. Wenden Sie sich an die Verwaltung"
             return render_template('Einloggen.html', error=error)
@@ -60,8 +66,10 @@ def login():
 
     return render_template('Einloggen.html')
 
+
 @app.route('/Menüleiste')
 def startseite():
     return render_template('Menüleiste.html', role=session.get('user_role'))
+
 
 close_database_connection(conn)

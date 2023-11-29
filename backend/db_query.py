@@ -1,4 +1,6 @@
 import mysql.connector
+from databaseConnection import get_database_connection
+
 
 def get_user_by_email(email):
     cnx = get_database_connection()
@@ -12,6 +14,12 @@ def get_user_by_email(email):
     cursor.close()
     cnx.close()
     return user
+
+#Bitte anlegen: def get_password_for_user(email):
+
+#Bitte anlegen: def get_role_for_user(email):
+
+#Bitte anlegen: def get_locked_status(email):
 
 
 def fetch_data():
@@ -35,10 +43,14 @@ def fetch_data():
     cursor.execute(query)
 
     for (client_id, client_last_name, employee_id, employee_last_name) in cursor:
-        print("Client ID: {}, Client Last Name: {}, Employee ID: {}, Employee Last Name: {}".format(client_id, client_last_name, employee_id, employee_last_name))
+        print("Client ID: {}, Client Last Name: {}, Employee ID: {}, Employee Last Name: {}".format(client_id,
+                                                                                                    client_last_name,
+                                                                                                    employee_id,
+                                                                                                    employee_last_name))
 
     cursor.close()
     cnx.close()
+
 
 if __name__ == "__main__":
     fetch_data()

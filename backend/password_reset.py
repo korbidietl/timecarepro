@@ -6,8 +6,8 @@ import hashlib
 from email.mime.text import MIMEText
 from databaseConnection import get_database_connection
 
-connection = get_database_connection()
-cursor = connection.cursor()
+conn = get_database_connection()
+cursor = conn.cursor()
 
 app = Flask(__name__)
 
