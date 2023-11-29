@@ -1,5 +1,7 @@
 body {
     font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+
 }
 
 table {
@@ -8,11 +10,74 @@ table {
 }
 
 th, td {
-    padding: 80px;
+    padding: 8px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
 th {
+    background-color: #f2f2f2;
+}
+
+.loginContainer{
+    text-align: center;
+    background-color: #fff;
+    padding: 50px;
+    border-radius: 8px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.center-container{
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    height: 100%;
+    margin: auto;
+    background-color: #f4f4f4;
+
+}
+.loginContainer {
+    text-align: center;
+    background-color: #fff;
+    padding: 20px 80px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+}
+h2{
+    text-align: center;
+}
+form {
+    display: flex;
+    flex-direction: column;
+}
+label {
+    margin-bottom: 8px;
+}
+
+input {
+    padding: 10px;
+    margin-bottom:16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 350px;
+}
+button {
     background-color: #FFA500;
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor:pointer;
+}
+button.hover {
+    background-color: #FFA800;
+}
+
+a{
+    text-align: center;
+    display: block;
+    margin-top: 16px;
+    text-decoration: none;
+    color: #4caf50;
 }
