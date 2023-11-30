@@ -32,10 +32,6 @@ def send_email(email, lastname, new_password):
         smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
         smtp.sendmail('resetyourpassword@timecarepro.de', [email], msg.as_string())
 
-        my_sql_operations = db_query()
-        first_name = my_sql_operations.get_first_name_by_email("test@example.com")
-        print(first_name)
-
 
 @password_reset_blueprint.route('/password_reset', methods=['POST'])
 def passwordreset():
