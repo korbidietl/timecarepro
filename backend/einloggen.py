@@ -1,7 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from db_query import check_account_locked, validate_login, validate_email, get_role_by_email, get_person_id_by_email
-from datetime import datetime, timedelta
-
 
 einloggen_blueprint = Blueprint("einloggen", __name__)
 
@@ -27,7 +25,6 @@ def login():
                 # Nutzer gefunden und wird in Session hinzugefügt
                 logged_in_users.add(email)
                 session['user_id'] = get_person_id_by_email(email)
-                session['last_activity'] = datetime.now()
                 session['user_role'] = get_role_by_email(email)
                 return redirect(url_for('startseite.html'))
             # Nutzer ist schon angemeldet
@@ -51,14 +48,4 @@ def login():
 
 @einloggen_blueprint.route('/Menüleiste')
 def startseite():
-    if 'last_activity' in session:
-        last_activity = session['last_activity']
-        if datetime.now() - last_activity > timedelta(minutes=30):  # Setze die Inaktivitätszeit auf 30 Minuten
-            session.clear()  # Lösche die Sitzung, um den Benutzer auszuloggen
-            return redirect(url_for('.login'))  # Nutze den Blueprint-Prefix
-
     return render_template('Menüleiste.html', role=session.get('user_role'))
-
-
-
-
