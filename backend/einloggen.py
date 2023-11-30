@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from db_query import get_user_by_email  # , get_password_for_user, get_role_for_user(email), get_locked_status(email)
+from db_query import get_user_by_email, check_account_locked, validate_login, email_exists, get_role_for_user,  # , get_password_for_user
 from datetime import datetime, timedelta
 import hashlib
 
@@ -37,38 +37,35 @@ def login():
         if not email or not password:
             error = "Alle Felder müssen ausgefüllt werden"
             return render_template('Einloggen.html', error=error)
-        else:
-            # nach Nutzerdaten in Datenbank suchen
-            user = get_user_by_email(email)
-            if user:
-                password_user = get_password_for_user(email)
-                role_user = get_role_for_user(email)
-                locked_status = get_locked_status(email)
 
-                if user and email not in logged_in_users and verify_password(password, password_user)
-                    # Nutzer gefunden und wird in Session hinzugefügt
-                    logged_in_users.add(email)
-                    session['user_id'] = email
-                    session['last_activity'] = datetime.now()
-                    session['user_role'] = role_user
-                    return redirect(url_for('startseite.html'))
-                elif user and email in logged_in_users:
-                    # Nutzer ist schon angemeldet
-                    error = "Benutzer ist bereits eingeloggt"
-                    return render_template('Einloggen.html', error=error)
-                elif locked_status == 0:
-                    # Nutzer ist gesperrt
-                    error = "Anmeldung fehlgeschlagen. Wenden Sie sich an die Verwaltung"
-                    return render_template('Einloggen.html', error=error)
-                else:
-                    # Passwort stimmt nicht
-                    error = "Die Zugangsdaten sind nicht korrekt."
-                    return render_template('Einloggen.html', error=error)
+        # wenn email in datenbank gefunden wird
+        elif email_exists(email):
 
+            # Nutzer gefunden und wird in Session hinzugefügt
+            if user and email not in logged_in_users and validate_login(email, password)
+                logged_in_users.add(email)
+                session['user_id'] = email
+                # wozu ist die last activity in der session relevant??
+                session['last_activity'] = datetime.now()
+                session['user_role'] = get_role_for_user(email)
+                return redirect(url_for('startseite.html'))
+            # Nutzer ist schon angemeldet
+            elif user and email in logged_in_users:
+                error = "Benutzer ist bereits eingeloggt"
+                return render_template('Einloggen.html', error=error)
+            # Nutzer ist gesperrt
+            elif check_account_locked(email):
+                error = "Anmeldung fehlgeschlagen. Wenden Sie sich an die Verwaltung"
+                return render_template('Einloggen.html', error=error)
+            # Passwort stimmt nicht
             else:
-                # Nutzer nicht gefunden
                 error = "Die Zugangsdaten sind nicht korrekt."
                 return render_template('Einloggen.html', error=error)
+
+        # Nutzer nicht gefunden
+        else:
+            error = "Die Zugangsdaten sind nicht korrekt."
+            return render_template('Einloggen.html', error=error)
 
 
 @einloggen_blueprint.route('/Menüleiste')

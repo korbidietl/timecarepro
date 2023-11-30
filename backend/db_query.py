@@ -16,6 +16,21 @@ def get_user_by_email(email):
     connection.close()
     return user
 
+# Überprüft, ob eine E-Mail-Adresse in der Datenbank existiert.
+# gibt TRUE zurück wenn eine übereinstimmende email gefunden wurde
+def email_exists(email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    query = "SELECT 1 FROM person WHERE email = %s"
+    cursor.execute(query, (email,))
+    result = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+
+    # Überprüfen, ob ein Datensatz gefunden wurde
+    return result is not None
+
 
 # Bitte anlegen: def get_password_for_user(email): -> rename: validate_login
 # Methode validate_login mit der E-Mail-Adresse und dem Passwort des Benutzers aufrufen.
@@ -34,7 +49,21 @@ def validate_login(email, password):
     return False
 
 
-# Bitte anlegen: def get_role_for_user(email):
+# Holt die Rolle eines Nutzers anhand seiner E-Mail-Adresse.
+# gibt rolle zurück falls eine gefunden wird
+# sonst wird NONE zurück gegeben
+def get_role_for_user(email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    query = "SELECT rolle FROM person WHERE email = %s"
+    cursor.execute(query, (email,))
+    result = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+
+    # Extrahiert und gibt die Rolle zurück, wenn ein Datensatz gefunden wurde
+    return result[0] if result else None
 
 # Bitte anlegen: def get_surnmae_for_user(email):
 
