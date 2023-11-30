@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from db_query import check_account_locked, validate_login, validate_email, get_role_by_email, get_person_id_by_email
 from datetime import datetime, timedelta
-import hashlib
+
 
 einloggen_blueprint = Blueprint("einloggen", __name__)
 

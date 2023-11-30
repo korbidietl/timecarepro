@@ -1,11 +1,13 @@
 from flask import Blueprint, render_template, redirect, url_for, session
 from einloggen import logged_in_users
 
+
 logout_blueprint = Blueprint("logout", __name__)
 
 
 @logout_blueprint.route('/logout')
 def logout():
+    # wie greife ich auf die richtige user_id zu
     # Überprüfen, ob der Benutzer eingeloggt ist
     if 'user_id' in session:
         # Benutzer aus Liste eingeloggter Benutzer entfernen
