@@ -4,18 +4,6 @@ from passlib.hash import sha1_crypt
 from passlib.utils import generate_password
 
 
-# Ludwig: @Korbi was das? xD
-# kann ersetzt werden, wenn wir get password / role / name  etc. by email haben
-def get_user_by_email(email):
-    connection = get_database_connection()
-    cursor = connection.cursor(dictionary=True)  # Aktiviere dictionary-based Cursor
-    cursor.execute("SELECT * FROM person WHERE email = %s", (email,))
-    user = cursor.fetchone()  # erstes Ergebnis wird aufgerufen
-    cursor.close()
-    connection.close()
-    return user
-
-# Bitte anlegen: def get_password_for_user(email): -> rename: validate_login
 # Methode validate_login mit der E-Mail-Adresse und dem Passwort des Benutzers aufrufen.
 # Diese Methode gibt True zurück,
 # wenn die E-Mail-Adresse und das Passwort in der Datenbank vorhanden sind und korrekt sind.
@@ -31,7 +19,6 @@ def validate_login(self, email, password):
             return True
     return False
 
-# Bitte anlegen: def get_role_for_user(email):
 # Methode, die die Rolle basierend auf der E-Mail aus der Datenbank abruft.
 # Wenn ein Ergebnis gefunden wird, wird es als Rolle (str) zurückgegeben. Andernfalls wird None zurückgegeben.
 def get_role_by_email(self, email):
@@ -42,7 +29,6 @@ def get_role_by_email(self, email):
     cursor.close()
     return result[0] if result else None
 
-# Bitte anlegen: def get_surnmae_for_user(email):
 # Methode gibt Vornamen zurück, wenn er in der Datenbank gefunden wird. Andernfalls gibt sie None zurück.
 def get_firstname_by_email(self, email):
     connection = get_database_connection()
@@ -53,7 +39,6 @@ def get_firstname_by_email(self, email):
         return result[0]
     else:
         return None
-
 
 # Aktualisiert das Passwort eines Nutzers in der Datenbank.
 # hasht es mit SHA1 und speichert das gehashte Passwort in der Datenbank.
@@ -79,7 +64,6 @@ def validate_email(self, email):
         return True
     return False
 
-# Bitte anlegen: def get_locked_status(email):
 # Überprüfung, ob der Benutzer, der die gegebene E-Mail-Adresse hat, gesperrt ist.
 # Wenn der Wert des Feldes "sperre" 1 ist, gibt die Methode True zurück, was bedeutet,
 # dass das Benutzerkonto gesperrt ist. Andernfalls gibt die Methode False zurück.
