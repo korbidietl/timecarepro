@@ -1,6 +1,6 @@
 from flask import render_template, request
 import hashlib
-from db_query import get_user_by_id, update_password_for_user
+from db_query import get_user_by_id, update_password_for_user, validate_login, set_password
 
 password_reset_blueprint = Blueprint("password_reset", __name__)
 
@@ -39,21 +39,13 @@ def change_password():
         if not validate_password(new_password):
             return render_template("change_password.html", error="Das neue Passwort ist zu kurz.")
 
-        #  user id durch session ersetzen !!!
-        user = get_user_by_id(user_id)
-        if user:
-            hashed_current_password = hash_password(current_password)
+        # Überprüfen, ob das aktuelle Passwort korrekt ist
+        if not validate_login(session['user_id'], current_password):
+            return render_template("change_password.html", error="Das aktuelle Passwort ist nicht korrekt.")
 
-            # Überprüfen, ob das aktuelle Passwort korrekt ist
-            if hashed_current_password != user.password:
-                return render_template("change_password.html", error="Das aktuelle Passwort ist nicht korrekt.")
+        # Aktualisieren des Passworts
+        set_password(session['user_id'], new_password)
 
-            # Aktualisieren des Passworts
-            hashed_new_password = hash_password(new_password)
-            update_password_for_user(user_id, hashed_new_password)
-
-            return render_template("change_password.html", success="Das Passwort wurde erfolgreich geändert.")
-        else:
-            return render_template("change_password.html", error="Benutzer nicht gefunden.")
+        return render_template("change_password.html", success="Das Passwort wurde erfolgreich geändert.")
 
     return render_template("change_password.html")
