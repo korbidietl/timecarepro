@@ -2,9 +2,8 @@ from flask import Blueprint, render_template, request
 import random
 import string
 import smtplib
-import hashlib
 from email.mime.text import MIMEText
-from db_query import get_user_by_email
+from db_query import validate_email, check_account_locked, set_password, set_password_required_true
 
 password_reset_blueprint = Blueprint("password_reset", __name__)
 
@@ -13,14 +12,6 @@ password_reset_blueprint = Blueprint("password_reset", __name__)
 def generate_random_password(length=10):
     characters = string.ascii_letters + string.digits + string.punctuation
     return ''.join(random.choice(characters) for _ in range(length))
-
-
-def hash_password(password):
-    # Hash Verschlüsselung des Passwortes
-    sha1 = hashlib.sha1()
-    sha1.update(password.encode('utf-8'))
-    hashed_password = sha1.hexdigest()
-    return hashed_password
 
 
 def send_email(email, lastname, new_password):
@@ -51,7 +42,7 @@ def passwordreset():
     print("Hello")
     if request.method == "POST":
         email = request.form["email"]
-        user = get_user_by_email(email)
+        user = validate_email(email)
 
         # Es wurde keine E-mail übergeben
         if not email:
@@ -61,15 +52,16 @@ def passwordreset():
         else:
             if user:
                 lastname = get_surename_for_user(email)
-                locked = get_locked_status(email)
+                locked = check_account_locked(email)
 
-                if not locked == 0:
+                if locked:
                     # Überprüfung ob Nutzer gesperrt ist
                     return render_template("password_reset.html")
                 else:
+                    # Neues Passwort generieren, abspeichern und Passwort erzwingen auf True setzen
                     new_password = generate_random_password()
-                    hashed_password = hash_password(new_password)
-                    set_password_for_user(hashed_password, email)
+                    set_password(email, new_password)
+                    set_password_required_true(email)
                     # E-Mail senden
                     send_email(email, lastname, new_password)
 
