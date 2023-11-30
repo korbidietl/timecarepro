@@ -77,19 +77,6 @@ def get_person_id_by_email(self, email):
         return None
 
 
-# Generiert ein Passwort, hasht es mit SHA1 und speichert das gehashte Passwort in der Datenbank.
-# Anschließend wird das neue Passwort zurückgegeben.
-def reset_password(self, email):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    new_password = generate_password(10)
-    hashed_password = sha1_crypt.encrypt(new_password)
-    cursor.execute("UPDATE person SET passwort = %s, passwort_erzwingen = 1 WHERE email = %s",
-                   (hashed_password, email,))
-    connection.commit()
-    return new_password
-
-
 # Überprüfung, ob eine Benutzer-ID für die gegebene E-Mail-Adresse existiert.
 # Wenn dies der Fall ist, gibt die Methode True zurück, sonst False.
 def validate_email(self, email):
