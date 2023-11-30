@@ -20,6 +20,8 @@ def validate_password(password):
 @password_reset_blueprint.route('/change_password', methods=['POST'])
 def change_password():
     if request.method == "POST":
+        # user_id würde davon ausgehen, dass der nutzer in der maske seine email / namen eingibt
+        # system sollte automatisch id des nutzers durch session verwenden
         user_id = request.form["user_id"]
         current_password = request.form["current_password"]
         new_password = request.form["new_password"]

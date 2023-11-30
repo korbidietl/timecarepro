@@ -5,6 +5,7 @@ from passlib.utils import generate_password
 
 
 # Ludwig: @Korbi was das? xD
+# kann ersetzt werden, wenn wir get password / role / name  etc. by email haben
 def get_user_by_email(email):
     connection = get_database_connection()
     cursor = connection.cursor(dictionary=True)  # Aktiviere dictionary-based Cursor
@@ -113,7 +114,7 @@ def fetch_data():
 if __name__ == "__main__":
     fetch_data()
 
-
+# aktualisiert das Passwort eines Nutzers basierend auf seiner E-Mail.
 def update_password_for_user(email, new_password_hash):
     cnx = get_database_connection()
     cursor = cnx.cursor()
@@ -123,7 +124,7 @@ def update_password_for_user(email, new_password_hash):
     cursor.close()
     cnx.close()
 
-
+# holt das derzeitige Passwort (Hash) des Nutzers zur Überprüfung.
 def get_password_hash_for_user(email):
     cnx = get_database_connection()
     cursor = cnx.cursor()
