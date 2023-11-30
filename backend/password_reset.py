@@ -3,7 +3,7 @@ import random
 import string
 import smtplib
 from email.mime.text import MIMEText
-from db_query import validate_email, check_account_locked, set_password, set_password_required_true
+from db_query import validate_email, check_account_locked, set_password, set_password_required_true, get_lastname_by_email
 
 password_reset_blueprint = Blueprint("password_reset", __name__)
 
@@ -47,7 +47,7 @@ def passwordreset():
 
         else:
             if user:
-                lastname = get_surename_for_user(email)
+                lastname = get_lastname_by_email(email)
                 locked = check_account_locked(email)
 
                 if locked:
