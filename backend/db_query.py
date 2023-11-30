@@ -8,7 +8,7 @@ from passlib.utils import generate_password
 # Diese Methode gibt True zurück,
 # wenn die E-Mail-Adresse und das Passwort in der Datenbank vorhanden sind und korrekt sind.
 # Andernfalls gibt sie False zurück.
-def validate_login(self, email, password):
+def validate_login(email, password):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT passwort FROM person WHERE email = %s", (email,))
@@ -22,7 +22,7 @@ def validate_login(self, email, password):
 
 # Methode, die die Rolle basierend auf der E-Mail aus der Datenbank abruft.
 # Wenn ein Ergebnis gefunden wird, wird es als Rolle (str) zurückgegeben. Andernfalls wird None zurückgegeben.
-def get_role_by_email(self, email):
+def get_role_by_email(email):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT rolle FROM person WHERE email = %s", (email,))
@@ -32,7 +32,7 @@ def get_role_by_email(self, email):
 
 
 # Methode gibt Vornamen zurück, wenn er in der Datenbank gefunden wird. Andernfalls gibt sie None zurück.
-def get_firstname_by_email(self, email):
+def get_firstname_by_email(email):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT vorname FROM person WHERE email = %s", (email,))
@@ -43,22 +43,43 @@ def get_firstname_by_email(self, email):
         return None
 
 
-# Generiert ein Passwort, hasht es mit SHA1 und speichert das gehashte Passwort in der Datenbank.
-# Anschließend wird das neue Passwort zurückgegeben.
-def reset_password(self, email):
+# Methode hasht das übergebene Passwort und speichert es in der Datenbank ab
+def set_password(email, new_passwort):
+    hashed_password = sha1_crypt.encrypt(new_passwort)
     connection = get_database_connection()
     cursor = connection.cursor()
-    new_password = generate_password(10)
-    hashed_password = sha1_crypt.encrypt(new_password)
-    cursor.execute("UPDATE person SET passwort = %s, passwort_erzwingen = 1 WHERE email = %s",
+    cursor.execute("UPDATE person SET passwort = %s WHERE email = %s",
                    (hashed_password, email,))
     connection.commit()
-    return new_password
+    cursor.close()
+    connection.close()
+
+
+# Metode setzt den Status "passwort_erzwingen" auf true
+def set_password_required_true(email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET passwort_erzwingen = 1 WHERE email = %s", (email,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+# Methode übergibt die ID der Person mit übergebener E-Mail
+def get_person_id_by_email(email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM person WHERE email = %s", (email,))
+    result = cursor.fetchone()  # erstes Ergebnis wird aufgerufen
+    if result:
+        return result[0]
+    else:
+        return None
 
 
 # Überprüfung, ob eine Benutzer-ID für die gegebene E-Mail-Adresse existiert.
 # Wenn dies der Fall ist, gibt die Methode True zurück, sonst False.
-def validate_email(self, email):
+def validate_email(email):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT id FROM person WHERE email = %s", (email,))
@@ -71,7 +92,7 @@ def validate_email(self, email):
 # Überprüfung, ob der Benutzer, der die gegebene E-Mail-Adresse hat, gesperrt ist.
 # Wenn der Wert des Feldes "sperre" 1 ist, gibt die Methode True zurück, was bedeutet,
 # dass das Benutzerkonto gesperrt ist. Andernfalls gibt die Methode False zurück.
-def check_account_locked(self, email):
+def check_account_locked(email):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT sperre FROM person WHERE email = %s", (email,))
@@ -80,25 +101,3 @@ def check_account_locked(self, email):
         if result[0] == 1:
             return True
     return False
-
-
-# @korbi bitte anpassen/löschen/ hab ich glaub ich oben schon
-def update_password_for_user(email, new_password_hash):
-    cnx = get_database_connection()
-    cursor = cnx.cursor()
-    query = "UPDATE person SET password = %s WHERE email = %s"
-    cursor.execute(query, (new_password_hash, email))
-    cnx.commit()
-    cursor.close()
-    cnx.close()
-
-
-def get_password_hash_for_user(email):
-    cnx = get_database_connection()
-    cursor = cnx.cursor()
-    query = "SELECT password FROM person WHERE email = %s"
-    cursor.execute(query, (email,))
-    password_hash = cursor.fetchone()
-    cursor.close()
-    cnx.close()
-    return password_hash[0] if password_hash else None
