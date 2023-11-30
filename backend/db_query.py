@@ -43,6 +43,30 @@ def get_firstname_by_email(self, email):
         return None
 
 
+# Methode hasht das übergebene Passwort und speichert es in der Datenbank ab
+def set_password(self, email, new_passwort):
+    hashed_password = sha1_crypt.encrypt(new_passwort)
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET passwort = %s, passwort_erzwingen = 1 WHERE email = %s",
+                   (hashed_password, email,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+# Methode übergibt die ID der Person mit übergebener E-Mail
+def get_person_id_by_email(self, email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM person WHERE email = %s", (email,))
+    result = self.cursor.fetchone()  # erstes Ergebnis wird aufgerufen
+    if result:
+        return result[0]
+    else:
+        return None
+
+
 # Generiert ein Passwort, hasht es mit SHA1 und speichert das gehashte Passwort in der Datenbank.
 # Anschließend wird das neue Passwort zurückgegeben.
 def reset_password(self, email):
@@ -80,6 +104,17 @@ def check_account_locked(self, email):
         if result[0] == 1:
             return True
     return False
+
+
+def set_password(self, email, new_passwort):
+    hashed_password = sha1_crypt.encrypt(new_passwort)
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET passwort = %s, passwort_erzwingen = 1 WHERE email = %s",
+                   (hashed_password, email,))
+    connection.commit()
+    cursor.close()
+    connection.close()
 
 
 # @korbi bitte anpassen/löschen/ hab ich glaub ich oben schon
