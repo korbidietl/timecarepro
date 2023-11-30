@@ -1,6 +1,6 @@
 from flask import render_template, request
 import hashlib
-from db_query import get_user_by_id, update_password_for_user, validate_login, set_password
+from db_query import get_user_by_id, validate_login, set_password
 
 password_reset_blueprint = Blueprint("password_reset", __name__)
 
