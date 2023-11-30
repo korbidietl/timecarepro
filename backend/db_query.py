@@ -44,6 +44,18 @@ def get_firstname_by_email(email):
         return None
 
 
+# Methode gibt Nachnamen zurück, wenn er in der Datenbank gefunden wird. Andernfalls gibt sie None zurück.
+def get_lastname_by_email(email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT nachname FROM person WHERE email = %s", (email,))
+    result = cursor.fetchone()  # erstes Ergebnis wird aufgerufen
+    if result:
+        return result[0]
+    else:
+        return None
+
+
 # Methode hasht das übergebene Passwort und speichert es in der Datenbank ab
 def set_password(email, new_passwort):
     hashed_password = sha1_crypt.encrypt(new_passwort)
