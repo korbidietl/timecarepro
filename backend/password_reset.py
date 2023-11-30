@@ -44,6 +44,7 @@ def send_email(email, lastname, new_password):
 
 @password_reset_blueprint.route('/password_reset', methods=['POST'])
 def passwordreset():
+    print("Hello")
     if request.method == "POST":
         email = request.form["email"]
         user = get_user_by_email(email)

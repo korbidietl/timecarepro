@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from db_query import get_user_by_email  # , get_password_for_user, get_role_for_user(email), get_locked_status(email)
+from datetime import datetime, timedelta
 import hashlib
 
 einloggen_blueprint = Blueprint("einloggen", __name__)
@@ -17,8 +18,8 @@ def hash_password(password):
 
 def verify_password(password, hashed_password):
     # Überprüfung ob Passwörter übereinstimmen
-    encripted_password = hash_password(password)
-    return encripted_password == hashed_password
+    encrypted_password = hash_password(password)
+    return encrypted_password == hashed_password
 
 
 @einloggen_blueprint.route('/', methods=['GET', 'POST'])
@@ -39,11 +40,11 @@ def login():
                 role_user = get_role_for_user(email)
                 locked_status = get_locked_status(email)
 
-                if user and email not in logged_in_users and verify_password(password, password_user):
+                if user and email not in logged_in_users and verify_password(password, password_user)
                     # Nutzer gefunden und wird in Session hinzugefügt
                     logged_in_users.add(email)
                     session['user_id'] = email
-                    # Rolle in der Session speichern
+                    session['last_activity'] = datetime.now()
                     session['user_role'] = role_user
                     return redirect(url_for('startseite.html'))
                 elif user and email in logged_in_users:
@@ -67,4 +68,10 @@ def login():
 
 @einloggen_blueprint.route('/Menüleiste')
 def startseite():
+    if 'last_activity' in session:
+        last_activity = session['last_activity']
+        if datetime.now() - last_activity > timedelta(minutes=30):  # Setze die Inaktivitätszeit auf 30 Minuten
+            session.clear()  # Lösche die Sitzung, um den Benutzer auszuloggen
+            return redirect(url_for('.login'))  # Nutze den Blueprint-Prefix
+
     return render_template('Menüleiste.html', role=session.get('user_role'))
