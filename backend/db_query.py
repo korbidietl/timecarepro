@@ -38,21 +38,27 @@ def validate_login(email, password):
 
 # Bitte anlegen: def get_surnmae_for_user(email):
 
-# Bitte anlegen: def set_password_for_user(password, email)
-# Passwort zurückzusetzen Methode reset_password mit der E-Mail-Adresse des Benutzers aufrufen.
-# Diese Methode generiert ein neues Passwort
+
+# Aktualisiert das Passwort eines Nutzers in der Datenbank.
 # hasht es mit SHA1 und speichert das gehashte Passwort in der Datenbank.
-# Anschließend wird das neue Passwort zurückgegeben.
-def reset_password(email):
+def set_password(email, new_password):
+    hashed_password = sha1_crypt.encrypt(new_password)
     connection = get_database_connection()
     cursor = connection.cursor()
-    new_password = generate_password(10)
-    hashed_password = sha1_crypt.encrypt(new_password)
     cursor.execute("UPDATE person SET passwort = %s, passwort_erzwingen = 1 WHERE email = %s",
                    (hashed_password, email,))
     connection.commit()
-    return new_password
+    cursor.close()
+    connection.close()
 
+# Setzt das Passwort eines Nutzers zurück und generiert ein neues Passwort.
+# Passwort zurückzusetzen Methode reset_password mit der E-Mail-Adresse des Benutzers aufrufen.
+# Diese Methode generiert ein neues Passwort
+# Anschließend wird das neue Passwort zurückgegeben.
+def reset_password(email):
+    new_password = generate_password(10)
+    set_password(email, new_password)
+    return new_password
 
 # Überprüfung, ob eine Benutzer-ID für die gegebene E-Mail-Adresse existiert.
 # Wenn dies der Fall ist, gibt die Methode True zurück, sonst False.
