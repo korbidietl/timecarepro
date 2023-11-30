@@ -1,3 +1,5 @@
+import hashlib
+
 import mysql.connector
 from databaseConnection import get_database_connection
 from passlib.hash import sha1_crypt
@@ -11,14 +13,13 @@ from passlib.utils import generate_password
 def validate_login(email, password):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT passwort FROM person WHERE email = %s", (email,))
+    cursor.execute("SELECT UNHEX(passwort) FROM person WHERE email = %s", (email,))
     result = cursor.fetchone()  # erstes Ergebnis wird aufgerufen
     if result:
         hashed_password = result[0]
-        if sha1_crypt.verify(password, hashed_password):
+        if hashlib.sha1(password.encode()).hexdigest() == hashed_password:
             return True
     return False
-
 
 # Methode, die die Rolle basierend auf der E-Mail aus der Datenbank abruft.
 # Wenn ein Ergebnis gefunden wird, wird es als Rolle (str) zurückgegeben. Andernfalls wird None zurückgegeben.
@@ -36,6 +37,18 @@ def get_firstname_by_email(email):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT vorname FROM person WHERE email = %s", (email,))
+    result = cursor.fetchone()  # erstes Ergebnis wird aufgerufen
+    if result:
+        return result[0]
+    else:
+        return None
+
+
+# Methode gibt Nachnamen zurück, wenn er in der Datenbank gefunden wird. Andernfalls gibt sie None zurück.
+def get_lastname_by_email(email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT nachname FROM person WHERE email = %s", (email,))
     result = cursor.fetchone()  # erstes Ergebnis wird aufgerufen
     if result:
         return result[0]
