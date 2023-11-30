@@ -58,3 +58,24 @@ def fetch_data():
 
 if __name__ == "__main__":
     fetch_data()
+
+
+
+def update_password_for_user(email, new_password_hash):
+    cnx = get_database_connection()
+    cursor = cnx.cursor()
+    query = "UPDATE person SET password = %s WHERE email = %s"
+    cursor.execute(query, (new_password_hash, email))
+    cnx.commit()
+    cursor.close()
+    cnx.close()
+
+def get_password_hash_for_user(email):
+    cnx = get_database_connection()
+    cursor = cnx.cursor()
+    query = "SELECT password FROM person WHERE email = %s"
+    cursor.execute(query, (email,))
+    password_hash = cursor.fetchone()
+    cursor.close()
+    cnx.close()
+    return password_hash[0] if password_hash else None
