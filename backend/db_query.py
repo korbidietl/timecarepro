@@ -68,8 +68,8 @@ def validate_email(email):
 # Überprüfung, ob der Benutzer, der die gegebene E-Mail-Adresse hat, gesperrt ist.
 # Wenn der Wert des Feldes "sperre" 1 ist, gibt die Methode True zurück, was bedeutet,
 # dass das Benutzerkonto gesperrt ist. Andernfalls gibt die Methode False zurück.
-def check_account_locked(self, email):
-    connection = self.get_connection()
+def check_account_locked(email):
+    connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT sperre FROM person WHERE email = %s", (email,))
     result = cursor.fetchone()
