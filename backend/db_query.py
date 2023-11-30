@@ -21,6 +21,10 @@ def get_user_by_email(email):
 
 #Bitte anlegen: def get_locked_status(email):
 
+#Bitte anlegen: def get_surnmae_for_user(email):
+
+#Bitte anlegen: def set_password_for_user(password, email)
+
 
 def fetch_data():
     cnx = mysql.connector.connect(

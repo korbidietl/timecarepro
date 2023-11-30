@@ -1,12 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-from databaseConnection import get_database_connection, close_database_connection
+from flask import Blueprint, render_template, request, redirect, url_for, session
 from db_query import get_user_by_email # , get_password_for_user, get_role_for_user(email), get_locked_status(email)
 import hashlib
 
-app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+einloggen_blueprint = Blueprint("einloggen", __name__)
 
-conn = get_database_connection()
 
 logged_in_users = set()
 
@@ -25,7 +22,7 @@ def verify_password(password, hashed_password):
     return encripted_password == hashed_password
 
 
-@app.route('/', methods=['GET', 'POST'])
+@einloggen_blueprint.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
@@ -67,9 +64,7 @@ def login():
     return render_template('Einloggen.html')
 
 
-@app.route('/Menüleiste')
+@einloggen_blueprint.route('/Menüleiste')
 def startseite():
     return render_template('Menüleiste.html', role=session.get('user_role'))
 
-
-close_database_connection(conn)
