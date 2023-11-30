@@ -5,7 +5,8 @@ from passlib.utils import generate_password
 
 
 # Ludwig: @Korbi was das? xD
-def get_user_by_email(self, email):
+# kann ersetzt werden, wenn wir get password / role / name  etc. by email haben
+def get_user_by_email(email):
     connection = get_database_connection()
     cursor = connection.cursor(dictionary=True)  # Aktiviere dictionary-based Cursor
     cursor.execute("SELECT * FROM person WHERE email = %s", (email,))
@@ -53,9 +54,8 @@ def get_firstname_by_email(self, email):
     else:
         return None
 
-# Bitte anlegen: def set_password_for_user(password, email)
-# Passwort zurückzusetzen Methode reset_password mit der E-Mail-Adresse des Benutzers aufrufen.
-# Diese Methode generiert ein neues Passwort
+
+# Aktualisiert das Passwort eines Nutzers in der Datenbank.
 # hasht es mit SHA1 und speichert das gehashte Passwort in der Datenbank.
 # Anschließend wird das neue Passwort zurückgegeben.
 def reset_password(self, email):
