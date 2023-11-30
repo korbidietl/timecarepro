@@ -48,8 +48,18 @@ def set_password(self, email, new_passwort):
     hashed_password = sha1_crypt.encrypt(new_passwort)
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("UPDATE person SET passwort = %s, passwort_erzwingen = 1 WHERE email = %s",
+    cursor.execute("UPDATE person SET passwort = %s WHERE email = %s",
                    (hashed_password, email,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+# Metode setzt den Status "passwort_erzwingen" auf true
+def set_password_required_true(self, email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET passwort_erzwingen = 1 WHERE email = %s", (email,))
     connection.commit()
     cursor.close()
     connection.close()
