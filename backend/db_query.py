@@ -43,8 +43,7 @@ def get_firstname_by_email(self, email):
         return None
 
 
-# Aktualisiert das Passwort eines Nutzers in der Datenbank.
-# hasht es mit SHA1 und speichert das gehashte Passwort in der Datenbank.
+# Generiert ein Passwort, hasht es mit SHA1 und speichert das gehashte Passwort in der Datenbank.
 # Anschließend wird das neue Passwort zurückgegeben.
 def reset_password(self, email):
     connection = get_database_connection()
