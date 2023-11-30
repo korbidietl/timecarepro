@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from db_query import get_user_by_email, check_account_locked, validate_login, email_exists, get_role_for_user,  # , get_password_for_user
+from db_query import check_account_locked, validate_login, validate_email, get_role_by_email,  # , get_password_for_user
 from datetime import datetime, timedelta
 import hashlib
 
@@ -33,21 +33,21 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        # Überprüfen ob alle Felder ausgefüllt wurden
+        # Überprüfen, ob alle Felder ausgefüllt wurden
         if not email or not password:
             error = "Alle Felder müssen ausgefüllt werden"
             return render_template('Einloggen.html', error=error)
 
         # wenn email in datenbank gefunden wird
-        elif email_exists(email):
+        elif validate_email(email):
 
             # Nutzer gefunden und wird in Session hinzugefügt
-            if user and email not in logged_in_users and validate_login(email, password)
+            if user and email not in logged_in_users and validate_login(email, password):
                 logged_in_users.add(email)
                 session['user_id'] = email
                 # wozu ist die last activity in der session relevant??
                 session['last_activity'] = datetime.now()
-                session['user_role'] = get_role_for_user(email)
+                session['user_role'] = get_role_by_email(email)
                 return redirect(url_for('startseite.html'))
             # Nutzer ist schon angemeldet
             elif user and email in logged_in_users:
