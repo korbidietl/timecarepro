@@ -64,6 +64,7 @@ def validate_email(email):
         return True
     return False
 
+
 # Bitte anlegen: def get_locked_status(email):
 # Überprüfung, ob der Benutzer, der die gegebene E-Mail-Adresse hat, gesperrt ist.
 # Wenn der Wert des Feldes "sperre" 1 ist, gibt die Methode True zurück, was bedeutet,
@@ -77,9 +78,6 @@ def check_account_locked(email):
         if result[0] == 1:
             return True
     return False
-
-
-
 
 
 def fetch_data():
