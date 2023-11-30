@@ -1,9 +1,6 @@
 import hashlib
-
-import mysql.connector
 from databaseConnection import get_database_connection
 from passlib.hash import sha1_crypt
-from passlib.utils import generate_password
 
 
 # Methode validate_login mit der E-Mail-Adresse und dem Passwort des Benutzers aufrufen.
@@ -20,6 +17,7 @@ def validate_login(email, password):
         if hashlib.sha1(password.encode()).hexdigest() == hashed_password:
             return True
     return False
+
 
 # Methode, die die Rolle basierend auf der E-Mail aus der Datenbank abruft.
 # Wenn ein Ergebnis gefunden wird, wird es als Rolle (str) zurückgegeben. Andernfalls wird None zurückgegeben.
@@ -56,7 +54,7 @@ def get_lastname_by_email(email):
         return None
 
 
-# Methode hasht das übergebene Passwort und speichert es in der Datenbank ab
+# Methode hashed das übergebene Passwort und speichert es in der Datenbank ab
 def set_password(email, new_passwort):
     hashed_password = sha1_crypt.encrypt(new_passwort)
     connection = get_database_connection()
@@ -68,7 +66,7 @@ def set_password(email, new_passwort):
     connection.close()
 
 
-# Metode setzt den Status "passwort_erzwingen" auf true
+# Methode setzt den Status "passwort_erzwingen" auf true
 def set_password_required_true(email):
     connection = get_database_connection()
     cursor = connection.cursor()
