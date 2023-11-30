@@ -7,7 +7,7 @@ einloggen_blueprint = Blueprint("einloggen", __name__)
 
 logged_in_users = set()
 
-
+# evtl diese methoden "public" machen. werden immer wieder verwendet --> redundanter code
 def hash_password(password):
     # Hash Verschlüsselung des Passwortes
     sha1 = hashlib.sha1()
@@ -15,12 +15,17 @@ def hash_password(password):
     hashed_password = sha1.hexdigest()
     return hashed_password
 
-
+# gleiches spiel wie bei hash_password
 def verify_password(password, hashed_password):
     # Überprüfung ob Passwörter übereinstimmen
     encrypted_password = hash_password(password)
     return encrypted_password == hashed_password
 
+
+# beim log-in prozess sollte die user id als session id gespeichert werden !!
+# diese muss dann file übergreifend abrufbar sein.
+# bsp.: beim log-in wird user id ermittelt
+# --> diese wird bei passwort_change erneut gebraucht, damit der user nicht wieder seine email eingeben muss
 
 @einloggen_blueprint.route('/', methods=['GET', 'POST'])
 def login():

@@ -39,6 +39,7 @@ def change_password():
         if not validate_password(new_password):
             return render_template("change_password.html", error="Das neue Passwort ist zu kurz.")
 
+        #  user id durch session ersetzen !!!
         user = get_user_by_id(user_id)
         if user:
             hashed_current_password = hash_password(current_password)
