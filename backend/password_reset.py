@@ -9,13 +9,6 @@ from db_query import get_user_by_email
 password_reset_blueprint = Blueprint("password_reset", __name__)
 
 
-@password_reset_blueprint.route('/password_reset', methods=['POST'])
-def handle_password_reset():
-    email = request.form['email']
-    result = password_reset(email)
-    return result
-
-
 # Neues Passwort wird erzeugt
 def generate_random_password(length=10):
     characters = string.ascii_letters + string.digits + string.punctuation
@@ -30,51 +23,55 @@ def hash_password(password):
     return hashed_password
 
 
-def password_reset(email):
+def send_email(email, lastname, new_password):
+    subject = "Ihr neues Passwort"
+    body = (f"Sehr geehrte/r Frau/Mann {lastname}, \n\n"
+            f"Ihr Passwort wurde erfolgreich zurückgesetzt. "
+            f"Das automatisch generierte Passwort ist: {new_password} \n"
+            f"Bitte ändern Sie dieses Passwort schnellstmöglich.\n\n"
+            f"Mit freundlichen Grüßen\n"
+            f"Ihr TimeCare Pro-Team")
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = 'resetyourpasswort@timecarepro.de'
+    msg['To'] = email
 
-    # Es wurde keine E-mail übergeben
-    if not email:
-        error = "Geben Sie für das Zurücksetzen des Passworts zuerst Ihre E-Mail-Adresse ein."
-        return render_template("password_reset.html", error=error)
+    with smtplib.SMTP('132.231.36.210', 1103) as smtp:
+        smtp.starttls()
+        smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
+        smtp.sendmail('resetyourpassword@timecarepro.de', [email], msg.as_string())
 
-    # Überprüfung ob in der Datenbank diese E-Mail hinterlegt ist
-    user = get_user_by_email(email)
 
-    if user:
-        person_surnmae = get_surename_for_user(email)
-        locked = get_locked_status(email)
+@password_reset_blueprint.route('/password_reset', methods=['POST'])
+def passwordreset():
+    if request.method == "POST":
+        email = request.form["email"]
+        user = get_user_by_email(email)
 
-        if not locked == 0:
-            # Überprüfung ob Nutzer gesperrt ist
-            return render_template("password_reset.html")
+        # Es wurde keine E-mail übergeben
+        if not email:
+            error = "Geben Sie für das Zurücksetzen des Passworts zuerst Ihre E-Mail-Adresse ein."
+            return render_template("password_reset.html", error=error)
+
         else:
-            new_password = generate_random_password()
-            hashed_password = hash_password(new_password)
-            set_password_for_user(hashed_password, email)
+            if user:
+                lastname = get_surename_for_user(email)
+                locked = get_locked_status(email)
 
-            # E-Mail senden
-            subject = "Ihr neues Passwort"
-            body = (f"Sehr geehrte/r Frau/Mann {person_surnmae}, \n\n"
-                    f"Ihr Passwort wurde erfolgreich zurückgesetzt. "
-                    f"Das automatisch generierte Passwort ist: {new_password} \n"
-                    f"Bitte ändern Sie dieses Passwort schnellstmöglich.\n\n"
-                    f"Mit freundlichen Grüßen\n"
-                    f"Ihr TimeCare Pro-Team")
-            msg = MIMEText(body)
-            msg['Subject'] = subject
-            msg['From'] = 'resetyourpasswort@timecarepro.de'
-            msg['To'] = email
+                if not locked == 0:
+                    # Überprüfung ob Nutzer gesperrt ist
+                    return render_template("password_reset.html")
+                else:
+                    new_password = generate_random_password()
+                    hashed_password = hash_password(new_password)
+                    set_password_for_user(hashed_password, email)
+                    # E-Mail senden
+                    send_email(email, lastname, new_password)
 
-            with smtplib.SMTP('132.231.36.210', 1103) as smtp:
-                smtp.starttls()
-                smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
-                smtp.sendmail('resetyourpassword@timecarepro.de', [email], msg.as_string())
-
-            return render_template('Einloggen.html', email=email, success_message="Ein neues Passwort wurde an die "
-                                                                                      "angegebene E-Mail-Adresse "
-                                                                                      "versendet.")
-    else:
-        # keine E-mail in der Datenbank gefunden
-        return render_template('Einloggen.html')
-
-
+                    return render_template('Einloggen.html', email=email,
+                                           success_message="Ein neues Passwort wurde an die "
+                                                           "angegebene E-Mail-Adresse "
+                                                           "versendet.")
+            else:
+                # keine E-mail in der Datenbank gefunden
+                return render_template('Einloggen.html')

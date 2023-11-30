@@ -1,9 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from db_query import get_user_by_email # , get_password_for_user, get_role_for_user(email), get_locked_status(email)
+from db_query import get_user_by_email  # , get_password_for_user, get_role_for_user(email), get_locked_status(email)
 import hashlib
 
 einloggen_blueprint = Blueprint("einloggen", __name__)
-
 
 logged_in_users = set()
 
@@ -36,35 +35,36 @@ def login():
             # nach Nutzerdaten in Datenbank suchen
             user = get_user_by_email(email)
             if user:
-                hashed_password = get_password_for_user(email)
-                role = get_role_for_user(email)
-                locked = get_locked_status(email)
+                password_user = get_password_for_user(email)
+                role_user = get_role_for_user(email)
+                locked_status = get_locked_status(email)
 
-        if user and email not in logged_in_users and verify_password(password, hashed_password):
-            # Nutzer gefunden und wird in Session hinzugefügt
-            logged_in_users.add(email)
-            session['user_id'] = email
-            # Rolle in der Session speichern
-            if user:
-                session['user_role'] = user['rolle']
-            return redirect(url_for('startseite.html'))
-        elif user and email in logged_in_users:
-            # Nutzer ist schon angemeldet
-            error = "Benutzer ist bereits eingeloggt"
-            return render_template('Einloggen.html', error=error)
-        elif locked == 0:
-            # Nutzer ist gesperrt
-            error = "Anmeldung fehlgeschlagen. Wenden Sie sich an die Verwaltung"
-            return render_template('Einloggen.html', error=error)
-        else:
-            # Nutzer nicht gefunden oder Passwort stimmt nicht
-            error = "Die Zugangsdaten sind nicht korrekt."
-            return render_template('Einloggen.html', error=error)
+                if user and email not in logged_in_users and verify_password(password, password_user):
+                    # Nutzer gefunden und wird in Session hinzugefügt
+                    logged_in_users.add(email)
+                    session['user_id'] = email
+                    # Rolle in der Session speichern
+                    session['user_role'] = role_user
+                    return redirect(url_for('startseite.html'))
+                elif user and email in logged_in_users:
+                    # Nutzer ist schon angemeldet
+                    error = "Benutzer ist bereits eingeloggt"
+                    return render_template('Einloggen.html', error=error)
+                elif locked_status == 0:
+                    # Nutzer ist gesperrt
+                    error = "Anmeldung fehlgeschlagen. Wenden Sie sich an die Verwaltung"
+                    return render_template('Einloggen.html', error=error)
+                else:
+                    # Passwort stimmt nicht
+                    error = "Die Zugangsdaten sind nicht korrekt."
+                    return render_template('Einloggen.html', error=error)
 
-    return render_template('Einloggen.html')
+            else:
+                # Nutzer nicht gefunden
+                error = "Die Zugangsdaten sind nicht korrekt."
+                return render_template('Einloggen.html', error=error)
 
 
 @einloggen_blueprint.route('/Menüleiste')
 def startseite():
     return render_template('Menüleiste.html', role=session.get('user_role'))
-
