@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from db_query import check_account_locked, validate_login, validate_email, get_role_by_email
+from db_query import check_account_locked, validate_login, validate_email, get_role_by_email, get_person_id_by_email
 from datetime import datetime, timedelta
 import hashlib
 
@@ -26,7 +26,7 @@ def login():
             if user and email not in logged_in_users and validate_login(email, password):
                 # Nutzer gefunden und wird in Session hinzugefügt
                 logged_in_users.add(email)
-                session['user_id'] = email
+                session['user_id'] = get_person_id_by_email(email)
                 session['last_activity'] = datetime.now()
                 session['user_role'] = get_role_by_email(email)
                 return redirect(url_for('startseite.html'))
@@ -62,23 +62,3 @@ def startseite():
 
 
 
-
-
-# evtl diese methoden "public" machen. werden immer wieder verwendet --> redundanter code
-def hash_password(password):
-    # Hash Verschlüsselung des Passwortes
-    sha1 = hashlib.sha1()
-    sha1.update(password.encode('utf-8'))
-    hashed_password = sha1.hexdigest()
-    return hashed_password
-
-
-
-
-
-
-# gleiches spiel wie bei hash_password
-def verify_password(password, hashed_password):
-    # Überprüfung ob Passwörter übereinstimmen
-    encrypted_password = hash_password(password)
-    return encrypted_password == hashed_password
