@@ -11,7 +11,10 @@ def submit_arbeitsstunden():
     start_zeit = request.form.get('startZeit')
     end_zeit = request.form.get('endZeit')
     kilometer = request.form.get('kilometer')
-    klient_id = request.form.get('klient')  # Nehmen wir an, dass dies die ID ist
+    # da müssen wir uns noch überlegen, wie das am besten sinn macht
+    # weil klient name kann ja doppelt sein, aber das dropdown soll ja keine id anzeigen
+    # wie erkennt man aber im dropdown welcher max mustermann der richtige ist?
+    klient_id = request.form.get('klient')
     beschreibung = request.form.get('beschreibung')
     interne_notiz = request.form.get('interneNotiz')
     unterschrift_klient
