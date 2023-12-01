@@ -5,13 +5,6 @@ from db_query import get_user_by_id, validate_login, set_password
 password_reset_blueprint = Blueprint("password_reset", __name__)
 
 
-# funktion doppelt sich mit hash_password aus password_reset.py
-# ich weiß nicht ob sie trotzdem doppelt aufgeführt werden muss
-def hash_password(password):
-    sha1 = hashlib.sha1()
-    sha1.update(password.encode('utf-8'))
-    return sha1.hexdigest()
-
 # ich habe jetzt mal eine minimale passwort länge von 8 festegelegt --> evtl noch ändern
 def validate_password(password):
     # Überprüft, ob das Passwort den Anforderungen entspricht (z.B. Länge)
