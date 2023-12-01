@@ -15,6 +15,8 @@ def submit_arbeitsstunden():
     klient_id = request.form.get('klient')  # Nehmen wir an, dass dies die ID ist
     beschreibung = request.form.get('beschreibung')
     interne_notiz = request.form.get('interneNotiz')
+    unterschrift_klient
+    unterschrift_mitarbeiter
     # hier müssen noch unterschriften rein
 
     # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
@@ -22,7 +24,7 @@ def submit_arbeitsstunden():
     end_datetime = datetime.strptime(f"{datum} {end_zeit}", '%Y-%m-%d %H:%M')
 
     # Füge neuen Zeiteintrag hinzu und erhalte die ID
-    zeiteintrag_id = add_zeiteintrag(start_datetime, end_datetime, beschreibung, interne_notiz)
+    zeiteintrag_id = add_zeiteintrag(datum, start_datetime, end_datetime, beschreibung, interne_notiz, unterschrift_klient, unterschrift_mitarbeiter)
 
     # Falls Kilometer angegeben, füge Fahrt hinzu
     if kilometer:
