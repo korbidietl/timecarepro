@@ -235,3 +235,60 @@ body {
     color: #fff;
     color: white;
 }
+
+
+/* vorlage */
+
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+}
+
+.form-group {
+    flex: 1; /* Flex-Container nutzen, um die Größe dynamisch anzupassen */
+    margin-right: 10px; /* Etwas Abstand zwischen den Gruppen */
+}
+
+.form-group:last-child {
+    margin-right: 0; /* Kein Abstand nach dem letzten Element */
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.form-group input[type="time"],
+.form-group input[type="date"],
+.form-group input[type="number"],
+.form-group select {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-group textarea {
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none; /* Verhindert das Vergrößern/Verkleinern des Textbereichs */
+    overflow-y: auto; /* Ermöglicht das Scrollen innerhalb des Textbereichs */
+    height: 150px; /* Fixe Höhe für den Textbereich */
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-actions button {
+    padding: 10px 15px; /* Polsterung der Schaltflächen */
+    width: 48%; /* Schaltflächen nebeneinander mit etwas Abstand */
+}
+
+
