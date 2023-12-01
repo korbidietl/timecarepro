@@ -1,4 +1,7 @@
 import hashlib
+
+from flask import session
+
 from databaseConnection import get_database_connection
 from passlib.hash import sha1_crypt
 
@@ -208,6 +211,20 @@ def get_zeiteintrag_id(person_id):
     return result
 
 
+# Erstellt einen neuen Zeiteintrag
+def add_zeiteintrag(start_time, end_time, klient_id, beschreibung, interne_notiz):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO zeiteintrag (start_zeit, end_zeit, mitarbeiter_ID, klient_ID, "
+                   "beschreibung, interne_notiz, überschneidung, absage) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                   start_time, end_time, session['user_id'], klient_id, beschreibung, interne_notiz, False, False)
+    zeiteintrag_id = cursor.lastrowid
+    connection.commit()
+    cursor.close()
+    connection.close()
+    return zeiteintrag_id
+
+
 # Stunden werden im Zeiteintrag geändert mit Eingabe der Start- und Endzeit
 # automatisch werden die Unterschriften gelöscht
 def edit_zeiteintrag(zeiteintrag_id, start_time, end_time):
@@ -215,6 +232,17 @@ def edit_zeiteintrag(zeiteintrag_id, start_time, end_time):
     cursor = connection.cursor()
     cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = NULL, "
                    "unterschrift_Klient = NULL WHERE id = %s", (start_time, end_time, zeiteintrag_id))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+# fügt eine Fahrt hinzu
+def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO fahrt (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_ID) "
+                   "VALUES (%s, %s, %s, %s, %s)", kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id)
     connection.commit()
     cursor.close()
     connection.close()
