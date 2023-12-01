@@ -26,6 +26,7 @@ def login():
                 logged_in_users.add(email)
                 session['user_id'] = get_person_id_by_email(email)
                 session['user_role'] = get_role_by_email(email)
+                session['user_email'] = email
                 return redirect(url_for('startseite.html'))
             # Nutzer ist schon angemeldet
             elif user and email in logged_in_users:
