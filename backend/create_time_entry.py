@@ -1,6 +1,5 @@
 from flask import Flask, request, redirect, url_for
-import mysql.connector
-from db_query import add_zeintrag, add_fahrt
+from db_query import add_zeiteintrag, add_fahrt
 from datetime import datetime
 
 app = Flask(__name__)
