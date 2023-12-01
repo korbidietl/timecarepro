@@ -128,8 +128,22 @@ def create_account(vorname, nachname, geburtsdatum, qualifikation, adresse, roll
     cursor.close()
 
 
+# Person mit übergebenen ID wird mit übergebenen Parameter bearbeitet
+def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
+                 telefonnummer, passwort, sperre, passwort_erzwingen):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET vorname = %s, nachname = %s, geburtsdatum = %s, qualifikation = %s, "
+                   "adresse = %s, rolle = %s, email = %s, telefonnummer = %s, passwort = %s, sperre = %s, "
+                   "passwort_erzwingen = %s WHERE ID = %s",
+                   (vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
+                    telefonnummer, passwort, sperre, passwort_erzwingen))
+    connection.commit()
+    cursor.close()
+
+
 # Erzeugt einen neuen Eintrag in der Klient-Tabelle
-def create_client(vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
+def create_klient(vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
                   adresse, kontingent_hk, kontingent_fk, fallverantwortung_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -138,5 +152,19 @@ def create_client(vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter
                    "(%s, %s, %s, %s, %s, %s, %s, %s, %s)",
                    (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
                     adresse, kontingent_hk, kontingent_fk, fallverantwortung_id))
+    connection.commit()
+    cursor.close()
+
+
+# Klient mit übergebenen ID wird mit übergebenen Parameter bearbeitet
+def edit_klient(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
+                kontingent_hk, kontingent_fk, fallverantwortung_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE klient SET vorname = %s, nachname = %s, geburtsdatum = %s, telefonnummer = %s, "
+                   "sachbearbeiter_ID = %s, adresse = %s, kontingent_HK = %s, kontingent_FK = %s, "
+                   "fallverantwortung_ID = %s WHERE ID = %s",
+                   (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
+                    kontingent_hk, kontingent_fk, fallverantwortung_id, client_id))
     connection.commit()
     cursor.close()
