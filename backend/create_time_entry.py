@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, render_template
 from db_query import add_zeiteintrag, add_fahrt
 from datetime import datetime
 
@@ -25,12 +25,22 @@ def submit_arbeitsstunden():
     start_datetime = datetime.strptime(f"{datum} {start_zeit}", '%Y-%m-%d %H:%M')
     end_datetime = datetime.strptime(f"{datum} {end_zeit}", '%Y-%m-%d %H:%M')
 
-    # Füge neuen Zeiteintrag hinzu und erhalte die ID
-    zeiteintrag_id = add_zeiteintrag(datum, start_datetime, end_datetime, beschreibung, interne_notiz, unterschrift_klient, unterschrift_mitarbeiter)
+    # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
+    if start_datetime >= end_datetime:
+        return render_template("create_time_entry.html", error="Endzeitpunkt muss nach Startzeitpunkt sein.")
 
-    # Falls Kilometer angegeben, füge Fahrt hinzu
-    if kilometer:
-        add_fahrt(zeiteintrag_id, kilometer)
+    # prüft auf überschneidung einer bestehenden eintragung in der datenbank
+    elif überschneidung(start_zeit, end_zeit, klient_id):
+        # überschneidungs funktion
+        return /FS030/
+
+    # Füge neuen Zeiteintrag hinzu und erhalte die ID
+    else:
+        zeiteintrag_id = add_zeiteintrag(datum, start_datetime, end_datetime, beschreibung, interne_notiz, unterschrift_klient, unterschrift_mitarbeiter)
+
+        # Falls Kilometer angegeben, füge Fahrt hinzu
+        if kilometer:
+            add_fahrt(zeiteintrag_id, kilometer)
 
     # Weiterleitung zurück zur Übersicht der abgelegten Stunden
     return redirect(url_for('arbeitsleistung_uebersicht'))

@@ -23,19 +23,20 @@ def change_password():
             return render_template("password_change.html", error="Bitte füllen Sie alle Felder aus.")
 
         # Prüfen, ob die neuen Passwörter übereinstimmen
-        if new_password != confirm_password:
+        elif new_password != confirm_password:
             return render_template("password_change.html", error="Die neuen Passwörter stimmen nicht überein.")
 
         # Prüfen, ob das neue Passwort den Anforderungen entspricht
-        if not validate_password(new_password):
+        elif not validate_password(new_password):
             return render_template("password_change.html", error="Das neue Passwort ist zu kurz.")
 
         # Überprüfen, ob das aktuelle Passwort korrekt ist
-        if not validate_login(session['user_email'], current_password):
+        elif not validate_login(session['user_email'], current_password):
             return render_template("password_change.html", error="Das aktuelle Passwort ist nicht korrekt.")
 
         # Aktualisieren des Passworts
-        set_password(session['user_email'], new_password)
+        else:
+            set_password(session['user_email'], new_password)
 
         return render_template("password_change.html", success="Das Passwort wurde erfolgreich geändert.")
 
