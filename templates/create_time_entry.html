@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbeitsstunden Eintrag</title>
+    <link rel="stylesheet" href="../frontend/styles.css">
+</head>
+<body>
+    <div class="registration-form">
+        <h2>Erbrachte Arbeitsleistung hinzufügen</h2>
+        <form action="/submit_time_entry" method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="datum">Datum:</label>
+                    <input type="date" id="datum" name="datum" required>
+                </div>
+                <div class="form-group">
+                    <label for="startZeit">Startzeitpunkt:</label>
+                    <input type="time" id="startZeit" name="startZeit" required>
+                </div>
+                <div class="form-group">
+                    <label for="endZeit">Endzeitpunkt:</label>
+                    <input type="time" id="endZeit" name="endZeit" required>
+                </div>
+                <div class="form-group">
+                    <label for="kilometer">Kilometer:</label>
+                    <input type="number" id="kilometer" name="kilometer">
+                </div>
+                <div class="form-group">
+                    <label for="klient">Klient:</label>
+                    <select id="klient" name="klient">
+                        <!-- Optionen für Klienten (Nachname, Vorname) -->
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="beschreibung">Beschreibung:</label>
+                    <textarea id="beschreibung" name="beschreibung" readonly></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="interneNotiz">Interne Notiz:</label>
+                    <textarea id="interneNotiz" name="interneNotiz" readonly></textarea>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Unterschrift Klient:</label>
+                    <!-- Hier könnte ein Canvas oder ein Feld für die Unterschrift implementiert werden -->
+                </div>
+                <div class="form-group">
+                    <label>Unterschrift Mitarbeiter:</label>
+                    <!-- Hier könnte ein Canvas oder ein Feld für die Unterschrift implementiert werden -->
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit">Eintrag hinzufügen</button>
+                <button type="button" onclick="window.location='/FMOF010';">Abbrechen</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+
