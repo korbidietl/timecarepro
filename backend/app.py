@@ -1,8 +1,8 @@
-from flask import Flask
+from flask import Flask, session
 from einloggen import einloggen_blueprint
 from password_reset import password_reset_blueprint
 from logout import logout_blueprint
-from flask_session import Session
+# from flask_session import Session
 from datetime import timedelta
 from middleware import before_request
 
@@ -20,7 +20,7 @@ app.register_blueprint(password_reset_blueprint)
 app.register_blueprint(logout_blueprint)
 
 
-Session(app)
+session(app)
 
 # Middleware registrieren
 app.before_request(before_request)

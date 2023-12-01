@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../frontend/styles.css">
+    <title>Klient anlegen</title>
+</head>
+<body>
+    <!-- Menüleiste einbinden -->
+    {% include 'menu.html' %}
+
+    <div class = "loginContainer">
+        <h2>Klient anlegen</h2>
+        <form action="/create_client" method="post">
+            <div class="form-column">
+                 <div class="form-group">
+                    <label for="lastname">Nachname:</label>
+                    <input type="text" id="lastname" name="lastname" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="firstname">Vorname:</label>
+                    <input type="text" id="firstname" name="firstname" required>
+                </div>
+            </div>
+
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="birthday">Geburtstag:</label>
+                    <input type="date" id="birthday" name="birthday" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="number">Telefonnummer:</label>
+                    <input type="text" id="number" name="number" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="sbDropdown">Sachbearbeiter auswählen:</label>
+                    <select class="form-control" id="sbDropdown" name="sbDropdown">
+                        <!-- Optionen werden durch Python generiert -->
+                        {% for item in items %}
+                        <option value="{{item['id']}}">{{item['nachname']}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Klient anlegen</button>
+                <a href="/startseite">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
+telefonnummer, sachbearbeiter_id,
+                  adresse, kontingent_hk, kontingent_fk, fallverantwortung_id

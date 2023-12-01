@@ -160,6 +160,17 @@ def check_account_locked(email):
     return False
 
 
+#
+def sachbearbeiter_dropdown():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, nachname FROM person")
+    items = []
+    for (id, nachname) in cursor.fetchall():
+        items.append({'id': id, 'nachname': nachname})
+    connection.close()
+
+
 # Erzeugt einen neuen Eintrag in der Klient-Tabelle
 def create_klient(vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
                   adresse, kontingent_hk, kontingent_fk, fallverantwortung_id):
