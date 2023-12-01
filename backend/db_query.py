@@ -112,3 +112,31 @@ def check_account_locked(email):
         if result[0] == 1:
             return True
     return False
+
+
+# Erzeugt einen neuen Eintrag (Account) in der Person-Tabelle
+def create_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
+                   telefonnummer, passwort, sperre, passwort_erzwingen):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO person (vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email, "
+                   "telefonnummer, passwort, sperre, passwort_erzwingen) VALUES "
+                   "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                   (vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
+                    telefonnummer, passwort, sperre, passwort_erzwingen))
+    connection.commit()
+    cursor.close()
+
+
+# Erzeugt einen neuen Eintrag in der Klient-Tabelle
+def create_client(vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
+                  adresse, kontingent_hk, kontingent_fk, fallverantwortung_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO klient (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_ID, "
+                   "adresse, kontingent_HK, kontingent_FK, fallverantwortung_ID) VALUES "
+                   "(%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                   (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
+                    adresse, kontingent_hk, kontingent_fk, fallverantwortung_id))
+    connection.commit()
+    cursor.close()
