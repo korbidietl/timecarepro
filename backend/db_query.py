@@ -212,12 +212,14 @@ def get_zeiteintrag_id(person_id):
 
 
 # Erstellt einen neuen Zeiteintrag
-def add_zeiteintrag(start_time, end_time, klient_id, beschreibung, interne_notiz):
+def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time, klient_id, beschreibung, interne_notiz):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("INSERT INTO zeiteintrag (start_zeit, end_zeit, mitarbeiter_ID, klient_ID, "
-                   "beschreibung, interne_notiz, überschneidung, absage) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                   start_time, end_time, session['user_id'], klient_id, beschreibung, interne_notiz, False, False)
+    cursor.execute("INSERT INTO zeiteintrag (unterschrift_Mitarbeiter, unterschrift_Klient, start_zeit, end_zeit, "
+                   "mitarbeiter_ID, klient_ID, beschreibung, interne_notiz, überschneidung, absage) "
+                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                   unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time, session['user_id'],
+                   klient_id, beschreibung, interne_notiz, False, False)
     zeiteintrag_id = cursor.lastrowid
     connection.commit()
     cursor.close()
@@ -225,17 +227,23 @@ def add_zeiteintrag(start_time, end_time, klient_id, beschreibung, interne_notiz
     return zeiteintrag_id
 
 
-# Stunden werden im Zeiteintrag geändert mit Eingabe der Start- und Endzeit
-# automatisch werden die Unterschriften gelöscht
-def edit_zeiteintrag(zeiteintrag_id, start_time, end_time):
+# Stunden werden im Zeiteintrag geändert mit Eingabe der Start- und Endzeit. Wenn keine Unterschriften übergeben
+# werden, werden die Unterschriften gelöscht
+def edit_zeiteintrag(zeiteintrag_id, start_time=None, end_time=None, unterschrift_mitarbeiter=None,
+                     unterschrift_klient=None):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = NULL, "
-                   "unterschrift_Klient = NULL WHERE id = %s", (start_time, end_time, zeiteintrag_id))
+    if unterschrift_mitarbeiter is not None and unterschrift_klient is not None:
+        cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = %s, "
+                       "unterschrift_Klient = %s WHERE id = %s",
+                       (start_time, end_time, unterschrift_mitarbeiter, unterschrift_klient, zeiteintrag_id))
+    else:
+        cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = NULL, "
+                       "unterschrift_Klient = NULL WHERE id = %s",
+                       (start_time, end_time, zeiteintrag_id))
     connection.commit()
     cursor.close()
     connection.close()
-
 
 # fügt eine Fahrt hinzu
 def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id):
