@@ -100,20 +100,6 @@ def validate_email(email):
     return False
 
 
-# Überprüfung, ob der Benutzer, der die gegebene E-Mail-Adresse hat, gesperrt ist.
-# Wenn der Wert des Feldes "sperre" 1 ist, gibt die Methode True zurück, was bedeutet,
-# dass das Benutzerkonto gesperrt ist. Andernfalls gibt die Methode False zurück.
-def check_account_locked(email):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT sperre FROM person WHERE email = %s", (email,))
-    result = cursor.fetchone()
-    if result:
-        if result[0] == 1:
-            return True
-    return False
-
-
 # Erzeugt einen neuen Eintrag (Account) in der Person-Tabelle
 def create_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
                    telefonnummer, passwort, sperre, passwort_erzwingen):
@@ -128,7 +114,7 @@ def create_account(vorname, nachname, geburtsdatum, qualifikation, adresse, roll
     cursor.close()
 
 
-# Person mit übergebenen ID wird mit übergebenen Parameter bearbeitet
+# Account mit übergebenen ID wird mit übergebenen Parameter bearbeitet
 def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
                  telefonnummer, passwort, sperre, passwort_erzwingen):
     connection = get_database_connection()
@@ -140,6 +126,38 @@ def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle,
                     telefonnummer, passwort, sperre, passwort_erzwingen))
     connection.commit()
     cursor.close()
+
+
+# Account sperren
+def edit_account_lock(person_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET sperre = %s WHERE ID = %s", (True, person_id))
+    connection.commit()
+    cursor.close()
+
+
+# Account entsperren
+def edit_account_unlock(person_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET sperre = %s WHERE ID = %s", (False, person_id))
+    connection.commit()
+    cursor.close()
+
+
+# Überprüfung, ob der Benutzer, der die gegebene E-Mail-Adresse hat, gesperrt ist.
+# Wenn der Wert des Feldes "sperre" 1 ist, gibt die Methode True zurück, was bedeutet,
+# dass das Benutzerkonto gesperrt ist. Andernfalls gibt die Methode False zurück.
+def check_account_locked(email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT sperre FROM person WHERE email = %s", (email,))
+    result = cursor.fetchone()
+    if result:
+        if result[0] == 1:
+            return True
+    return False
 
 
 # Erzeugt einen neuen Eintrag in der Klient-Tabelle
@@ -168,3 +186,4 @@ def edit_klient(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachb
                     kontingent_hk, kontingent_fk, fallverantwortung_id, client_id))
     connection.commit()
     cursor.close()
+
