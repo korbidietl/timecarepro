@@ -187,3 +187,23 @@ def edit_klient(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachb
     connection.commit()
     cursor.close()
 
+
+# Gibt alle IDs der Zeiteinträge der übergebenen Person ID aus
+def get_zeiteintrag_id(person_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM zeiteintrag WHERE mitarbeiter_ID = %s", (person_id,))
+    result = cursor.fetchall()
+    return result
+
+
+# Stunden werden im Zeiteintrag geändert mit Eingabe der Start- und Endzeit
+# automatisch werden die Unterschriften gelöscht
+def edit_zeiteintrag(zeiteintrag_id, start_time, end_time):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = NULL, "
+                   "unterschrift_Klient = NULL WHERE id = %s", (start_time, end_time, zeiteintrag_id))
+    connection.commit()
+    cursor.close()
+    connection.close()
