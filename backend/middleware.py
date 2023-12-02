@@ -1,6 +1,6 @@
 from flask import session, redirect, url_for
 from datetime import datetime, timedelta
-from einloggen import logged_in_users
+from login import logged_in_users
 
 
 def before_request():

@@ -15,7 +15,7 @@ def login():
         # Überprüfen, ob alle Felder ausgefüllt wurden
         if not email or not password:
             error = "Alle Felder müssen ausgefüllt werden"
-            return render_template('Einloggen.html', error=error)
+            return render_template('login.html', error=error)
 
         # wenn email in datenbank gefunden wird
         user = validate_email(email)
@@ -31,22 +31,22 @@ def login():
             # Nutzer ist schon angemeldet
             elif user and email in logged_in_users:
                 error = "Benutzer ist bereits eingeloggt"
-                return render_template('Einloggen.html', error=error)
+                return render_template('login.html', error=error)
             # Nutzer ist gesperrt
             elif check_account_locked(email):
                 error = "Anmeldung fehlgeschlagen. Wenden Sie sich an die Verwaltung"
-                return render_template('Einloggen.html', error=error)
+                return render_template('login.html', error=error)
             # Passwort stimmt nicht
             else:
                 error = "Die Zugangsdaten sind nicht korrekt."
-                return render_template('Einloggen.html', error=error)
+                return render_template('login.html', error=error)
 
         # Nutzer nicht gefunden
         else:
             error = "Die Zugangsdaten sind nicht korrekt."
-            return render_template('Einloggen.html', error=error)
+            return render_template('login.html', error=error)
 
 
 @einloggen_blueprint.route('/Menüleiste')
 def startseite():
-    return render_template('Menüleiste.html', role=session.get('user_role'))
+    return render_template('navbar.html', role=session.get('user_role'))

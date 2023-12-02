@@ -61,10 +61,10 @@ def passwordreset():
                     # E-Mail senden
                     send_email(email, lastname, new_password)
 
-                    return render_template('Einloggen.html', email=email,
+                    return render_template('login.html', email=email,
                                            success_message="Ein neues Passwort wurde an die "
                                                            "angegebene E-Mail-Adresse "
                                                            "versendet.")
             else:
                 # keine E-mail in der Datenbank gefunden
-                return render_template('Einloggen.html')
+                return render_template('login.html')
