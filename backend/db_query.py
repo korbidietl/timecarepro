@@ -212,7 +212,8 @@ def get_zeiteintrag_id(person_id):
 
 
 # Erstellt einen neuen Zeiteintrag
-def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time, klient_id, beschreibung, interne_notiz):
+def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time,
+                    klient_id, beschreibung, interne_notiz):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("INSERT INTO zeiteintrag (unterschrift_Mitarbeiter, unterschrift_Klient, start_zeit, end_zeit, "
@@ -244,6 +245,33 @@ def edit_zeiteintrag(zeiteintrag_id, start_time=None, end_time=None, unterschrif
     connection.commit()
     cursor.close()
     connection.close()
+
+
+# Zeiteintrag wird gelöscht
+def delete_zeiteintrag(zeiteintrag_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM zeiteintrag WHERE id = %s", (zeiteintrag_id,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+# Überprüft, ob es einen Zeiteintrag mit der angegebenen Zeit gibt, gibt true zurück, wenn es eine Überschneidung gibt
+def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT COUNT(*) FROM zeiteintrag WHERE id != %s AND klient_id = %s "
+        "AND ((start_zeit >= %s AND start_zeit < %s) "
+        "OR (end_zeit > %s AND end_zeit <= %s) "
+        "OR (start_zeit <= %s AND end_zeit >= %s))",
+        (zeiteintrag_id, klient_id, start_time, end_time, start_time, end_time, start_time, end_time))
+    count = cursor.fetchone()[0]
+    cursor.close()
+    connection.close()
+    return count > 0
+
 
 # fügt eine Fahrt hinzu
 def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id):
