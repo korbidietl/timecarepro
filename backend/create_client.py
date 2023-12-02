@@ -14,7 +14,7 @@ def register_client():
 
     sachbearbeiter_dropdown()
 
-    return render_template('create_client.html', items=items)
+    return render_template('create_client.html', item=sachbearbeiter_dropdown())
 
 
 if __name__ == '__main__':

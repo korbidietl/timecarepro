@@ -40,7 +40,7 @@
                     <select class="form-control" id="sbDropdown" name="sbDropdown">
                         <!-- Optionen werden durch Python generiert -->
                         {% for item in items %}
-                        <option value="{{item['id']}}">{{item['nachname']}}</option>
+                        <option value="{{item['id']}}">{{items['nachname']}}</option>
                         {% endfor %}
                     </select>
                 </div>

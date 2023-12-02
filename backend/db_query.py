@@ -169,9 +169,10 @@ def sachbearbeiter_dropdown():
     cursor = connection.cursor()
     cursor.execute("SELECT id, nachname FROM person")
     items = []
-    for (id, nachname) in cursor.fetchall():
-        items.append({'id': id, 'nachname': nachname})
+    for (ID, nachname) in cursor.fetchall():
+        items.append({'id': ID, 'nachname': nachname})
     connection.close()
+    return items
 
 
 # Erzeugt einen neuen Eintrag in der Klient-Tabelle
