@@ -3,36 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../frontend/styles.css">
-    <title>Klient anlegen</title>
+    <title>Klient bearbeiten</title>
 </head>
 <body>
     <!-- Menüleiste einbinden -->
     {% include 'Menüleiste.html' %}
 
     <div class = "loginContainer">
-        <h2>Klient anlegen</h2>
-        <form action="/create_client" method="post">
+        <h2>Klient bearbeiten</h2>
+        <form action="/edit_client" method="post">
             <div class="form-column">
-                 <div class="form-group">
-                    <label for="lastname">Nachname:</label>
-                    <input type="text" id="lastname" name="lastname" required>
+                <div class="form-group">
+                    <label for="client_id">KlientID:</label>
+                    <input type="number" id="client_id" name="client_id">
                 </div>
 
                 <div class="form-group">
-                    <label for="firstname">Vorname:</label>
-                    <input type="text" id="firstname" name="firstname" required>
+                    <label for="vorname">Vorname:</label>
+                    <input type="text" id="vorname" name="vorname">
+                </div>
+
+                <div class="form-group">
+                    <label for="nachname">Nachname:</label>
+                    <input type="text" id="nachname" name="nachname">
                 </div>
             </div>
 
             <div class="form-column">
                 <div class="form-group">
-                    <label for="birthday">Geburtstag:</label>
-                    <input type="date" id="birthday" name="birthday" required>
+                    <label for="geburtsdatum">Geburtstag:</label>
+                    <input type="date" id="geburtsdatum" name="geburtsdatum">
                 </div>
 
                 <div class="form-group">
-                    <label for="number">Telefonnummer:</label>
-                    <input type="text" id="number" name="number" required>
+                    <label for="telefonnummer">Telefonnummer:</label>
+                    <input type="text" id="telefonnummer" name="telefonnummer">
                 </div>
 
                 <div class="form-group">
@@ -46,18 +51,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="address">Adresse:</label>
-                    <input type="text" id="address" name="address" required>
+                    <label for="adresse">Adresse:</label>
+                    <input type="text" id="adresse" name="adresse">
                 </div>
 
                 <div class="form-group">
                     <label for="fk">Fachkraftkontingent:</label>
-                    <input type="number" id="fk" name="fkontingent" required>
+                    <input type="number" id="fk" name="kontingent_fk">
                 </div>
 
                 <div class="form-group">
                     <label for="hk">Hilfskraftkontingent:</label>
-                    <input type="number" id="hk" name="hkontingent" required>
+                    <input type="number" id="hk" name="kontingent_hk">
                 </div>
 
                 <div class="form-group">

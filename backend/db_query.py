@@ -164,10 +164,10 @@ def check_account_locked(email):
 
 
 #
-def sachbearbeiter_dropdown():
+def mitarbeiter_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT id, nachname FROM person")
+    cursor.execute("SELECT id, nachname FROM person WHERE rolle LIKE '%%Mitarbeiter%%'")
     items = []
     for (ID, nachname) in cursor.fetchall():
         items.append({'id': ID, 'nachname': nachname})
