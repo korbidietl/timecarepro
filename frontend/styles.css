@@ -156,12 +156,20 @@ a{
     justify-content: space-between;
 }
 
+/*Account anlgen Formatierung */
+.form-container {
+    display: flex;
+}
 .form-column {
-    flex: 0 0 calc(50% - 10px); /* Berechne die Breite für zwei Spalten mit Abstand */
-    margin-bottom: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-right: 20px;
 }
 
 .form-group {
+    width: 100%;
     margin-bottom: 20px;
 }
 
@@ -220,6 +228,7 @@ body {
 
 /* Style der Links innerhalb der Navigationsleiste */
 .navbar a {
+
     float: left;
     display: flex;
     justify-content: space-between;
@@ -227,13 +236,17 @@ body {
     text-align: center;
     padding: 14px 20px;
     text-decoration: none;
+
+
 }
 
 /* Änderung der Farben beim Überfahren der Links */
 .navbar a:hover {
     background-color: #c98200;
     color: #fff;
-    color: white;
+    /*color: white;
+
+     */
 }
 
 
