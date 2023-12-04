@@ -3,7 +3,8 @@ import random
 import string
 import smtplib
 from email.mime.text import MIMEText
-from db_query import validate_email, check_account_locked, set_password, set_password_required_true, get_lastname_by_email
+from db_query import validate_email, check_account_locked, set_password, set_password_required_true, \
+    get_lastname_by_email
 
 password_reset_blueprint = Blueprint("password_reset", __name__)
 
@@ -14,7 +15,20 @@ def generate_random_password(length=10):
     return ''.join(random.choice(characters) for _ in range(length))
 
 
-def send_email(email, lastname, new_password):
+def send_email(email, subject, body):
+    msg = MIMEText(body)
+
+    msg['Subject'] = subject
+    msg['From'] = 'resetyourpasswort@timecarepro.de'
+    msg['To'] = email
+
+    with smtplib.SMTP('132.231.36.210', 1103) as smtp:
+        smtp.starttls()
+    smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
+    smtp.sendmail('resetyourpassword@timecarepro.de', [email], msg.as_string())
+
+
+def send_email_passwort_reset(email, lastname, new_password):
     subject = "Ihr neues Passwort"
     body = (f"Sehr geehrte/r Frau/Mann {lastname}, \n\n"
             f"Ihr Passwort wurde erfolgreich zurückgesetzt. "
@@ -22,15 +36,7 @@ def send_email(email, lastname, new_password):
             f"Bitte ändern Sie dieses Passwort schnellstmöglich.\n\n"
             f"Mit freundlichen Grüßen\n"
             f"Ihr TimeCare Pro-Team")
-    msg = MIMEText(body)
-    msg['Subject'] = subject
-    msg['From'] = 'resetyourpasswort@timecarepro.de'
-    msg['To'] = email
-
-    with smtplib.SMTP('132.231.36.210', 1103) as smtp:
-        smtp.starttls()
-        smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
-        smtp.sendmail('resetyourpassword@timecarepro.de', [email], msg.as_string())
+    send_email(email, subject, body)
 
 
 @password_reset_blueprint.route('/password_reset', methods=['POST'])
@@ -59,7 +65,7 @@ def passwordreset():
                     set_password(email, new_password)
                     set_password_required_true(email)
                     # E-Mail senden
-                    send_email(email, lastname, new_password)
+                    send_email_passwort_reset(email, lastname, new_password)
 
                     return render_template('login.html', email=email,
                                            success_message="Ein neues Passwort wurde an die "

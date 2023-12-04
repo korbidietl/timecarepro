@@ -12,36 +12,89 @@
     <div class = "loginContainer">
         <h2>Account anlegen</h2>
         <form action="/create_account" method="post">
-            <div class="form-column">
-                 <div class="form-group">
-                    <label for="lastname">Nachname:</label>
-                    <input type="text" id="lastname" name="lastname" required>
+            <div class= "form-container">
+                <div class="form-column">
+                     <div class="form-group">
+                        <label for="lastname">Nachname:</label>
+                        <input type="text" id="lastname" name="lastname" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="firstname">Vorname:</label>
+                        <input type="text" id="firstname" name="firstname" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="firstname">Vorname:</label>
-                    <input type="text" id="firstname" name="firstname" required>
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="role">Rolle:</label>
+                        <select id="role" name="role" required>
+                            {% for role in role_choices %}
+                                 <option value="{{ role }}">{{ role }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">E-Mail:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
                 </div>
+
+                <div id="additional-fields" style="display: none;">
+                <!-- Zusätzliche Felder für Mitarbeiter -->
+                    <div class="form-group">
+                        <label for="birthday">Geburtstag:</label>
+                        <input type="date" id="birthday" name="birthday" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Adresse:</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="qualification">Qualifikation:</label>
+                        <input type="text" id="qualification" name="qualification">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Telefonnummer:</label>
+                        <input type="tel" id="phone" name="phone" required pattern="[0-9] {10}">
+                        <small> Bitte geben Sie eine gültige Telefonnummer (10 Ziffern) ein.</small>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="form-column">
-                <div class="form-group">
-                    <label for="role">Rolle:</label>
-                    <input type="text" id="role" name="role" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">E-Mail:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-            </div>
 
             <div class="form-actions">
                 <button type="submit">Account anlegen</button>
-                <a href="/startseite">Abbrechen</a>
+                <a href="/account_overview">Abbrechen</a>
             </div>
         </form>
     </div>
 
+<script>
+    $(document).ready(function() {
+        // Funktion zum Überprüfen der Rolle und Anzeigen/Verstecken der zusätzlichen Felder
+        function checkRole() {
+            var selectedRole = $('#role').val();
+            if (selectedRole === 'Mitarbeiter') {
+                $('#additional-fields').show();
+            } else {
+                $('#additional-fields').hide();
+            }
+        }
+
+        // Initial überprüfen, wenn die Seite geladen wird
+        checkRole();
+
+        // Überprüfen, wenn sich die Auswahl ändert
+        $('#role').change(function() {
+            checkRole();
+        });
+    });
+</script>
 </body>
 </html>

@@ -5,7 +5,7 @@ from logout import logout_blueprint
 # from flask_session import Session
 from datetime import timedelta
 from middleware import before_request
-from db_query import sachbearbeiter_dropdown
+# from db_query import sachbearbeiter_dropdown
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
