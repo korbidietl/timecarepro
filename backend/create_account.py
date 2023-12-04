@@ -1,14 +1,18 @@
 from password_reset import generate_random_password, send_email
 from flask import Flask, render_template, request
 from db_query import validate_email, create_account, set_password_required_true
+from passlib.hash import sha1_crypt
+from datetime import datetime
 
 app = Flask(__name__)
 
 
 def is_valid_date(date_string):
-    # Hier implementiere die Logik für die Überprüfung eines gültigen Datums
-    # Rückgabe True, wenn das Datum gültig ist, andernfalls False
-    return True
+    try:
+        date_object = datetime.strptime(date_string, "%d.%m.%Y")
+        return True
+    except ValueError:
+        return False
 
 
 def is_valid_phone(phone_number):
@@ -31,11 +35,9 @@ def send_email_create_account(email, lastname, new_password):
 
 @app.route('/create_account', methods=['POST'])
 def create_account():
-    # Hier kannst du die Daten aus dem Formular verwenden
     selected_role = request.form.get('role')
     lastname = request.form.get('lastname')
     firstname = request.form.get('firstname')
-    role = request.form.get('role')
     email = request.form.get('email')
     birthday = request.form.get('birthday')
     address = request.form.get('address')
@@ -51,7 +53,7 @@ def create_account():
             return render_template('create_account.html', error_message=error_message)
 
     # Überprüfung ob alle zusätzlich notwendigen Felder für Mitarbeiter ausgefüllt wurden
-    if role == 'Mitarbeiter':
+    if selected_role == 'Mitarbeiter':
         additional_fields = ['birthday', 'address', 'phone']
         for field in additional_fields:
             value = request.form.get(field)
@@ -68,15 +70,16 @@ def create_account():
                 return render_template('create_account.html', error_message=error_message)
 
     # Überprüfung ob schon ein Account existiert
-    email = request.form.get('email')
     if validate_email(email):
         error_message = 'Es existiert bereits ein Account mit dieser E-Mail-Adresse.'
         return render_template('create_account.html', error_message=error_message)
 
     else:
         password = generate_random_password(10)
+        hashed_password = sha1_crypt.encrypt(password)
         change_password = set_password_required_true(email)
-        create_account(firstname, lastname, birthday, qualification, address, phone, password, 0, change_password)
+        create_account(firstname, lastname, birthday, qualification, address, selected_role, email, phone, hashed_password, 0,
+                       change_password)
         send_email_create_account(email, lastname, password)
         return render_template('account_overview.html', email=email,
-                                           success_message="Account wurde erfolgreich angelegt")
+                               success_message="Account wurde erfolgreich angelegt")

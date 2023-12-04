@@ -29,8 +29,8 @@
                     <div class="form-group">
                         <label for="role">Rolle:</label>
                         <select id="role" name="role" required>
-                            {% for role in role_choices %}
-                                 <option value="{{ role }}">{{ role }}</option>
+                            {% for item in items %}
+                                 <option value="{{item['role']}}">{{items['role']}}</option>
                             {% endfor %}
                         </select>
                     </div>
