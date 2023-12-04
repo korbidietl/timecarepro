@@ -175,6 +175,17 @@ def mitarbeiter_dropdown():
     return items
 
 
+def rolle_dropdown():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, rolle FROM person")
+    items = []
+    for (ID, rolle) in cursor.fetchall():
+        items.append({'id': ID, 'rolle': rolle})
+    connection.close()
+    return items
+
+
 # Erzeugt einen neuen Eintrag in der Klient-Tabelle
 def create_klient(vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
                   adresse, kontingent_hk, kontingent_fk, fallverantwortung_id):
