@@ -16,7 +16,7 @@ def get_database_connection():
     except mysql.connector.Error as e:
         print(f"Fehler bei der Verbindung zur Datenbank: {e}")
 
-    return None
+    return conn
 
 
 def close_database_connection(conn):

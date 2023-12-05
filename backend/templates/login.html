@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="../frontend/styles.css">
+    <link rel="stylesheet" href="../../frontend/styles.css">
 </head>
 
 <body>
@@ -11,7 +11,7 @@
     <div class="center-container">
         <div class ="loginContainer">
             <h2>Einloggen</h2>
-            <form action="/einloggen" method="post">
+            <form action="/login" method="post">
 
                 <label for="email">E-Mail:</label>
                 <input type="email" id="email" name="email" placeholder="E-Mail" required>
@@ -21,7 +21,9 @@
                 <button type="submit">Einloggen</button>
 
             </form>
-            <form action="password_reset.html" method="post">
+            <a href="/password_reset">Passwort zurücksetzen</a>
+
+            <form action="password_reset" method="post">
                 <button id="passwordResetButton" class="password_reset" onclick="openResetPopup()">Passwort zurücksetzen</button>
             </form>
         </div>

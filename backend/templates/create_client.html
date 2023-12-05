@@ -2,42 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="../frontend/styles.css">
-    <title>Klient bearbeiten</title>
+    <link rel="stylesheet" href="../../frontend/styles.css">
+    <title>Klient anlegen</title>
 </head>
 <body>
-    <!-- Menüleiste einbinden -->
-    {% include 'Menüleiste.html' %}
+    <!-- Menüleiste einbinden-->
+    <iframe src="navbar.html" width="100%" height="100%" style="border:none;"></iframe>
 
     <div class = "loginContainer">
-        <h2>Klient bearbeiten</h2>
-        <form action="/edit_client" method="post">
+        <h2>Klient anlegen</h2>
+        <form action="/create_client" method="post">
+            <div class="form-container">
             <div class="form-column">
-                <div class="form-group">
-                    <label for="client_id">KlientID:</label>
-                    <input type="number" id="client_id" name="client_id">
+                 <div class="form-group">
+                    <label for="lastname">Nachname:</label>
+                    <input type="text" id="lastname" name="lastname" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="vorname">Vorname:</label>
-                    <input type="text" id="vorname" name="vorname">
-                </div>
-
-                <div class="form-group">
-                    <label for="nachname">Nachname:</label>
-                    <input type="text" id="nachname" name="nachname">
+                    <label for="firstname">Vorname:</label>
+                    <input type="text" id="firstname" name="firstname" required>
                 </div>
             </div>
 
             <div class="form-column">
                 <div class="form-group">
-                    <label for="geburtsdatum">Geburtstag:</label>
-                    <input type="date" id="geburtsdatum" name="geburtsdatum">
+                    <label for="birthday">Geburtstag:</label>
+                    <input type="date" id="birthday" name="birthday" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="telefonnummer">Telefonnummer:</label>
-                    <input type="text" id="telefonnummer" name="telefonnummer">
+                    <label for="number">Telefonnummer:</label>
+                    <input type="text" id="number" name="number" required>
                 </div>
 
                 <div class="form-group">
@@ -51,18 +47,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="adresse">Adresse:</label>
-                    <input type="text" id="adresse" name="adresse">
+                    <label for="address">Adresse:</label>
+                    <input type="text" id="address" name="address" required>
                 </div>
 
                 <div class="form-group">
                     <label for="fk">Fachkraftkontingent:</label>
-                    <input type="number" id="fk" name="kontingent_fk">
+                    <input type="number" id="fk" name="fkontingent" required>
                 </div>
 
                 <div class="form-group">
                     <label for="hk">Hilfskraftkontingent:</label>
-                    <input type="number" id="hk" name="kontingent_hk">
+                    <input type="number" id="hk" name="hkontingent" required>
                 </div>
 
                 <div class="form-group">
@@ -75,7 +71,7 @@
                     </select>
                 </div>
             </div>
-
+            </div>
             <div class="form-actions">
                 <button type="submit">Klient anlegen</button>
                 <a href="/startseite">Abbrechen</a>
