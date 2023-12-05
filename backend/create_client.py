@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from db_query import mitarbeiter_dropdown, create_klient
 
 app = Flask(__name__)
@@ -22,7 +22,6 @@ def register_client():
         return jsonify({'message': 'Client successfully updated'}), 200
     except Exception as e:
         return jsonify({'message': 'Error updating client: ' + str(e)}), 500
-
 
 
     return render_template('create_client.html', items=mitarbeiter_dropdown())
