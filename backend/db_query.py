@@ -269,22 +269,6 @@ def delete_zeiteintrag(zeiteintrag_id):
     connection.close()
 
 
-# Überprüft, ob es einen Zeiteintrag mit der angegebenen Zeit gibt, gibt true zurück, wenn es eine Überschneidung gibt
-def not_use_check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute(
-        "SELECT COUNT(*) FROM zeiteintrag WHERE id != %s AND klient_id = %s "
-        "AND ((start_zeit >= %s AND start_zeit < %s) "
-        "OR (end_zeit > %s AND end_zeit <= %s) "
-        "OR (start_zeit <= %s AND end_zeit >= %s))",
-        (zeiteintrag_id, klient_id, start_time, end_time, start_time, end_time, start_time, end_time))
-    count = cursor.fetchone()[0]
-    cursor.close()
-    connection.close()
-    return count > 0  # Wunsch: Liste mit Einträgen ausgeben
-
-
 # Überprüfung auf Überschneidung und Rückgabe der überschneidungen als ID in einer Liste "ids"
 def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
     connection = get_database_connection()
