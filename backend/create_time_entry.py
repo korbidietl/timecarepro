@@ -4,7 +4,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-@app.route('/submit_time_entry', methods=['POST'])
+@app.route('/submit_time_entry', methods=['POST']) #bitte route auf /create_time_entry ändern
 def submit_arbeitsstunden():
     # Eingabedaten aus dem Formular holen
     datum = request.form.get('datum')
