@@ -29,7 +29,7 @@ def login():
                 session['user_id'] = get_person_id_by_email(email)
                 session['user_role'] = get_role_by_email(email)
                 session['user_email'] = email
-                return redirect(url_for('home.html'))
+                return redirect(url_for('home'))
             # Nutzer ist schon angemeldet
             elif user and email in logged_in_users:
                 error = "Benutzer ist bereits eingeloggt"
@@ -48,6 +48,7 @@ def login():
             error = "Die Zugangsdaten sind nicht korrekt."
             return render_template('login.html', error=error)
 
+    return render_template('login.html')
 # @einloggen_blueprint.route('/Menüleiste')
 # def startseite():
 # return render_template('navbar.html', role=session.get('user_role'))

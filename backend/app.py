@@ -1,47 +1,55 @@
-from flask import Flask, session, render_template, request, redirect, url_for
+from flask import Flask
 
 # from password_reset import password_reset_blueprint
 # from logout import logout_blueprint
 from datetime import timedelta
 
+
 # from middleware import before_request
 # import login
 # from db_query import validate_email, validate_login, get_person_id_by_email, get_role_by_email, check_account_locked
 
-app = Flask(__name__, template_folder='templates')
-app.secret_key = "your_secret_key"
-
-# für die Inaktivitätsbedingung
-app.config['SESSION_TYPE'] = 'filesystem'  # Du kannst 'filesystem' durch andere Optionen ersetzen
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Setze die Inaktivitätszeit auf 30 Minuten
 
 # alle Blueprints
-from backend.login import login_blueprint
-app.register_blueprint(login_blueprint, url_prefix='/login')
+def create_app():
+    app = Flask(__name__, template_folder='templates', static_folder='static')
+    app.secret_key = "your_secret_key"
+
+    # für die Inaktivitätsbedingung
+    # app.config['SESSION_TYPE'] = 'filesystem'  # Du kannst 'filesystem' durch andere Optionen ersetzen
+    # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Setze die Inaktivitätszeit auf 30 Minuten
+
+    from login import login_blueprint
+    app.register_blueprint(login_blueprint, url_prefix='/login')
+
+    return app
+
+app = create_app()
+
 
 
 # app.register_blueprint(password_reset_blueprint)
 # app.register_blueprint(logout_blueprint)
 
 
-@app.route("/login")
-def log():
-    return render_template('login.html')
+#@app.route("/login")
+#def log():
+  #  return render_template('login.html')
 
 
-@app.route("/password_reset")
-def password_reset():
-    return render_template("password_reset.html")
+#@app.route("/password_reset")
+#def password_reset():
+ #   return render_template("password_reset.html")
 
 
-@app.route("/create_account")
-def create_account():
-    return render_template("create_account.html")
+#@app.route("/create_account")
+#def create_account():
+ #   return render_template("create_account.html")
 
 
-@app.route("/create_client")
-def create_client():
-    return render_template("create_client.html")
+#@app.route("/create_client")
+#def create_client():
+ #   return render_template("create_client.html")
 
 
 #
@@ -83,5 +91,4 @@ def create_client():
 # app.before_request(before_request)
 
 if __name__ == '__main__':
-    print(app.url_map)
     app.run(debug=True)
