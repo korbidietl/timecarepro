@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, jsonify
-from db_query import mitarbeiter_dropdown, create_klient
+from flask import Flask, render_template, request, jsonify, Blueprint
+from db_query import mitarbeiter_dropdown, create_klient, validate_client
 
-app = Flask(__name__)
+# app = Flask(__name__)
+
+create_client_blueprint = Blueprint("create_client", __name__)
 
 
-@app.route('/create_client', methods=['POST'])
+@create_client_blueprint.route('/create_client', methods=['POST'])
 def register_client():
     nachname = request.form.get('lastname')
     vorname = request.form.get('firstname')
@@ -16,17 +18,24 @@ def register_client():
     kontingent_hk = request.form.get('hkcontingent')
     fallverantwortung_id = request.form.get('fvDropdown')
 
-    try:
+    required_fields = ['lastname', 'firstname', 'birthday', 'address']
+
+    for field in required_fields:
+        if not request.form.get(field):
+            error_message = 'Es müssen alle Felder ausgefüllt werden.'
+            return render_template('create_client.html', error_message=error_message)
+
+    # validate client in db_query hinzufügen (validate_email(email))
+    if validate_client(vorname, nachname, geburtsdatum):
+        error_message = 'Es existiert bereits ein Client mit diesem Namen und dem Geburtsdatum.'
+        return render_template('create_client.html', error_message=error_message)
+
+    else:
         create_klient(nachname, vorname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                       kontingent_hk, kontingent_fk, fallverantwortung_id)
-        return jsonify({'message': 'Client successfully updated'}), 200
-    except Exception as e:
-        return jsonify({'message': 'Error updating client: ' + str(e)}), 500
+        return render_template('account_overview.html',
+                               success_message="Client wurde erfolgreich angelegt")
 
 
-    return render_template('create_client.html', items=mitarbeiter_dropdown())
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
+# if __name__ == '__main__':
+#     app.run(debug=True)

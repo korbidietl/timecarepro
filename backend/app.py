@@ -4,8 +4,8 @@ from flask import Flask, session, render_template, request, redirect, url_for
 # from logout import logout_blueprint
 from datetime import timedelta
 # from middleware import before_request
-import login
-from db_query import validate_email, validate_login, get_person_id_by_email, get_role_by_email, check_account_locked
+# import login
+# from db_query import validate_email, validate_login, get_person_id_by_email, get_role_by_email, check_account_locked
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -39,26 +39,26 @@ def create_account():
 @app.route("/create_client")
 def create_client():
     return render_template("create_client.html")
-
-
-@app.route("/create_time_entry")
-def create_time_entry():
-    return render_template("create_time_entry.html")
-
-
-@app.route("/edit_client")
-def edit_client():
-    return render_template("edit_client.html")
-
-
-@app.route("/password_change")
-def password_change():
-    return render_template("password_change.html")
-
-
-@app.route("/password_reset")
-def password_reset():
-    return render_template("password_reset.html")
+#
+#
+# @app.route("/create_time_entry")
+# def create_time_entry():
+#     return render_template("create_time_entry.html")
+#
+#
+# @app.route("/edit_client")
+# def edit_client():
+#     return render_template("edit_client.html")
+#
+#
+# @app.route("/password_change")
+# def password_change():
+#     return render_template("password_change.html")
+#
+#
+# @app.route("/password_reset")
+# def password_reset():
+#     return render_template("password_reset.html")
 
 
 

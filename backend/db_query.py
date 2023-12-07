@@ -214,6 +214,18 @@ def edit_klient(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachb
     cursor.close()
 
 
+# Prüft, ob schon ein Client mit dem Namen und Geburtsdatum existiert
+def validate_client(vorname, nachname, geburtsdatum):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM klient WHERE vorname = %s AND nachname = %s AND geburtsdatum = %s",
+                   (vorname, nachname, geburtsdatum,))
+    result = cursor.fetchone()
+    if result:
+        return True
+    return False
+
+
 # Gibt alle IDs der Zeiteinträge der übergebenen Person ID aus
 def get_zeiteintrag_id(person_id):
     connection = get_database_connection()
