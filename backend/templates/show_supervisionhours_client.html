@@ -47,7 +47,7 @@
         <div class="form-actions">
             {% if session['user_role'] in ['Mitarbeiter mit Fallverantwortung', 'Verwaltung', 'Geschäftsführung'] %}
                 <button onclick="window.location='/add_time_entry';">Zeiteintrag hinzufügen</button>
-                <button onclick="window.location='/edit_time_entry';">Bearbeiten</button>
+                <button onclick="window.location.href='/edit_time_entry/{{ zeiteintrag_id }}'">Zeiteintrag bearbeiten</button>
                 <button onclick="window.location='/delete_time_entry';">Löschen</button>
             {% endif %}
 

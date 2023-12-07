@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Accountverwaltung</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Accountverwaltung</h2>
+        <button onclick="window.location.href='/add_account';">Account anlegen</button>
+        <button onclick="window.location.href='/add_client';">Klient anlegen</button>
+
+        <!-- Steuerbüro Tabelle -->
+        {% if steuerbueros %}
+        <h3>Steuerbüro</h3>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Vorname</th>
+                <th>Nachname</th>
+                <th>E-Mail</th>
+                <th>Aktionen</th>
+            </tr>
+            {% for steuerbuero in steuerbueros %}
+            <tr>
+                <td>{{ steuerbuero.ID }}</td>
+                <td>{{ steuerbuero.Vorname }}</td>
+                <td>{{ steuerbuero.Nachname }}</td>
+                <td>{{ steuerbuero.Email }}</td>
+                <td>
+                    <button onclick="window.location.href='/details/{{ steuerbuero.ID }}'">Details</button>
+                    <button onclick="window.location.href='/edit/{{ steuerbuero.ID }}'">Bearbeiten</button>
+                    {% if steuerbuero.Sperre %}
+                        <button onclick="window.location.href='/unlock/{{ steuerbuero.ID }}'">Entsperren</button>
+                    {% else %}
+                        <button onclick="window.location.href='/lock/{{ steuerbuero.ID }}'">Sperren</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>Keine Steuerbüros gefunden.</p>
+        {% endif %}
+
+        <!-- Sachbearbeiter/Kostenträger Tabelle -->
+        {% if sachbearbeiter %}
+        <h3>Sachbearbeiter/Kostenträger</h3>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Vorname</th>
+                <th>Nachname</th>
+                <th>E-Mail</th>
+                <th>Aktionen</th>
+            </tr>
+            {% for sb in sachbearbeiter %}
+            <tr>
+                <td>{{ sb.ID }}</td>
+                <td>{{ sb.Vorname }}</td>
+                <td>{{ sb.Nachname }}</td>
+                <td>{{ sb.Email }}</td>
+                <td>
+                    <button onclick="window.location.href='/details/{{ sb.ID }}'">Details</button>
+                    <button onclick="window.location.href='/edit/{{ sb.ID }}'">Bearbeiten</button>
+                    {% if sb.Sperre %}
+                        <button onclick="window.location.href='/unlock/{{ sb.ID }}'">Entsperren</button>
+                    {% else %}
+                        <button onclick="window.location.href='/lock/{{ sb.ID }}'">Sperren</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>Keine Sachbearbeiter/Kostenträger gefunden.</p>
+        {% endif %}
+
+        {% include 'client_table.html' %}
+    </div>
+</body>
+</html>

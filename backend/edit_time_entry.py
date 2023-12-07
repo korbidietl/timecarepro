@@ -8,14 +8,18 @@ app = Flask(__name__)
 def edit_time_entry(zeiteintrag_id):
     if request.method == 'POST':
         # Annahme, dass die Formulardaten die erforderlichen Werte enthalten
-        start_time = request.form.get('startZeit')
-        end_time = request.form.get('endZeit')
-        # Anpassen für Unterschriften und andere Felder nach Bedarf
+        datum = request.form.get('datum')
+        start_zeit = request.form.get('startZeit')
+        end_zeit = request.form.get('endZeit')
+        kilometer = request.form.get('kilometer')
+        klient_id = request.form.get('klient')
+        beschreibung = request.form.get('beschreibung')
+        interne_notiz = request.form.get('interneNotiz')
         unterschrift_mitarbeiter = request.form.get('unterschriftMitarbeiter')
         unterschrift_klient = request.form.get('unterschriftKlient')
 
         # Aktualisieren des Zeiteintrags
-        edit_zeiteintrag(zeiteintrag_id, start_time, end_time, unterschrift_mitarbeiter, unterschrift_klient)
+        edit_zeiteintrag(zeiteintrag_id, start_zeit, end_zeit, unterschrift_mitarbeiter, unterschrift_klient)
 
         # Weiterleiten nach dem Aktualisieren
         return redirect(url_for('irgendeine_weitere_route'))
