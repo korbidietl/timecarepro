@@ -8,8 +8,8 @@
 </head>
 <body>
     <div class="registration-form">
-        <h2>Erbrachte Arbeitsleistung hinzufügen</h2>
-        <form action="/submit_time_entry" method="post">
+        <h2>Zeiteintrag bearbeiten</h2>
+        <form action="/edit_time_entry" method="post">
             <div class="form-row">
                 <div class="form-group">
                     <label for="datum">Datum:</label>
@@ -44,6 +44,29 @@
                     <textarea id="interneNotiz" name="interneNotiz" readonly></textarea>
                 </div>
             </div>
+
+            {% if fahrten %}
+            <h3>Fahrten</h3>
+            <table>
+                <tr>
+                    <th>Start-Adresse</th>
+                    <th>End-Adresse</th>
+                    <th>Gefahrene Kilometer</th>
+                </tr>
+                {% for fahrt in fahrten %}
+                <tr>
+                    <td>{{ fahrt.Start_Adresse }}</td>
+                    <td>{{ fahrt.End_Adresse }}</td>
+                    <td>{{ fahrt.Kilometer }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <div class="form-actions">
+                <button onclick="window.location='/add_fahrt';">+ Fahrt</button>
+                <button onclick="window.location='/remove_fahrt';">- Fahrt</button>
+            </div>
+            {% endif %}
+
             <div class="form-row">
                 <div class="form-group">
                     <label>Unterschrift Klient:</label>
@@ -62,4 +85,3 @@
     </div>
 </body>
 </html>
-
