@@ -21,6 +21,7 @@ def edit_time_entry(zeiteintrag_id):
         return redirect(url_for('irgendeine_weitere_route'))
 
     # Wenn die Methode GET ist, lade die Seite zum Bearbeiten
+    # lädt die daten aus der datenbank und pflegt sie in das html file ein
     zeiteintrag_data, fahrten_data = fetch_time_entry_data(zeiteintrag_id)
     return render_template('edit_time_entry.html', zeiteintrag=zeiteintrag_data, fahrten=fahrten_data)
 
