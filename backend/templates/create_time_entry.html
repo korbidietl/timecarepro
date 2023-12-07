@@ -12,16 +12,12 @@
         <form action="/submit_time_entry" method="post">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="datum">Datum:</label>
-                    <input type="date" id="datum" name="datum" required>
+                    <label for="startZeit">Startzeitpunkt (Datum und Uhrzeit):</label>
+                    <input type="datetime-local" id="startZeit" name="startZeit" required>
                 </div>
                 <div class="form-group">
-                    <label for="startZeit">Startzeitpunkt:</label>
-                    <input type="time" id="startZeit" name="startZeit" required>
-                </div>
-                <div class="form-group">
-                    <label for="endZeit">Endzeitpunkt:</label>
-                    <input type="time" id="endZeit" name="endZeit" required>
+                    <label for="endZeit">Endzeitpunkt (Datum und Uhrzeit):</label>
+                    <input type="datetime-local" id="endZeit" name="endZeit" required>
                 </div>
                 <div class="form-group">
                     <label for="kilometer">Kilometer:</label>

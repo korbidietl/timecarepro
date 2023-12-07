@@ -1,10 +1,10 @@
 from flask import Flask, request, redirect, url_for, render_template
-from db_query import add_zeiteintrag, add_fahrt
+from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag
 from datetime import datetime
 
 app = Flask(__name__)
 
-@app.route('/submit_time_entry', methods=['POST']) #bitte route auf /create_time_entry ändern
+@app.route('/create_time_entry', methods=['POST'])
 def submit_arbeitsstunden():
     # Eingabedaten aus dem Formular holen
     datum = request.form.get('datum')
@@ -17,9 +17,9 @@ def submit_arbeitsstunden():
     klient_id = request.form.get('klient')
     beschreibung = request.form.get('beschreibung')
     interne_notiz = request.form.get('interneNotiz')
+    # hier müssen noch unterschriften rein
     unterschrift_klient
     unterschrift_mitarbeiter
-    # hier müssen noch unterschriften rein
 
     # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
     start_datetime = datetime.strptime(f"{datum} {start_zeit}", '%Y-%m-%d %H:%M')
@@ -30,7 +30,7 @@ def submit_arbeitsstunden():
         return render_template("create_time_entry.html", error="Endzeitpunkt muss nach Startzeitpunkt sein.")
 
     # prüft auf überschneidung einer bestehenden eintragung in der datenbank
-    elif überschneidung(start_zeit, end_zeit, klient_id):
+    elif check_for_overlapping_zeiteintrag(time_id,klient_id, start_zeit, end_zeit):
         # überschneidungs funktion
         return /FS030/
 

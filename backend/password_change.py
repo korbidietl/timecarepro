@@ -10,7 +10,7 @@ def validate_password(password):
     # Überprüft, ob das Passwort den Anforderungen entspricht (z.B. Länge)
     return len(password) >= 8
 
-@password_reset_blueprint.route('/change_password', methods=['POST'])
+@app.route('/password_change', methods=['POST'])
 def change_password():
     if request.method == "POST":
 
