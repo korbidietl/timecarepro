@@ -33,7 +33,7 @@ def register_client():
     else:
         create_klient(nachname, vorname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                       kontingent_hk, kontingent_fk, fallverantwortung_id)
-        return render_template('account_overview.html',
+        return render_template('home.html',
                                success_message="Client wurde erfolgreich angelegt")
 
 
