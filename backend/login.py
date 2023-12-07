@@ -7,7 +7,6 @@ einloggen_blueprint = Blueprint("einloggen", __name__)
 logged_in_users = set()
 
 
-
 #@einloggen_blueprint.route('/', methods=['GET', 'POST'])
 #@app.route("/login")
 def login():
