@@ -1,6 +1,6 @@
 # Haupt-Flask-Datei (z.B. app.py)
 from flask import Flask, render_template, request, redirect, url_for, session
-from db_query import fetch_time_entry_data, edit_zeiteintrag
+from db_query import return_zeiteintrag, edit_zeiteintrag
 
 app = Flask(__name__)
 
@@ -20,9 +20,9 @@ def edit_time_entry(zeiteintrag_id):
         # Weiterleiten nach dem Aktualisieren
         return redirect(url_for('irgendeine_weitere_route'))
 
-    # Wenn die Methode GET ist, lade die Seite zum Bearbeiten
+    # Wenn die Methode GET ist, lädt die Seite zum Bearbeiten
     # lädt die daten aus der datenbank und pflegt sie in das html file ein
-    zeiteintrag_data, fahrten_data = fetch_time_entry_data(zeiteintrag_id)
+    zeiteintrag_data, fahrten_data = return_zeiteintrag(zeiteintrag_id)
     return render_template('edit_time_entry.html', zeiteintrag=zeiteintrag_data, fahrten=fahrten_data)
 
 if __name__ == '__main__':

@@ -29,11 +29,6 @@ def submit_arbeitsstunden():
     if start_datetime >= end_datetime:
         return render_template("create_time_entry.html", error="Endzeitpunkt muss nach Startzeitpunkt sein.")
 
-    # prüft auf überschneidung einer bestehenden eintragung in der datenbank
-    elif check_for_overlapping_zeiteintrag(time_id,klient_id, start_zeit, end_zeit):
-        # überschneidungs funktion
-        return /FS030/
-
     # Füge neuen Zeiteintrag hinzu und erhalte die ID
     else:
         zeiteintrag_id = add_zeiteintrag(datum, start_datetime, end_datetime, beschreibung, interne_notiz, unterschrift_klient, unterschrift_mitarbeiter)
@@ -42,14 +37,13 @@ def submit_arbeitsstunden():
         if kilometer:
             add_fahrt(zeiteintrag_id, kilometer)
 
-    # Weiterleitung zurück zur Übersicht der abgelegten Stunden
-    return redirect(url_for('arbeitsleistung_uebersicht'))
+        # prüft auf überschneidung einer bestehenden eintragung in der datenbank
+        if check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_zeit, end_zeit):
+            # überschneidungs funktion
+            return / FS030 /
 
-# Ersetze 'arbeitsleistung_uebersicht' mit der tatsächlichen Route für die Übersicht
-@app.route('/see_time_entry')
-def arbeitsleistung_uebersicht():
-    # Implementierung der Übersichtsansicht
-    pass
+    # Weiterleitung zurück zur Übersicht der abgelegten Stunden
+    return redirect(url_for('see_supervisionhours_client'))
 
 if __name__ == '__main__':
     app.run(debug=True)

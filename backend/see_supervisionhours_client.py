@@ -1,6 +1,6 @@
 from flask import render_template
 
-
-@app.route('/edit_time_entry')
-def edit_time_entry():
-    return render_template('edit_time_entry.html')
+@app.route('/see_supervisionhours_client')
+def see_supervisionhours_client():
+    # Implementierung der Übersichtsansicht
+    pass
