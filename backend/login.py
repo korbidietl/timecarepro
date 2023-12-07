@@ -1,14 +1,14 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from db_query import check_account_locked, validate_login, validate_email, get_role_by_email, get_person_id_by_email
-from app import app
 
-# einloggen_blueprint = Blueprint("einloggen", __name__)
+
+login_blueprint = Blueprint("login", __name__)
 
 logged_in_users = set()
 
 
-#@einloggen_blueprint.route('/', methods=['GET', 'POST'])
-@app.route("/login")
+# @app.route("/login", methods=['POST'])
+@login_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
@@ -48,7 +48,6 @@ def login():
             error = "Die Zugangsdaten sind nicht korrekt."
             return render_template('login.html', error=error)
 
-
 # @einloggen_blueprint.route('/Menüleiste')
 # def startseite():
-   # return render_template('navbar.html', role=session.get('user_role'))
+# return render_template('navbar.html', role=session.get('user_role'))
