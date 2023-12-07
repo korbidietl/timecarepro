@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 
 # from password_reset import password_reset_blueprint
 # from logout import logout_blueprint
@@ -22,6 +22,9 @@ def create_app():
     from login import login_blueprint
     app.register_blueprint(login_blueprint, url_prefix='/login')
 
+    from password_reset import password_reset_blueprint
+    app.register_blueprint(password_reset_blueprint, url_prefix='/password_reset')
+
     return app
 
 app = create_app()
@@ -32,9 +35,9 @@ app = create_app()
 # app.register_blueprint(logout_blueprint)
 
 
-#@app.route("/login")
-#def log():
-  #  return render_template('login.html')
+@app.route("/login")
+def log():
+    return render_template('login.html')
 
 
 #@app.route("/password_reset")
@@ -47,9 +50,9 @@ app = create_app()
  #   return render_template("create_account.html")
 
 
-#@app.route("/create_client")
-#def create_client():
- #   return render_template("create_client.html")
+@app.route("/create_client")
+def create_client():
+    return render_template("create_client.html")
 
 
 #
