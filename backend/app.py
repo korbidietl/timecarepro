@@ -7,7 +7,7 @@ from datetime import timedelta
 # import login
 # from db_query import validate_email, validate_login, get_person_id_by_email, get_role_by_email, check_account_locked
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 app.secret_key = "your_secret_key"
 
 # für die Inaktivitätsbedingung
@@ -21,9 +21,9 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Setze die In
 # app.register_blueprint(logout_blueprint)
 
 
-@app.route("/")
+@app.route("/login")
 def login():
-    return render_template("login.html")
+    return render_template('login.html')
 
 
 @app.route("/password_reset")
