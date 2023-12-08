@@ -2,6 +2,7 @@ from flask import Flask, request, redirect, url_for, render_template
 from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag
 from datetime import datetime
 
+#gehört glaub ich nur in app.py
 app = Flask(__name__)
 
 @app.route('/create_time_entry', methods=['POST'])
