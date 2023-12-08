@@ -340,26 +340,6 @@ def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end
     return ids
 
 
-# fügt eine Fahrt hinzu
-def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("INSERT INTO fahrt (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_ID) "
-                   "VALUES (%s, %s, %s, %s, %s)", kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id)
-    connection.commit()
-    cursor.close()
-    connection.close()
-
-
-def delete_fahrt(fahrt_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("DELETE FROM fahrt WHERE id = %s", fahrt_id)
-    connection.commit()
-    cursor.close()
-    connection.close()
-
-
 def check_booked(zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -378,3 +358,23 @@ def check_booked(zeiteintrag_id):
     if result:
         return True
     return False
+
+
+# fügt eine Fahrt hinzu
+def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO fahrt (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_ID) "
+                   "VALUES (%s, %s, %s, %s, %s)", kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id)
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+def delete_fahrt(fahrt_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM fahrt WHERE id = %s", fahrt_id)
+    connection.commit()
+    cursor.close()
+    connection.close()
