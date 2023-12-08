@@ -45,5 +45,6 @@ def submit_arbeitsstunden():
     # Weiterleitung zurück zur Übersicht der abgelegten Stunden
     return redirect(url_for('see_supervisionhours_client'))
 
+#Warum? muss glaub ich nur in die app.py
 if __name__ == '__main__':
     app.run(debug=True)
