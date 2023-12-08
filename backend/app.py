@@ -1,13 +1,6 @@
 from flask import Flask, render_template
-
-# from password_reset import password_reset_blueprint
-# from logout import logout_blueprint
 from datetime import timedelta
-
-
 # from middleware import before_request
-# import login
-# from db_query import validate_email, validate_login, get_person_id_by_email, get_role_by_email, check_account_locked
 
 
 # alle Blueprints
@@ -15,6 +8,7 @@ def create_app():
     app = Flask(__name__, template_folder='templates', static_folder='static')
     app.secret_key = "your_secret_key"
 
+    app.config['DEBUG']=True
     # für die Inaktivitätsbedingung
     # app.config['SESSION_TYPE'] = 'filesystem'  # Du kannst 'filesystem' durch andere Optionen ersetzen
     # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Setze die Inaktivitätszeit auf 30 Minuten
@@ -27,27 +21,27 @@ def create_app():
 
     return app
 
-app = create_app()
 
+app = create_app()
 
 
 # app.register_blueprint(password_reset_blueprint)
 # app.register_blueprint(logout_blueprint)
 
 
-@app.route("/login")
-def log():
-    return render_template('login.html')
+#@app.route("/login")
+#def log():
+#    return render_template('login.html')
 
 
-#@app.route("/password_reset")
-#def password_reset():
- #   return render_template("password_reset.html")
+# @app.route("/password_reset")
+# def password_reset():
+#   return render_template("password_reset.html")
 
 
-#@app.route("/create_account")
-#def create_account():
- #   return render_template("create_account.html")
+# @app.route("/create_account")
+# def create_account():
+#   return render_template("create_account.html")
 
 
 @app.route("/create_client")
