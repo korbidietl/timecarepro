@@ -131,6 +131,14 @@ def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle,
     cursor.close()
 
 
+def get_person_data(account_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM person WHERE ID = %s", (account_id, ))
+    result = cursor.fetchall()
+    return result
+
+
 # Account sperren
 def edit_account_lock(person_id):
     connection = get_database_connection()
