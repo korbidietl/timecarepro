@@ -172,7 +172,6 @@ a{
 .form-group {
     width: 100%;
     margin-bottom: 20px;
-    padding-right: 30px;
 }
 
 .form-group label {
@@ -186,6 +185,25 @@ a{
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+.form-group2 {
+    width: 100%;
+    margin-bottom: 20px;
+    padding-right: 30px;
+}
+
+.form-group2 input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-group2 label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
 }
 
 .form-actions {
@@ -282,6 +300,7 @@ body {
 .form-group input[type="number"],
 .form-group select {
     width: 80%;
+    height: 20px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;

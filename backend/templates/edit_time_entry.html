@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
+    <!-- menüleiste -->
+    <iframe src="navbar.html" width="100%" height="100%" style="border:none;"></iframe>
+
     <div class="registration-form">
         <h2>Zeiteintrag bearbeiten</h2>
         <form action="/edit_time_entry" method="post">
@@ -23,16 +26,24 @@
                     <label for="endZeit">Endzeitpunkt:</label>
                     <input type="time" id="endZeit" name="endZeit" required>
                 </div>
+            </div>
+            <div class="form-row">
                 <div class="form-group">
                     <label for="kilometer">Kilometer:</label>
                     <input type="number" id="kilometer" name="kilometer">
                 </div>
+                <!-- dynamisches such-dropdown -->
                 <div class="form-group">
-                    <label for="klient">Klient:</label>
-                    <select id="klient" name="klient">
-                        <!-- Optionen für Klienten (Nachname, Vorname) -->
-                    </select>
+                    <label for="klient-input">Klient:</label>
+                    <input type="text" id="klient-input" name="klient" list="klient-list">
+                    <datalist id="klient-list">
+                        <!-- Die Optionen werden dynamisch über Python/Flask geladen -->
+                        {% for klient in klienten %}
+                        <option value="{{ klient.vorname }} {{ klient.nachname }}">{{ klient.vorname }} {{ klient.nachname }}</option>
+                        {% endfor %}
+                    </datalist>
                 </div>
+
             </div>
             <div class="form-row">
                 <div class="form-group">
