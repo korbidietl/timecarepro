@@ -1,6 +1,6 @@
 import hashlib
 
-from flask import session
+from flask import session, json
 
 from database_connection import get_database_connection
 from passlib.hash import sha1_crypt
@@ -226,6 +226,18 @@ def validate_client(vorname, nachname, geburtsdatum):
     return False
 
 
+# returned json Vorschläge für eingabefeld
+def client_dropdown():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, nachname FROM klient")
+    items = []
+    for (ID, nachname) in cursor.fetchall():
+        items.append({'id': ID, 'nachname': nachname})
+    connection.close()
+    return items
+
+
 # Gibt alle IDs der Zeiteinträge der übergebenen Person ID aus
 def get_zeiteintrag_id(person_id):
     connection = get_database_connection()
@@ -255,20 +267,50 @@ def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, e
 # Stunden werden im Zeiteintrag geändert mit Eingabe der Start- und Endzeit. Wenn keine Unterschriften übergeben
 # werden, werden die Unterschriften gelöscht
 def edit_zeiteintrag(zeiteintrag_id, start_time=None, end_time=None, unterschrift_mitarbeiter=None,
-                     unterschrift_klient=None):
+                     unterschrift_klient=None, klient_id=None,
+                     beschreibung=None, interne_notiz=None, absage=None):
     connection = get_database_connection()
     cursor = connection.cursor()
     if unterschrift_mitarbeiter is not None and unterschrift_klient is not None:
         cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = %s, "
-                       "unterschrift_Klient = %s WHERE id = %s",
-                       (start_time, end_time, unterschrift_mitarbeiter, unterschrift_klient, zeiteintrag_id))
+                       "unterschrift_Klient = %s, klient_ID = %s, beschreibung = %s, interne_notiz = %s, absage = %s "
+                       "WHERE ID = %s",
+                       (start_time, end_time, unterschrift_mitarbeiter, unterschrift_klient, klient_id, beschreibung,
+                        interne_notiz, absage, zeiteintrag_id))
     else:
         cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = NULL, "
-                       "unterschrift_Klient = NULL WHERE id = %s",
-                       (start_time, end_time, zeiteintrag_id))
+                       "unterschrift_Klient = NULL, klient_ID = %s, beschreibung = %s, interne_notiz = %s, absage = %s "
+                       "WHERE ID = %s",
+                       (start_time, end_time, unterschrift_mitarbeiter, unterschrift_klient, klient_id, beschreibung,
+                        interne_notiz, absage, zeiteintrag_id))
     connection.commit()
     cursor.close()
     connection.close()
+
+
+# Ein Zeiteintrag wird zurückgegeben. Funktion gibt Dictionary zurück,
+# bei dem jeder Schlüssel eine Zeiteintrag-ID ist und jeder Wert ein weiteres Dictionary ist,
+# das die Zeiteintrag- und Fahrteninformationen enthält.
+# list(zeiteintrag_fahrten.values()) zurückgeben dann erhält man das Ergebnis als Liste
+def get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""SELECT ze.*, fa.* FROM zeiteintrag ze 
+        LEFT JOIN fahrt fa ON ze.id = fa.zeiteintrag_id WHERE ze.id = %s""",
+                   (zeiteintrag_id,))
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    # Group the result by Zeiteintrag entries
+    zeiteintrag_fahrten = {}
+    for row in result:
+        zeiteintrag_id = row[0]
+        if zeiteintrag_id not in zeiteintrag_fahrten:
+            zeiteintrag_fahrten[zeiteintrag_id] = {'zeiteintrag': row[:8], 'fahrten': []}
+        zeiteintrag_fahrten[zeiteintrag_id]['fahrten'].append(row[8:])
+
+    return list(zeiteintrag_fahrten.values())  # Die Ergebnisse werden dann nach Zeiteintrag-IDs gruppiert.
 
 
 # Zeiteintrag wird gelöscht

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sperren Bestätigung</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <p>Wollen Sie den Account wirklich sperren?</p>
+    <button onclick="close_popup()">Nein</button>
+    <button onclick="confirm_lock('{person_id}')">Ja</button>
+
+    <script>
+        function confirm_lock(person_id) {
+            // Hier kann man eine andere URL oder einen anderen API-Aufruf verwenden,
+            // um die edit_account_lock Funktion aufzurufen
+            fetch('/db_query.py?person_id=' + person_id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    function_name: 'edit_account_lock',
+                    person_id: person_id
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Account erfolgreich gesperrt');
+                    close_popup();
+                } else {
+                    alert('Fehler: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Fehler: ' + error);
+            });
+        }
+
+        function close_popup() {
+            window.close();
+        }
+    </script>
+</body>
+</html>
