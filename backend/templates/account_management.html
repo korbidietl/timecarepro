@@ -22,7 +22,6 @@
                 <th>Vorname</th>
                 <th>Nachname</th>
                 <th>E-Mail</th>
-                <th>Aktionen</th>
             </tr>
             {% for steuerbuero in steuerbueros %}
             <tr>
@@ -55,7 +54,6 @@
                 <th>Vorname</th>
                 <th>Nachname</th>
                 <th>E-Mail</th>
-                <th>Aktionen</th>
             </tr>
             {% for sb in sachbearbeiter %}
             <tr>
@@ -81,5 +79,10 @@
 
         {% include 'client_table.html' %}
     </div>
+
+    <iframe src="show_employee_table.html" width="100%" height="100%" style="border:none;"></iframe>
+    <iframe src="show_client_table.html" width="100%" height="100%" style="border:none;"></iframe>
+
+
 </body>
 </html>

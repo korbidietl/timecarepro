@@ -326,4 +326,16 @@ body {
     width: 48%; /* Schaltflächen nebeneinander mit etwas Abstand */
 }
 
+/* Stile für die Anordnung des Zeitraum-Dropdowns und des Anzeigen-Buttons */
+.time-selection-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.time-selection-container select,
+.time-selection-container button {
+    margin-left: 10px;
+}
 
