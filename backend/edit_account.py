@@ -14,6 +14,7 @@ def edit_account_details(person_id):
         address = request.form.get('address')
         phone = request.form.get('phone')
         qualification = request.form.get('qualification')
+        # rolle und email sind nicht bearbeitbar
 
         # Überprüfen, ob alle erforderlichen Felder ausgefüllt wurden
         required_fields = ['lastname', 'firstname', 'birthday', 'address', 'phone']
@@ -33,7 +34,12 @@ def edit_account_details(person_id):
         # Account-Daten aktualisieren
         edit_account(person_id, firstname, lastname, birthday, qualification, address, phone)
 
-        return redirect(url_for('account_overview'))
+        # Rückleitung zur vorherigen Seite
+        # weiß noch nicht wie das implementiert werden soll
+        # vllt so:
+        if request.method == 'GET':
+            return_url = request.args.get('return_url', '/default_return_page')
+            return render_template('edit_account.html', person_id=person_id, return_url=return_url)
 
     person = get_person_data(person_id)
     return render_template('details_account.html', person=person)

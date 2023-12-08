@@ -172,6 +172,7 @@ a{
 .form-group {
     width: 100%;
     margin-bottom: 20px;
+    padding-right: 30px;
 }
 
 .form-group label {
