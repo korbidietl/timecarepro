@@ -2,13 +2,13 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from db_query import check_account_locked, validate_login, validate_email, get_role_by_email, get_person_id_by_email
 
 
-login_blueprint = Blueprint("login", __name__)
+login_blueprint = Blueprint("login", __name__, template_folder='templates')
 
 logged_in_users = set()
 
 
 # @app.route("/login", methods=['POST'])
-@login_blueprint.route('/login', methods=['GET', 'POST'])
+@login_blueprint.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
