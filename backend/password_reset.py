@@ -41,7 +41,6 @@ def send_email_passwort_reset(email, lastname, new_password):
 
 @password_reset_blueprint.route('/password_reset', methods=['POST'])
 def passwordreset():
-    print("Hello")
     if request.method == "POST":
         email = request.form["email"]
         user = validate_email(email)
@@ -74,3 +73,5 @@ def passwordreset():
             else:
                 # keine E-mail in der Datenbank gefunden
                 return render_template('login.html')
+
+    render_template('password_reset.html')
