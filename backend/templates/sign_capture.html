@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unterschriften erfassen</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <div class="center-container">
+        <div class="loginContainer">
+            <div class="reset-container">
+                <div class="reset-content">
+                    <h2>Unterschrift einfügen</h2>
+                    <form action="/sign_capture" method="post">
+                        <canvas id="signatureCanvas" width="400" height="200" style="border:1px solid #000;"></canvas>
+                        <div class="accordion-button">
+                            <button type="submit">Speichern</button>
+                            <button type="button" onclick="clearSignature()">Leeren</button>
+                            <button type="button" onclick="close_popup()">Abbrechen</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function clearSignature() {
+            let canvas = document.getElementById("signatureCanvas");
+            let context = canvas.getContext("2d");
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        function close_popup() {
+                    window.history.back();
+                }
+    </script>
+</body>
+</html>
