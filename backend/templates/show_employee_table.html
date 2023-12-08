@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mitarbeitertabelle</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <div class="center-container">
+        <div class="table-container">
+            <h2>Mitarbeitertabelle</h2>
+
+            <!-- Drop-Down für Zeitraum -->
+            <div class="time-selection-container">
+                <form action="/mitarbeiter" method="post">
+                    <label for="zeitraum">Zeitraum:</label>
+                    <select name="zeitraum" id="zeitraum">
+                        <!-- Optionen für Zeitraum -->
+                    </select>
+                    <button type="submit">Anzeigen</button>
+                </form>
+            </div>
+
+            <!-- Tabelle für Mitarbeiter -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Personalnr.</th>
+                        <th>Vorname</th>
+                        <th>Nachname</th>
+                        <th>Geleistete Stunden</th>
+                        <th>Gefahrene Kilometer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mitarbeiter in mitarbeitern %}
+                    <tr>
+                        <td>{{ mitarbeiter.personalnr }}</td>
+                        <td>{{ mitarbeiter.vorname }}</td>
+                        <td>{{ mitarbeiter.nachname }}</td>
+                        <td>{{ mitarbeiter.geleistete_stunden }}</td>
+                        <td>{{ mitarbeiter.gefahrene_km }}</td>
+                        <td>
+                            <!-- Bedingte Buttons basierend auf der Rolle des Nutzers -->
+                            {% if session['user_role'] in ['Verwaltung', 'Steuerbüro'] %}
+                                <td><a href="/zeiteinträge/{{ mitarbeiter.personalnr }}">Zeiteintrag ansehen</a></td>
+                                {% if session['user_role'] == 'Verwaltung' %}
+                                    <td><a href="/bearbeiten/{{ mitarbeiter.personalnr }}">Bearbeiten</a></td>
+                                    <td><a href="/sperren/{{ mitarbeiter.personalnr }}">Sperren/Entsperren</a></td>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Exportieren und Drucken Buttons für Steuerbüro und Geschäftsführung -->
+            {% if session['user_role'] in ['Steuerbüro', 'Geschäftsführung'] %}
+            <div class="export-print-buttons">
+                <button onclick="exportToCSV()">Exportieren</button>
+                <button onclick="printTable()">Drucken</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function exportToCSV() {
+            // Implementieren Sie die Logik zum Exportieren der Tabelle in CSV-Format
+        }
+
+        function printTable() {
+            // Implementieren Sie die Logik zum Drucken der Tabelle
+        }
+    </script>
+</body>
+</html>
