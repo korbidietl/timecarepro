@@ -1,8 +1,5 @@
 from flask import Flask, request, render_template, redirect, url_for
-from datetime import datetime
-from passlib.hash import sha1_crypt
 from db_query import validate_email, create_account, edit_account, get_person_data
-from email_helper import send_email
 from create_account import is_valid_phone, is_valid_date
 
 app = Flask(__name__)
