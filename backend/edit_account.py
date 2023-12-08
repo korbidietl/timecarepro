@@ -1,45 +1,47 @@
-from flask import Flask, request, redirect, url_for, flash, render_template
+from flask import Flask, request, render_template, redirect, url_for
+from datetime import datetime
+from passlib.hash import sha1_crypt
+from db_query import validate_email, create_account, edit_account, get_person_data
+from email_helper import send_email
+from create_account import is_valid_phone, is_valid_date
 
 app = Flask(__name__)
-# Stellen Sie sicher, dass Sie einen geheimen Schlüssel für Flask festlegen
-app.secret_key = 'IhrGeheimerSchlüssel'
 
 @app.route('/edit_account/<int:person_id>', methods=['GET', 'POST'])
-def edit_account(person_id):
+def edit_account_details(person_id):
     if request.method == 'POST':
-        # Daten aus dem Formular holen
+        # Daten aus dem Formular
         lastname = request.form.get('lastname')
         firstname = request.form.get('firstname')
-        # role und email sind readonly, daher werden sie nicht bearbeitet
-        # Weitere Felder je nach Bedarf
+        birthday = request.form.get('birthday')
+        address = request.form.get('address')
+        phone = request.form.get('phone')
+        qualification = request.form.get('qualification')
 
-        # Datenbank-Update-Logik
-        try:
-            update_person(person_id, lastname, firstname)
-            flash('Account wurde erfolgreich bearbeitet.')
-            return redirect(url_for('account_overview'))
-        except Exception as e:
-            flash(f'Ein Fehler ist aufgetreten: {e}')
+        # Überprüfen, ob alle erforderlichen Felder ausgefüllt wurden
+        required_fields = ['lastname', 'firstname', 'birthday', 'address', 'phone']
+        for field in required_fields:
+            if not request.form.get(field):
+                error_message = 'Es müssen alle Felder ausgefüllt werden.'
+                return render_template('details_account.html', error_message=error_message, person_id=person_id)
 
-    # Daten für die GET-Anfrage laden
-    person = get_person_data(person_id)  # Ihre Funktion zum Abrufen der Personendaten
-    return render_template('edit_account.html', person=person)
+        # Überprüfen des Datentyps für Geburtstag und Telefonnummer
+        if not is_valid_date(birthday):
+            error_message = 'Das Geburtsdatum ist ungültig.'
+            return render_template('details_account.html', error_message=error_message, person_id=person_id)
+        if not is_valid_phone(phone):
+            error_message = 'Die Telefonnummer ist ungültig.'
+            return render_template('details_account.html', error_message=error_message, person_id=person_id)
 
-def update_person(person_id, lastname, firstname):
-    # Logik zur Aktualisierung der Person in der Datenbank
-    # Verwenden Sie hier Ihre Datenbankverbindung und -abfrage
-    pass
+        # Account-Daten aktualisieren
+        edit_account(person_id, firstname, lastname, birthday, qualification, address, phone)
 
-def get_person_data(person_id):
-    # Logik zum Abrufen der Personendaten aus der Datenbank
-    # Verwenden Sie hier Ihre Datenbankverbindung und -abfrage
-    return {
-        'id': person_id,
-        'lastname': 'Mustermann',
-        'firstname': 'Max',
-        'role': 'Mitarbeiter',
-        'email': 'max.mustermann@example.com'
-    }
+        return redirect(url_for('account_overview'))
 
+    person = get_person_data(person_id)
+    return render_template('details_account.html', person=person)
+
+# Führen Sie die Flask-App aus
 if __name__ == '__main__':
     app.run(debug=True)
+
