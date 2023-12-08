@@ -1,6 +1,6 @@
 import hashlib
 
-from flask import session, json
+from flask import session
 
 from database_connection import get_database_connection
 from passlib.hash import sha1_crypt
@@ -366,6 +366,43 @@ def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id
     cursor = connection.cursor()
     cursor.execute("INSERT INTO fahrt (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_ID) "
                    "VALUES (%s, %s, %s, %s, %s)", kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id)
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+def edit_fahrt(id, kilometer, abrechenbar, zeiteintrag_id, start_adresse=None, end_adresse=None):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    query = "UPDATE fahrt SET "
+    parameters = []
+
+    query += "kilometer = %s, "
+    parameters.append(kilometer)
+
+    if start_adresse is not None:
+        query += "start_adresse = %s, "
+        parameters.append(start_adresse)
+
+    if end_adresse is not None:
+        query += "end_adresse = %s, "
+        parameters.append(end_adresse)
+
+    query += "abrechenbar = %s, "
+    parameters.append(abrechenbar)
+
+    query += "zeiteintrag_ID = %s, "
+    parameters.append(zeiteintrag_id)
+
+    # remove last comma and space
+    query = query[:-2]
+
+    # add where clause
+    query += " WHERE id = %s"
+    parameters.append(id)
+
+    cursor.execute(query, parameters)
     connection.commit()
     cursor.close()
     connection.close()
