@@ -317,6 +317,7 @@ def get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id):
 def delete_zeiteintrag(zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()
+    cursor.execute("DELETE FROM fahrt WHERE zeiteintrag_ID = %s", (zeiteintrag_id,))
     cursor.execute("DELETE FROM zeiteintrag WHERE id = %s", (zeiteintrag_id,))
     connection.commit()
     cursor.close()
@@ -348,3 +349,32 @@ def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id
     connection.commit()
     cursor.close()
     connection.close()
+
+
+def delete_fahrt(fahrt_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM fahrt WHERE id = %s", fahrt_id)
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+def check_booked(zeiteintrag_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT 1
+    FROM zeiteintrag z
+    JOIN klient k ON z.klient_id = k.id
+    JOIN buchung b ON b.klient_id = k.id
+    WHERE z.id = %s
+    AND EXTRACT(MONTH FROM b.monat) = EXTRACT(MONTH FROM z.end_zeit)
+    LIMIT 1
+    """, (zeiteintrag_id,))
+    result = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    if result:
+        return True
+    return False
