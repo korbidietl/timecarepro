@@ -8,7 +8,6 @@ def create_app():
     app = Flask(__name__, template_folder='templates', static_folder='static')
     app.secret_key = "your_secret_key"
 
-    app.config['DEBUG']=True
     # für die Inaktivitätsbedingung
     # app.config['SESSION_TYPE'] = 'filesystem'  # Du kannst 'filesystem' durch andere Optionen ersetzen
     # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Setze die Inaktivitätszeit auf 30 Minuten
