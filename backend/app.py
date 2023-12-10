@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from datetime import timedelta
 # from middleware import before_request
 
@@ -43,9 +43,9 @@ app = create_app()
 #   return render_template("create_account.html")
 
 
-@app.route("/create_client")
-def create_client():
-    return render_template("create_client.html")
+#@app.route("/create_client")
+#def create_client():
+#   return render_template("create_client.html")
 
 
 #
