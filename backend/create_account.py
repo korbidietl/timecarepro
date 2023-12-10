@@ -1,10 +1,10 @@
 from password_reset import generate_random_password, send_email
-from flask import Flask, render_template, request
+from flask import Blueprint, render_template, request
 from db_query import validate_email, create_account, set_password_required_true
 from passlib.hash import sha1_crypt
 from datetime import datetime
 
-app = Flask(__name__)
+create_account_blueprint = Blueprint('create_account', __name__)
 
 
 def is_valid_date(date_string):
@@ -33,53 +33,56 @@ def send_email_create_account(email, lastname, new_password):
     send_email(email, subject, body)
 
 
-@app.route('/create_account', methods=['POST'])
+@create_account_blueprint.route('/create_account', methods=['POST', 'GET'])
 def create_account():
-    selected_role = request.form.get('role')
-    lastname = request.form.get('lastname')
-    firstname = request.form.get('firstname')
-    email = request.form.get('email')
-    birthday = request.form.get('birthday')
-    address = request.form.get('address')
-    qualification = request.form.get('qualification')
-    phone = request.form.get('phone')
+    if request.method == 'POST':
+        selected_role = request.form.get('role')
+        lastname = request.form.get('lastname')
+        firstname = request.form.get('firstname')
+        email = request.form.get('email')
+        birthday = request.form.get('birthday')
+        address = request.form.get('address')
+        qualification = request.form.get('qualification')
+        phone = request.form.get('phone')
 
-    # Überprüfung ob alle notwendigen Felder ausgefüllt wurden
-    required_fields = ['lastname', 'firstname', 'role', 'email']
+        # Überprüfung ob alle notwendigen Felder ausgefüllt wurden
+        required_fields = ['lastname', 'firstname', 'role', 'email']
 
-    for field in required_fields:
-        if not request.form.get(field):
-            error_message = 'Es müssen alle Felder ausgefüllt werden.'
+        for field in required_fields:
+            if not request.form.get(field):
+                error_message = 'Es müssen alle Felder ausgefüllt werden.'
+                return render_template('create_account.html', error_message=error_message)
+
+        # Überprüfung ob alle zusätzlich notwendigen Felder für Mitarbeiter ausgefüllt wurden
+        if selected_role == 'Mitarbeiter':
+            additional_fields = ['birthday', 'address', 'phone']
+            for field in additional_fields:
+                value = request.form.get(field)
+                if not value:
+                    error_message = 'Bei der Rolle Mitarbeiter müssen alle benötigten Felder ausgefüllt werden.'
+                    return render_template('create_account.html', error_message=error_message)
+
+                    # Überprüfen des Datentyps
+                if field == 'birthday' and not is_valid_date(value):
+                    error_message = f'Eingabe in Feld {field} ungültig. Bitte geben Sie ein gültiges Datum ein.'
+                    return render_template('create_account.html', error_message=error_message)
+                elif field == 'phone' and not is_valid_phone(value):
+                    error_message = f'Eingabe in Feld {field} ungültig. Bitte geben Sie eine gültige Telefonnummer ein.'
+                    return render_template('create_account.html', error_message=error_message)
+
+        # Überprüfung ob schon ein Account existiert
+        if validate_email(email):
+            error_message = 'Es existiert bereits ein Account mit dieser E-Mail-Adresse.'
             return render_template('create_account.html', error_message=error_message)
 
-    # Überprüfung ob alle zusätzlich notwendigen Felder für Mitarbeiter ausgefüllt wurden
-    if selected_role == 'Mitarbeiter':
-        additional_fields = ['birthday', 'address', 'phone']
-        for field in additional_fields:
-            value = request.form.get(field)
-            if not value:
-                error_message = 'Bei der Rolle Mitarbeiter müssen alle benötigten Felder ausgefüllt werden.'
-                return render_template('create_account.html', error_message=error_message)
-
-                # Überprüfen des Datentyps
-            if field == 'birthday' and not is_valid_date(value):
-                error_message = f'Eingabe in Feld {field} ungültig. Bitte geben Sie ein gültiges Datum ein.'
-                return render_template('create_account.html', error_message=error_message)
-            elif field == 'phone' and not is_valid_phone(value):
-                error_message = f'Eingabe in Feld {field} ungültig. Bitte geben Sie eine gültige Telefonnummer ein.'
-                return render_template('create_account.html', error_message=error_message)
-
-    # Überprüfung ob schon ein Account existiert
-    if validate_email(email):
-        error_message = 'Es existiert bereits ein Account mit dieser E-Mail-Adresse.'
-        return render_template('create_account.html', error_message=error_message)
-
-    else:
-        password = generate_random_password(10)
-        hashed_password = sha1_crypt.encrypt(password)
-        change_password = set_password_required_true(email)
-        create_account(firstname, lastname, birthday, qualification, address, selected_role, email, phone, hashed_password, 0,
-                       change_password)
-        send_email_create_account(email, lastname, password)
-        return render_template('account_overview.html', email=email,
-                               success_message="Account wurde erfolgreich angelegt")
+        else:
+            password = generate_random_password(10)
+            hashed_password = sha1_crypt.encrypt(password)
+            change_password = set_password_required_true(email)
+            create_account(firstname, lastname, birthday, qualification, address, selected_role, email, phone,
+                           hashed_password, 0,
+                           change_password)
+            send_email_create_account(email, lastname, password)
+            return render_template('account_overview.html', email=email,
+                                   success_message="Account wurde erfolgreich angelegt")
+    return render_template('/create_account.html')

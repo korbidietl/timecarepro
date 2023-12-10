@@ -1,10 +1,10 @@
-# Haupt-Flask-Datei (z.B. app.py)
-from flask import Flask, render_template, request, redirect, url_for, session
-from db_query import return_zeiteintrag, edit_zeiteintrag
+from flask import Blueprint, Flask, render_template, request, redirect, url_for, session
+from db_query import  edit_zeiteintrag # return_zeiteintrag --> get_zeiteintrag_with_fahrten_by_id?
 
-app = Flask(__name__)
+edit_time_entry_blueprint = Blueprint('edit_time_entry', __name__)
 
-@app.route('/edit_time_entry/<zeiteintrag_id>', methods=['GET', 'POST'])
+
+@edit_time_entry_blueprint.route('/edit_time_entry/<int:zeiteintrag_id>', methods=['GET', 'POST'])
 def edit_time_entry(zeiteintrag_id):
     if request.method == 'POST':
         # Annahme, dass die Formulardaten die erforderlichen Werte enthalten
@@ -26,9 +26,8 @@ def edit_time_entry(zeiteintrag_id):
 
     # Wenn die Methode GET ist, lädt die Seite zum Bearbeiten
     # lädt die daten aus der datenbank und pflegt sie in das html file ein
-    zeiteintrag_data, fahrten_data = return_zeiteintrag(zeiteintrag_id)
-    return render_template('edit_time_entry.html', zeiteintrag=zeiteintrag_data, fahrten=fahrten_data)
+    # zeiteintrag_data, fahrten_data = return_zeiteintrag(zeiteintrag_id)
+    # return render_template('edit_time_entry.html', zeiteintrag=zeiteintrag_data, fahrten=fahrten_data)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
 

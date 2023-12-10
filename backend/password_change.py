@@ -1,8 +1,7 @@
-from flask import render_template, request
-import hashlib
-from db_query import get_user_by_id, validate_login, set_password
+from flask import render_template, request, Blueprint, session
+from db_query import validate_login, set_password
 
-password_reset_blueprint = Blueprint("password_reset", __name__)
+password_change_blueprint = Blueprint("password_change", __name__)
 
 
 # ich habe jetzt mal eine minimale passwort länge von 8 festegelegt --> evtl noch ändern
@@ -10,7 +9,8 @@ def validate_password(password):
     # Überprüft, ob das Passwort den Anforderungen entspricht (z.B. Länge)
     return len(password) >= 8
 
-@app.route('/password_change', methods=['POST'])
+
+@password_change_blueprint.route('/password_change', methods=['POST','GET'])
 def change_password():
     if request.method == "POST":
 
@@ -40,4 +40,4 @@ def change_password():
 
         return render_template("password_change.html", success="Das Passwort wurde erfolgreich geändert.")
 
-    return render_template("password_change.html")
+    return render_template("/password_change.html")

@@ -4,7 +4,7 @@ from db_query import delete_zeiteintrag, check_booked
 delete_time_entry_blueprint = Blueprint("delete te", __name__)
 
 
-@delete_time_entry_blueprint.route('/delete_te/<int:zeiteintrags_id>', methods='POST')
+@delete_time_entry_blueprint.route('/delete_te/<int:zeiteintrags_id>', methods=['POST', 'GET'])
 def delete_te(zeiteintrags_id):
     if request.method == 'POST':
         # übergebene ID und vermerk von welcher Funktion hierher geleitet
@@ -31,4 +31,4 @@ def delete_te(zeiteintrags_id):
             elif origin_function == 'function 2':
                 return redirect(url_for('name_function_2'))
 
-    render_template('delete_time_entry.html')
+    return render_template('/delete_time_entry.html')

@@ -39,7 +39,7 @@ def send_email_passwort_reset(email, lastname, new_password):
     send_email(email, subject, body)
 
 
-@password_reset_blueprint.route('/password_reset', methods=['POST'])
+@password_reset_blueprint.route('/password_reset', methods=['POST', 'GET'])
 def passwordreset():
     if request.method == "POST":
         email = request.form["email"]
@@ -50,28 +50,27 @@ def passwordreset():
             error = "Geben Sie für das Zurücksetzen des Passworts zuerst Ihre E-Mail-Adresse ein."
             return render_template("password_reset.html", error=error)
 
-        else:
-            if user:
-                lastname = get_lastname_by_email(email)
-                locked = check_account_locked(email)
+        if user:
+            lastname = get_lastname_by_email(email)
+            locked = check_account_locked(email)
 
-                if locked:
-                    # Überprüfung ob Nutzer gesperrt ist
-                    return render_template("password_reset.html")
-                else:
-                    # Neues Passwort generieren, abspeichern und Passwort erzwingen auf True setzen
-                    new_password = generate_random_password()
-                    set_password(email, new_password)
-                    set_password_required_true(email)
-                    # E-Mail senden
-                    send_email_passwort_reset(email, lastname, new_password)
-
-                    return render_template('login.html', email=email,
-                                           success_message="Ein neues Passwort wurde an die "
-                                                           "angegebene E-Mail-Adresse "
-                                                           "versendet.")
+            if locked:
+                # Überprüfung ob Nutzer gesperrt ist
+                return render_template("password_reset.html")
             else:
-                # keine E-mail in der Datenbank gefunden
-                return render_template('login.html')
+                # Neues Passwort generieren, abspeichern und Passwort erzwingen auf True setzen
+                new_password = generate_random_password()
+                set_password(email, new_password)
+                set_password_required_true(email)
+                # E-Mail senden
+                send_email_passwort_reset(email, lastname, new_password)
 
-    render_template('password_reset.html')
+                return render_template('login.html', email=email,
+                                       success_message="Ein neues Passwort wurde an die "
+                                                       "angegebene E-Mail-Adresse "
+                                                       "versendet.")
+        else:
+            # keine E-mail in der Datenbank gefunden
+            return render_template('login.html')
+
+    return render_template('password_reset.html')

@@ -6,7 +6,7 @@ login_blueprint = Blueprint("login", __name__, template_folder='templates')
 logged_in_users = set()
 
 
-@login_blueprint.route('/login', methods=['GET', 'POST'])
+@login_blueprint.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']

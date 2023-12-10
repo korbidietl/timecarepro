@@ -35,7 +35,7 @@ def extrahiere_jahr_und_monat(kombination):
     return monat_nummer, int(jahr)
 
 
-@client_hours_blueprint.route('/client/<int:client_id>', methods=['POST'])
+@client_hours_blueprint.route('/client_supervision_hours/<int:client_id>', methods=['POST'])
 def client_profile(client_id):
     kombinationen = generate_month_year_combinations()
 
