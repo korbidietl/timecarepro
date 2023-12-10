@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, redirect, url_for
-from db_query import validate_email, create_account, edit_account, get_person_data
+from db_query import edit_account, get_person_data
 from create_account import is_valid_phone, is_valid_date
 
 app = Flask(__name__)
