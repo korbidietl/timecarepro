@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Betreuungsstunden Übersicht</title>
+    <title>Betreuungsstunden Klienten Übersicht</title>
     <link rel="stylesheet" href="../static/styles.css">
 </head>
 <!-- Klientname einfügen, Sachbearbeiter neben Klient, view_time_entries?, Drop-Down , Buchung und co verlinken -->
@@ -18,7 +18,7 @@
 
         <div class="form-row">
             <div class="accordion-button">
-                <!-- Drop-Down für Monat -->
+                <!-- Drop-Down für Monat auswahl, initial akutelles Monat-->
                 <form action="{{ url_for('client_hours_blueprint.monat_auswahl') }}" method="post">
                     <label for="monat_jahr">Zeitraum</label>
                     <select name="monat_jahr" id="monat_jahr">
@@ -31,12 +31,18 @@
                     <button type="submit">Anzeigen</button>
                 </form>
             </div>
+            <!-- Button für Buchung und Buchung revidieren -->
             <div class="accordion-button">
-                <button type="submit">Buchung</button>
-                <button type="submit">Buchung revidieren</button>
+                {% if user_role in ['Verwaltung', 'Geschäftsführung'] %}
+                    <a href="{{ url_for('some_blueprint.buchen', client_id=client_id) }}" class="form-actions">Buchung</a>
+                {% endif %}
+
+                {% if user_role == 'Geschäftsführung' %}
+                    <a href="{{ url_for('some_blueprint.buchung_revidieren', client_id=client_id) }}" class="form-actions">Buchung revidieren</a>
+                {% endif %}
             </div>
         </div>
-
+        <!-- Tabelle der Zeiteinträge -->
         {% if zeiteintraege_liste %}
             <table>
                 <thead>
@@ -65,64 +71,47 @@
                         <td>{{ zeiteintrag.anfang }}</td>
                         <td>{{ zeiteintrag.ende }}</td>
                         <td>{{ zeiteintrag.mitarbeiter }}</td>
-                        {% if {{user_role}} in ['Mitarbeiter mit Fallverantwortung','Verwaltung','Geschäftsführung']
-                        <td>{{ zeiteintrag.überschneidung }}</td>
+                        {% if user_role in ['Mitarbeiter mit Fallverantwortung','Verwaltung','Geschäftsführung']
+                            <td>{{ zeiteintrag.überschneidung }}</td>
                         {% endif %}
                         <td>{{ zeiteintrag.unterschrift_klient }}</td>
                         <td>{{ zeiteintrag.unterschrift_mitarbeiter }}</td>
-                        <!-- Weitere Zellen für weitere Attribute von zeiteintrag -->
+
+                        <!-- Buttons Bearbeiten und Löschen in jeder Zeile -->
                         {% if not zeiteintrag.gebucht %}
-                        <td>
-                            <a href="{{ url_for('edit_time_entry', zeiteintrag_id=zeiteintrag.id) }}">Bearbeiten</a>
-                            <a href="{{ url_for('delete_time_entry', zeiteintrag_id=zeiteintrag.id) }}">Löschen</a>
-                        </td>
+                            {% if user_role == 'Mitarbeiter' and zeiteintrag.mitarbeiter_id == session['user_id'] %}
+                                <td>
+                                    <a href="{{ url_for('edit_time_entry', zeiteintrag_id=zeiteintrag.id) }}">Bearbeiten</a>
+                                    <a href="{{ url_for('delete_time_entry', zeiteintrag_id=zeiteintrag.id) }}">Löschen</a>
+                                </td>
+                            {% endif %}
                         {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
-                <!-- Tabellenzeilen mit Daten -->
             </table>
+        <!-- keine Daten für ausgewählten Monat -->
         {% else %}
             <p>Noch keine Einträge vorhanden.</p>
         {% endif %}
-        <!--
-        <div class="form-actions">
-            {% if session['user_role'] in ['Mitarbeiter mit Fallverantwortung', 'Verwaltung', 'Geschäftsführung'] %}
-                <button onclick="window.location='/add_time_entry';">Zeiteintrag hinzufügen</button>
-                <button onclick="window.location.href='/edit_time_entry/{{ zeiteintrag_id }}'">Zeiteintrag bearbeiten</button>
-                <button onclick="window.location='/delete_time_entry';">Löschen</button>
-            {% endif %}
 
-            {% if session['user_role'] in ['Verwaltung', 'Geschäftsführung'] %} -->
-                <!-- Spezielle Buttons für Verwaltung und Geschäftsführung -->
-        <!--
-                <button onclick="window.location='/book_time_entry';">Buchen</button>
-                <button onclick="window.location='/export_time_entries';">Exportieren</button>
-                <button onclick="window.location='/print_time_entries';">Drucken</button>
-            {% endif %}
-
-            {% if session['user_role'] == 'Geschäftsführung' %} -->
-                <!-- Spezieller Button nur für Geschäftsführung -->
-                <!--
-                <button onclick="window.location='/revert_booking';">Buchung revidieren</button>
-            {% endif %}
-            -->
+        <!-- Buttons export und drucken -->
         <div class="leerzeile"> </div>
             <div class="form-row">
                 <div class="accordion-button">
-                    <button type="submit">Exportieren</button>
-                    <button type="submit">Drucken</button>
-
+                    {% if user_role in ['Verwaltung', 'Geschäftsführung', 'Steuerbüro', 'Sachbearbeiter/Kostenträger'] %}
+                        <a href="{{ url_for('client_hours_blueprint.exportieren', client_id=client_id) }}">Exportieren</a>
+                        <button onclick="window.print();">Drucken</button>
+                    {% endif %}
+                <!-- Button Zeiteintrag hinzufügen -->
                 </div>
-                <button type="submit">Zeiteintrag hinzufügen</button>
+                {% if user_role not in ['Verwaltung', 'Steuerbüro', 'Sachbearbeiter/Kostenträger'] %}
+                    <form action="{{ url_for('create_time_entry.submit_arbeitsstunden', client_id=client_id) }}" method="get">
+                        <button type="submit">Zeiteintrag hinzufügen</button>
+                    </form>
+                {% endif %}
             </div>
     </div>
-    <script>
-        function loadMonthData() {
-            let clientName = document.getElementById('clientName').innerText;
-            let month = document.getElementById('monthSelect').value
-        }
-    </script>
-</body>
+    </body>
 </html>
 

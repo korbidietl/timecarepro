@@ -1,6 +1,8 @@
 import datetime
+import io
+import csv
 
-from flask import Blueprint, render_template, request, session
+from flask import Blueprint, render_template, request, session, Response
 from datetime import datetime
 from db_query import get_client_name, get_sachbearbeiter_name, get_fallverantwortung_id, check_booked
 client_hours_blueprint = Blueprint('client_hours_blueprint', __name__, template_folder='templates')
@@ -33,6 +35,7 @@ def extrahiere_jahr_und_monat(kombination):
 def client_profile(client_id):
     kombinationen = generate_month_year_combinations()
 
+    #auswahl des angezeigten Zeitraums
     if request.method =='POST':
         gewaehlte_kombination = request.form.get('monat_jahr')
     else:
@@ -50,7 +53,7 @@ def client_profile(client_id):
     client_sachbearbeiter = get_sachbearbeiter_name(client_id)
     fallverantwortung_id = get_fallverantwortung_id(client_id)
 
-    # Rolle aus der Session
+    # Rolle und ID aus der Session
     user_id = session.get('user_id')
     user_role = session.get('user_role')
 
@@ -69,9 +72,30 @@ def client_profile(client_id):
 
     return render_template('show_supervisionhours_client.html', client_id=client_id, client_name = client_name,client_sachbearbeiter= client_sachbearbeiter)
 
-@client_hours_blueprint.route('/monat_auswahl', methods=['GET', 'POST'])
-def monat_auswahl():
 
-    gewaehlte_kombination = request.form.get('monat_jahr') if request.method == 'POST' else kombinationen[-1]
-    # Verarbeiten Sie die Auswahl
-    return render_template('show_supervisionhours_client.html', kombinationen=kombinationen, gewaehlte_kombination=gewaehlte_kombination)
+
+def generiere_csv_daten(zeiteintraege_liste):
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Beispiel: Schreiben der Kopfzeilen
+    writer.writerow(['Datum', 'Beschreibung', 'Kilometer','Anfang','Ende','Mitarbeitet','Unterschrift KLient', 'Unterschrift Mitarbeiter'])
+
+    # Schreiben der Datenzeilen
+    for zeiteintrag in zeiteintraege_liste:
+        writer.writerow([zeiteintrag.datum, zeiteintrag.stunden, zeiteintrag.beschreibung, zeiteintrag.kilometer, zeiteintrag.anfang, zeiteintrag.ende, zeiteintrag.mitarbieter, zeiteintrag.unterschrift_klient, zeiteintrag.unterschrift_mitarbeiter])
+
+
+    return output.getvalue()
+
+
+@client_hours_blueprint.route('/exportieren/<int:client_id>')
+def exportieren_client(client_id):
+    zeiteintraege_liste = get_zeiteintraege_for_client(client_id)
+    csv_daten = generiere_csv_daten(zeiteintraege_liste)
+
+    return Response(
+        csv_daten,
+        mimetype="text/csv",
+        headers={"Content-disposition": "attachment; filename=uebersicht.csv"}
+    )

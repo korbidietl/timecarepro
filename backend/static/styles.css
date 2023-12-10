@@ -212,16 +212,17 @@ a{
     align-items: center;
 }
 
-.form-actions button {
+.form-actions button, .form-actions a {
     background-color: #FFA500;
     color: #fff;
     padding: 12px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    text-decoration: none;
 }
 
-.form-actions a {
+{
     text-decoration: none;
     color: #FFA500;
 

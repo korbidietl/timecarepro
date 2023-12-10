@@ -1,11 +1,11 @@
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Blueprint, request, redirect, url_for, render_template
 from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag
 from datetime import datetime
 
-#gehört glaub ich nur in app.py
-app = Flask(__name__)
+create_time_entry_blueprint = Blueprint('create_time_entry', __name__)
 
-@app.route('/create_time_entry', methods=['POST'])
+
+@create_time_entry_blueprint.route('/create_time_entry', methods=['POST', 'GET'])
 def submit_arbeitsstunden():
     # Eingabedaten aus dem Formular holen
     datum = request.form.get('datum')
@@ -32,7 +32,8 @@ def submit_arbeitsstunden():
 
     # Füge neuen Zeiteintrag hinzu und erhalte die ID
     else:
-        zeiteintrag_id = add_zeiteintrag(datum, start_datetime, end_datetime, beschreibung, interne_notiz, unterschrift_klient, unterschrift_mitarbeiter)
+        zeiteintrag_id = add_zeiteintrag(datum, start_datetime, end_datetime, beschreibung, interne_notiz,
+                                         unterschrift_klient, unterschrift_mitarbeiter)
 
         # Falls Kilometer angegeben, füge Fahrt hinzu
         if kilometer:
@@ -46,6 +47,5 @@ def submit_arbeitsstunden():
     # Weiterleitung zurück zur Übersicht der abgelegten Stunden
     return redirect(url_for('see_supervisionhours_client'))
 
-#Warum? muss glaub ich nur in die app.py
-if __name__ == '__main__':
-    app.run(debug=True)
+
+
