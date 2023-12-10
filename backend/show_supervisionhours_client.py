@@ -57,6 +57,7 @@ def client_profile(client_id):
     client_sachbearbeiter = get_sachbearbeiter_name(client_id)
     fallverantwortung_id = get_fallverantwortung_id(client_id)
 
+
     # Rolle und ID aus der Session
     user_id = session.get('user_id')
     user_role = session.get('user_role')
@@ -65,11 +66,13 @@ def client_profile(client_id):
     if user_id == fallverantwortung_id:
         # Datenbankaufruf für alle anzeigen
         zeiteintraege_liste = get_zeiteintraege_for_client(client_id, monat, jahr)
+        booked = check_booked(zeiteintraege_liste.zeiteintrags_id)
         return render_template('show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste)
 
     else:
         # Zeiteinträge nur von eigener ID (ohne Fallverantwortung)
         zeiteintraege_liste_of = get_zeiteintraege_for_client_of(client_id)
+        booked = check_booked(zeiteintraege_liste_of.zeiteintrags_id)
         return render_template('show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste_of)
 
 

@@ -4,11 +4,10 @@ from db_query import delete_zeiteintrag, check_booked
 delete_time_entry_blueprint = Blueprint("delete te", __name__)
 
 
-@delete_time_entry_blueprint.route('/delete_te', methods='POST')
-def delete_te():
+@delete_time_entry_blueprint.route('/delete_te/<int:zeiteintrags_id>', methods='POST')
+def delete_te(zeiteintrags_id):
     if request.method == 'POST':
         # übergebene ID und vermerk von welcher Funktion hierher geleitet
-        zeiteintrags_id = request.form.get('zeiteintrags_ID')
         origin_function = request.form.get('origin_function')
         booked = check_booked(zeiteintrags_id)
         # Zeiteintrag wurde schon gebucht

@@ -78,7 +78,7 @@
                         <td>{{ zeiteintrag.unterschrift_mitarbeiter }}</td>
 
                         <!-- Buttons Bearbeiten und Löschen in jeder Zeile -->
-                        {% if not zeiteintrag.gebucht %}
+                        {% if not booked %}
                             {% if user_role == 'Mitarbeiter' and zeiteintrag.mitarbeiter_id == session['user_id'] %}
                                 <td>
                                     <a href="{{ url_for('edit_time_entry', zeiteintrag_id=zeiteintrag.id) }}">Bearbeiten</a>
