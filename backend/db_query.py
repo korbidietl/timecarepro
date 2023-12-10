@@ -171,7 +171,6 @@ def check_account_locked(email):
     return False
 
 
-#
 def mitarbeiter_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -220,6 +219,41 @@ def edit_klient(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachb
                     kontingent_hk, kontingent_fk, fallverantwortung_id, client_id))
     connection.commit()
     cursor.close()
+
+
+def get_client_name(client_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT vorname, nachname FROM klient WHERE ID = %s", (client_id,))
+    client_name = cursor.fetchone()
+    cursor.close()
+    return client_name
+
+
+def get_sachbearbeiter_name(client_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT sachbearbeiter_id FROM klient WHERE ID = %s", (client_id,))
+    sachbearbeiter_id = cursor.fetchone()
+    if sachbearbeiter_id is not None:
+        # Get Vorname and Nachname from Account table
+        cursor.execute("SELECT vorname, nachname FROM person WHERE ID = %s", (sachbearbeiter_id[0],))
+        sachbearbeiter_name = cursor.fetchone()
+        return sachbearbeiter_name
+    else:
+        return None
+
+
+def get_fallverantwortung_id(client_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT fallverantwortung_id FROM klient WHERE ID = %s", (client_id,))
+    fallverantwortung_id = cursor.fetchone()
+
+    if fallverantwortung_id is not None:
+        return fallverantwortung_id[0]
+    else:
+        return None
 
 
 # Prüft, ob schon ein Client mit dem Namen und Geburtsdatum existiert
