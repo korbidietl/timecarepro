@@ -230,7 +230,11 @@ a{
 
 
 
+/*Design für Tabellen */
+.container-tabelle {
+    background-color: #fff;
 
+}
 /* Grundlegendes Styling */
 body {
     font-family: Arial, sans-serif;

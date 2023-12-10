@@ -6,44 +6,63 @@
     <title>Betreuungsstunden Übersicht</title>
     <link rel="stylesheet" href="../static/styles.css">
 </head>
+<!-- Klientname einfügen, Sachbearbeiter neben Klient, view_time_entries?, Drop-Down , Buchung und co verlinken -->
 <body>
-    <div class="registration-form">
-        <h2>Betreuungsstunden für Klienten</h2>
-        <form action="/view_time_entries" method="post">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="zeitraum">Zeitraum:</label>
-                    <!-- dropdown ist unschön gelöst -> alternative suchen -->
-                    <select id="zeitraum" name="zeitraum">
-                        <option value="Januar">Januar</option>
-                        <option value="Februar">Februar</option>
-                        <option value="März">März</option>
-                        <option value="April">April</option>
-                        <option value="Mai">Mai</option>
-                        <option value="Juni">Juni</option>
-                        <option value="Juli">Juli</option>
-                        <option value="August">August</option>
-                        <option value="September">September</option>
-                        <option value="Oktober">Oktober</option>
-                        <option value="November">November</option>
-                        <option value="Dezember">Dezember</option>
-                    </select>
-                </div>
-                <button type="submit">Zeitraum auswählen</button>
+    {% include 'navbar.html' %}
+
+    <div class="container-tabelle">
+        <div class="form-row" style="justify-content: start;">
+            <h2 style="margin: 0; font-size: 1.5em; line-height: 1.2em;">Klient: <span id="clientName">Hilde Sacher</span></h2>
+            <div style="margin-left: 40px; font-weight: normal; font-size: 1.5em; line-height: 1.2em;">Sachbearbeiter: <span id="caseworkerName">Ronald Bauer</span></div>
+        </div>
+        <div class="form-row">
+            <div class="accordion-button">
+                <!-- Drop-Down für Monat -->
+                <label for="monthSelect">Monat:</label>
+                <select id="monthSelect" name="month">
+                    <option value="Januar">Januar</option>
+                    <option value="Februar">Februar</option>
+                    <option value="März">März</option>
+                    <option value="April">April</option>
+                    <option value="Mai">Mai</option>
+                    <option value="Juni">Juni</option>
+                    <option value="Juli">Juli</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="Oktober">Oktober</option>
+                    <option value="November">November</option>
+                    <option value="Dezember">Dezember</option>
+                </select>
+                <button onclick="loadMonthData()">Laden</button>
             </div>
-        </form>
+            <div class="accordion-button">
+                <button type="submit">Buchung</button>
+                <button type="submit">Buchung revidieren</button>
+            </div>
+        </div>
+
 
         <table>
-            <tr>
-                <th>Klient</th>
-                <th>Startzeit</th>
-                <th>Endzeit</th>
-                <th>Beschreibung</th>
-                <th>Kilometer</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Datum</th>
+                    <th>Beschreibung</th>
+                    <th>Kilometer</th>
+                    <th>Anfang</th>
+                    <th>Ende</th>
+                    <th>Mitarbeiter</th>
+                    <th>Überschneidung</th>
+                    <th>Unterschrift Klient</th>
+                    <th>Unterschrift Mitarbeiter</th>
+                    <th>Aktion</th>
+                </tr>
+            </thead>
+            <tbody id="tableData">
+
+            </tbody>
             <!-- Tabellenzeilen mit Daten -->
         </table>
-
+        <!--
         <div class="form-actions">
             {% if session['user_role'] in ['Mitarbeiter mit Fallverantwortung', 'Verwaltung', 'Geschäftsführung'] %}
                 <button onclick="window.location='/add_time_entry';">Zeiteintrag hinzufügen</button>
@@ -51,19 +70,36 @@
                 <button onclick="window.location='/delete_time_entry';">Löschen</button>
             {% endif %}
 
-            {% if session['user_role'] in ['Verwaltung', 'Geschäftsführung'] %}
+            {% if session['user_role'] in ['Verwaltung', 'Geschäftsführung'] %} -->
                 <!-- Spezielle Buttons für Verwaltung und Geschäftsführung -->
+        <!--
                 <button onclick="window.location='/book_time_entry';">Buchen</button>
                 <button onclick="window.location='/export_time_entries';">Exportieren</button>
                 <button onclick="window.location='/print_time_entries';">Drucken</button>
             {% endif %}
 
-            {% if session['user_role'] == 'Geschäftsführung' %}
+            {% if session['user_role'] == 'Geschäftsführung' %} -->
                 <!-- Spezieller Button nur für Geschäftsführung -->
+                <!--
                 <button onclick="window.location='/revert_booking';">Buchung revidieren</button>
             {% endif %}
-        </div>
+            -->
+
+            <div class="form-row">
+                <div class="accordion-button">
+                    <button type="submit">Exportieren</button>
+                    <button type="submit">Drucken</button>
+
+                </div>
+                <button type="submit">Zeiteintrag hinzufügen</button>
+            </div>
     </div>
+    <script>
+        function loadMonthData() {
+            let clientName = document.getElementById('clientName').innerText;
+            let month = document.getElementById('monthSelect').value
+        }
+    </script>
 </body>
 </html>
 
