@@ -2,6 +2,7 @@ import datetime
 
 from flask import Blueprint, render_template, request, session
 from datetime import datetime
+from db_query import get_client_name, get_sachbearbeiter_name, get_fallverantwortung_id
 client_hours_blueprint = Blueprint('client_hours_blueprint', __name__, template_folder='templates')
 
 def generate_month_year_combinations():
@@ -22,7 +23,7 @@ def client_profile(client_id):
     # Abrufe aus der Datenbank
     client_name = get_client_name(client_id)
     client_sachbearbeiter = get_sachbearbeiter_name(client_id)
-    fallverantwortung_id =
+    fallverantwortung_id = get_fallverantwortung_id(client_id)
 
     # Rolle aus der Session
     user_id = session.get('user_id')
@@ -33,15 +34,17 @@ def client_profile(client_id):
 
     # Überprüfen ob Fallverantwortung hat
     if user_id == fallverantwortung_id:
+        return render_template('login.html')
 
     else:
+        return render_template('login.html')
 
 
 
     return render_template('show_supervisionhours_client.html', client_id=client_id, client_name = client_name,client_sachbearbeiter= client_sachbearbeiter)
 
-@client_hours_blueprint.route('/ihre_route', methods=['GET', 'POST'])
-def ihre_view_funktion():
+@client_hours_blueprint.route('/monat_auswahlt', methods=['GET', 'POST'])
+def monat_auswahl():
     kombinationen = generate_month_year_combinations()
     gewaehlte_kombination = request.form.get('monat_jahr') if request.method == 'POST' else kombinationen[-1]
     # Verarbeiten Sie die Auswahl

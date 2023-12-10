@@ -19,8 +19,9 @@
         <div class="form-row">
             <div class="accordion-button">
                 <!-- Drop-Down für Monat -->
-                <form action="{{ url_for('client_hours_blueprint.ihre_view_funktion') }}" method="post">
-                    <select name="monat_jahr">
+                <form action="{{ url_for('client_hours_blueprint.monat_auswahl') }}" method="post">
+                    <label for="monat_jahr">Zeitraum</label>
+                    <select name="monat_jahr" id="monat_jahr">
                         {% for kombination in kombinationen %}
                         <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
                             {{ kombination }}
@@ -53,7 +54,25 @@
                 </tr>
             </thead>
             <tbody id="tableData">
-
+                {% for zeiteintrag in zeiteintraege_liste %}
+                <tr>
+                    <!-- Füllen Sie jede Zelle mit Daten aus zeiteintrag -->
+                    <td>{{ zeiteintrag.attribut1 }}</td>
+                    <td>{{ zeiteintrag.attribut2 }}</td>
+                    <td>{{ zeiteintrag.attribut3 }}</td>
+                    <td>{{ zeiteintrag.attribut4 }}</td>
+                    <td>{{ zeiteintrag.attribut5 }}</td>
+                    <td>{{ zeiteintrag.attribut6 }}</td>
+                    <td>{{ zeiteintrag.attribut7 }}</td>
+                    <td>{{ zeiteintrag.attribut8 }}</td>
+                    <td>{{ zeiteintrag.attribut9 }}</td>
+                    <!-- Weitere Zellen für weitere Attribute von zeiteintrag -->
+                    <td>
+                        <a href="{{ url_for('edit_time_entry', zeiteintrag_id=zeiteintrag.id) }}">Bearbeiten</a>
+                        <a href="{{ url_for('delete_time_entry', zeiteintrag_id=zeiteintrag.id) }}">Löschen</a>
+                    </td>
+                </tr>
+                {% endfor %}
             </tbody>
             <!-- Tabellenzeilen mit Daten -->
         </table>
@@ -79,7 +98,7 @@
                 <button onclick="window.location='/revert_booking';">Buchung revidieren</button>
             {% endif %}
             -->
-
+        <div class="leerzeile"> </div>
             <div class="form-row">
                 <div class="accordion-button">
                     <button type="submit">Exportieren</button>

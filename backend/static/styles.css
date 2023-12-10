@@ -235,6 +235,10 @@ a{
     background-color: #fff;
 
 }
+/*Leerzeile einfügen*/
+.leerzeile {
+    height: 50px; /* Oder jede andere Höhe, die Sie benötigen */
+}
 /* Grundlegendes Styling */
 body {
     font-family: Arial, sans-serif;

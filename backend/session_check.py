@@ -11,4 +11,4 @@ def check_session_timeout():
     session.modified = True
     if 'user_email' not in session:
         flash('Ihre Session ist abgelaufen. Bitte loggen Sie sich erneut ein.', 'warning')
-        return redirect(url_for('login_blueprint.login'))
+        return redirect(url_for('login.login'))

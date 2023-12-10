@@ -10,7 +10,7 @@ def create_app():
 
     # für die Inaktivitätsbedingung
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
-    app.before_request(check_session_timeout)
+    # app.before_request(check_session_timeout)
 
     from login import login_blueprint
     app.register_blueprint(login_blueprint)
