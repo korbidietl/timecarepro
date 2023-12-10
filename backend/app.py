@@ -1,28 +1,32 @@
 from flask import Flask, render_template, request
 from datetime import timedelta
-# from middleware import before_request
+from session_check import check_session_timeout
 
 
 # alle Blueprints
 def create_app():
     app = Flask(__name__, template_folder='templates', static_folder='static')
-    app.secret_key = "your_secret_key"
+    app.config['SECRET_KEY'] = "secretKey"
 
     # für die Inaktivitätsbedingung
-    # app.config['SESSION_TYPE'] = 'filesystem'  # Du kannst 'filesystem' durch andere Optionen ersetzen
-    # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Setze die Inaktivitätszeit auf 30 Minuten
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+    app.before_request(check_session_timeout)
 
     from login import login_blueprint
-    app.register_blueprint(login_blueprint, url_prefix='/login')
+    app.register_blueprint(login_blueprint)
 
     from password_reset import password_reset_blueprint
-    app.register_blueprint(password_reset_blueprint, url_prefix='/password_reset')
+    app.register_blueprint(password_reset_blueprint)
 
+    from show_supervisionhours_client import client_hours_blueprint
+    app.register_blueprint(client_hours_blueprint)
     return app
 
 
 app = create_app()
 
+for rule in app.url_map.iter_rules():
+    print(rule)
 
 # app.register_blueprint(password_reset_blueprint)
 # app.register_blueprint(logout_blueprint)
