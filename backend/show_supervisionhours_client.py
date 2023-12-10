@@ -35,7 +35,7 @@ def extrahiere_jahr_und_monat(kombination):
     return monat_nummer, int(jahr)
 
 
-@client_hours_blueprint.route('/client/<int:client_id>', methods='POST')
+@client_hours_blueprint.route('/client/<int:client_id>', methods=['POST'])
 def client_profile(client_id):
     kombinationen = generate_month_year_combinations()
 
@@ -91,7 +91,7 @@ def generiere_csv_daten(zeiteintraege_liste):
     return output.getvalue()
 
 
-@client_hours_blueprint.route('/exportieren/<int:client_id>')
+@client_hours_blueprint.route('/exportieren/<int:client_id>', methods=['POST'])
 def exportieren_client(client_id):
     zeiteintraege_liste = get_zeiteintraege_for_client(client_id)
     csv_daten = generiere_csv_daten(zeiteintraege_liste)

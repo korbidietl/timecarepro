@@ -100,7 +100,7 @@
             <div class="form-row">
                 <div class="accordion-button">
                     {% if user_role in ['Verwaltung', 'Geschäftsführung', 'Steuerbüro', 'Sachbearbeiter/Kostenträger'] %}
-                        <a href="{{ url_for('client_hours_blueprint.exportieren', client_id=client_id) }}">Exportieren</a>
+                        <a href="{{ url_for('export_client_hours_blueprint.exportieren_client', client_id=client_id) }}">Exportieren</a>
                         <button onclick="window.print();">Drucken</button>
                     {% endif %}
                 <!-- Button Zeiteintrag hinzufügen -->
