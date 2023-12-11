@@ -171,11 +171,12 @@ def check_account_locked(email):
     return False
 
 
-def account_table(person_id, monat):
+def account_table(monat):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT person.ID, person.nachname, person.vorname, SUM(DATEDIFF(zeiteintrag.start_zeit, zeiteintrag.end_zeit)) "
+        "SELECT person.ID, person.nachname, person.vorname, "
+        "SUM(DATEDIFF(zeiteintrag.start_zeit, zeiteintrag.end_zeit)) "
         "AS geleistete_stunden, SUM(fahrt.kilometer) AS gefahrene_kilometer "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
         "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
