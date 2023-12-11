@@ -14,10 +14,10 @@ def validate_login(email, password):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT passwort FROM person WHERE email = %s", (email,))
-    result = cursor.fetchone() # erstes Ergebnis wird aufgerufen
+    result = cursor.fetchone()  # erstes Ergebnis wird aufgerufen
     if result:
-        hashed_password = result[0].decode()
-        if hashlib.sha1(password.encode()).hexdigest()[2:] == hashed_password:
+        hashed_password = result[0]
+        if hashlib.sha1(password.encode()).hexdigest() == hashed_password:
             return True
     return False
 
@@ -134,7 +134,7 @@ def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle,
 def get_person_data(account_id):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM person WHERE ID = %s", (account_id, ))
+    cursor.execute("SELECT * FROM person WHERE ID = %s", (account_id,))
     result = cursor.fetchall()
     return result
 
@@ -169,6 +169,20 @@ def check_account_locked(email):
         if result[0] == 1:
             return True
     return False
+
+
+def account_table(monat):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT person.ID, person.nachname, person.vorname, "
+        "SUM(DATEDIFF(zeiteintrag.start_zeit, zeiteintrag.end_zeit)) "
+        "AS geleistete_stunden, SUM(fahrt.kilometer) AS gefahrene_kilometer "
+        "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
+        "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
+        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s GROUP BY person.ID", (monat,))
+    result = cursor.fetchone()
+    return result
 
 
 def mitarbeiter_dropdown():
