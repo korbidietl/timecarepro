@@ -35,8 +35,8 @@ def extrahiere_jahr_und_monat(kombination):
     return monat_nummer, int(jahr)
 
 
-@client_hours_blueprint.route('/client_supervision_hours/<int:client_id>', methods=['POST'])
-def client_profile(client_id):
+@client_hours_blueprint.route('/client_supervision_hours/<int:client_id>', methods=['POST', 'GET'])
+def client_supervision_hours(client_id):
     kombinationen = generate_month_year_combinations()
 
     # auswahl des angezeigten Zeitraums
@@ -54,9 +54,11 @@ def client_profile(client_id):
 
     # Abrufe aus der Datenbank
     client_name = get_client_name(client_id)
-    client_sachbearbeiter = get_sachbearbeiter_name(client_id)
+    # client_name = f"{client_data[0]} {client_data[1]}"
+    client_sachbearbeiter_name = get_sachbearbeiter_name(client_id)
+    #client_sachbearbeiter_name = f"{client_sachbearbeiter_data[0]} {client_sachbearbeiter_data[1]}"
     fallverantwortung_id = get_fallverantwortung_id(client_id)
-
+    fallverantwortung = False
 
     # Rolle und ID aus der Session
     user_id = session.get('user_id')
@@ -64,16 +66,23 @@ def client_profile(client_id):
 
     # Überprüfen ob Fallverantwortung hat
     if user_id == fallverantwortung_id:
+        fallverantwortung = True
         # Datenbankaufruf für alle anzeigen
-        zeiteintraege_liste = get_zeiteintraege_for_client(client_id, monat, jahr)
-        booked = check_booked(zeiteintraege_liste.zeiteintrags_id)
-        return render_template('show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste)
+        #zeiteintraege_liste = get_zeiteintraege_for_client(client_id, monat, jahr)
+        #booked = check_booked(zeiteintraege_liste.zeiteintrags_id)
+        #return render_template('show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste)
 
-    else:
+    elif user_id != fallverantwortung_id:
+        fallverantwortung = False
         # Zeiteinträge nur von eigener ID (ohne Fallverantwortung)
-        zeiteintraege_liste_of = get_zeiteintraege_for_client_of(client_id)
-        booked = check_booked(zeiteintraege_liste_of.zeiteintrags_id)
-        return render_template('show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste_of)
+       # zeiteintraege_liste_of = get_zeiteintraege_for_client_of(client_id)
+        #booked = check_booked(zeiteintraege_liste_of.zeiteintrags_id)
+        #return render_template('show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste_of)
+
+    return render_template('/show_supervisionhours_client.html', client_id=client_id, client_name=client_name,
+                           client_sachbearbeiter=client_sachbearbeiter_name, fallverantwortung=fallverantwortung,
+                           user_id=user_id, user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
+                           kombinationen=kombinationen)
 
 
 # Für Export
@@ -96,11 +105,11 @@ def generiere_csv_daten(zeiteintraege_liste):
 
 @client_hours_blueprint.route('/exportieren/<int:client_id>', methods=['POST'])
 def exportieren_client(client_id):
-    zeiteintraege_liste = get_zeiteintraege_for_client(client_id)
-    csv_daten = generiere_csv_daten(zeiteintraege_liste)
+   # zeiteintraege_liste = get_zeiteintraege_for_client(client_id)
+   # csv_daten = generiere_csv_daten(zeiteintraege_liste)
 
     return Response(
-        csv_daten,
+     #   csv_daten,
         mimetype="text/csv",
         headers={"Content-disposition": "attachment; filename=uebersicht.csv"}
     )
