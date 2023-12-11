@@ -21,7 +21,7 @@ def login():
         user = validate_email(email)
 
         if user:
-            if user and email not in logged_in_users and validate_login(email, password):
+            if email not in logged_in_users and validate_login(email, password):
                 # Nutzer gefunden und wird in Session hinzugefügt
                 logged_in_users.add(email)
                 session['user_id'] = get_person_id_by_email(email)
@@ -29,7 +29,7 @@ def login():
                 session['user_email'] = email
                 return redirect(url_for('home'))
             # Nutzer ist schon angemeldet
-            elif user and email in logged_in_users:
+            elif email in logged_in_users:
                 flash("Benutzer ist bereits eingeloggt")
                 return render_template('login.html')
             # Nutzer ist gesperrt
