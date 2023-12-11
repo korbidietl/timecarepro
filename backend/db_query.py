@@ -190,20 +190,20 @@ def account_table(monat):
     distance_table = cursor.fetchall()
 
     # Beispielcode zum Erstellen/Zusammenfügen einer Tabelle
-    # report_table = []
-    # for time_spalte, distance_spalte in zip(time_table, distance_table):
-    #     if time_spalte[0] == distance_spalte[0]: # IDs müssen übereinstimmen
-    #         report_table.append(
-    #             (
-    #                 time_spalte[0], # ID
-    #                 time_spalte[1], # vorname
-    #                 time_spalte[2], # nachname
-    #                 time_spalte[3], # geleistete_stunden
-    #                 distance_spalte[4], # gefahrene_kilometer
-    #             )
-    #         )
+    report_table = []
+    for time_spalte, distance_spalte in zip(time_table, distance_table):
+        if time_spalte[0] == distance_spalte[0]: # IDs müssen übereinstimmen
+            report_table.append(
+                (
+                    time_spalte[0], # ID
+                    time_spalte[1], # vorname
+                    time_spalte[2], # nachname
+                    time_spalte[3], # geleistete_stunden
+                    distance_spalte[4], # gefahrene_kilometer
+                )
+            )
 
-    return time_table, distance_table
+    return report_table
 
 def mitarbeiter_dropdown():
     connection = get_database_connection()
