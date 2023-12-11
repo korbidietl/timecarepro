@@ -176,14 +176,34 @@ def account_table(monat):
     cursor = connection.cursor()
     cursor.execute(
         "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(DATEDIFF(zeiteintrag.start_zeit, zeiteintrag.end_zeit)) "
-        "AS geleistete_stunden, SUM(fahrt.kilometer) AS gefahrene_kilometer "
+        "SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
+        "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
+        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s GROUP BY person.ID", (monat,))
+    time_table = cursor.fetchall()
+
+    cursor.execute(
+        "SELECT person.ID, person.nachname, person.vorname, "
+        "SUM(fahrt.kilometer) AS gefahrene_kilometer "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
         "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
         "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s GROUP BY person.ID", (monat,))
-    result = cursor.fetchone()
-    return result
+    distance_table = cursor.fetchall()
 
+    # Beispielcode zum Erstellen/Zusammenfügen einer Tabelle
+    # report_table = []
+    # for zeit_zeile, kilometer_zeile in zip(time_table, distance_table):
+    #     if zeit_zeile[0] == kilometer_zeile[0]: # IDs müssen übereinstimmen
+    #         report_table.append(
+    #             (
+    #                 zeit_zeile[0],
+    #                 zeit_zeile[1],
+    #                 zeit_zeile[2],
+    #                 zeit_zeile[3],
+    #                 kilometer_zeile[4],
+    #             )
+    #         )
+
+    return time_table, distance_table
 
 def mitarbeiter_dropdown():
     connection = get_database_connection()
