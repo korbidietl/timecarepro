@@ -1,5 +1,6 @@
 from flask import Flask
 from datetime import timedelta
+from session_check import check_session_timeout
 
 
 def create_app():
@@ -7,8 +8,8 @@ def create_app():
     app.config['SECRET_KEY'] = "secretKey"
 
     # für die Inaktivitätsbedingung
-    # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
-    # app.before_request(check_session_timeout)
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+    app.before_request(check_session_timeout)
 
     # Systemweite Anforderungen
     from sign_capture import signature_blueprint
