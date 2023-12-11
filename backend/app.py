@@ -7,7 +7,7 @@ def create_app():
     app.config['SECRET_KEY'] = "secretKey"
 
     # für die Inaktivitätsbedingung
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+    # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
     # app.before_request(check_session_timeout)
 
     # Systemweite Anforderungen
