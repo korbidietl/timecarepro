@@ -191,15 +191,15 @@ def account_table(monat):
 
     # Beispielcode zum Erstellen/Zusammenfügen einer Tabelle
     # report_table = []
-    # for zeit_zeile, kilometer_zeile in zip(time_table, distance_table):
-    #     if zeit_zeile[0] == kilometer_zeile[0]: # IDs müssen übereinstimmen
+    # for time_spalte, distance_spalte in zip(time_table, distance_table):
+    #     if time_spalte[0] == distance_spalte[0]: # IDs müssen übereinstimmen
     #         report_table.append(
     #             (
-    #                 zeit_zeile[0],
-    #                 zeit_zeile[1],
-    #                 zeit_zeile[2],
-    #                 zeit_zeile[3],
-    #                 kilometer_zeile[4],
+    #                 time_spalte[0], # ID
+    #                 time_spalte[1], # vorname
+    #                 time_spalte[2], # nachname
+    #                 time_spalte[3], # geleistete_stunden
+    #                 distance_spalte[4], # gefahrene_kilometer
     #             )
     #         )
 
