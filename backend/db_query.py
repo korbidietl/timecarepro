@@ -419,8 +419,6 @@ def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end
 def get_zeiteintrag_for_client(client_id, month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
-
-    # Ersetzen Sie diese Abfrage durch Ihre eigene Tabelle und Spaltennamen
     cursor.execute("""
         SELECT
             DATE_FORMAT(z.start_zeit, '%d.%m.%Y') AS Datum,
@@ -443,11 +441,9 @@ def get_zeiteintrag_for_client(client_id, month, year):
         GROUP BY
             z.id
     """, (client_id, month, year))
-
     result = cursor.fetchall()
     cursor.close()
     connection.close()
-
     return result
 
 
