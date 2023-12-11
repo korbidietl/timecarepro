@@ -188,8 +188,7 @@ def account_table(monat):
         "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
         "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s GROUP BY person.ID", (monat,))
     distance_table = cursor.fetchall()
-
-    # Beispielcode zum Erstellen/Zusammenfügen einer Tabelle
+    # Zusammenfügen der Tabellen
     report_table = []
     for time_spalte, distance_spalte in zip(time_table, distance_table):
         if time_spalte[0] == distance_spalte[0]: # IDs müssen übereinstimmen
