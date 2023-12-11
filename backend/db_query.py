@@ -176,8 +176,8 @@ def account_table(monat):
     cursor = connection.cursor()
     cursor.execute(
         "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(DATEDIFF(zeiteintrag.start_zeit, zeiteintrag.end_zeit)) "
-        "AS geleistete_stunden, SUM(fahrt.kilometer) AS gefahrene_kilometer "
+        "SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden, "
+        "SUM(fahrt.kilometer) AS gefahrene_kilometer "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
         "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
         "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s GROUP BY person.ID", (monat,))
