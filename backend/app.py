@@ -22,6 +22,9 @@ def create_app():
     app.register_blueprint(password_reset_blueprint)
 
     # Angemeldete Nutzer
+    from home import home_blueprint
+    app.register_blueprint(home_blueprint)
+
     from logout import logout_blueprint
     app.register_blueprint(logout_blueprint)
 
