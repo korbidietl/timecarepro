@@ -421,11 +421,12 @@ def get_zeiteintrag_for_client(client_id, month, year):
     cursor = connection.cursor()
     cursor.execute("""
         SELECT
+            z.ID AS Zeiteintragnr,
             DATE_FORMAT(z.start_zeit, '%d.%m.%Y') AS Datum,
             z.beschreibung AS Beschreibung,
             SUM(f.kilometer) AS Kilometer,
-            DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfangszeit,
-            DATE_FORMAT(z.end_zeit, '%H:%i') AS Endzeit,
+            DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
+            DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
             CONCAT(p.vorname, ' ', p.nachname) AS Mitarbeiter,
             z.überschneidung AS Überschneidung,
             z.unterschrift_Klient AS Unterschrift_Klient,
