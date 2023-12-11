@@ -191,18 +191,19 @@ def account_table(monat):
     # Zusammenfügen der Tabellen
     report_table = []
     for time_spalte, distance_spalte in zip(time_table, distance_table):
-        if time_spalte[0] == distance_spalte[0]: # IDs müssen übereinstimmen
+        if time_spalte[0] == distance_spalte[0]:  # IDs müssen übereinstimmen
             report_table.append(
                 (
-                    time_spalte[0], # ID
-                    time_spalte[1], # vorname
-                    time_spalte[2], # nachname
-                    time_spalte[3], # geleistete_stunden
-                    distance_spalte[4], # gefahrene_kilometer
+                    time_spalte[0],  # ID
+                    time_spalte[1],  # vorname
+                    time_spalte[2],  # nachname
+                    time_spalte[3],  # geleistete_stunden
+                    distance_spalte[4],  # gefahrene_kilometer
                 )
             )
 
     return report_table
+
 
 def mitarbeiter_dropdown():
     connection = get_database_connection()
