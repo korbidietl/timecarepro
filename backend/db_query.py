@@ -13,11 +13,11 @@ from passlib.hash import sha1_crypt
 def validate_login(email, password):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT UNHEX(passwort) FROM person WHERE email = %s", (email,))
-    result = cursor.fetchone()  # erstes Ergebnis wird aufgerufen
+    cursor.execute("SELECT passwort FROM person WHERE email = %s", (email,))
+    result = cursor.fetchone() # erstes Ergebnis wird aufgerufen
     if result:
-        hashed_password = result[0]
-        if hashlib.sha1(password.encode()).hexdigest() == hashed_password:
+        hashed_password = result[0].decode()
+        if hashlib.sha1(password.encode()).hexdigest()[2:] == hashed_password:
             return True
     return False
 
