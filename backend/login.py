@@ -42,7 +42,6 @@ def login():
                 return render_template('login.html')
 
 
-
         # Nutzer nicht gefunden
         else:
             flash("Die Zugangsdaten sind nicht korrekt.")

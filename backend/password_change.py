@@ -40,4 +40,4 @@ def change_password():
 
         return render_template("password_change.html", success="Das Passwort wurde erfolgreich geändert.")
 
-    return render_template("/password_change.html")
+    return render_template("password_change.html")
