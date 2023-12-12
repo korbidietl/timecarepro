@@ -2,7 +2,7 @@ import hashlib
 from flask import session
 from database_connection import get_database_connection
 from passlib.hash import sha1_crypt
-
+# Stand: Pflichtenheft S. 37
 
 # /FS030/
 def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
