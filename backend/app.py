@@ -41,26 +41,26 @@ def create_app():
     from create_time_entry import create_time_entry_blueprint
     app.register_blueprint(create_time_entry_blueprint)
 
-    from edit_time_entry import edit_time_entry_blueprint
+    from FV100_edit_time_entry import edit_time_entry_blueprint
     app.register_blueprint(edit_time_entry_blueprint)
 
-    from delete_time_entry import delete_time_entry_blueprint
+    from FV110_delete_time_entry import delete_time_entry_blueprint
     app.register_blueprint(delete_time_entry_blueprint)
 
     # Verwaltung
-    from create_account import create_account_blueprint
+    from FV020_create_account import create_account_blueprint
     app.register_blueprint(create_account_blueprint)
 
-    from account_details import account_details_blueprint
+    from FV030_account_details import account_details_blueprint
     app.register_blueprint(account_details_blueprint)
 
-    from edit_account import edit_account_blueprint
+    from FV040_edit_account import edit_account_blueprint
     app.register_blueprint(edit_account_blueprint)
 
-    from create_client import create_client_blueprint
+    from FV070_create_client import create_client_blueprint
     app.register_blueprint(create_client_blueprint)
 
-    from edit_client import edit_client_blueprint
+    from FV090_edit_client import edit_client_blueprint
     app.register_blueprint(edit_client_blueprint)
 
     # Geschäftsführung
