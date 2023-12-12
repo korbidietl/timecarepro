@@ -1,17 +1,26 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from db_query import get_person_by_id, get_zeiteintrag_with_fahrten_by_id, check_booked
+from db_query import get_zeiteintrag_for_client, get_zeiteintrag_with_fahrten_by_id, check_booked
 
 view_time_entries_blueprint = Blueprint("view_time_entries", __name__, template_folder='templates')
 
 @view_time_entries_blueprint.route('/view_time_entries/<int:person_id>', methods=['GET', 'POST'])
 def view_time_entries(person_id):
-    person = get_person_by_id(person_id)
+    person = session['user_id']
     if request.method == 'POST':
-        month = request.form['month']
-        time_entries = get_zeiteintrag_with_fahrten_by_id(person_id, month)
-        for entry in time_entries:
-            entry['kilometer'] = sum([fahrt['kilometer'] for fahrt in get_zeiteintrag_with_fahrten_by_id(entry['id'])])
-            entry['buchung_vorhanden'] = check_booked(entry['id'])
+        monat = request.form['month']
+        jahr = request.form['year']
+
+        # funktionsnamen get_zeiteintrag... noch ändern --> ist nicht aktuell
+        zeiteintrag_ids = get_zeiteintrag_for_client(monat, jahr)
+
+        time_entries = []
+        for zeiteintrag_id in zeiteintrag_ids:
+            zeiteintrag_with_fahrten = get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id)
+            for entry in zeiteintrag_with_fahrten:
+                entry['zeiteintrag']['kilometer'] = sum([fahrt['kilometer'] for fahrt in entry['fahrten']])
+                entry['zeiteintrag']['buchung_vorhanden'] = check_booked(entry['zeiteintrag']['id'])
+                time_entries.append(entry['zeiteintrag'])
+
         return render_template('view_time_entries.html', person=person, time_entries=time_entries)
     else:
         return render_template('view_time_entries.html', person=person, time_entries=[])

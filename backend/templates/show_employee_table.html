@@ -35,13 +35,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for mitarbeiter in mitarbeitern %}
+                    {% for mitarbeiterliste %}
                     <tr>
                         <td>{{ mitarbeiter.personalnr }}</td>
                         <td>{{ mitarbeiter.vorname }}</td>
                         <td>{{ mitarbeiter.nachname }}</td>
                         <td>{{ mitarbeiter.geleistete_stunden }}</td>
                         <td>{{ mitarbeiter.gefahrene_km }}</td>
+
                         <td>
                             <!-- Bedingte Buttons basierend auf der Rolle des Nutzers -->
                             {% if session['user_role'] in ['Verwaltung', 'Steuerbüro'] %}

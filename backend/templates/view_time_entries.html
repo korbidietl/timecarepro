@@ -9,7 +9,7 @@
     {% include 'menu.html' %}
 
     <div class="container">
-        <h2>Zeiteinträge für {{ person.vorname }} {{ person.nachname }}</h2>
+        <h2>Deine Zeiteinträge</h2>
 
         <form action="/view_time_entries/{{ person.id }}" method="post">
             <div class="form-group">
@@ -17,6 +17,12 @@
                 <select id="month" name="month">
                     <!-- Optionen für Monate -->
                 </select>
+
+                <label for="year">Jahr:</label>
+                <select id="year" name="year">
+                    <!-- Optionen für Jahre -->
+                </select>
+
                 <button type="submit">Anzeigen</button>
             </div>
         </form>
@@ -31,7 +37,6 @@
                         <th>Endzeit</th>
                         <th>Beschreibung</th>
                         <th>Kilometer</th>
-                        <th>Aktionen</th>
                     </tr>
                 </thead>
                 <tbody>
