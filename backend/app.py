@@ -51,6 +51,9 @@ def create_app():
     from create_account import create_account_blueprint
     app.register_blueprint(create_account_blueprint)
 
+    from account_details import account_details_blueprint
+    app.register_blueprint(account_details_blueprint)
+
     from edit_account import edit_account_blueprint
     app.register_blueprint(edit_account_blueprint)
 
