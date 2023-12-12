@@ -6,6 +6,22 @@ from database_connection import get_database_connection
 from passlib.hash import sha1_crypt
 
 
+# /FS030/
+def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT id FROM zeiteintrag WHERE id != %s AND klient_id = %s "
+        "AND ((start_zeit >= %s AND start_zeit < %s) "
+        "OR (end_zeit > %s AND end_zeit <= %s) "
+        "OR (start_zeit <= %s AND end_zeit >= %s))",
+        (zeiteintrag_id, klient_id, start_time, end_time, start_time, end_time, start_time, end_time))
+    ids = [id[0] for id in cursor.fetchall()]
+    cursor.close()
+    connection.close()
+    return ids
+
+
 # /FNAN010/
 def validate_login(email, password):
     connection = get_database_connection()
@@ -491,23 +507,6 @@ def delete_zeiteintrag(zeiteintrag_id):
     connection.commit()
     cursor.close()
     connection.close()
-
-
-# Überprüfung auf Überschneidung und Rückgabe der überschneidungen als ID in einer Liste "ids"
-# /FS030/
-def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute(
-        "SELECT id FROM zeiteintrag WHERE id != %s AND klient_id = %s "
-        "AND ((start_zeit >= %s AND start_zeit < %s) "
-        "OR (end_zeit > %s AND end_zeit <= %s) "
-        "OR (start_zeit <= %s AND end_zeit >= %s))",
-        (zeiteintrag_id, klient_id, start_time, end_time, start_time, end_time, start_time, end_time))
-    ids = [id[0] for id in cursor.fetchall()]
-    cursor.close()
-    connection.close()
-    return ids
 
 
 def get_zeiteintrag_for_client(client_id, month, year):

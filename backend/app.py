@@ -16,20 +16,20 @@ def create_app():
     app.register_blueprint(signature_blueprint)
 
     # Nicht-angemeldete Nutzer
-    from login import login_blueprint
+    from FNAN010_login import login_blueprint
     app.register_blueprint(login_blueprint)
 
-    from password_reset import password_reset_blueprint
+    from FNAN020_password_reset import password_reset_blueprint
     app.register_blueprint(password_reset_blueprint)
 
     # Angemeldete Nutzer
-    from home import home_blueprint
+    from FAN010_home import home_blueprint
     app.register_blueprint(home_blueprint)
 
-    from logout import logout_blueprint
+    from FAN050_logout import logout_blueprint
     app.register_blueprint(logout_blueprint)
 
-    from password_change import password_change_blueprint
+    from FAN060_password_change import password_change_blueprint
     app.register_blueprint(password_change_blueprint)
 
     # Sachbearbeiter/Kostenträger
