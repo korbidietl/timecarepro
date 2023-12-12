@@ -38,7 +38,7 @@ def create_app():
     from show_supervisionhours_client import client_hours_blueprint
     app.register_blueprint(client_hours_blueprint)
 
-    from create_time_entry import create_time_entry_blueprint
+    from FMOF030_create_time_entry import create_time_entry_blueprint
     app.register_blueprint(create_time_entry_blueprint)
 
     from FV100_edit_time_entry import edit_time_entry_blueprint
