@@ -1,5 +1,5 @@
 from password_reset import generate_random_password, send_email
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, flash
 from db_query import validate_email, create_account, set_password_required_true
 from passlib.hash import sha1_crypt
 from datetime import datetime
@@ -50,8 +50,8 @@ def create_account():
 
         for field in required_fields:
             if not request.form.get(field):
-                error_message = 'Es müssen alle Felder ausgefüllt werden.'
-                return render_template('create_account.html', error_message=error_message)
+                flash('Es müssen alle Felder ausgefüllt werden.')
+                return render_template('create_account.html')
 
         # Überprüfung ob alle zusätzlich notwendigen Felder für Mitarbeiter ausgefüllt wurden
         if selected_role == 'Mitarbeiter':
@@ -59,21 +59,21 @@ def create_account():
             for field in additional_fields:
                 value = request.form.get(field)
                 if not value:
-                    error_message = 'Bei der Rolle Mitarbeiter müssen alle benötigten Felder ausgefüllt werden.'
-                    return render_template('create_account.html', error_message=error_message)
+                    flash('Bei der Rolle Mitarbeiter müssen alle benötigten Felder ausgefüllt werden.')
+                    return render_template('create_account.html')
 
                     # Überprüfen des Datentyps
                 if field == 'birthday' and not is_valid_date(value):
-                    error_message = f'Eingabe in Feld {field} ungültig. Bitte geben Sie ein gültiges Datum ein.'
-                    return render_template('create_account.html', error_message=error_message)
+                    flash(f'Eingabe in Feld {field} ungültig. Bitte geben Sie ein gültiges Datum ein.')
+                    return render_template('create_account.html')
                 elif field == 'phone' and not is_valid_phone(value):
-                    error_message = f'Eingabe in Feld {field} ungültig. Bitte geben Sie eine gültige Telefonnummer ein.'
-                    return render_template('create_account.html', error_message=error_message)
+                    flash(f'Eingabe in Feld {field} ungültig. Bitte geben Sie eine gültige Telefonnummer ein.')
+                    return render_template('create_account.html')
 
         # Überprüfung ob schon ein Account existiert
         if validate_email(email):
-            error_message = 'Es existiert bereits ein Account mit dieser E-Mail-Adresse.'
-            return render_template('create_account.html', error_message=error_message)
+            flash('Es existiert bereits ein Account mit dieser E-Mail-Adresse.')
+            return render_template('create_account.html')
 
         else:
             password = generate_random_password(10)
@@ -85,4 +85,4 @@ def create_account():
             send_email_create_account(email, lastname, password)
             return render_template('account_overview.html', email=email,
                                    success_message="Account wurde erfolgreich angelegt")
-    return render_template('/create_account.html')
+    return render_template('/create_account.html', )

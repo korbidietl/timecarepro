@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, flash
 import random
 import string
 import smtplib
@@ -47,8 +47,8 @@ def passwordreset():
 
         # Es wurde keine E-mail übergeben
         if not email:
-            error = "Geben Sie für das Zurücksetzen des Passworts zuerst Ihre E-Mail-Adresse ein."
-            return render_template("password_reset.html", error=error)
+            flash("Geben Sie für das Zurücksetzen des Passworts zuerst Ihre E-Mail-Adresse ein.")
+            return render_template("password_reset.html")
 
         if user:
             lastname = get_lastname_by_email(email)
