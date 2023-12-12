@@ -15,9 +15,9 @@ def mitarbeiter():
     # Fehlerbehandlung, wenn keine Mitarbeiter gefunden werden
     if not mitarbeiterliste:
         error_message = "Keine Mitarbeiter gefunden."
-        return render_template('mitarbeiter.html', error_message=error_message)
+        return render_template('show_employee_table.html', error_message=error_message)
 
-    return render_template('mitarbeiter.html', mitarbeitern=mitarbeitern)
+    return render_template('show_employee_table.html', mitarbeitern=mitarbeitern)
 
 if __name__ == '__main__':
     app.run(debug=True)

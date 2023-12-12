@@ -14,6 +14,7 @@ def view_time_entries(person_id):
         zeiteintrag_ids = get_zeiteintrag_for_client(monat, jahr)
 
         time_entries = []
+
         for zeiteintrag_id in zeiteintrag_ids:
             zeiteintrag_with_fahrten = get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id)
             for entry in zeiteintrag_with_fahrten:

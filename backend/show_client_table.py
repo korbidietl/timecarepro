@@ -1,26 +1,32 @@
-from flask import Flask, render_template, request, session
-from db_query import client_dashboard
-# ... (weitere erforderliche Importe)
+from flask import Blueprint, render_template, request, session
+from db_query import get_client_ids, get_client_dashboard
 
-app = Flask(__name__)
+show_clients_blueprint = Blueprint("show_clients", __name__, template_folder='templates')
 
-@app.route('/klienten', methods=['GET', 'POST'])
+@show_clients_blueprint.route('/show_clients', methods=['GET', 'POST'])
 def show_clients():
-    # Wenn der Request eine POST-Anfrage ist, holen wir den gewählten Monat
+    person = session['user_id']
     if request.method == 'POST':
-        monat = request.form.get('zeitraum')
+        month = request.form['month']
+        year = request.form['year']
+
+        client_ids = get_client_ids(month, year, person)
+        clients = []
+
+        # Prüfen, ob Klienten-IDs vorhanden sind
+        if not client_ids:
+            return render_template('clients.html', person=person, clients=[],
+                                   no_clients_message="Keine Klienten vorhanden.")
+
+        for client_id in client_ids:
+            client_info = get_client_dashboard(client_id, month, year)
+            clients.append(client_info)
+
+        return render_template('clients.html', person=person, clients=clients)
     else:
-        # Standardmäßig wird der aktuelle Monat ausgewählt, falls keine Auswahl getroffen wurde
-        monat = None  # oder setze einen Standardmonat, z.B. datetime.now().month
-
-    clients = client_dashboard(monat)
-
-    if not clients:
-        return render_template('klienten.html', no_clients_message=True)
-
-    # Rendern der HTML-Seite mit den Klientendaten
-    user_role = session.get('user_role')  # Hole die Benutzerrolle aus der Session
-    return render_template('klienten.html', clients=clients, user_role=user_role)
+        return render_template('clients.html', person=person, clients=[])
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
