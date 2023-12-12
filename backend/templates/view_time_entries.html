@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/styles.css">
+    <title>Zeiteinträge ansehen</title>
+</head>
+<body>
+    {% include 'menu.html' %}
+
+    <div class="container">
+        <h2>Zeiteinträge für {{ person.vorname }} {{ person.nachname }}</h2>
+
+        <form action="/view_time_entries/{{ person.id }}" method="post">
+            <div class="form-group">
+                <label for="month">Monat:</label>
+                <select id="month" name="month">
+                    <!-- Optionen für Monate -->
+                </select>
+                <button type="submit">Anzeigen</button>
+            </div>
+        </form>
+
+        {% if error %}
+            <p>{{ error }}</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Startzeit</th>
+                        <th>Endzeit</th>
+                        <th>Beschreibung</th>
+                        <th>Kilometer</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in time_entries %}
+                        <tr>
+                            <td>{{ entry.start_zeit }}</td>
+                            <td>{{ entry.end_zeit }}</td>
+                            <td>{{ entry.beschreibung }}</td>
+                            <td>{{ entry.kilometer }}</td>
+                            <td>
+                                {% if not entry.buchung_vorhanden %}
+                                    <a href="/edit_time_entry/{{ entry.id }}">Bearbeiten</a>
+                                    <a href="/delete_time_entry/{{ entry.id }}">Löschen</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="/add_time_entry/{{ person.id }}">Zeiteintrag hinzufügen</a>
+        {% endif %}
+    </div>
+
+</body>
+</html>

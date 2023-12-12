@@ -15,7 +15,7 @@
         <button onclick="window.location.href='/add_client';">Klient anlegen</button>
 
         <!-- Steuerbüro Tabelle -->
-        {% if steuerbueros %}
+        {% if steuerbuero %}
         <h3>Steuerbüro</h3>
         <table>
             <tr>
@@ -34,9 +34,9 @@
                     <button onclick="window.location.href='/details/{{ steuerbuero.ID }}'">Details</button>
                     <button onclick="window.location.href='/edit/{{ steuerbuero.ID }}'">Bearbeiten</button>
                     {% if steuerbuero.Sperre %}
-                        <button onclick="window.location.href='/unlock/{{ steuerbuero.ID }}'">Entsperren</button>
+                        <button onclick="window.location.href='/unlock_account/{{ steuerbuero.ID }}'">Entsperren</button>
                     {% else %}
-                        <button onclick="window.location.href='/lock/{{ steuerbuero.ID }}'">Sperren</button>
+                        <button onclick="window.location.href='/lock_account/{{ steuerbuero.ID }}'">Sperren</button>
                     {% endif %}
                 </td>
             </tr>
