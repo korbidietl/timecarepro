@@ -188,22 +188,22 @@ def account_table(monat):
         "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
         "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s GROUP BY person.ID", (monat,))
     distance_table = cursor.fetchall()
+    # Zusammenfügen der Tabellen
+    report_table = []
+    for time_spalte, distance_spalte in zip(time_table, distance_table):
+        if time_spalte[0] == distance_spalte[0]:  # IDs müssen übereinstimmen
+            report_table.append(
+                (
+                    time_spalte[0],  # ID
+                    time_spalte[1],  # vorname
+                    time_spalte[2],  # nachname
+                    time_spalte[3],  # geleistete_stunden
+                    distance_spalte[4],  # gefahrene_kilometer
+                )
+            )
 
-    # Beispielcode zum Erstellen/Zusammenfügen einer Tabelle
-    # report_table = []
-    # for zeit_zeile, kilometer_zeile in zip(time_table, distance_table):
-    #     if zeit_zeile[0] == kilometer_zeile[0]: # IDs müssen übereinstimmen
-    #         report_table.append(
-    #             (
-    #                 zeit_zeile[0],
-    #                 zeit_zeile[1],
-    #                 zeit_zeile[2],
-    #                 zeit_zeile[3],
-    #                 kilometer_zeile[4],
-    #             )
-    #         )
+    return report_table
 
-    return time_table, distance_table
 
 def mitarbeiter_dropdown():
     connection = get_database_connection()
@@ -414,6 +414,71 @@ def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end
     cursor.close()
     connection.close()
     return ids
+
+
+def get_zeiteintrag_for_client(client_id, month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT
+            z.ID AS Zeiteintragnr,
+            DATE_FORMAT(z.start_zeit, '%d.%m.%Y') AS Datum,
+            z.beschreibung AS Beschreibung,
+            SUM(f.kilometer) AS Kilometer,
+            DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
+            DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
+            CONCAT(p.vorname, ' ', p.nachname) AS Mitarbeiter,
+            z.überschneidung AS Überschneidung,
+            z.unterschrift_Klient AS Unterschrift_Klient,
+            z.unterschrift_Mitarbeiter AS Unterschrift_Mitarbeiter
+        FROM
+            zeiteintrag z
+            LEFT JOIN fahrt f ON z.id = f.zeiteintrag_id
+            LEFT JOIN person p ON z.mitarbeiter_ID = p.id
+        WHERE
+            z.klient_ID = %s AND
+            MONTH(z.start_zeit) = %s AND
+            YEAR(z.start_zeit) = %s
+        GROUP BY
+            z.id
+    """, (client_id, month, year))
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return result
+
+
+def get_zeiteintrag_for_client_and_person(client_id, person_id, month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT
+            z.ID AS Zeiteintragnr,
+            DATE_FORMAT(z.start_zeit, '%d.%m.%Y') AS Datum,
+            z.beschreibung AS Beschreibung,
+            SUM(f.kilometer) AS Kilometer,
+            DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
+            DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
+            CONCAT(p.vorname, ' ', p.nachname) AS Mitarbeiter,
+            z.überschneidung AS Überschneidung,
+            z.unterschrift_Klient AS Unterschrift_Klient,
+            z.unterschrift_Mitarbeiter AS Unterschrift_Mitarbeiter
+        FROM
+            zeiteintrag z
+            LEFT JOIN fahrt f ON z.id = f.zeiteintrag_id
+            LEFT JOIN person p ON z.mitarbeiter_ID = p.id
+        WHERE
+            z.klient_ID = %s AND
+            p.ID = %s AND
+            MONTH(z.start_zeit) = %s AND
+            YEAR(z.start_zeit) = %s
+        GROUP BY
+            z.id
+    """, (client_id, person_id, month, year))
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return result
 
 
 def check_booked(zeiteintrag_id):

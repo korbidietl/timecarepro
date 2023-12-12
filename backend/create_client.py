@@ -36,5 +36,5 @@ def register_client():
                           kontingent_hk, kontingent_fk, fallverantwortung_id)
             return render_template('home.html',
                                    success_message="Client wurde erfolgreich angelegt")
-    return render_template('/create_client.html')
+    return render_template('create_client.html')
 
