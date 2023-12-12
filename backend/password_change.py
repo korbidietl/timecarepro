@@ -1,5 +1,6 @@
 from flask import render_template, request, Blueprint, session
 from db_query import validate_login, set_password
+from password_reset import send_email
 
 password_change_blueprint = Blueprint("password_change", __name__)
 
@@ -10,7 +11,16 @@ def validate_password(password):
     return len(password) >= 8
 
 
-@password_change_blueprint.route('/password_change', methods=['POST','GET'])
+def send_email_passwort_change(email, lastname):
+    subject = "Ihr neues Passwort"
+    body = (f"Sehr geehrte/r Frau/Mann {lastname}, \n\n"
+            f"Sie haben ihr Passwort erfolgreich geändert. \n\n"
+            f"Mit freundlichen Grüßen\n"
+            f"Ihr TimeCare Pro-Team")
+    send_email(email, subject, body)
+
+
+@password_change_blueprint.route('/password_change', methods=['POST', 'GET'])
 def change_password():
     if request.method == "POST":
 
@@ -37,7 +47,8 @@ def change_password():
         # Aktualisieren des Passworts
         else:
             set_password(session['user_email'], new_password)
+            send_email_passwort_change(session['user_email'], new_password)
 
-        return render_template("password_change.html", success="Das Passwort wurde erfolgreich geändert.")
+        return render_template("password_change.html", success_message="Das Passwort wurde erfolgreich geändert.")
 
     return render_template("/password_change.html")
