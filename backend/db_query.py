@@ -2,7 +2,10 @@ import hashlib
 from flask import session
 from database_connection import get_database_connection
 from passlib.hash import sha1_crypt
+
+
 # Stand: Pflichtenheft S. 37
+
 
 # /FS030/
 def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
@@ -174,6 +177,29 @@ def get_zeiteintrag_for_mitarbeiter(mitarbeiter_id, month, year):
     cursor.close()
     connection.close()
     return result
+
+
+# /FAN040/
+def get_client_info(client_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+       SELECT k.ID, k.nachname, k.vorname,
+           k.kontingent_FK, k.kontingent_HK,
+           k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)
+           ELSE 0 END) as fachkraftsaldo,
+           k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)
+           ELSE 0 END) as hilfskraftsaldo,
+           CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
+       FROM klient k
+       LEFT JOIN zeiteintrag z ON k.ID = z.klient_id
+       LEFT JOIN person p ON k.fallverantwortung_ID = p.ID
+       WHERE k.ID = %s
+       GROUP BY k.ID, p.nachname, p.vorname
+   """, (client_id,))
+    client_info = cursor.fetchone()
+    cursor.close()
+    return client_info
 
 
 # /FAN060/
@@ -647,4 +673,3 @@ def delete_fahrt(fahrt_id):
     connection.commit()
     cursor.close()
     connection.close()
-
