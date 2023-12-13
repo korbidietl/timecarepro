@@ -9,49 +9,69 @@
     {% include 'navbar.html' %}
 
     <div class="registration-form">
-        <h2>Mitarbeiter: Mitarbeiter Name</h2>
-        <form action="/account_details" method="post">
+        <h2>Mitarbeiter: {{firstname}} {{lastname}}</h2>
+        <form action="/account_details/<int:person_id>" method="get">
             <div class="form-row">
                 <div class="form-group2">
                     <label for="lastname">Nachname:</label>
-                    <div id='lastname'>{{nachname}}</div>
+                    <div id='lastname'>{{lastname}}</div>
                 </div>
                 <div class="form-group2">
                     <label for="firstname">Vorname:</label>
-                    <input type="text" id="firstname" name="firstname" required>
+                    <div id="firstname">{{firstname}}</div>
                 </div>
-                <div class="form-group2">
-                    <label for="address">Adresse:</label>
-                    <input type="text" id="address" name="address" required>
-                </div>
+                {% if role == 'Mitarbeiter' %}
+                    <div class="form-group2">
+                        <label for="address">Adresse:</label>
+                        <div id="address">{{address}}</div>
+                    </div>
+                {% endif %}
             </div>
             <div class="form-row">
                 <div class="form-group2">
                     <label for="role">Rolle:</label>
-                    <input type="text" id="role" name="role" disabled>
+                    <div id="role">{{role}}</div>
                 </div>
-                <div class="form-group2">
-                    <label for="qualification">Qualifikation:</label>
-                    <input type="text" id="qualification" name="qualification">
-                </div>
-                <div class="form-group2">
-                    <label for="phone">Telefonnummer:</label>
-                    <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}">
-                </div>
+                {% if role == 'Mitarbeiter' %}
+                    <div class="form-group2">
+                        <label for="qualification">Qualifikation:</label>
+                        <div id="qualification">{{qualification}}</div>
+                    </div>
+                    <div class="form-group2">
+                        <label for="phone">Telefonnummer:</label>
+                        <div id="phone">{{phone}}</div>
+                    </div>
+                {% endif %}
             </div>
             <div class="form-row">
                 <div class="form-group2">
                     <label for="email">E-Mail:</label>
-                    <input type="email" id="email" name="email" disabled>
+                    <div id="email">{{email}}</div>
                 </div>
-                <div class="form-group2">
-                    <label for="birthday">Geburtstag:</label>
-                    <input type="date" id="birthday" name="birthday">
-                </div>
+                {% if role == 'Mitarbeiter' %}
+                    <div class="form-group2">
+                        <label for="birthday">Geburtstag:</label>
+                        <div id="birthday">{{birthday}}</div>
+                    </div>
+                {% endif %}
             </div>
+            <!-- Buttons -->
             <div class="form-row">
-                <button type="submit">Speichern</button>
-                <button type="button" onclick="window.location.href='{{ return_url }}'">Abbrechen</button>
+                <form action="{{url_for('edit_account.edit_account_details', person_id=person_id)}}">
+                    <button type="submit">Bearbeiten</button>
+                </form>
+                {% if locked %}
+                    <!-- Zeigt den "Entsperren"-Button an, wenn der Account gesperrt ist -->
+                    <form action="{{ url_for('entsperren_route', person_id=person_id) }}" method="post">
+                        <button type="submit">Entsperren</button>
+                    </form>
+                {% else %}
+                    <!-- Zeigt den "Sperren"-Button an, wenn der Account nicht gesperrt ist -->
+                    <form action="{{ url_for('sperren_route', person_id=person_id) }}" method="post">
+                        <button type="submit">Sperren</button>
+                    </form>
+                {% endif %}
+                <button type="button" onclick="window.location.href='{{ return_url }}'">Schließen</button>
             </div>
         </form>
     </div>
