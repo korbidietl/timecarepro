@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from db_query import edit_account, get_person_data
-from create_account import is_valid_phone, is_valid_date
+from FV020_create_account import is_valid_phone, is_valid_date
 
 edit_account_blueprint = Blueprint('edit_account', __name__)
 

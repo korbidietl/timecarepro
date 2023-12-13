@@ -1,6 +1,6 @@
 from flask import render_template, request, Blueprint, session
 from db_query import validate_login, set_password
-from password_reset import send_email
+from FNAN020_password_reset import send_email
 
 password_change_blueprint = Blueprint("password_change", __name__)
 

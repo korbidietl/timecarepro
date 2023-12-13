@@ -1,15 +1,26 @@
 import hashlib
-
 from flask import session
-
 from database_connection import get_database_connection
 from passlib.hash import sha1_crypt
+# Stand: Pflichtenheft S. 37
+
+# /FS030/
+def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT id FROM zeiteintrag WHERE id != %s AND klient_id = %s "
+        "AND ((start_zeit >= %s AND start_zeit < %s) "
+        "OR (end_zeit > %s AND end_zeit <= %s) "
+        "OR (start_zeit <= %s AND end_zeit >= %s))",
+        (zeiteintrag_id, klient_id, start_time, end_time, start_time, end_time, start_time, end_time))
+    ids = [id[0] for id in cursor.fetchall()]
+    cursor.close()
+    connection.close()
+    return ids
 
 
-# Methode validate_login mit der E-Mail-Adresse und dem Passwort des Benutzers aufrufen.
-# Diese Methode gibt True zurück,
-# wenn die E-Mail-Adresse und das Passwort in der Datenbank vorhanden sind und korrekt sind.
-# Andernfalls gibt sie False zurück.
+# /FNAN010/
 def validate_login(email, password):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -20,6 +31,184 @@ def validate_login(email, password):
         if hashlib.sha1(password.encode()).hexdigest() == hashed_password:
             return True
     return False
+
+
+# /FNAN010/
+# /FNAN020/
+def check_account_locked(email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT sperre FROM person WHERE email = %s", (email,))
+    result = cursor.fetchone()
+    if result:
+        if result[0] == 1:
+            return True
+    return False
+
+
+# /FNAN020/
+def set_password_mail(email, new_passwort):
+    hashed_password = sha1_crypt.encrypt(new_passwort)
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET passwort = %s WHERE email = %s",
+                   (hashed_password, email,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+# /FNAN020/
+def validate_email(email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM person WHERE email = %s", (email,))
+    result = cursor.fetchone()
+    if result:
+        return True
+    return False
+
+
+# /FAN010/
+# /FAN020/
+# /FAN030/
+# /FAN040/
+def get_role_by_id(person_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT rolle FROM person WHERE ID = %s", (person_id,))
+    result = cursor.fetchone()  # erstes Ergebnis wird aufgerufen
+    cursor.close()
+    return result[0] if result else None
+
+
+# /FAN030/
+def account_table_mitarbeiter(monat, person_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT person.ID, person.nachname, person.vorname, "
+        "SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
+        "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
+        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s AND person.ID = %s GROUP BY person.ID", (monat, person_id))
+    time_table_mitarbeiter = cursor.fetchall()
+
+    cursor.execute(
+        "SELECT person.ID, person.nachname, person.vorname, "
+        "SUM(fahrt.kilometer) AS gefahrene_kilometer "
+        "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
+        "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
+        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s AND person.ID = %s GROUP BY person.ID", (monat, person_id))
+    distance_table_mitarbeiter = cursor.fetchall()
+    # Zusammenfügen der Tabellen
+    report_table = []
+    for time_spalte, distance_spalte in zip(time_table_mitarbeiter, distance_table_mitarbeiter):
+        if time_spalte[0] == distance_spalte[0]:  # IDs müssen übereinstimmen
+            report_table.append(
+                (
+                    time_spalte[0],  # ID
+                    time_spalte[1],  # vorname
+                    time_spalte[2],  # nachname
+                    time_spalte[3],  # geleistete_stunden
+                    distance_spalte[4],  # gefahrene_kilometer
+                )
+            )
+    return report_table
+
+
+# /FAN030/
+def account_table(monat):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT person.ID, person.nachname, person.vorname, "
+        "SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
+        "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
+        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s GROUP BY person.ID", (monat,))
+    time_table = cursor.fetchall()
+
+    cursor.execute(
+        "SELECT person.ID, person.nachname, person.vorname, "
+        "SUM(fahrt.kilometer) AS gefahrene_kilometer "
+        "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
+        "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
+        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s GROUP BY person.ID", (monat,))
+    distance_table = cursor.fetchall()
+    # Zusammenfügen der Tabellen
+    report_table = []
+    for time_spalte, distance_spalte in zip(time_table, distance_table):
+        if time_spalte[0] == distance_spalte[0]:  # IDs müssen übereinstimmen
+            report_table.append(
+                (
+                    time_spalte[0],  # ID
+                    time_spalte[1],  # vorname
+                    time_spalte[2],  # nachname
+                    time_spalte[3],  # geleistete_stunden
+                    distance_spalte[4],  # gefahrene_kilometer
+                )
+            )
+    return report_table
+
+
+# /FAN030/
+def get_zeiteintrag_for_mitarbeiter(mitarbeiter_id, month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT
+            z.ID AS Zeiteintragnr,
+            DATE_FORMAT(z.start_zeit, '%d.%m.%Y') AS Datum,
+            DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
+            DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende
+        FROM
+            zeiteintrag z
+            LEFT JOIN person p ON z.mitarbeiter_ID = p.id
+        WHERE
+            z.mitarbeiter_ID = %s AND
+            MONTH(z.start_zeit) = %s AND
+            YEAR(z.start_zeit) = %s
+        GROUP BY
+            z.id
+    """, (mitarbeiter_id, month, year))
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return result
+
+
+# /FAN060/
+def validate_reset(person_id, password):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT passwort FROM person WHERE ID = %s", (person_id,))
+    result = cursor.fetchone()  # erstes Ergebnis wird aufgerufen
+    if result:
+        hashed_password = result[0]
+        if hashlib.sha1(password.encode()).hexdigest() == hashed_password:
+            return True
+    return False
+
+
+# /FAN060/
+def set_password_id(person_id, new_passwort):
+    hashed_password = sha1_crypt.encrypt(new_passwort)
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET passwort = %s WHERE ID = %s",
+                   (hashed_password, person_id,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+# /FAN060/
+def set_password_required_true(email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET passwort_erzwingen = 1 WHERE email = %s", (email,))
+    connection.commit()
+    cursor.close()
+    connection.close()
 
 
 # Methode, die die Rolle basierend auf der E-Mail aus der Datenbank abruft.
@@ -57,28 +246,6 @@ def get_lastname_by_email(email):
         return None
 
 
-# Methode hashed das übergebene Passwort und speichert es in der Datenbank ab
-def set_password(email, new_passwort):
-    hashed_password = sha1_crypt.encrypt(new_passwort)
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("UPDATE person SET passwort = %s WHERE email = %s",
-                   (hashed_password, email,))
-    connection.commit()
-    cursor.close()
-    connection.close()
-
-
-# Methode setzt den Status "passwort_erzwingen" auf true
-def set_password_required_true(email):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("UPDATE person SET passwort_erzwingen = 1 WHERE email = %s", (email,))
-    connection.commit()
-    cursor.close()
-    connection.close()
-
-
 # Methode übergibt die ID der Person mit übergebener E-Mail
 def get_person_id_by_email(email):
     connection = get_database_connection()
@@ -89,18 +256,6 @@ def get_person_id_by_email(email):
         return result[0]
     else:
         return None
-
-
-# Überprüfung, ob eine Benutzer-ID für die gegebene E-Mail-Adresse existiert.
-# Wenn dies der Fall ist, gibt die Methode True zurück, sonst False.
-def validate_email(email):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT id FROM person WHERE email = %s", (email,))
-    result = cursor.fetchone()
-    if result:
-        return True
-    return False
 
 
 # Erzeugt einen neuen Eintrag (Account) in der Person-Tabelle
@@ -155,54 +310,6 @@ def edit_account_unlock(person_id):
     cursor.execute("UPDATE person SET sperre = %s WHERE ID = %s", (False, person_id))
     connection.commit()
     cursor.close()
-
-
-# Überprüfung, ob der Benutzer, der die gegebene E-Mail-Adresse hat, gesperrt ist.
-# Wenn der Wert des Feldes "sperre" 1 ist, gibt die Methode True zurück, was bedeutet,
-# dass das Benutzerkonto gesperrt ist. Andernfalls gibt die Methode False zurück.
-def check_account_locked(email):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT sperre FROM person WHERE email = %s", (email,))
-    result = cursor.fetchone()
-    if result:
-        if result[0] == 1:
-            return True
-    return False
-
-
-def account_table(monat):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute(
-        "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
-        "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
-        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s GROUP BY person.ID", (monat,))
-    time_table = cursor.fetchall()
-
-    cursor.execute(
-        "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(fahrt.kilometer) AS gefahrene_kilometer "
-        "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
-        "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
-        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s GROUP BY person.ID", (monat,))
-    distance_table = cursor.fetchall()
-    # Zusammenfügen der Tabellen
-    report_table = []
-    for time_spalte, distance_spalte in zip(time_table, distance_table):
-        if time_spalte[0] == distance_spalte[0]:  # IDs müssen übereinstimmen
-            report_table.append(
-                (
-                    time_spalte[0],  # ID
-                    time_spalte[1],  # vorname
-                    time_spalte[2],  # nachname
-                    time_spalte[3],  # geleistete_stunden
-                    distance_spalte[4],  # gefahrene_kilometer
-                )
-            )
-
-    return report_table
 
 
 def mitarbeiter_dropdown():
@@ -400,22 +507,6 @@ def delete_zeiteintrag(zeiteintrag_id):
     connection.close()
 
 
-# Überprüfung auf Überschneidung und Rückgabe der überschneidungen als ID in einer Liste "ids"
-def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute(
-        "SELECT id FROM zeiteintrag WHERE id != %s AND klient_id = %s "
-        "AND ((start_zeit >= %s AND start_zeit < %s) "
-        "OR (end_zeit > %s AND end_zeit <= %s) "
-        "OR (start_zeit <= %s AND end_zeit >= %s))",
-        (zeiteintrag_id, klient_id, start_time, end_time, start_time, end_time, start_time, end_time))
-    ids = [id[0] for id in cursor.fetchall()]
-    cursor.close()
-    connection.close()
-    return ids
-
-
 def get_zeiteintrag_for_client(client_id, month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -556,3 +647,4 @@ def delete_fahrt(fahrt_id):
     connection.commit()
     cursor.close()
     connection.close()
+

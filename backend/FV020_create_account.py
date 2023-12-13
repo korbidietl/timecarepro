@@ -1,4 +1,4 @@
-from password_reset import generate_random_password, send_email
+from FNAN020_password_reset import generate_random_password, send_email
 from flask import Blueprint, render_template, request, flash
 from db_query import validate_email, create_account, set_password_required_true
 from passlib.hash import sha1_crypt
