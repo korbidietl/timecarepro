@@ -3,10 +3,10 @@ from db_query import edit_account_lock, edit_account_unlock
 
 account_management_blueprint = Blueprint("account_management", __name__)
 
+
 @account_management_blueprint.route('/account_management', methods=['GET', 'POST'])
 def account_management():
-
-    #accounts = get_all_accounts()
+    # accounts = get_all_accounts()
 
     if request.method == 'POST':
         if 'lock_account' in request.form:
@@ -20,4 +20,4 @@ def account_management():
         # Nach dem Bearbeiten der Accounts die Seite neu laden
         return redirect(url_for('.account_management'))
 
-    return render_template('account_management.html')
+    return render_template('FV010_account_management.html')

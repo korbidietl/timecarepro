@@ -27,7 +27,7 @@ def edit_time_entry(zeiteintrag_id):
     # Wenn die Methode GET ist, lädt die Seite zum Bearbeiten
     # lädt die daten aus der datenbank und pflegt sie in das html file ein
     # zeiteintrag_data, fahrten_data = return_zeiteintrag(zeiteintrag_id)
-    # return render_template('edit_time_entry.html', zeiteintrag=zeiteintrag_data, fahrten=fahrten_data)
+    # return render_template('FMOF050_edit_time_entry.html', zeiteintrag=zeiteintrag_data, fahrten=fahrten_data)
 
 
 

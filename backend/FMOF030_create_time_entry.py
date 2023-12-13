@@ -29,7 +29,7 @@ def submit_arbeitsstunden():
 
     # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
     if start_datetime >= end_datetime:
-        return render_template("create_time_entry.html", error="Endzeitpunkt muss nach Startzeitpunkt sein.")
+        return render_template("FMOF030_create_time_entry.html", error="Endzeitpunkt muss nach Startzeitpunkt sein.")
 
     # Füge neuen Zeiteintrag hinzu und erhalte die ID
     else:

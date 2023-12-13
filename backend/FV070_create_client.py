@@ -24,17 +24,17 @@ def register_client():
         for field in required_fields:
             if not request.form.get(field):
                 error_message = 'Es müssen alle Felder ausgefüllt werden.'
-                return render_template('create_client.html', error_message=error_message)
+                return render_template('FV070_create_client.html', error_message=error_message)
 
         # validate client in db_query hinzufügen (validate_email(email))
         if validate_client(vorname, nachname, geburtsdatum):
             error_message = 'Es existiert bereits ein Client mit diesem Namen und dem Geburtsdatum.'
-            return render_template('create_client.html', error_message=error_message)
+            return render_template('FV070_create_client.html', error_message=error_message)
 
         else:
             create_klient(nachname, vorname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                           kontingent_hk, kontingent_fk, fallverantwortung_id)
-            return render_template('home.html',
+            return render_template('FAN010_home.html',
                                    success_message="Client wurde erfolgreich angelegt")
-    return render_template('create_client.html')
+    return render_template('FV070_create_client.html')
 

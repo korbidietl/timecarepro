@@ -70,16 +70,16 @@ def client_supervision_hours(client_id):
         # Datenbankaufruf für alle anzeigen
         #zeiteintraege_liste = get_zeiteintraege_for_client(client_id, monat, jahr)
         #booked = check_booked(zeiteintraege_liste.zeiteintrags_id)
-        #return render_template('show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste)
+        #return render_template('FMOF010_show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste)
 
     elif user_id != fallverantwortung_id:
         fallverantwortung = False
         # Zeiteinträge nur von eigener ID (ohne Fallverantwortung)
        # zeiteintraege_liste_of = get_zeiteintraege_for_client_of(client_id)
         #booked = check_booked(zeiteintraege_liste_of.zeiteintrags_id)
-        #return render_template('show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste_of)
+        #return render_template('FMOF010_show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste_of)
 
-    return render_template('/show_supervisionhours_client.html', client_id=client_id, client_name=client_name,
+    return render_template('/FMOF010_show_supervisionhours_client.html', client_id=client_id, client_name=client_name,
                            client_sachbearbeiter=client_sachbearbeiter_name, fallverantwortung=fallverantwortung,
                            user_id=user_id, user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
                            kombinationen=kombinationen)

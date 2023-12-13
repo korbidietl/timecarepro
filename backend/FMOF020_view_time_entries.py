@@ -3,6 +3,7 @@ from db_query import get_zeiteintrag_for_client, get_zeiteintrag_with_fahrten_by
 
 view_time_entries_blueprint = Blueprint("view_time_entries", __name__, template_folder='templates')
 
+
 @view_time_entries_blueprint.route('/view_time_entries/<int:person_id>', methods=['GET', 'POST'])
 def view_time_entries(person_id):
     person = session['user_id']
@@ -22,6 +23,6 @@ def view_time_entries(person_id):
                 entry['zeiteintrag']['buchung_vorhanden'] = check_booked(entry['zeiteintrag']['id'])
                 time_entries.append(entry['zeiteintrag'])
 
-        return render_template('view_time_entries.html', person=person, time_entries=time_entries)
+        return render_template('FMOF020_view_time_entries.html', person=person, time_entries=time_entries)
     else:
-        return render_template('view_time_entries.html', person=person, time_entries=[])
+        return render_template('FMOF020_view_time_entries.html', person=person, time_entries=[])
