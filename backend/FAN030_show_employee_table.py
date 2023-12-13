@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, session
+from flask import render_template, request, session, Blueprint
 from db_query import account_table, account_table_mitarbeiter, get_role_by_id
 
-app = Flask(__name__)
+show_employee_table_blueprint = Blueprint('home', __name__)
 
 
-@app.route('/mitarbeiter', methods=['GET', 'POST'])
+@show_employee_table_blueprint.route('/mitarbeitertabelle', methods=['GET', 'POST'])
 def mitarbeiter():
     user_role = get_role_by_id(session['user_id'])
     mitarbeiterliste = []
