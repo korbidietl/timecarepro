@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, session, flash
 from db_query import check_account_locked, validate_login, validate_email, get_role_by_email, get_person_id_by_email
 
 login_blueprint = Blueprint("login", __name__, template_folder='templates')
@@ -25,7 +25,6 @@ def login():
                 # Nutzer gefunden und wird in Session hinzugefügt
                 logged_in_users.add(email)
                 session['user_id'] = get_person_id_by_email(email)
-                session['user_role'] = get_role_by_email(email)
                 session['user_email'] = email
                 return render_template('FAN010_home.html')
             # Passwort stimmt nicht
