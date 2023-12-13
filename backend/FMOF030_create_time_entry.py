@@ -46,7 +46,7 @@ def submit_arbeitsstunden():
             return
 
     # Weiterleitung zurück zur Übersicht der abgelegten Stunden
-    return redirect(url_for('see_supervisionhours_client'))
+    return redirect(url_for('show_supervisionhours_client'))
 
 
 

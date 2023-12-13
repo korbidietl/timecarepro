@@ -83,6 +83,6 @@ def create_account():
                            hashed_password, 0,
                            change_password)
             send_email_create_account(email, lastname, password)
-            return render_template('account_overview.html', email=email,
+            return render_template('FV010_account_management.html', email=email,
                                    success_message="Account wurde erfolgreich angelegt")
-    return render_template('/FV020_create_account.html', )
+    return render_template('FV020_create_account.html', )

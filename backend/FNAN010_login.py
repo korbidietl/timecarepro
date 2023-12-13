@@ -41,7 +41,6 @@ def login():
                 flash("Anmeldung fehlgeschlagen. Wenden Sie sich an die Verwaltung")
                 return render_template('FNAN010_login.html')
 
-
         # Nutzer nicht gefunden
         else:
             flash("Die Zugangsdaten sind nicht korrekt.")

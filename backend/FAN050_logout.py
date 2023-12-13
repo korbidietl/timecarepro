@@ -16,6 +16,7 @@ def logout():
         # Session löschen
         session.pop('user_id', None)
         session.pop('user_role', None)
+        session.pop('user_email', None)
 
         return render_template('FNAN010_login.html')
 
