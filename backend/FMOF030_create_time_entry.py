@@ -1,7 +1,7 @@
 from flask import Blueprint, request, redirect, url_for, render_template
 from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag
 from datetime import datetime
-from sign_capture import capture_signature
+from FS020_sign_capture import capture_signature
 
 create_time_entry_blueprint = Blueprint('create_time_entry', __name__)
 
