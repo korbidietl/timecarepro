@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from db_query import get_zeiteintrag_for_client, get_zeiteintrag_with_fahrten_by_id, check_booked
 
-view_time_entries_blueprint = Blueprint("view_time_entries", __name__, template_folder='templates')
+view_time_entries_blueprint = Blueprint("view_time_entries", __name__)
 
 
 @view_time_entries_blueprint.route('/view_time_entries/<int:person_id>', methods=['GET', 'POST'])
