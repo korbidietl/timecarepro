@@ -1,5 +1,5 @@
 from flask import render_template, request, Blueprint, session
-from db_query import validate_login, set_password
+from db_query import validate_login, set_password_mail
 from FNAN020_password_reset import send_email
 
 password_change_blueprint = Blueprint("password_change", __name__)
@@ -46,7 +46,7 @@ def change_password():
 
         # Aktualisieren des Passworts
         else:
-            set_password(session['user_email'], new_password)
+            set_password_mail(session['user_email'], new_password)
             send_email_passwort_change(session['user_email'], new_password)
 
         return render_template("password_change.html", success_message="Das Passwort wurde erfolgreich geändert.")
