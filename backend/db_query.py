@@ -180,7 +180,7 @@ def get_zeiteintrag_for_mitarbeiter(mitarbeiter_id, month, year):
 
 
 # /FAN040/
-def get_client_info(client_id):
+def get_client_table(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
