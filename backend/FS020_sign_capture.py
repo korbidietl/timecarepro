@@ -11,11 +11,11 @@ def capture_signature():
         target_function = request.form.get('origin_function')
 
         if target_function == 'create_time_entry':
-            return render_template('create_time_entry.html', signature_data=signature_data)
+            return render_template('FMOF030_create_time_entry.html', signature_data=signature_data)
         elif target_function == 'edit_time_entry':
-            return render_template('edit_time_entry.html', signature_data=signature_data)
+            return render_template('FMOF050_edit_time_entry.html', signature_data=signature_data)
         elif target_function == 'login':  # FV100:
-            return render_template('login')  # FV100, signature_date=signature_data)
+            return render_template('login', signature_data=signature_data)  # FV100
 
     else:
-        return render_template('/sign_capture.html')
+        return render_template('/FS020_sign_capture.html')

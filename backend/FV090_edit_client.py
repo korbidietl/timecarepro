@@ -25,4 +25,4 @@ def edit_client():
         except Exception as e:
             return jsonify({'message': 'Error updating client: ' + str(e)}), 500
 
-    return render_template('edit_client.html')
+    return render_template('FV080_edit_client.html')

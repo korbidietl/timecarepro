@@ -1,7 +1,7 @@
 from flask import Blueprint, request, redirect, url_for, render_template
 from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag
 from datetime import datetime
-from sign_capture import capture_signature
+from FS020_sign_capture import capture_signature
 
 create_time_entry_blueprint = Blueprint('create_time_entry', __name__)
 
@@ -29,7 +29,7 @@ def submit_arbeitsstunden():
 
     # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
     if start_datetime >= end_datetime:
-        return render_template("create_time_entry.html", error="Endzeitpunkt muss nach Startzeitpunkt sein.")
+        return render_template("FMOF030_create_time_entry.html", error="Endzeitpunkt muss nach Startzeitpunkt sein.")
 
     # Füge neuen Zeiteintrag hinzu und erhalte die ID
     else:
@@ -46,7 +46,7 @@ def submit_arbeitsstunden():
             return
 
     # Weiterleitung zurück zur Übersicht der abgelegten Stunden
-    return redirect(url_for('see_supervisionhours_client'))
+    return redirect(url_for('show_supervisionhours_client'))
 
 
 

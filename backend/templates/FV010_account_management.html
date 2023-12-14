@@ -7,7 +7,7 @@
 </head>
 <body>
      <!-- Menüleiste einbinden -->
-    {% include 'navbar.html' %}
+    {% include 'FAN020_navbar.html' %}
 
     <div class="container">
         <h2>Accountverwaltung</h2>
@@ -15,7 +15,7 @@
         <button onclick="window.location.href='/add_client';">Klient anlegen</button>
 
         <!-- Steuerbüro Tabelle -->
-        {% if steuerbuero %}
+        {% if session['user_role'] == 'Steuerbuero' %}
         <h3>Steuerbüro</h3>
         <table>
             <tr>
@@ -47,7 +47,7 @@
         {% endif %}
 
         <!-- Sachbearbeiter/Kostenträger Tabelle -->
-        {% if sachbearbeiter %}
+        {% if session['user_role'] == 'Sachbearbeiter' %}
         <h3>Sachbearbeiter/Kostenträger</h3>
         <table>
             <tr>
@@ -74,15 +74,10 @@
             </tr>
             {% endfor %}
         </table>
-        {% else %}
-        <p>Keine Sachbearbeiter/Kostenträger gefunden.</p>
-        {% endif %}
-
-        {% include 'client_table.html' %}
     </div>
 
-    <iframe src="show_employee_table.html" width="100%" height="100%" style="border:none;"></iframe>
-    <iframe src="show_client_table.html" width="100%" height="100%" style="border:none;"></iframe>
+    <iframe src="FAN030_show_employee_table.html" width="100%" height="100%" style="border:none;"></iframe>
+    <iframe src="FAN040_show_client_table.html" width="100%" height="100%" style="border:none;"></iframe>
 
 
 </body>

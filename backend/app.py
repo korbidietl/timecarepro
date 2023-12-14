@@ -12,7 +12,7 @@ def create_app():
     app.before_request(check_session_timeout)
 
     # Systemweite Anforderungen
-    from sign_capture import signature_blueprint
+    from FS020_sign_capture import signature_blueprint
     app.register_blueprint(signature_blueprint)
 
     # Nicht-angemeldete Nutzer
@@ -35,16 +35,16 @@ def create_app():
     # Sachbearbeiter/Kostenträger
 
     # Mitarbeiter ohne Fallverantwortung
-    from show_supervisionhours_client import client_hours_blueprint
+    from FMOF010_show_supervisionhours_client import client_hours_blueprint
     app.register_blueprint(client_hours_blueprint)
 
     from FMOF030_create_time_entry import create_time_entry_blueprint
     app.register_blueprint(create_time_entry_blueprint)
 
-    from FV100_edit_time_entry import edit_time_entry_blueprint
+    from FMOF050_edit_time_entry import edit_time_entry_blueprint
     app.register_blueprint(edit_time_entry_blueprint)
 
-    from FV110_delete_time_entry import delete_time_entry_blueprint
+    from FMOF060_delete_time_entry import delete_time_entry_blueprint
     app.register_blueprint(delete_time_entry_blueprint)
 
     # Verwaltung

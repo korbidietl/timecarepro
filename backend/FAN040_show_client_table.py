@@ -3,6 +3,7 @@ from db_query import get_client_ids, get_client_dashboard
 
 show_clients_blueprint = Blueprint("show_clients", __name__, template_folder='templates')
 
+
 @show_clients_blueprint.route('/show_clients', methods=['GET', 'POST'])
 def show_clients():
     person = session['user_id']
@@ -25,8 +26,5 @@ def show_clients():
         return render_template('clients.html', person=person, clients=clients)
     else:
         return render_template('clients.html', person=person, clients=[])
-
-if __name__ == '__main__':
-    app.run(debug=True)
 
 

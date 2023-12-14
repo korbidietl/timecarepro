@@ -14,4 +14,4 @@ def account_details(person_id):
     role = 'Mitarbeiter'
     user_name = 'Hallo'
 
-    return render_template('account_details.html', person_id=person_id, locked=locked, role=role)
+    return render_template('FV030_account_details.html', person_id=person_id, locked=locked, role=role)

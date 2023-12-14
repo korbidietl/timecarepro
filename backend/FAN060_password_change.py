@@ -5,10 +5,9 @@ from FNAN020_password_reset import send_email
 password_change_blueprint = Blueprint("password_change", __name__)
 
 
-# ich habe jetzt mal eine minimale passwort länge von 8 festegelegt --> evtl noch ändern
 def validate_password(password):
     # Überprüft, ob das Passwort den Anforderungen entspricht (z.B. Länge)
-    return len(password) >= 8
+    return len(password) >= 10
 
 
 def send_email_passwort_change(email, lastname):
@@ -30,25 +29,26 @@ def change_password():
 
         # Prüfen, ob alle Felder ausgefüllt sind
         if not current_password or not new_password or not confirm_password:
-            return render_template("password_change.html", error="Bitte füllen Sie alle Felder aus.")
+            return render_template("FAN060_password_change.html", error="Bitte füllen Sie alle Felder aus.")
 
         # Prüfen, ob die neuen Passwörter übereinstimmen
         elif new_password != confirm_password:
-            return render_template("password_change.html", error="Die neuen Passwörter stimmen nicht überein.")
+            return render_template("FAN060_password_change.html", error="Die neuen Passwörter stimmen nicht überein.")
 
         # Prüfen, ob das neue Passwort den Anforderungen entspricht
         elif not validate_password(new_password):
-            return render_template("password_change.html", error="Das neue Passwort ist zu kurz.")
+            return render_template("FAN060_password_change.html", error="Das neue Passwort ist zu kurz.")
 
         # Überprüfen, ob das aktuelle Passwort korrekt ist
         elif not validate_login(session['user_email'], current_password):
-            return render_template("password_change.html", error="Das aktuelle Passwort ist nicht korrekt.")
+            return render_template("FAN060_password_change.html", error="Das aktuelle Passwort ist nicht korrekt.")
 
         # Aktualisieren des Passworts
         else:
             set_password_mail(session['user_email'], new_password)
             send_email_passwort_change(session['user_email'], new_password)
 
-        return render_template("password_change.html", success_message="Das Passwort wurde erfolgreich geändert.")
+        return render_template("FAN060_password_change.html",
+                               success_message="Das Passwort wurde erfolgreich geändert.")
 
-    return render_template("password_change.html")
+    return render_template("FAN060_password_change.html")

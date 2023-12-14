@@ -192,6 +192,9 @@ a{
     margin-bottom: 20px;
     padding-right: 30px;
 }
+.for-mitarbeiter {
+    display: none;
+}
 
 .form-group2 input {
     width: 100%;
@@ -227,7 +230,20 @@ a{
     color: #FFA500;
 
 }
+/* Formatierung für Account-anlegen */
 
+.mein-eindeutiges-formular select,
+.mein-eindeutiges-formular input[type="text"],
+.mein-eindeutiges-formular input[type="email"],
+.mein-eindeutiges-formular input[type="tel"],
+.mein-eindeutiges-formular input[type="date"] {
+    width: 100%; /* Stellt die Breite ein */
+    padding: 8px; /* Fügt Polsterung hinzu */
+    margin-bottom: 10px; /* Abstand nach unten */
+    border: 1px solid #ccc; /* Randfarbe */
+    border-radius: 4px; /* Abgerundete Ecken */
+    box-sizing: border-box; /* Box-Modell-Verhalten */
+}
 /* Pop-Up Fehlermeldungen auf der Webseite */
 .modal {
     display: none;
