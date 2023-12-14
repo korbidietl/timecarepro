@@ -568,14 +568,14 @@ def get_zeiteintrag_id(person_id):
 
 # Erstellt einen neuen Zeiteintrag
 def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time,
-                    klient_id, beschreibung, interne_notiz):
+                    klient_id, fachkraft, beschreibung, interne_notiz, absage):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("INSERT INTO zeiteintrag (unterschrift_Mitarbeiter, unterschrift_Klient, start_zeit, end_zeit, "
-                   "mitarbeiter_ID, klient_ID, beschreibung, interne_notiz, überschneidung, absage) "
-                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                   "mitarbeiter_ID, klient_ID, fachkraft, beschreibung, interne_notiz, überschneidung, absage) "
+                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                    unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time, session['user_id'],
-                   klient_id, beschreibung, interne_notiz, False, False)
+                   klient_id, fachkraft, beschreibung, interne_notiz, False, absage)
     zeiteintrag_id = cursor.lastrowid
     connection.commit()
     cursor.close()
