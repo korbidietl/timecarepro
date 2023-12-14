@@ -37,11 +37,11 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="beschreibung">Beschreibung:</label>
-                    <textarea id="beschreibung" name="beschreibung" readonly></textarea>
+                    <textarea id="beschreibung" name="beschreibung" ></textarea>
                 </div>
                 <div class="form-group">
                     <label for="interneNotiz">Interne Notiz:</label>
-                    <textarea id="interneNotiz" name="interneNotiz" readonly></textarea>
+                    <textarea id="interneNotiz" name="interneNotiz" ></textarea>
                 </div>
                 <div class="form-group">
                     <label for="absage">Absage:</label>
@@ -53,16 +53,16 @@
                 <!-- Ursprüngliche Fahrt-Eingabezeile -->
                 <div class="form-row fahrt-row">
                     <div class="form-group">
-                        <label for="anrechenbarkeit0">Anrechenbarkeit:</label>
-                        <input type="checkbox" id="anrechenbarkeit0" name="anrechenbarkeit0" required>
+                        <label for="abrechenbarkeit0">Abrechenbarkeit:</label>
+                        <input type="checkbox" id="abrechenbarkeit0" name="abrechenbarkeit0" required>
                     </div>
                     <div class="form-group">
-                        <label for="startZeit_fahrt0">Startzeitpunkt:</label>
-                        <input type="time" id="startZeit_fahrt0" name="startZeit_fahrt0" required>
+                        <label for="start_adresse0">Start Adresse:</label>
+                        <input type="text" id="start_adresse0" name="start_adresse0" required>
                     </div>
                     <div class="form-group">
-                        <label for="endZeit_fahrt0">Endzeitpunkt:</label>
-                        <input type="time" id="endZeit_fahrt0" name="endZeit_fahrt0" required>
+                        <label for="end_adresse0">End Adresse:</label>
+                        <input type="text" id="end_adresse0" name="end_adresse0" required>
                     </div>
                     <div class="form-group">
                         <label for="kilometer0">Kilometer:</label>
@@ -98,33 +98,35 @@
             const newFahrtRow = document.createElement('div');
             newFahrtRow.classList.add('form-row', 'fahrt-row');
             newFahrtRow.innerHTML = `
-                <div class="form-group">
-                    <label for="anrechenbarkeit${fahrtCounter}">Anrechenbarkeit:</label>
-                    <input type="checkbox" id="anrechenbarkeit${fahrtCounter}" name="anrechenbarkeit${fahrtCounter}" required>
-                </div>
-                <div class="form-group">
-                    <label for="startZeit_fahrt${fahrtCounter}">Startzeitpunkt:</label>
-                    <input type="time" id="startZeit_fahrt${fahrtCounter}" name="startZeit_fahrt${fahrtCounter}" required>
-                </div>
-                <div class="form-group">
-                    <label for="endZeit_fahrt${fahrtCounter}">Endzeitpunkt:</label>
-                    <input type="time" id="endZeit_fahrt${fahrtCounter}" name="endZeit_fahrt${fahrtCounter}" required>
-                </div>
-                <div class="form-group">
-                    <label for="kilometer${fahrtCounter}">Kilometer:</label>
-                    <input type="number" id="kilometer${fahrtCounter}" name="kilometer${fahrtCounter}">
-                </div>
-                <button type="button" onclick="addFahrt()">+</button>
-                <button type="button" onclick="removeFahrt(this)">-</button>
+                        <div class="form-group">
+                           <input type="checkbox" id="abrechenbarkeit${fahrtCounter}" name="abrechenbarkeit${fahrtCounter}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="start_adresse${fahrtCounter}" name="start_adresse${fahrtCounter}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="end_adresse${fahrtCounter}" name="end_adresse${fahrtCounter}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="kilometer${fahrtCounter}" name="kilometer${fahrtCounter}">
+                        </div>
+                        <button type="button" onclick="addFahrt()">+</button>
+                        <button type="button" onclick="removeFahrt(this)">-</button>
+                        </div>
             `;
             fahrtContainer.appendChild(newFahrtRow);
             fahrtCounter++;
         }
 
         function removeFahrt(buttonElement) {
-            const fahrtRow = buttonElement.closest('.fahrt-row');
-            fahrtRow.remove();
+            if (fahrtCounter <= 2) {
+                // mache nichts
+            } else {
+                const fahrtRow = buttonElement.closest('.fahrt-row');
+                fahrtRow.remove();
+            }
         }
+
     </script>
 </body>
 </html>
