@@ -41,6 +41,9 @@ def create_app():
     from FMOF030_create_time_entry import create_time_entry_blueprint
     app.register_blueprint(create_time_entry_blueprint)
 
+    from FMOF040_work_hours_details import work_hours_details_blueprint
+    app.register_blueprint(work_hours_details_blueprint)
+
     from FMOF050_edit_time_entry import edit_time_entry_blueprint
     app.register_blueprint(edit_time_entry_blueprint)
 

@@ -9,7 +9,7 @@
     {% include 'FAN020_navbar.html' %}
 
     <div class="registration-form">
-        <h2>Mitarbeiter: {{firstname}} {{lastname}}</h2>
+        <h2>{{role}}: {{firstname}} {{lastname}}</h2>
         <form action="/account_details/<int:person_id>" method="get">
             <div class="form-row">
                 <div class="form-group2">
