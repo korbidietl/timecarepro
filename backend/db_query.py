@@ -180,24 +180,47 @@ def get_zeiteintrag_for_mitarbeiter(mitarbeiter_id, month, year):
 
 
 # /FAN040/
-def get_client_table(client_id):
+def get_client_table_sb(person_id, month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
-       SELECT k.ID, k.nachname, k.vorname,
-           k.kontingent_FK, k.kontingent_HK,
-           k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)
-           ELSE 0 END) as fachkraftsaldo,
-           k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)
-           ELSE 0 END) as hilfskraftsaldo,
-           CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
-       FROM klient k
-       LEFT JOIN zeiteintrag z ON k.ID = z.klient_id
-       LEFT JOIN person p ON k.fallverantwortung_ID = p.ID
-       WHERE k.ID = %s
-       GROUP BY k.ID, p.nachname, p.vorname
-   """, (client_id,))
+        SELECT k.ID, k.nachname, k.vorname,
+            k.kontingent_FK, k.kontingent_HK,
+            k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)
+            ELSE 0 END) as fachkraftsaldo,
+            k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)
+            ELSE 0 END) as hilfskraftsaldo,
+            CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
+        FROM klient k
+        LEFT JOIN zeiteintrag z ON k.ID = z.klient_id
+        LEFT JOIN person p ON k.fallverantwortung_ID = p.ID
+        WHERE k.fallverantwortung_ID = %s AND MONTH(z.start_zeit) = %s AND YEAR(z.start_zeit) = %s
+        GROUP BY k.ID, p.nachname, p.vorname
+    """, (person_id, month, year))
     client_info = cursor.fetchone()
+    cursor.close()
+    return client_info
+
+
+# /FAN040/
+def get_client_table(month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT k.ID, k.nachname, k.vorname,
+            k.kontingent_FK, k.kontingent_HK,
+            k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)
+            ELSE 0 END) as fachkraftsaldo,
+            k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)
+            ELSE 0 END) as hilfskraftsaldo,
+            CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
+        FROM klient k
+        LEFT JOIN zeiteintrag z ON k.ID = z.klient_id
+        LEFT JOIN person p ON k.fallverantwortung_ID = p.ID
+        WHERE MONTH(z.start_zeit) = %s AND YEAR(z.start_zeit) = %s
+        GROUP BY k.ID, p.nachname, p.vorname
+    """, (month, year))
+    client_info = cursor.fetchall()
     cursor.close()
     return client_info
 
