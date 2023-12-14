@@ -8,11 +8,11 @@
 <body>
     {% include 'FAN020_navbar.html' %}
 
-    <div class="container">
+    <div class="table-form">
         <h2>Deine Zeiteinträge</h2>
 
         <form action="/view_time_entries/{{ person.id }}" method="post">
-            <div class="form-group">
+            <div class="form-group-table">
                 <label for="month">Monat:</label>
                 <select id="month" name="month">
                     <!-- Optionen für Monate -->
@@ -49,6 +49,10 @@
                             <td>
                                 {% if not entry.buchung_vorhanden %}
                                     <a href="/edit_time_entry/{{ entry.id }}">Bearbeiten</a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not entry.buchung_vorhanden %}
                                     <a href="/delete_time_entry/{{ entry.id }}">Löschen</a>
                                 {% endif %}
                             </td>

@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
-     <!-- Menüleiste einbinden -->
+
     {% include 'FAN020_navbar.html' %}
 
     <div class="center-container">
@@ -14,10 +14,14 @@
             <h2>Kliententabelle</h2>
 
             <div class="time-selection-container">
-                <form action="/klienten" method="post">
-                    <label for="zeitraum">Zeitraum:</label>
-                    <select name="zeitraum" id="zeitraum">
-                        <!-- Optionen für Zeitraum -->
+                <form action="/show_clients" method="post">
+                    <label for="month">Monat:</label>
+                    <select name="month" id="month">
+                        <!-- Optionen für Monat -->
+                    </select>
+                    <label for="year">Jahr:</label>
+                    <select name="year" id="year">
+                        <!-- Optionen für Jahr -->
                     </select>
                     <button type="submit">Anzeigen</button>
                 </form>
@@ -33,8 +37,6 @@
                         <th>Kontingent HK</th>
                         <th>Saldo FK</th>
                         <th>Saldo HK</th>
-                        <!-- Weitere Spalten für Buttons -->
-                        
                     </tr>
                 </thead>
                 <tbody>
