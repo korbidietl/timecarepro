@@ -293,7 +293,7 @@ def get_zeiteintrag_for_client_and_person(client_id, person_id, month, year):
 
 
 # /FMOF010/
-def get_zeiteintrag(month, year):
+def get_zeiteintrag_for_client(client_id, month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
@@ -313,11 +313,12 @@ def get_zeiteintrag(month, year):
                 LEFT JOIN fahrt f ON z.id = f.zeiteintrag_id
                 LEFT JOIN person p ON z.mitarbeiter_ID = p.id
             WHERE
+                z.klient_ID = %s AND            
                 MONTH(z.start_zeit) = %s AND
                 YEAR(z.start_zeit) = %s
             GROUP BY
                 z.id
-        """, (month, year))
+        """, (client_id, month, year))
     result = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -673,38 +674,6 @@ def delete_zeiteintrag(zeiteintrag_id):
     connection.commit()
     cursor.close()
     connection.close()
-
-
-def get_zeiteintrag_for_client(client_id, month, year):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("""
-        SELECT
-            z.ID AS Zeiteintragnr,
-            DATE_FORMAT(z.start_zeit, '%d.%m.%Y') AS Datum,
-            z.beschreibung AS Beschreibung,
-            SUM(f.kilometer) AS Kilometer,
-            DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
-            DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
-            CONCAT(p.vorname, ' ', p.nachname) AS Mitarbeiter,
-            z.überschneidung AS Überschneidung,
-            z.unterschrift_Klient AS Unterschrift_Klient,
-            z.unterschrift_Mitarbeiter AS Unterschrift_Mitarbeiter
-        FROM
-            zeiteintrag z
-            LEFT JOIN fahrt f ON z.id = f.zeiteintrag_id
-            LEFT JOIN person p ON z.mitarbeiter_ID = p.id
-        WHERE
-            z.klient_ID = %s AND
-            MONTH(z.start_zeit) = %s AND
-            YEAR(z.start_zeit) = %s
-        GROUP BY
-            z.id
-    """, (client_id, month, year))
-    result = cursor.fetchall()
-    cursor.close()
-    connection.close()
-    return result
 
 
 # fügt eine Fahrt hinzu
