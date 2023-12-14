@@ -5,6 +5,7 @@ from passlib.hash import sha1_crypt
 
 
 # /FS030/
+# /FMOF010/
 def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -255,6 +256,95 @@ def set_password_required_true(email):
     connection.commit()
     cursor.close()
     connection.close()
+
+
+# /FMOF010/
+def get_zeiteintrag_for_client_and_person(client_id, person_id, month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT
+            z.ID AS Zeiteintragnr,
+            DATE_FORMAT(z.start_zeit, '%d.%m.%Y') AS Datum,
+            z.beschreibung AS Beschreibung,
+            SUM(f.kilometer) AS Kilometer,
+            DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
+            DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
+            CONCAT(p.vorname, ' ', p.nachname) AS Mitarbeiter,
+            z.überschneidung AS Überschneidung,
+            z.unterschrift_Klient AS Unterschrift_Klient,
+            z.unterschrift_Mitarbeiter AS Unterschrift_Mitarbeiter
+        FROM
+            zeiteintrag z
+            LEFT JOIN fahrt f ON z.id = f.zeiteintrag_id
+            LEFT JOIN person p ON z.mitarbeiter_ID = p.id
+        WHERE
+            z.klient_ID = %s AND
+            p.ID = %s AND
+            MONTH(z.start_zeit) = %s AND
+            YEAR(z.start_zeit) = %s
+        GROUP BY
+            z.id
+    """, (client_id, person_id, month, year))
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return result
+
+
+# /FMOF010/
+# /FMOF020/
+def check_booked(zeiteintrag_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT 1
+    FROM zeiteintrag z
+    JOIN klient k ON z.klient_id = k.id
+    JOIN buchung b ON b.klient_id = k.id
+    WHERE z.id = %s
+    AND EXTRACT(MONTH FROM b.monat) = EXTRACT(MONTH FROM z.end_zeit)
+    LIMIT 1
+    """, (zeiteintrag_id,))
+    result = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    if result:
+        return True
+    return False
+
+
+# /FMOF020/
+def get_zeiteintrag_for_person(person_id, month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT
+            z.ID AS Zeiteintragnr,
+            DATE_FORMAT(z.start_zeit, '%d.%m.%Y') AS Datum,
+            z.beschreibung AS Tätigkeit,
+            SUM(f.kilometer) AS Kilometer,
+            DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
+            DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
+            CONCAT(k.vorname, ' ', k.nachname) AS Klient,
+            z.unterschrift_Klient AS Unterschrift_Klient,
+            z.unterschrift_Mitarbeiter AS Unterschrift_Mitarbeiter
+        FROM
+            zeiteintrag z
+            LEFT JOIN fahrt f ON z.ID = f.zeiteintrag_ID
+            LEFT JOIN klient k ON z.klient_ID = k.ID
+            LEFT JOIN person p ON z.mitarbeiter_ID = p.ID
+        WHERE
+            p.ID = %s AND
+            MONTH(z.start_zeit) = %s AND
+            YEAR(z.start_zeit) = %s
+        GROUP BY
+            z.id
+    """, (person_id, month, year))
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return result
 
 
 # Methode, die die Rolle basierend auf der E-Mail aus der Datenbank abruft.
@@ -583,59 +673,6 @@ def get_zeiteintrag_for_client(client_id, month, year):
     cursor.close()
     connection.close()
     return result
-
-
-def get_zeiteintrag_for_client_and_person(client_id, person_id, month, year):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("""
-        SELECT
-            z.ID AS Zeiteintragnr,
-            DATE_FORMAT(z.start_zeit, '%d.%m.%Y') AS Datum,
-            z.beschreibung AS Beschreibung,
-            SUM(f.kilometer) AS Kilometer,
-            DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
-            DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
-            CONCAT(p.vorname, ' ', p.nachname) AS Mitarbeiter,
-            z.überschneidung AS Überschneidung,
-            z.unterschrift_Klient AS Unterschrift_Klient,
-            z.unterschrift_Mitarbeiter AS Unterschrift_Mitarbeiter
-        FROM
-            zeiteintrag z
-            LEFT JOIN fahrt f ON z.id = f.zeiteintrag_id
-            LEFT JOIN person p ON z.mitarbeiter_ID = p.id
-        WHERE
-            z.klient_ID = %s AND
-            p.ID = %s AND
-            MONTH(z.start_zeit) = %s AND
-            YEAR(z.start_zeit) = %s
-        GROUP BY
-            z.id
-    """, (client_id, person_id, month, year))
-    result = cursor.fetchall()
-    cursor.close()
-    connection.close()
-    return result
-
-
-def check_booked(zeiteintrag_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("""
-    SELECT 1
-    FROM zeiteintrag z
-    JOIN klient k ON z.klient_id = k.id
-    JOIN buchung b ON b.klient_id = k.id
-    WHERE z.id = %s
-    AND EXTRACT(MONTH FROM b.monat) = EXTRACT(MONTH FROM z.end_zeit)
-    LIMIT 1
-    """, (zeiteintrag_id,))
-    result = cursor.fetchone()
-    cursor.close()
-    connection.close()
-    if result:
-        return True
-    return False
 
 
 # fügt eine Fahrt hinzu
