@@ -21,6 +21,7 @@ def submit_arbeitsstunden():
     # hier müssen noch unterschriften rein
     unterschrift_klient = capture_signature()
     unterschrift_mitarbeiter = capture_signature()
+    absage = request.form.get('absage')
 
     # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
     start_datetime = datetime.strptime(f"{datum} {start_zeit}", '%Y-%m-%d %H:%M')

@@ -4,7 +4,7 @@ import csv
 
 from flask import Blueprint, render_template, request, session, Response
 from datetime import datetime
-from db_query import get_client_name, get_sachbearbeiter_name, get_fallverantwortung_id, check_booked
+from db_query import get_client_name, get_sachbearbeiter_name, get_fallverantwortung_id, get_zeiteintrag_for_client_and_person, check_for_overlapping_zeiteintrag,check_booked
 
 client_hours_blueprint = Blueprint('client_hours_blueprint', __name__, template_folder='templates')
 
@@ -50,34 +50,36 @@ def client_supervision_hours(client_id):
         aktueller_monat = datetime.now().month
         gewaehlte_kombination = f"{monate[aktueller_monat - 1]} {aktuelles_jahr}"
 
-    monat, jahr = extrahiere_jahr_und_monat(gewaehlte_kombination)
+    month, year = extrahiere_jahr_und_monat(gewaehlte_kombination)
 
     # Abrufe aus der Datenbank
     client_name = get_client_name(client_id)
-    # client_name = f"{client_data[0]} {client_data[1]}"
     client_sachbearbeiter_name = get_sachbearbeiter_name(client_id)
-    #client_sachbearbeiter_name = f"{client_sachbearbeiter_data[0]} {client_sachbearbeiter_data[1]}"
     fallverantwortung_id = get_fallverantwortung_id(client_id)
-    fallverantwortung = False
+    fallverantwortung = client_id == fallverantwortung_id
 
     # Rolle und ID aus der Session
     user_id = session.get('user_id')
     user_role = session.get('user_role')
 
     # Überprüfen ob Fallverantwortung hat
-    if user_id == fallverantwortung_id:
-        fallverantwortung = True
+    if fallverantwortung:
+
         # Datenbankaufruf für alle anzeigen
         #zeiteintraege_liste = get_zeiteintraege_for_client(client_id, monat, jahr)
         #booked = check_booked(zeiteintraege_liste.zeiteintrags_id)
         #return render_template('FMOF010_show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste)
 
-    elif user_id != fallverantwortung_id:
-        fallverantwortung = False
-        # Zeiteinträge nur von eigener ID (ohne Fallverantwortung)
-       # zeiteintraege_liste_of = get_zeiteintraege_for_client_of(client_id)
-        #booked = check_booked(zeiteintraege_liste_of.zeiteintrags_id)
-        #return render_template('FMOF010_show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste_of)
+    else:
+        zeiteintraege_liste = get_zeiteintrag_for_client_and_person(client_id,user_id,month,year)
+        for zeiteintrag in zeiteintraege_liste:
+            zeiteintrag['ueberschneidung'] = check_for_overlapping_zeiteintrag()
+        for zeiteintrag in zeiteintraege_liste:
+            booked = check_booked(zeiteintrag.id)
+        return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id, client_id= client_id, zeiteintraege_liste=zeiteintraege_liste,booked=booked, client_name=client_name,
+                           client_sachbearbeiter=client_sachbearbeiter_name, fallverantwortung=fallverantwortung,
+                           user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
+                           kombinationen=kombinationen)
 
     return render_template('/FMOF010_show_supervisionhours_client.html', client_id=client_id, client_name=client_name,
                            client_sachbearbeiter=client_sachbearbeiter_name, fallverantwortung=fallverantwortung,

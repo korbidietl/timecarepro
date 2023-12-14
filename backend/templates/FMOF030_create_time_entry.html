@@ -37,11 +37,11 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="beschreibung">Beschreibung:</label>
-                    <textarea id="beschreibung" name="beschreibung" ></textarea>
+                    <input type="text" id="beschreibung" name="beschreibung" ></input>
                 </div>
                 <div class="form-group">
                     <label for="interneNotiz">Interne Notiz:</label>
-                    <textarea id="interneNotiz" name="interneNotiz" ></textarea>
+                    <input type="text" id="interneNotiz" name="interneNotiz" ></input>
                 </div>
                 <div class="form-group">
                     <label for="absage">Absage:</label>
@@ -73,14 +73,14 @@
                 </div>
             </div>
 
-            <div class="form-row">
+            <div class="form-actions">
                 <div class="form-group">
                     <label>Unterschrift Klient:</label>
-                    <!-- Hier könnte ein Canvas oder ein Feld für die Unterschrift implementiert werden -->
+                    <button type="button" onclick="window.location='/FS020_sign_capture.html';">Unterschrift Klient</button>
                 </div>
                 <div class="form-group">
                     <label>Unterschrift Mitarbeiter:</label>
-                    <!-- Hier könnte ein Canvas oder ein Feld für die Unterschrift implementiert werden -->
+                    <button type="button" onclick="window.location='/FS020_sign_capture.html';">Unterschrift Mitarbeiter</button>
                 </div>
             </div>
             <div class="form-actions">
@@ -119,13 +119,16 @@
         }
 
         function removeFahrt(buttonElement) {
-            if (fahrtCounter <= 2) {
-                // mache nichts
-            } else {
+            const fahrtContainer = document.getElementById('fahrtenContainer');
+            const fahrtRows = fahrtContainer.getElementsByClassName('fahrt-row');
+
+            if (fahrtRows.length > 1) {
                 const fahrtRow = buttonElement.closest('.fahrt-row');
                 fahrtRow.remove();
-            }
+                fahrtCounter--; // Reduziere den Zähler nur, wenn eine Zeile entfernt wurde
+                }
         }
+
 
     </script>
 </body>
