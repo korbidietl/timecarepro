@@ -298,9 +298,10 @@ a{
     background-color: #fff;
 
 }
+
 /*Leerzeile einfügen*/
 .leerzeile {
-    height: 50px; /* Oder jede andere Höhe, die Sie benötigen */
+    height: 30px;
 }
 /* Grundlegendes Styling */
 body {
