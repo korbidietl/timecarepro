@@ -399,6 +399,7 @@ def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, e
 
 
 # /FMOF030/
+# /FMOF050/
 def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -532,6 +533,16 @@ def edit_fahrt(fahrt_id, kilometer, abrechenbar, zeiteintrag_id, start_adresse=N
     connection.close()
 
 
+# /FMOF050/
+def delete_fahrt(fahrt_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM fahrt WHERE id = %s", fahrt_id)
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
 # /FMOF060/
 def delete_zeiteintrag(zeiteintrag_id):
     connection = get_database_connection()
@@ -543,6 +554,30 @@ def delete_zeiteintrag(zeiteintrag_id):
     connection.close()
 
 
+# /FV020/
+def create_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
+                   telefonnummer, passwort, sperre, passwort_erzwingen):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO person (vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email, "
+                   "telefonnummer, passwort, sperre, passwort_erzwingen) VALUES "
+                   "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                   (vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
+                    telefonnummer, passwort, sperre, passwort_erzwingen))
+    connection.commit()
+    cursor.close()
+
+
+# /FV020/
+def rolle_dropdown():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, rolle FROM person")
+    items = []
+    for (ID, rolle) in cursor.fetchall():
+        items.append({'id': ID, 'rolle': rolle})
+    connection.close()
+    return items
 
 
 
@@ -600,20 +635,6 @@ def get_person_id_by_email(email):
         return None
 
 
-# Erzeugt einen neuen Eintrag (Account) in der Person-Tabelle
-def create_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
-                   telefonnummer, passwort, sperre, passwort_erzwingen):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("INSERT INTO person (vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email, "
-                   "telefonnummer, passwort, sperre, passwort_erzwingen) VALUES "
-                   "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                   (vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
-                    telefonnummer, passwort, sperre, passwort_erzwingen))
-    connection.commit()
-    cursor.close()
-
-
 # Account mit übergebenen ID wird mit übergebenen Parameter bearbeitet
 def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
                  telefonnummer, passwort, sperre, passwort_erzwingen):
@@ -661,17 +682,6 @@ def mitarbeiter_dropdown():
     items = []
     for (ID, nachname) in cursor.fetchall():
         items.append({'id': ID, 'nachname': nachname})
-    connection.close()
-    return items
-
-
-def rolle_dropdown():
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT id, rolle FROM person")
-    items = []
-    for (ID, rolle) in cursor.fetchall():
-        items.append({'id': ID, 'rolle': rolle})
     connection.close()
     return items
 
@@ -783,12 +793,3 @@ def get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id):
         zeiteintrag_fahrten[zeiteintrag_id]['fahrten'].append(row[8:])
 
     return list(zeiteintrag_fahrten.values())  # Die Ergebnisse werden dann nach Zeiteintrag-IDs gruppiert.
-
-
-def delete_fahrt(fahrt_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("DELETE FROM fahrt WHERE id = %s", fahrt_id)
-    connection.commit()
-    cursor.close()
-    connection.close()
