@@ -410,6 +410,7 @@ def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id
 
 
 # /FMOF030/
+# /FMOF050/
 def is_booked_client(client_id, monat, jahr):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -429,6 +430,125 @@ def is_booked_client(client_id, monat, jahr):
     if result:
         return True
     return False
+
+
+# /FMOF030/
+# /FMOF050/
+def client_dropdown():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, nachname FROM klient")
+    items = []
+    for (ID, nachname) in cursor.fetchall():
+        items.append({'id': ID, 'nachname': nachname})
+    connection.close()
+    return items
+
+
+# /FMOF040/
+def get_zeiteintrag_by_id(zeiteintrag_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""SELECT * FROM zeiteintrag WHERE ID = %s""",
+                   (zeiteintrag_id,))
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return result
+
+
+# /FMOF040
+def get_fahrt_by_zeiteintrag(zeiteintrag_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""SELECT * FROM fahrt WHERE zeiteintrag_ID = %s""",
+                   (zeiteintrag_id,))
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return result
+
+
+# /FMOF050/
+def edit_zeiteintrag(zeiteintrag_id, start_time=None, end_time=None, unterschrift_mitarbeiter=None,
+                     unterschrift_klient=None, klient_id=None, fachkraft=None,
+                     beschreibung=None, interne_notiz=None, absage=None):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    if unterschrift_mitarbeiter is not None and unterschrift_klient is not None:
+        cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = %s, "
+                       "unterschrift_Klient = %s, klient_ID = %s, fachkraft = %s, "
+                       "beschreibung = %s, interne_notiz = %s, absage = %s "
+                       "WHERE ID = %s",
+                       (start_time, end_time, unterschrift_mitarbeiter, unterschrift_klient, klient_id, fachkraft,
+                        beschreibung, interne_notiz, absage, zeiteintrag_id))
+    else:
+        cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = NULL, "
+                       "unterschrift_Klient = NULL, klient_ID = %s, fachkraft = %s, "
+                       "beschreibung = %s, interne_notiz = %s, absage = %s "
+                       "WHERE ID = %s",
+                       (start_time, end_time, unterschrift_mitarbeiter, unterschrift_klient, klient_id, fachkraft,
+                        beschreibung, interne_notiz, absage, zeiteintrag_id))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+# /FMOF050/
+def edit_fahrt(fahrt_id, kilometer, abrechenbar, zeiteintrag_id, start_adresse=None, end_adresse=None):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    query = "UPDATE fahrt SET "
+    parameters = []
+
+    query += "kilometer = %s, "
+    parameters.append(kilometer)
+
+    if start_adresse is not None:
+        query += "start_adresse = %s, "
+        parameters.append(start_adresse)
+
+    if end_adresse is not None:
+        query += "end_adresse = %s, "
+        parameters.append(end_adresse)
+
+    query += "abrechenbar = %s, "
+    parameters.append(abrechenbar)
+
+    query += "zeiteintrag_ID = %s, "
+    parameters.append(zeiteintrag_id)
+
+    # remove last comma and space
+    query = query[:-2]
+
+    # add where clause
+    query += " WHERE id = %s"
+    parameters.append(fahrt_id)
+
+    cursor.execute(query, parameters)
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+# /FMOF060/
+def delete_zeiteintrag(zeiteintrag_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM fahrt WHERE zeiteintrag_ID = %s", (zeiteintrag_id,))
+    cursor.execute("DELETE FROM zeiteintrag WHERE id = %s", (zeiteintrag_id,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+
+
+
+
+
+
 
 
 
@@ -631,18 +751,6 @@ def validate_client(vorname, nachname, geburtsdatum):
     return False
 
 
-# returned json Vorschläge für eingabefeld
-def client_dropdown():
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT id, nachname FROM klient")
-    items = []
-    for (ID, nachname) in cursor.fetchall():
-        items.append({'id': ID, 'nachname': nachname})
-    connection.close()
-    return items
-
-
 # Gibt alle IDs der Zeiteinträge der übergebenen Person ID aus
 def get_zeiteintrag_id(person_id):
     connection = get_database_connection()
@@ -650,30 +758,6 @@ def get_zeiteintrag_id(person_id):
     cursor.execute("SELECT id FROM zeiteintrag WHERE mitarbeiter_ID = %s", (person_id,))
     result = cursor.fetchall()
     return result
-
-
-# Stunden werden im Zeiteintrag geändert mit Eingabe der Start- und Endzeit. Wenn keine Unterschriften übergeben
-# werden, werden die Unterschriften gelöscht
-def edit_zeiteintrag(zeiteintrag_id, start_time=None, end_time=None, unterschrift_mitarbeiter=None,
-                     unterschrift_klient=None, klient_id=None,
-                     beschreibung=None, interne_notiz=None, absage=None):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    if unterschrift_mitarbeiter is not None and unterschrift_klient is not None:
-        cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = %s, "
-                       "unterschrift_Klient = %s, klient_ID = %s, beschreibung = %s, interne_notiz = %s, absage = %s "
-                       "WHERE ID = %s",
-                       (start_time, end_time, unterschrift_mitarbeiter, unterschrift_klient, klient_id, beschreibung,
-                        interne_notiz, absage, zeiteintrag_id))
-    else:
-        cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = NULL, "
-                       "unterschrift_Klient = NULL, klient_ID = %s, beschreibung = %s, interne_notiz = %s, absage = %s "
-                       "WHERE ID = %s",
-                       (start_time, end_time, unterschrift_mitarbeiter, unterschrift_klient, klient_id, beschreibung,
-                        interne_notiz, absage, zeiteintrag_id))
-    connection.commit()
-    cursor.close()
-    connection.close()
 
 
 # Ein Zeiteintrag wird zurückgegeben. Funktion gibt Dictionary zurück,
@@ -699,54 +783,6 @@ def get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id):
         zeiteintrag_fahrten[zeiteintrag_id]['fahrten'].append(row[8:])
 
     return list(zeiteintrag_fahrten.values())  # Die Ergebnisse werden dann nach Zeiteintrag-IDs gruppiert.
-
-
-# Zeiteintrag wird gelöscht
-def delete_zeiteintrag(zeiteintrag_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("DELETE FROM fahrt WHERE zeiteintrag_ID = %s", (zeiteintrag_id,))
-    cursor.execute("DELETE FROM zeiteintrag WHERE id = %s", (zeiteintrag_id,))
-    connection.commit()
-    cursor.close()
-    connection.close()
-
-
-def edit_fahrt(id, kilometer, abrechenbar, zeiteintrag_id, start_adresse=None, end_adresse=None):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-
-    query = "UPDATE fahrt SET "
-    parameters = []
-
-    query += "kilometer = %s, "
-    parameters.append(kilometer)
-
-    if start_adresse is not None:
-        query += "start_adresse = %s, "
-        parameters.append(start_adresse)
-
-    if end_adresse is not None:
-        query += "end_adresse = %s, "
-        parameters.append(end_adresse)
-
-    query += "abrechenbar = %s, "
-    parameters.append(abrechenbar)
-
-    query += "zeiteintrag_ID = %s, "
-    parameters.append(zeiteintrag_id)
-
-    # remove last comma and space
-    query = query[:-2]
-
-    # add where clause
-    query += " WHERE id = %s"
-    parameters.append(id)
-
-    cursor.execute(query, parameters)
-    connection.commit()
-    cursor.close()
-    connection.close()
 
 
 def delete_fahrt(fahrt_id):
