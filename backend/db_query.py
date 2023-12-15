@@ -6,6 +6,7 @@ from passlib.hash import sha1_crypt
 
 # /FS030/
 # /FMOF010/
+# /FMOF030/
 def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -380,6 +381,58 @@ def get_zeiteintrag_for_person(person_id, month, year):
     return result
 
 
+# /FMOF030/
+def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time,
+                    klient_id, fachkraft, beschreibung, interne_notiz, absage):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO zeiteintrag (unterschrift_Mitarbeiter, unterschrift_Klient, start_zeit, end_zeit, "
+                   "mitarbeiter_ID, klient_ID, fachkraft, beschreibung, interne_notiz, überschneidung, absage) "
+                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                   unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time, session['user_id'],
+                   klient_id, fachkraft, beschreibung, interne_notiz, False, absage)
+    zeiteintrag_id = cursor.lastrowid
+    connection.commit()
+    cursor.close()
+    connection.close()
+    return zeiteintrag_id
+
+
+# /FMOF030/
+def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO fahrt (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_ID) "
+                   "VALUES (%s, %s, %s, %s, %s)", kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id)
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+# /FMOF030/
+def is_booked_client(client_id, monat, jahr):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT 1
+    FROM zeiteintrag z
+    JOIN klient k ON z.klient_id = k.id
+    JOIN buchung b ON b.klient_id = k.id
+    WHERE k.id = %s
+    AND EXTRACT(MONTH FROM b.monat) = %s
+    AND EXTRACT(YEAR FROM b.monat) = %s
+    LIMIT 1
+    """, (client_id, monat, jahr))
+    result = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    if result:
+        return True
+    return False
+
+
+
+
 # Methode, die die Rolle basierend auf der E-Mail aus der Datenbank abruft.
 # Wenn ein Ergebnis gefunden wird, wird es als Rolle (str) zurückgegeben. Andernfalls wird None zurückgegeben.
 def get_role_by_email(email):
@@ -599,23 +652,6 @@ def get_zeiteintrag_id(person_id):
     return result
 
 
-# Erstellt einen neuen Zeiteintrag
-def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time,
-                    klient_id, fachkraft, beschreibung, interne_notiz, absage):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("INSERT INTO zeiteintrag (unterschrift_Mitarbeiter, unterschrift_Klient, start_zeit, end_zeit, "
-                   "mitarbeiter_ID, klient_ID, fachkraft, beschreibung, interne_notiz, überschneidung, absage) "
-                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                   unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time, session['user_id'],
-                   klient_id, fachkraft, beschreibung, interne_notiz, False, absage)
-    zeiteintrag_id = cursor.lastrowid
-    connection.commit()
-    cursor.close()
-    connection.close()
-    return zeiteintrag_id
-
-
 # Stunden werden im Zeiteintrag geändert mit Eingabe der Start- und Endzeit. Wenn keine Unterschriften übergeben
 # werden, werden die Unterschriften gelöscht
 def edit_zeiteintrag(zeiteintrag_id, start_time=None, end_time=None, unterschrift_mitarbeiter=None,
@@ -671,17 +707,6 @@ def delete_zeiteintrag(zeiteintrag_id):
     cursor = connection.cursor()
     cursor.execute("DELETE FROM fahrt WHERE zeiteintrag_ID = %s", (zeiteintrag_id,))
     cursor.execute("DELETE FROM zeiteintrag WHERE id = %s", (zeiteintrag_id,))
-    connection.commit()
-    cursor.close()
-    connection.close()
-
-
-# fügt eine Fahrt hinzu
-def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("INSERT INTO fahrt (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_ID) "
-                   "VALUES (%s, %s, %s, %s, %s)", kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id)
     connection.commit()
     cursor.close()
     connection.close()
