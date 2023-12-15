@@ -3,16 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arbeitsstunden Eintrag</title>
+    <title>Arbeitsstunden Bearbeiten</title>
     <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
-     <!-- Menüleiste einbinden -->
-    {% include 'FAN020_navbar.html' %}
-
     <div class="registration-form">
         <h2>Zeiteintrag bearbeiten</h2>
-        <form action="/edit_time_entry" method="post">
+        <form action="/submit_time_entry" method="post">
             <div class="form-row">
                 <div class="form-group">
                     <label for="datum">Datum:</label>
@@ -26,66 +23,64 @@
                     <label for="endZeit">Endzeitpunkt:</label>
                     <input type="time" id="endZeit" name="endZeit" required>
                 </div>
-            </div>
-            <div class="form-row">
                 <div class="form-group">
-                    <label for="kilometer">Kilometer:</label>
-                    <input type="number" id="kilometer" name="kilometer">
+                    <label for="fachkraft">Fachkraft:</label>
+                    <input type="checkbox" id="fachkraft" name="fachkraft">
                 </div>
-                <!-- dynamisches such-dropdown -->
                 <div class="form-group">
-                    <label for="klient-input">Klient:</label>
-                    <input type="text" id="klient-input" name="klient" list="klient-list">
-                    <datalist id="klient-list">
-                        <!-- Die Optionen werden dynamisch über Python/Flask geladen -->
-                        {% for klient in klienten %}
-                        <option value="{{ klient.vorname }} {{ klient.nachname }}">{{ klient.vorname }} {{ klient.nachname }}</option>
-                        {% endfor %}
-                    </datalist>
+                    <label for="klient">Klient:</label>
+                    <select id="klient" name="klient">
+                        <!-- Klienten DROPDOWN -->
+                    </select>
                 </div>
-
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label for="beschreibung">Beschreibung:</label>
-                    <textarea id="beschreibung" name="beschreibung" ></textarea>
+                    <input type="text" id="beschreibung" name="beschreibung" ></input>
                 </div>
                 <div class="form-group">
                     <label for="interneNotiz">Interne Notiz:</label>
-                    <textarea id="interneNotiz" name="interneNotiz" ></textarea>
+                    <input type="text" id="interneNotiz" name="interneNotiz" ></input>
+                </div>
+                <div class="form-group">
+                    <label for="absage">Absage:</label>
+                    <input type="checkbox" id="absage" name="absage">
+                </div>
+            </div>
+            <h3>Fahrten:</h3>
+            <div id="fahrtenContainer">
+                <!-- Ursprüngliche Fahrt-Eingabezeile -->
+                <div class="form-row fahrt-row">
+                    <div class="form-group">
+                        <label for="abrechenbarkeit0">Abrechenbarkeit:</label>
+                        <input type="checkbox" id="abrechenbarkeit0" name="abrechenbarkeit0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="start_adresse0">Start Adresse:</label>
+                        <input type="text" id="start_adresse0" name="start_adresse0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end_adresse0">End Adresse:</label>
+                        <input type="text" id="end_adresse0" name="end_adresse0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="kilometer0">Kilometer:</label>
+                        <input type="number" id="kilometer0" name="kilometer0">
+                    </div>
+                    <button type="button" onclick="addFahrt()">+</button>
+                    <button type="button" onclick="removeFahrt(this)">-</button>
                 </div>
             </div>
 
-            {% if fahrten %}
-            <h3>Fahrten</h3>
-            <table>
-                <tr>
-                    <th>Start-Adresse</th>
-                    <th>End-Adresse</th>
-                    <th>Gefahrene Kilometer</th>
-                </tr>
-                {% for fahrt in fahrten %}
-                <tr>
-                    <td>{{ fahrt.Start_Adresse }}</td>
-                    <td>{{ fahrt.End_Adresse }}</td>
-                    <td>{{ fahrt.Kilometer }}</td>
-                </tr>
-                {% endfor %}
-            </table>
             <div class="form-actions">
-                <button onclick="window.location='/add_fahrt';">+ Fahrt</button>
-                <button onclick="window.location='/remove_fahrt';">- Fahrt</button>
-            </div>
-            {% endif %}
-
-            <div class="form-row">
                 <div class="form-group">
                     <label>Unterschrift Klient:</label>
-                    <!-- UNTERSCHRIFT FUNKTION -->
+                    <button type="button" onclick="window.location='/FS020_sign_capture.html';">Unterschrift Klient</button>
                 </div>
                 <div class="form-group">
                     <label>Unterschrift Mitarbeiter:</label>
-                    <!-- UNTERSCHRIFT FUNKTION -->
+                    <button type="button" onclick="window.location='/FS020_sign_capture.html';">Unterschrift Mitarbeiter</button>
                 </div>
             </div>
             <div class="form-actions">
@@ -94,5 +89,49 @@
             </div>
         </form>
     </div>
+
+    <script>
+        let fahrtCounter = 1;
+
+        function addFahrt() {
+            const fahrtContainer = document.getElementById('fahrtenContainer');
+            const newFahrtRow = document.createElement('div');
+            newFahrtRow.classList.add('form-row', 'fahrt-row');
+            newFahrtRow.innerHTML = `
+                        <div class="form-group">
+                           <input type="checkbox" id="abrechenbarkeit${fahrtCounter}" name="abrechenbarkeit${fahrtCounter}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="start_adresse${fahrtCounter}" name="start_adresse${fahrtCounter}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="end_adresse${fahrtCounter}" name="end_adresse${fahrtCounter}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="kilometer${fahrtCounter}" name="kilometer${fahrtCounter}">
+                        </div>
+                        <button type="button" onclick="addFahrt()">+</button>
+                        <button type="button" onclick="removeFahrt(this)">-</button>
+                        </div>
+            `;
+            fahrtContainer.appendChild(newFahrtRow);
+            fahrtCounter++;
+        }
+
+        function removeFahrt(buttonElement) {
+            const fahrtContainer = document.getElementById('fahrtenContainer');
+            const fahrtRows = fahrtContainer.getElementsByClassName('fahrt-row');
+
+            if (fahrtRows.length > 1) {
+                const fahrtRow = buttonElement.closest('.fahrt-row');
+                fahrtRow.remove();
+                fahrtCounter--; // Reduziere den Zähler nur, wenn eine Zeile entfernt wurde
+                }
+        }
+
+
+    </script>
 </body>
 </html>
+
+
