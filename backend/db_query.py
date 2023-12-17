@@ -729,6 +729,75 @@ def get_email_by_zeiteintrag(zeiteintrag_id):
         return None
 
 
+# /FV120/
+def check_signatures(client_id, month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+       SELECT * FROM zeiteintrag 
+       WHERE Klient_ID = %s AND MONTH(end_zeit) = %s AND YEAR(end_zeit) = %s
+   """, (client_id, month, year))
+    results = cursor.fetchall()
+    if not results:
+        return False
+    for result in results:
+        if not result["unterschrift_Klient"].is_null() or not result["unterschrift_Mitarbeiter"].is_null():
+            return False
+    return True
+
+
+# /FV120/
+def book_zeiteintrag(client_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT * FROM buchung 
+        WHERE Klient_ID = %s ORDER BY monat DESC LIMIT 1
+    """, (client_id,))
+    last_entry = cursor.fetchone()
+    if not last_entry:
+        return False
+    start_month = last_entry["end_zeit"].month
+    start_year = last_entry["end_zeit"].year
+    end_month = start_month + 1
+    if end_month == 13:
+        end_month = 1
+        end_year = start_year + 1
+    else:
+        end_year = start_year
+    cursor.execute("""
+        SELECT * FROM zeiteintrag 
+        WHERE Klient_ID = %s AND MONTH(end_zeit) = %s AND YEAR(end_zeit) = %s
+    """, (client_id, end_month, end_year))
+    results = cursor.fetchall()
+    if not results:
+        return False
+    cursor.execute("""
+        SELECT * FROM klient 
+        WHERE ID = %s
+    """, (client_id,))
+    client = cursor.fetchone()
+    if not client:
+        return False
+    fk_hours = 0
+    hk_hours = 0
+    for result in results:
+        if result["fachkraft"]:
+            fk_hours += result["end_zeit"].hour - result["start_zeit"].hour
+        else:
+            hk_hours += result["end_zeit"].hour - result["start_zeit"].hour
+    saldo_fk = client["kontingent_fk"] - fk_hours
+    saldo_hk = client["kontingent_hk"] - hk_hours
+    cursor.execute("""
+        INSERT INTO buchung (Klient_ID, monat, saldo_FK, saldo_HK)
+        VALUES (%s, %s, %s, %s)
+    """, (client_id, last_entry["end_zeit"], saldo_fk, saldo_hk))
+    connection.commit()
+    return True
+
+
+
+
 
 
 
