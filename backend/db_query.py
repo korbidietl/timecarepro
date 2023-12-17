@@ -471,6 +471,7 @@ def get_fahrt_by_zeiteintrag(zeiteintrag_id):
 
 
 # /FMOF050/
+# /FV100/
 def edit_zeiteintrag(zeiteintrag_id, start_time=None, end_time=None, unterschrift_mitarbeiter=None,
                      unterschrift_klient=None, klient_id=None, fachkraft=None,
                      beschreibung=None, interne_notiz=None, absage=None):
@@ -544,6 +545,7 @@ def delete_fahrt(fahrt_id):
 
 
 # /FMOF060/
+# /FV110/
 def delete_zeiteintrag(zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -552,6 +554,36 @@ def delete_zeiteintrag(zeiteintrag_id):
     connection.commit()
     cursor.close()
     connection.close()
+
+
+# /FV010/
+def get_steuerbuero_table():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT ID, nachname, vorname, email FROM person WHERE rolle = 'Steuerbüro'")
+    result = cursor.fetchall()
+    return result
+
+
+# /FV010/
+def get_sachbearbeiter_table():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT ID, nachname, vorname, email FROM person WHERE rolle = 'Kostenträger'")
+    result = cursor.fetchall()
+    return result
+
+
+# /FV020/
+def rolle_dropdown():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, rolle FROM person")
+    items = []
+    for (ID, rolle) in cursor.fetchall():
+        items.append({'id': ID, 'rolle': rolle})
+    connection.close()
+    return items
 
 
 # /FV020/
@@ -568,16 +600,133 @@ def create_account(vorname, nachname, geburtsdatum, qualifikation, adresse, roll
     cursor.close()
 
 
-# /FV020/
-def rolle_dropdown():
+# /FV030/
+def get_person_data(account_id):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT id, rolle FROM person")
-    items = []
-    for (ID, rolle) in cursor.fetchall():
-        items.append({'id': ID, 'rolle': rolle})
-    connection.close()
-    return items
+    cursor.execute("SELECT * FROM person WHERE ID = %s", (account_id,))
+    result = cursor.fetchall()
+    return result
+
+
+# /FV040/
+def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
+                 telefonnummer, passwort, sperre, passwort_erzwingen, account_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET vorname = %s, nachname = %s, geburtsdatum = %s, qualifikation = %s, "
+                   "adresse = %s, rolle = %s, email = %s, telefonnummer = %s, passwort = %s, sperre = %s, "
+                   "passwort_erzwingen = %s WHERE ID = %s",
+                   (vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
+                    telefonnummer, passwort, sperre, passwort_erzwingen, account_id))
+    connection.commit()
+    cursor.close()
+
+
+# /FV050/
+def edit_account_lock(person_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET sperre = %s WHERE ID = %s", (True, person_id))
+    connection.commit()
+    cursor.close()
+
+
+# /FV060/
+def edit_account_unlock(person_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET sperre = %s WHERE ID = %s", (False, person_id))
+    connection.commit()
+    cursor.close()
+
+
+# /FV070/
+def create_klient(vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
+                  adresse, kontingent_hk, kontingent_fk, fallverantwortung_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO klient (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_ID, "
+                   "adresse, kontingent_HK, kontingent_FK, fallverantwortung_ID) VALUES "
+                   "(%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                   (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
+                    adresse, kontingent_hk, kontingent_fk, fallverantwortung_id))
+    connection.commit()
+    cursor.close()
+
+
+# /FV070/
+def validate_client(vorname, nachname, geburtsdatum):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM klient WHERE vorname = %s AND nachname = %s AND geburtsdatum = %s",
+                   (vorname, nachname, geburtsdatum,))
+    result = cursor.fetchone()
+    if result:
+        return True
+    return False
+
+
+# /FV080
+def get_klient_data(person_id, klient_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT * FROM klient 
+        INNER JOIN person ON 
+        (klient.fallverantwortung_id = person.id 
+        OR klient.sachbearbeiter_id = person.id) 
+        WHERE person.id = %s AND klient.id = %s
+    """, (person_id, klient_id))
+    result = cursor.fetchall()
+    return result
+
+
+# /FV090/
+def edit_klient(person_id, klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
+                kontingent_hk, kontingent_fk, fallverantwortung_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    # Überprüfen, ob die Person berechtigt ist, den Klienten zu bearbeiten
+    cursor.execute("""
+        SELECT 1
+        FROM klient k join person p on p.ID = k.fallverantwortung_ID
+        WHERE p.ID = %s AND k.fallverantwortung_ID = %s
+    """, (person_id, fallverantwortung_id))
+    is_fallverantwortung = bool(cursor.fetchone())
+
+    cursor.execute("""
+        SELECT 1
+        FROM klient k join person p on k.sachbearbeiter_ID = p.ID
+        WHERE k.sachbearbeiter_ID = %s AND p.ID = %s
+    """, (sachbearbeiter_id, person_id))
+    is_sachbearbeiter = bool(cursor.fetchone())
+
+    if not is_fallverantwortung and not is_sachbearbeiter:
+        raise Exception("Person hat keine Berechtigung, den Klienten zu bearbeiten")
+
+    # Klienten bearbeiten
+    cursor.execute("UPDATE klient SET vorname = %s, nachname = %s, geburtsdatum = %s, telefonnummer = %s, "
+                   "sachbearbeiter_ID = %s, adresse = %s, kontingent_HK = %s, kontingent_FK = %s, "
+                   "fallverantwortung_ID = %s WHERE ID = %s",
+                   (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
+                    kontingent_hk, kontingent_fk, fallverantwortung_id, klient_id))
+    connection.commit()
+
+
+# /FV100/
+# /FV110/
+def get_email_by_zeiteintrag(zeiteintrag_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT person.email FROM person INNER JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_id "
+                   "WHERE zeiteintrag.ID = %s", (zeiteintrag_id,))
+    result = cursor.fetchone()
+    if result:
+        return result[0]
+    else:
+        return None
 
 
 
@@ -635,46 +784,6 @@ def get_person_id_by_email(email):
         return None
 
 
-# Account mit übergebenen ID wird mit übergebenen Parameter bearbeitet
-def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
-                 telefonnummer, passwort, sperre, passwort_erzwingen):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("UPDATE person SET vorname = %s, nachname = %s, geburtsdatum = %s, qualifikation = %s, "
-                   "adresse = %s, rolle = %s, email = %s, telefonnummer = %s, passwort = %s, sperre = %s, "
-                   "passwort_erzwingen = %s WHERE ID = %s",
-                   (vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
-                    telefonnummer, passwort, sperre, passwort_erzwingen))
-    connection.commit()
-    cursor.close()
-
-
-def get_person_data(account_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM person WHERE ID = %s", (account_id,))
-    result = cursor.fetchall()
-    return result
-
-
-# Account sperren
-def edit_account_lock(person_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("UPDATE person SET sperre = %s WHERE ID = %s", (True, person_id))
-    connection.commit()
-    cursor.close()
-
-
-# Account entsperren
-def edit_account_unlock(person_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("UPDATE person SET sperre = %s WHERE ID = %s", (False, person_id))
-    connection.commit()
-    cursor.close()
-
-
 def mitarbeiter_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -684,34 +793,6 @@ def mitarbeiter_dropdown():
         items.append({'id': ID, 'nachname': nachname})
     connection.close()
     return items
-
-
-# Erzeugt einen neuen Eintrag in der Klient-Tabelle
-def create_klient(vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
-                  adresse, kontingent_hk, kontingent_fk, fallverantwortung_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("INSERT INTO klient (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_ID, "
-                   "adresse, kontingent_HK, kontingent_FK, fallverantwortung_ID) VALUES "
-                   "(%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                   (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
-                    adresse, kontingent_hk, kontingent_fk, fallverantwortung_id))
-    connection.commit()
-    cursor.close()
-
-
-# Klient mit übergebenen ID wird mit übergebenen Parameter bearbeitet
-def edit_klient(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
-                kontingent_hk, kontingent_fk, fallverantwortung_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("UPDATE klient SET vorname = %s, nachname = %s, geburtsdatum = %s, telefonnummer = %s, "
-                   "sachbearbeiter_ID = %s, adresse = %s, kontingent_HK = %s, kontingent_FK = %s, "
-                   "fallverantwortung_ID = %s WHERE ID = %s",
-                   (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
-                    kontingent_hk, kontingent_fk, fallverantwortung_id, client_id))
-    connection.commit()
-    cursor.close()
 
 
 def get_client_name(client_id):
@@ -747,18 +828,6 @@ def get_fallverantwortung_id(client_id):
         return fallverantwortung_id[0]
     else:
         return None
-
-
-# Prüft, ob schon ein Client mit dem Namen und Geburtsdatum existiert
-def validate_client(vorname, nachname, geburtsdatum):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT id FROM klient WHERE vorname = %s AND nachname = %s AND geburtsdatum = %s",
-                   (vorname, nachname, geburtsdatum,))
-    result = cursor.fetchone()
-    if result:
-        return True
-    return False
 
 
 # Gibt alle IDs der Zeiteinträge der übergebenen Person ID aus
