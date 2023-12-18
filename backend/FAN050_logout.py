@@ -7,11 +7,12 @@ logout_blueprint = Blueprint("logout", __name__)
 
 @logout_blueprint.route('/logout')
 def logout():
-    # wie greife ich auf die richtige user_id zu
+    email = session.get('user_email')
+
     # Überprüfen, ob der Benutzer eingeloggt ist
     if 'user_id' in session:
         # Benutzer aus Liste eingeloggter Benutzer entfernen
-        logged_in_users.remove(session['user_id'])
+        logged_in_users.remove(email)
 
         # Session löschen
         session.pop('user_id', None)

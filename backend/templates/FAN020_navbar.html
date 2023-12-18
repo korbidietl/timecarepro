@@ -9,7 +9,7 @@
 <body>
 
     <div class="navbar">
-        <a href="/home">Startseite</a>
+        <a href="/home"><strong>Startseite</strong></a>
         {% if session['user_role'] == 'Verwaltung' or session['user_role'] == 'Geschäftsführung' %}
             <a href="/account_management">Accountverwaltung</a>
         {% endif %}
