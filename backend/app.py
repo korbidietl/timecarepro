@@ -26,6 +26,12 @@ def create_app():
     from FAN010_home import home_blueprint
     app.register_blueprint(home_blueprint)
 
+    from FAN030_show_employee_table import show_employee_table_blueprint
+    app.register_blueprint(show_employee_table_blueprint)
+
+    from FAN040_show_client_table import show_clients_blueprint
+    app.register_blueprint(show_clients_blueprint)
+
     from FAN050_logout import logout_blueprint
     app.register_blueprint(logout_blueprint)
 

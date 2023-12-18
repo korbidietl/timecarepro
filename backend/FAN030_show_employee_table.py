@@ -6,7 +6,7 @@ show_employee_table_blueprint = Blueprint('show_employee_table', __name__)
 
 @show_employee_table_blueprint.route('/show_employee_table', methods=['GET', 'POST'])
 def mitarbeiter():
-    user_role = get_role_by_id(session['user_id'])
+    user_role = get_role_by_id(session.get('user_id'))
     mitarbeiterliste = []
 
     if request.method == 'POST':
