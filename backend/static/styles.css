@@ -321,6 +321,8 @@ body {
 
 /* Styling der Navigationsleiste */
 .navbar {
+    display: flex;
+    justify-content: space-between;
     overflow: hidden;
     background-color: #FFA500;
     color: #fff;
@@ -328,6 +330,15 @@ body {
     border: none;
     border-radius: 4px;
     cursor:pointer;
+}
+.navbar-center {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+}
+.navbar-end {
+    display: flex;
+    justify-content: flex-end;
 }
 
 /* Style der Links innerhalb der Navigationsleiste */

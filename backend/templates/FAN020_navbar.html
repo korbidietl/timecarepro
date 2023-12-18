@@ -10,16 +10,19 @@
 
     <div class="navbar">
         <a href="/home"><strong>Startseite</strong></a>
-        {% if session['user_role'] == 'Verwaltung' or session['user_role'] == 'Geschäftsführung' %}
-            <a href="/account_management">Accountverwaltung</a>
-        {% endif %}
-        {% if session['user_role'] == 'Geschäftsführung' %}
-            <a href="/reporting">Reporting</a>
-            <a href="/create_client">Klient anlegen</a>
-            <a href="/aenderungsprotokoll">Änderungsprotokoll</a>
-        {% endif %}
-        <a href="/password_change">Passwort ändern</a>
-        <a href="/logout">Ausloggen</a>
+        <div class="navbar-center">
+            {% if session['user_role'] == 'Verwaltung' or session['user_role'] == 'Geschäftsführung' %}
+                <a href="/account_management">Accountverwaltung</a>
+            {% endif %}
+            {% if session['user_role'] == 'Geschäftsführung' %}
+                <a href="/reporting">Reporting</a>
+                <a href="/aenderungsprotokoll">Änderungsprotokoll</a>
+            {% endif %}
+        </div>
+        <div class="navbar-end">
+            <a href="/password_change">Passwort ändern</a>
+            <a href="/logout">Ausloggen</a>
+        </div>
     </div>
     </b><br/>
 </body>
