@@ -66,6 +66,9 @@ def create_app():
     from FV090_edit_client import edit_client_blueprint
     app.register_blueprint(edit_client_blueprint)
 
+    from FV100_edit_time_entry_fv import edit_time_entry_fv_blueprint
+    app.register_blueprint(edit_time_entry_fv_blueprint)
+
     # Geschäftsführung
 
     return app
