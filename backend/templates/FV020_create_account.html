@@ -29,8 +29,8 @@
     <div class = "registration-form">
         <h2>Account anlegen</h2>
         <div class="mein-eindeutiges-formular">
-            <form action="{{url_for('create_account.create_account')}}" method="post">
-                <div class= "form-row">
+            <form method="POST" action="{{url_for('create_account.create_account')}}" >
+                <div class="form-row">
                     <div class="form-group2">
                         <label for="lastname">Nachname:</label>
                         <input type="text" id="lastname" name="lastname" required>
@@ -49,7 +49,7 @@
                     <div class="form-group2">
                         <label for="role-select">Rolle:</label>
                         <select id="role-select" required onchange="toggleFieldsBasedOnRole()">
-                            <option value=""disabled selected>Bitte wählen</option>
+                            <option value="" disabled selected>Bitte wählen</option>
                             <option value="Mitarbeiter">Mitarbeiter</option>
                             <option value="Verwaltung">Verwaltung</option>
                             <option value="Geschäftsführung">Geschäftsführung</option>
@@ -76,6 +76,7 @@
                         <input type="date" id="birthday" name="birthday">
                     </div>
                 </div>
+
 
                 <div class="form-actions">
                     <button type="submit">Account anlegen</button>
