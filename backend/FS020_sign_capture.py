@@ -1,13 +1,12 @@
-from flask import Blueprint, request, render_template, session
+from flask import Blueprint, request, render_template, session, jsonify
 
 signature_blueprint = Blueprint('siganture', __name__)
 
 
-@signature_blueprint.route('/sign_capture', methods=['POST','GET'])
+@signature_blueprint.route('/sign_capture', methods=['POST', 'GET'])
 def capture_signature():
     if request.method == 'POST':
-        data = request.json
-        signature_data = data.get('signatureData', '')
+        signature_data = request.form.get('signatureData')
         target_function = request.form.get('origin_function')
 
         if target_function == 'create_time_entry':
@@ -17,5 +16,6 @@ def capture_signature():
         elif target_function == 'login':  # FV100:
             return render_template('login', signature_data=signature_data)  # FV100
 
+
     else:
-        return render_template('/FS020_sign_capture.html')
+        return render_template('FS020_sign_capture.html')

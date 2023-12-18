@@ -4,7 +4,8 @@ import csv
 
 from flask import Blueprint, render_template, request, session, Response
 from datetime import datetime
-from db_query import get_client_name, get_sachbearbeiter_name, get_fallverantwortung_id, get_zeiteintrag_for_client_and_person, check_for_overlapping_zeiteintrag,check_booked
+from db_query import get_client_name, get_sachbearbeiter_name, get_fallverantwortung_id, \
+    get_zeiteintrag_for_client_and_person, check_for_overlapping_zeiteintrag, check_booked, get_zeiteintrag_for_client
 
 client_hours_blueprint = Blueprint('client_hours_blueprint', __name__, template_folder='templates')
 
@@ -66,22 +67,30 @@ def client_supervision_hours(client_id):
     if fallverantwortung:
 
         # Datenbankaufruf für alle anzeigen
-        #zeiteintraege_liste = get_zeiteintraege_for_client(client_id, monat, jahr)
-        #booked = check_booked(zeiteintraege_liste.zeiteintrags_id)
-        #return render_template('FMOF010_show_supervisionhours_client.html', zeiteintraege_liste=zeiteintraege_liste)
-
-    else:
-        zeiteintraege_liste = get_zeiteintrag_for_client_and_person(client_id,user_id,month,year)
+        zeiteintraege_liste = get_zeiteintrag_for_client(client_id, month, year)
         for zeiteintrag in zeiteintraege_liste:
-            zeiteintrag['ueberschneidung'] = check_for_overlapping_zeiteintrag()
+            zeiteintrag['ueberschneidung'] = check_for_overlapping_zeiteintrag(2)
         for zeiteintrag in zeiteintraege_liste:
             booked = check_booked(zeiteintrag.id)
-        return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id, client_id= client_id, zeiteintraege_liste=zeiteintraege_liste,booked=booked, client_name=client_name,
-                           client_sachbearbeiter=client_sachbearbeiter_name, fallverantwortung=fallverantwortung,
-                           user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
-                           kombinationen=kombinationen)
 
-    return render_template('/FMOF010_show_supervisionhours_client.html', client_id=client_id, client_name=client_name,
+        return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id, client_id=client_id,
+                               zeiteintraege_liste=zeiteintraege_liste, booked=booked, client_name=client_name,
+                               user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
+                               kombinationen=kombinationen)
+
+    else:
+        zeiteintraege_liste = get_zeiteintrag_for_client_and_person(client_id, user_id, month, year)
+        for zeiteintrag in zeiteintraege_liste:
+            zeiteintrag['ueberschneidung'] = check_for_overlapping_zeiteintrag(2)
+        for zeiteintrag in zeiteintraege_liste:
+            booked = check_booked(zeiteintrag.id)
+        return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id, client_id=client_id,
+                               zeiteintraege_liste=zeiteintraege_liste, booked=booked, client_name=client_name,
+                               client_sachbearbeiter=client_sachbearbeiter_name, fallverantwortung=fallverantwortung,
+                               user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
+                               kombinationen=kombinationen)
+
+    return render_template('FMOF010_show_supervisionhours_client.html', client_id=client_id, client_name=client_name,
                            client_sachbearbeiter=client_sachbearbeiter_name, fallverantwortung=fallverantwortung,
                            user_id=user_id, user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
                            kombinationen=kombinationen)
@@ -107,11 +116,11 @@ def generiere_csv_daten(zeiteintraege_liste):
 
 @client_hours_blueprint.route('/exportieren/<int:client_id>', methods=['POST'])
 def exportieren_client(client_id):
-   # zeiteintraege_liste = get_zeiteintraege_for_client(client_id)
-   # csv_daten = generiere_csv_daten(zeiteintraege_liste)
+    # zeiteintraege_liste = get_zeiteintraege_for_client(client_id)
+    # csv_daten = generiere_csv_daten(zeiteintraege_liste)
 
     return Response(
-     #   csv_daten,
+        #   csv_daten,
         mimetype="text/csv",
         headers={"Content-disposition": "attachment; filename=uebersicht.csv"}
     )
