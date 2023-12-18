@@ -2,14 +2,21 @@
 <html lang="DE">
 <head>
     <title>Startseite</title>
+    <link rel="stylesheet" href="../static/styles.css">
+
 </head>
 <body>
      <!-- Menüleiste einbinden -->
     {% include 'FAN020_navbar.html' %}
+     <div class="container-tabelle">
 
-    <h2>Klienten</h2>
-    <p>Du bist jetzt eingeloggt.</p>
-    <iframe src="/show_clients" style="width:100%; height:300px;"></iframe>
+         {% if session['user_id'] != 'Steuerbüro' %}
+            <iframe src="/show_clients" style="width:100%; height:300px; border:none;"></iframe>
+         {% endif %}
+         {% if session['user_id'] != 'Sachbearbeiter/Kostenträger' %}
+             <iframe src="/show_employee_table" style="width:100%; height:300px; border:none;"></iframe>
+         {% endif %}
+     </div>
 
 </body>
 </html>
