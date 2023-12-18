@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, render_template
-from db_query import edit_klient
+from db_query import edit_klient, mitarbeiter_dropdown
 
 edit_client_blueprint = Blueprint('edit_client', __name__)
 
@@ -24,5 +24,8 @@ def edit_client():
             return jsonify({'message': 'Client successfully updated'}), 200
         except Exception as e:
             return jsonify({'message': 'Error updating client: ' + str(e)}), 500
-
-    return render_template('FV080_edit_client.html')
+    sachbearbeiter = mitarbeiter_dropdown()
+    sb = {'sachbearbeiter': sachbearbeiter}
+    fallverantwortung = mitarbeiter_dropdown()
+    fv = {'fallverantwortung': fallverantwortung}
+    return render_template('FV090_edit_client.html', **sb, **fv)

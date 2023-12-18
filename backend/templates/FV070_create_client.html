@@ -43,8 +43,8 @@
                     <label for="sbDropdown">Sachbearbeiter auswählen:</label>
                     <select class="form-control" id="sbDropdown" name="sbDropdown">
                         <!-- Optionen werden durch Python generiert -->
-                        {% for item in items %}
-                        <option value="{{item['id']}}">{{items['nachname']}}</option>
+                        {% for sb in sachbearbeiter %}
+                        <option value="{{sb.id}}">{{sb.nachname}}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -64,8 +64,8 @@
                     <label for="fvDropdown">Fallverantwortung auswählen:</label>
                     <select class="form-control" id="fvDropdown" name="fvDropdown">
                         <!-- Optionen werden durch Python generiert -->
-                        {% for item in items %}
-                        <option value="{{item['id']}}">{{items['nachname']}}</option>
+                        {% for fv in fallverantwortung %}
+                        <option value="{{fv.id}}">{{fv.nachname}}</option>
                         {% endfor %}
                     </select>
                 </div>

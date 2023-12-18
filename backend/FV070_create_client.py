@@ -36,5 +36,9 @@ def register_client():
                           kontingent_hk, kontingent_fk, fallverantwortung_id)
             return render_template('FAN010_home.html',
                                    success_message="Client wurde erfolgreich angelegt")
-    return render_template('FV070_create_client.html')
+    sachbearbeiter = mitarbeiter_dropdown()
+    sb = {'sachbearbeiter': sachbearbeiter}
+    fallverantwortung = mitarbeiter_dropdown()
+    fv = {'fallverantwortung': fallverantwortung}
+    return render_template('FV070_create_client.html', **sb, **fv)
 

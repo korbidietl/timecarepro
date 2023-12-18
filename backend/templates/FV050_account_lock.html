@@ -1,4 +1,31 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Lock</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+
+<body>
+    <div class="center-container">
+        <div class ="loginContainer">
+            <h2>Account sperren</h2>
+            <p>Bitte geben Sie die ID des Accounts ein:</p>
+            <form action="/account_lock" method="post">
+                <label for="person_id">Person ID:</label>
+                <input type="number" id="person_id" name="person_id" required>
+                <button type="submit">Account sperren</button>
+                <a href="/home">Abbrechen</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+<!--
+<!DOCTYPE html>
 <html>
 <head>
     <title>Sperren Bestätigung</title>
@@ -43,3 +70,4 @@
     </script>
 </body>
 </html>
+-->
