@@ -35,8 +35,8 @@ def create_app():
     # Sachbearbeiter/Kostenträger
 
     # Mitarbeiter ohne Fallverantwortung
-    from FMOF010_show_supervisionhours_client import client_hours_blueprint
-    app.register_blueprint(client_hours_blueprint)
+    # from FMOF010_show_supervisionhours_client import client_hours_blueprint
+    # app.register_blueprint(client_hours_blueprint)
 
     from FMOF030_create_time_entry import create_time_entry_blueprint
     app.register_blueprint(create_time_entry_blueprint)
@@ -59,6 +59,12 @@ def create_app():
 
     from FV040_edit_account import edit_account_blueprint
     app.register_blueprint(edit_account_blueprint)
+
+    from FV050_account_lock import account_lock_blueprint
+    app.register_blueprint(account_lock_blueprint)
+
+    from FV060_account_unlock import account_unlock_blueprint
+    app.register_blueprint(account_unlock_blueprint)
 
     from FV070_create_client import create_client_blueprint
     app.register_blueprint(create_client_blueprint)
