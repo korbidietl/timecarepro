@@ -7,6 +7,7 @@ from passlib.hash import sha1_crypt
 # /FS030/
 # /FMOF010/
 # /FMOF030/
+# /FSK010/
 def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -179,6 +180,7 @@ def get_zeiteintrag_for_mitarbeiter(mitarbeiter_id, month, year):
 
 
 # /FAN040/
+# /FSK010/
 def get_client_table_sb(person_id, month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -328,6 +330,8 @@ def get_zeiteintrag_for_client(client_id, month, year):
 
 # /FMOF010/
 # /FMOF020/
+# /FGF030/
+# /FSK010/
 def check_booked(zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -435,6 +439,7 @@ def is_booked_client(client_id, monat, jahr):
 
 # /FMOF030/
 # /FMOF050/
+# /FGF010/
 def client_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -459,6 +464,7 @@ def get_zeiteintrag_by_id(zeiteintrag_id):
 
 
 # /FMOF040
+# /FSK010/
 def get_fahrt_by_zeiteintrag(zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -796,13 +802,195 @@ def book_zeiteintrag(client_id):
     return True
 
 
+# /FGF010/
+def sum_mitarbeiter(month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT DISTINCT Mitarbeiter_ID FROM zeiteintrag 
+        WHERE MONTH(end_zeit) = %s AND YEAR(end_zeit) = %s 
+        AND Mitarbeiter_ID IN (SELECT ID FROM person WHERE sperre = FALSE)
+    """, (month, year))
+    mitarbeiter_ids = cursor.fetchall()
+    return len(mitarbeiter_ids)
+
+
+# /FGF010/
+def sum_hours_klient(month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, 
+        SUM(TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)) AS anzahl_Stunden 
+        FROM klient k 
+        JOIN zeiteintrag z ON k.ID = z.Klient_ID 
+        WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s 
+        GROUP BY k.ID 
+        ORDER BY k.ID
+    """, (month, year))
+    return cursor.fetchall()
+
+
+# /FGF010/
+def sum_hours_mitarbeiter(month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT p.ID AS Mitarbeiter_ID, p.Vorname, p.Nachname, 
+        SUM(TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)) AS anzahl_Stunden 
+        FROM person p 
+        JOIN zeiteintrag z ON p.ID = z.Mitarbeiter_ID 
+        WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s 
+        GROUP BY p.ID 
+        ORDER BY p.ID
+    """, (month, year))
+    return cursor.fetchall()
+
+
+# /FGF010/
+def sum_absage_klient(month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, COUNT(z.ID) AS anzahl_Absagen 
+        FROM klient k 
+        JOIN zeiteintrag z ON k.ID = z.Klient_ID 
+        WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s AND z.absage = 1 
+        GROUP BY k.ID 
+        ORDER BY k.ID
+    """, (month, year))
+    return cursor.fetchall()
+
+
+# /FGF010/
+def sum_absage_mitarbeiter(month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT p.ID AS Mitarbeiter_ID, p.Vorname, p.Nachname, COUNT(z.ID) AS anzahl_Absagen 
+        FROM person p 
+        JOIN zeiteintrag z ON p.ID = z.Mitarbeiter_ID 
+        WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s AND z.absage = 1 
+        GROUP BY p.ID 
+        ORDER BY p.ID
+    """, (month, year))
+    return cursor.fetchall()
+
+
+# /FGF010/
+def sum_km_klient(month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, 
+        SUM(f.kilometer) AS gesamt_km, SUM(IF(f.abrechenbar = 1, f.kilometer, 0)) 
+        AS abrechenbare_km, SUM(IF(f.abrechenbar = 0, f.kilometer, 0)) AS nichtabrechenbare_km 
+        FROM klient k 
+        JOIN zeiteintrag z ON k.ID = z.Klient_ID 
+        JOIN fahrt f ON z.ID = f.Zeiteintrag_ID 
+        WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s 
+        GROUP BY k.ID 
+        ORDER BY k.ID
+    """, (month, year))
+    return cursor.fetchall()
+
+
+# /FGF010/
+def sum_km_mitarbeiter(month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT p.ID AS Mitarbeiter_ID, p.Vorname, p.Nachname, 
+        SUM(f.kilometer) AS gesamt_km, SUM(IF(f.abrechenbar = 1, f.kilometer, 0)) 
+        AS abrechenbare_km, SUM(IF(f.abrechenbar = 0, f.kilometer, 0)) AS nichtabrechenbare_km 
+        FROM person p 
+        JOIN zeiteintrag z ON p.ID = z.Mitarbeiter_ID 
+        JOIN fahrt f ON z.ID = f.Zeiteintrag_ID 
+        WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s 
+        GROUP BY p.ID 
+        ORDER BY p.ID
+    """, (month, year))
+    return cursor.fetchall()
+
+
+# /FGF010/
+def mitarbeiter_dropdown():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, nachname FROM person WHERE rolle LIKE '%%Mitarbeiter%%'")
+    items = []
+    for (ID, nachname) in cursor.fetchall():
+        items.append({'id': ID, 'nachname': nachname})
+    connection.close()
+    return items
+
+
+# /FGF020/
+def get_protokoll(von=None, bis=None, aendernder_nutzer=None, eintrags_id=None):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    query = """
+        SELECT pk.ID, pk.zeit, CONCAT(p.vorname, ' ', p.nachname) AS Ändernder_Nutzer, pk.eintragungsart, 
+        pk.eintrag_ID, pk.eintrag_vorher, pk.eintrag_nachher 
+        FROM protokoll pk LEFT JOIN person p ON pk.person_ID = p.ID WHERE 1=1
+    """
+    parameters = []
+    if von:
+        query += " AND pk.zeit >= %s"
+        parameters.append(von)
+    if bis:
+        query += " AND pk.zeit <= %s"
+        parameters.append(bis)
+    if aendernder_nutzer:
+        query += " AND pk.person_id = %s"
+        parameters.append(aendernder_nutzer)
+    if eintrags_id:
+        query += " AND pk.eintrags_id = %s"
+        parameters.append(eintrags_id)
+
+    query += " ORDER BY Zeit DESC"
+
+    cursor.execute(query, parameters)
+    return cursor.fetchall()
+
+
+# /FGF020/
+def person_dropdown():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, nachname FROM person")
+    items = []
+    for (ID, nachname) in cursor.fetchall():
+        items.append({'id': ID, 'nachname': nachname})
+    connection.close()
+    return items
+
+
+# /FGF030/
+def get_last_buchung(client_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT DATE_FORMAT(monat, '%Y-%m') as Monat, id FROM buchung 
+        WHERE klient_id = %s 
+        ORDER BY monat DESC 
+        LIMIT 1
+    """, (client_id,))
+    return cursor.fetchone()
+
+
+# /FGF030/
+def delete_buchung(buchung_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM buchung WHERE id = %s", (buchung_id,))
+    connection.commit()
 
 
 
 
 
-
-
+# Folgende Methoden sind nicht Teil des Pflichtenhefts, sind aber evtl. nützlich!
 
 
 
@@ -851,17 +1039,6 @@ def get_person_id_by_email(email):
         return result[0]
     else:
         return None
-
-
-def mitarbeiter_dropdown():
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT id, nachname FROM person WHERE rolle LIKE '%%Mitarbeiter%%'")
-    items = []
-    for (ID, nachname) in cursor.fetchall():
-        items.append({'id': ID, 'nachname': nachname})
-    connection.close()
-    return items
 
 
 def get_client_name(client_id):
