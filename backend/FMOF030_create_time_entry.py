@@ -24,8 +24,9 @@ def submit_arbeitsstunden():
     absage = request.form.get('absage')
 
     # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
-    start_datetime = datetime.strptime(f"{datum} {start_zeit}", '%Y-%m-%d %H:%M')
-    end_datetime = datetime.strptime(f"{datum} {end_zeit}", '%Y-%m-%d %H:%M')
+    datum_datetime = datetime.strptime(f"{datum}", '%Y-%m-%d')
+    start_datetime = datetime.strptime(f"{start_zeit}", '%H:%M')
+    end_datetime = datetime.strptime(f"{end_zeit}", '%H:%M')
 
     # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
     if start_datetime >= end_datetime:
@@ -33,7 +34,7 @@ def submit_arbeitsstunden():
 
     # Füge neuen Zeiteintrag hinzu und erhalte die ID
     else:
-        zeiteintrag_id = add_zeiteintrag(datum, start_datetime, end_datetime, beschreibung, interne_notiz,
+        zeiteintrag_id = add_zeiteintrag(datum_datetime, start_datetime, end_datetime, beschreibung, interne_notiz,
                                          unterschrift_klient, unterschrift_mitarbeiter, absage)
 
         # Iteriere über alle Fahrt-Einträge und füge sie hinzu
