@@ -9,6 +9,20 @@
     <!-- Menüleiste einbinden-->
     {% include 'FAN020_navbar.html' %}
 
+
+    <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
     <div class = "registration-form">
         <h2>Klient anlegen</h2>
         <form action="/create_client" method="post">
@@ -78,4 +92,27 @@
     </div>
 
 </body>
+<script>
+    window.onload = function() {
+        // Überprüfen, ob Nachrichten vorhanden sind
+        {% if get_flashed_messages() %}
+        let modal = document.getElementById("flashModal");
+        let span = document.getElementsByClassName("close")[0];
+
+        // Modal anzeigen
+        modal.style.display = "block";
+
+        // Schließen, wenn das "X" geklickt wird
+        span.onclick = function() {
+            modal.style.display = "none";
+        };
+
+        // Schließen, wenn außerhalb des Modals geklickt wird
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+        {% endif %}
+</script>
 </html>

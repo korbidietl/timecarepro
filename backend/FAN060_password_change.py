@@ -1,4 +1,4 @@
-from flask import render_template, request, Blueprint, session
+from flask import render_template, request, Blueprint, session, flash
 from db_query import validate_login, set_password_mail
 from FNAN020_password_reset import send_email
 
@@ -29,19 +29,23 @@ def change_password():
 
         # Prüfen, ob alle Felder ausgefüllt sind
         if not current_password or not new_password or not confirm_password:
-            return render_template("FAN060_password_change.html", error="Bitte füllen Sie alle Felder aus.")
+            flash("Bitte füllen Sie alle Felder aus.")
+            return render_template("FAN060_password_change.html")
 
         # Prüfen, ob die neuen Passwörter übereinstimmen
         elif new_password != confirm_password:
-            return render_template("FAN060_password_change.html", error="Die neuen Passwörter stimmen nicht überein.")
+            flash("Die neuen Passwörter stimmen nicht überein.")
+            return render_template("FAN060_password_change.html")
 
         # Prüfen, ob das neue Passwort den Anforderungen entspricht
         elif not validate_password(new_password):
-            return render_template("FAN060_password_change.html", error="Das neue Passwort ist zu kurz.")
+            flash("Das neue Passwort ist zu kurz.")
+            return render_template("FAN060_password_change.html")
 
         # Überprüfen, ob das aktuelle Passwort korrekt ist
         elif not validate_login(session['user_email'], current_password):
-            return render_template("FAN060_password_change.html", error="Das aktuelle Passwort ist nicht korrekt.")
+            flash("Das aktuelle Passwort ist nicht korrekt.")
+            return render_template("FAN060_password_change.html")
 
         # Aktualisieren des Passworts
         else:

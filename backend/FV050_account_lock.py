@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, flash
 from db_query import edit_account_lock
 
 account_lock_blueprint = Blueprint('account_lock', __name__)
@@ -12,8 +12,8 @@ def account_lock(person_id):
 
         for field in required_fields:
             if not request.form.get(field):
-                error_message = 'Es müssen alle Felder ausgefüllt werden.'
-                return render_template('FV050_account_lock.html', error_message=error_message, person_id=person_id)
+                flash('Es müssen alle Felder ausgefüllt werden.')
+                return render_template('FV050_account_lock.html', person_id=person_id)
 
         edit_account_lock(person_id)
         return render_template('FAN010_home.html',

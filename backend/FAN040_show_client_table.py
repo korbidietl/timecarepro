@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, session
 from db_query import get_client_table, get_client_table_sb
 
-show_clients_blueprint = Blueprint("show_clients", __name__, template_folder='templates')
+show_clients_blueprint = Blueprint("show_clients", __name__)
 
 
 @show_clients_blueprint.route('/show_clients', methods=['GET', 'POST'])

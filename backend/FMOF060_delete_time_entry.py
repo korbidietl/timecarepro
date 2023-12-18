@@ -31,4 +31,4 @@ def delete_te(zeiteintrags_id):
             elif origin_function == 'function 2':
                 return redirect(url_for('name_function_2'))
 
-    return render_template('/FMOF060_delete_time_entry.html')
+    return render_template('FMOF060_delete_time_entry.html')

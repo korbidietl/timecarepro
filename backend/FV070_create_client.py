@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, Blueprint
+from flask import Flask, render_template, request, jsonify, Blueprint, flash
 from db_query import mitarbeiter_dropdown, create_klient, validate_client
 
 # app = Flask(__name__)
@@ -23,13 +23,13 @@ def register_client():
 
         for field in required_fields:
             if not request.form.get(field):
-                error_message = 'Es müssen alle Felder ausgefüllt werden.'
-                return render_template('FV070_create_client.html', error_message=error_message)
+                flash('Es müssen alle Felder ausgefüllt werden.')
+                return render_template('FV070_create_client.html')
 
         # validate client in db_query hinzufügen (validate_email(email))
         if validate_client(vorname, nachname, geburtsdatum):
-            error_message = 'Es existiert bereits ein Client mit diesem Namen und dem Geburtsdatum.'
-            return render_template('FV070_create_client.html', error_message=error_message)
+            flash('Es existiert bereits ein Client mit diesem Namen und dem Geburtsdatum.')
+            return render_template('FV070_create_client.html')
 
         else:
             create_klient(nachname, vorname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
