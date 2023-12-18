@@ -9,7 +9,7 @@
      <!-- Menüleiste einbinden -->
     {% include 'FAN020_navbar.html' %}
 
-    <div class="container">
+    <div class="registration-form">
         <h2>Accountverwaltung</h2>
         <button onclick="window.location.href='/create_account';">Account anlegen</button>
         <button onclick="window.location.href='/create_client';">Klient anlegen</button>
@@ -75,10 +75,8 @@
             {% endfor %}
         </table>
         {% endif %}
-    </div>
     {% include 'FAN030_show_employee_table.html' %}
     {% include 'FAN040_show_client_table.html' %}
-
-
+    </div>
 </body>
 </html>
