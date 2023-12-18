@@ -29,25 +29,22 @@ def edit_time_entry(zeiteintrag_id):
         absage = request.form.get('absage')
 
         # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
-        start_datetime = datetime.strptime(f"{datum} {start_zeit}", '%Y-%m-%d %H:%M')
-        end_datetime = datetime.strptime(f"{datum} {end_zeit}", '%Y-%m-%d %H:%M')
+        datum_datetime = datetime.strptime(f"{datum}", '%Y-%m-%d')
+        start_datetime = datetime.strptime(f"{start_zeit}", '%H:%M')
+        end_datetime = datetime.strptime(f"{end_zeit}", '%H:%M')
 
         # Änderungen am Zeiteintrag speichern
-        edit_zeiteintrag(zeiteintrag_id, start_zeit, end_zeit, unterschrift_klient, unterschrift_mitarbeiter, klient_id, beschreibung, interne_notiz, absage)
+        edit_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime, unterschrift_klient, unterschrift_mitarbeiter, klient_id, beschreibung, interne_notiz, absage)
 
         # Bearbeite Fahrt-Einträge
         existing_fahrten_ids = request.form.getlist('existing_fahrten_ids')
         for fahrt_id in existing_fahrten_ids:
-            if request.form.get(f'kilometer{fahrt_id}') is None:
-                # Falls kein Kilometer-Feld vorhanden ist, lösche die Fahrt
-                delete_fahrt(fahrt_id)
-            else:
-                # Ansonsten aktualisiere die Fahrt
-                edit_fahrt(fahrt_id, kilometer=request.form[f'kilometer{fahrt_id}'],
-                           abrechenbar=request.form.get(f'abrechenbarkeit{fahrt_id}', False),
-                           start_adresse=request.form[f'start_adresse{fahrt_id}'],
-                           end_adresse=request.form[f'end_adresse{fahrt_id}'],
-                           zeiteintrag_id=zeiteintrag_id)
+            # aktualisiere die Fahrt
+            edit_fahrt(fahrt_id, kilometer=request.form[f'kilometer{fahrt_id}'],
+                       abrechenbar=request.form.get(f'abrechenbarkeit{fahrt_id}', False),
+                       start_adresse=request.form[f'start_adresse{fahrt_id}'],
+                       end_adresse=request.form[f'end_adresse{fahrt_id}'],
+                       zeiteintrag_id=zeiteintrag_id)
 
         # Füge neue Fahrten hinzu
         for i in range(fahrtCounter):  # fahrtCounter sollte vom Frontend übergeben werden

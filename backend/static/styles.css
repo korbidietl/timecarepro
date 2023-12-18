@@ -32,6 +32,17 @@ th {
     background-color: #f4f4f4;
 
 }
+
+.center-container-tables{
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    height: 100%;
+    margin: auto;
+    background-color: #ffffff;
+
+}
+
 .loginContainer {
     text-align: center;
     background-color: #fff;
