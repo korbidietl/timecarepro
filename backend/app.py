@@ -51,6 +51,9 @@ def create_app():
     app.register_blueprint(delete_time_entry_blueprint)
 
     # Verwaltung
+    from FV010_account_management import account_management_blueprint
+    app.register_blueprint(account_management_blueprint)
+
     from FV020_create_account import create_account_blueprint
     app.register_blueprint(create_account_blueprint)
 

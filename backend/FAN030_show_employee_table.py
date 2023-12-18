@@ -1,10 +1,10 @@
 from flask import render_template, request, session, Blueprint
 from db_query import account_table, account_table_mitarbeiter, get_role_by_id
 
-show_employee_table_blueprint = Blueprint('home', __name__)
+show_employee_table_blueprint = Blueprint('show_employee_table', __name__)
 
 
-@show_employee_table_blueprint.route('/mitarbeitertabelle', methods=['GET', 'POST'])
+@show_employee_table_blueprint.route('/show_employee_table', methods=['GET', 'POST'])
 def mitarbeiter():
     user_role = get_role_by_id(session['user_id'])
     mitarbeiterliste = []
@@ -28,6 +28,4 @@ def mitarbeiter():
     return render_template('FAN030_show_employee_table.html', mitarbeiterliste=mitarbeiterliste)
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
 
