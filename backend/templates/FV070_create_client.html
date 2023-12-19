@@ -54,11 +54,11 @@
                 </div>
 
                 <div class="form-group2">
-                    <label for="sbDropdown">Sachbearbeiter auswählen:</label>
-                    <select class="form-control" id="sbDropdown" name="sbDropdown">
+                    <label for="ktDropdown">Kostenträger auswählen:</label>
+                    <select class="form-control" id="ktDropdown" name="ktDropdown">
                         <!-- Optionen werden durch Python generiert -->
-                        {% for sb in sachbearbeiter %}
-                        <option value="{{sb.id}}">{{sb.nachname}}</option>
+                        {% for kt in kostentraeger %}
+                        <option value="{{kt.id}}">{{kt.nachname}}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -84,15 +84,15 @@
                     </select>
                 </div>
             </div>
-            <div class="form-row">
+            <div class="form-actions">
                 <button type="submit">Speichern</button>
-                <a href="/home">Abbrechen</a>
+                <a href="/account_management">Abbrechen</a>
             </div>
         </form>
     </div>
 
 </body>
-<script>
+<!--<script>
     window.onload = function() {
         // Überprüfen, ob Nachrichten vorhanden sind
         {% if get_flashed_messages() %}
@@ -114,5 +114,5 @@
             }
         };
         {% endif %}
-</script>
+</script> -->
 </html>

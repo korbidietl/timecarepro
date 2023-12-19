@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Protokoll</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <!-- Menüleiste einbinden-->
+    {% include 'FAN020_navbar.html' %}
+
+    <div class="center-container-tables">
+        <div class="table-container">
+            <h3>Protokoll</h3>
+
+            <div class="time-selection-container">
+                <form action="/show_protocol" method="post">
+                    <label for="von">Von:</label>
+                    <input type="datetime-local" id="von" name="von">
+
+                    <label for="bis">Bis:</label>
+                    <input type="datetime-local" id="bis" name="bis">
+
+                    <div class="form-group2">
+                    <label for="nutzer">Ändernder Nutzer:</label>
+                    <select class="form-control" id="nutzer" name="nutzer">
+                        <!-- Optionen werden durch Python generiert -->
+                        {% for nutzer in nutzers %}
+                        <option value="{{nutzer.id}}">{{nutzer.nachname}}</option>
+                        {% endfor %}
+                    </select>
+                    </div>
+
+                    <label for="eintrags_id">Eintrags ID:</label>
+                    <input type="number" id="eintrags_id" name="eintrags_id">
+
+                    <button type="submit">Anzeigen</button>
+                </form>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Zeit</th>
+                        <th>Ändernder Nutzer</th>
+                        <th>Tabelle</th>
+                        <th>ID des geänderten Eintrags</th>
+                        <th>Eintrag vorher</th>
+                        <th>Eintrag nachher</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for protocol in protocols %}
+                        <tr>
+                            <td>{{ protocol.id }}</td>
+                            <td>{{ protocol.zeit }}</td>
+                            <td>{{ protocol.person_ID }}</td>
+                            <td>{{ protocol.eintragungsart }}</td>
+                            <td>{{ protocol.eintrag_ID }}</td>
+                            <td>{{ protocol.eintrag_vorher }}</td>
+                            <td>{{ protocol.eintrag_nachher }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <p id="no-clients-message" style="display: none;">Keine Protokolle gefunden.</p>
+        </div>
+    </div>
+</body>
+</html>
+

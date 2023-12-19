@@ -89,6 +89,9 @@ def create_app():
 
     # Geschäftsführung
 
+    from FGF020_show_protocol import show_protocol_blueprint
+    app.register_blueprint(show_protocol_blueprint)
+
     return app
 
 

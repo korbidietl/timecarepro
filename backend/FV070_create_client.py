@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, Blueprint, flash
-from db_query import mitarbeiter_dropdown, create_klient, validate_client
+from db_query import mitarbeiter_dropdown, create_klient, validate_client, kostentraeger_dropdown
 
 # app = Flask(__name__)
 
@@ -13,7 +13,7 @@ def register_client():
         vorname = request.form.get('firstname')
         geburtsdatum = request.form.get('birthday')
         telefonnummer = request.form.get('number')
-        sachbearbeiter_id = request.form.get('sbDropdown')
+        sachbearbeiter_id = request.form.get('ktDropdown')
         adresse = request.form.get('address')
         kontingent_fk = request.form.get('fkontingent')
         kontingent_hk = request.form.get('hkontingent')
@@ -36,9 +36,9 @@ def register_client():
                           kontingent_hk, kontingent_fk, fallverantwortung_id)
             return render_template('FAN010_home.html',
                                    success_message="Client wurde erfolgreich angelegt")
-    sachbearbeiter = mitarbeiter_dropdown()
-    sb = {'sachbearbeiter': sachbearbeiter}
+    kostentraeger = kostentraeger_dropdown()
+    kt = {'kostentraeger': kostentraeger}
     fallverantwortung = mitarbeiter_dropdown()
     fv = {'fallverantwortung': fallverantwortung}
-    return render_template('FV070_create_client.html', **sb, **fv)
+    return render_template('FV070_create_client.html', **kt, **fv)
 

@@ -923,6 +923,18 @@ def mitarbeiter_dropdown():
     return items
 
 
+# /FGF010/
+def kostentraeger_dropdown():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, nachname FROM person WHERE rolle LIKE '%%Kostenträger%%'")
+    items = []
+    for (ID, nachname) in cursor.fetchall():
+        items.append({'id': ID, 'nachname': nachname})
+    connection.close()
+    return items
+
+
 # /FGF020/
 def get_protokoll(von=None, bis=None, aendernder_nutzer=None, eintrags_id=None):
     connection = get_database_connection()
