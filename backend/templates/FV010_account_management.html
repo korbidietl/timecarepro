@@ -9,10 +9,10 @@
      <!-- Menüleiste einbinden -->
     {% include 'FAN020_navbar.html' %}
 
-    <div class="container">
+    <div class="registration-form">
         <h2>Accountverwaltung</h2>
-        <button onclick="window.location.href='/add_account';">Account anlegen</button>
-        <button onclick="window.location.href='/add_client';">Klient anlegen</button>
+        <button onclick="window.location.href='/create_account';">Account anlegen</button>
+        <button onclick="window.location.href='/create_client';">Klient anlegen</button>
 
         <!-- Steuerbüro Tabelle -->
         {% if session['user_role'] == 'Steuerbuero' %}
@@ -34,9 +34,9 @@
                     <button onclick="window.location.href='/details/{{ steuerbuero.ID }}'">Details</button>
                     <button onclick="window.location.href='/edit/{{ steuerbuero.ID }}'">Bearbeiten</button>
                     {% if steuerbuero.Sperre %}
-                        <button onclick="window.location.href='/unlock_account/{{ steuerbuero.ID }}'">Entsperren</button>
+                        <button onclick="window.location.href='/account_unlock/{{ steuerbuero.ID }}'">Entsperren</button>
                     {% else %}
-                        <button onclick="window.location.href='/lock_account/{{ steuerbuero.ID }}'">Sperren</button>
+                        <button onclick="window.location.href='/account_lock/{{ steuerbuero.ID }}'">Sperren</button>
                     {% endif %}
                 </td>
             </tr>
@@ -57,28 +57,26 @@
                 <th>E-Mail</th>
             </tr>
             {% for sb in sachbearbeiter %}
-            <tr>
-                <td>{{ sb.ID }}</td>
-                <td>{{ sb.Vorname }}</td>
-                <td>{{ sb.Nachname }}</td>
-                <td>{{ sb.Email }}</td>
-                <td>
-                    <button onclick="window.location.href='/details/{{ sb.ID }}'">Details</button>
-                    <button onclick="window.location.href='/edit/{{ sb.ID }}'">Bearbeiten</button>
-                    {% if sb.Sperre %}
-                        <button onclick="window.location.href='/unlock/{{ sb.ID }}'">Entsperren</button>
-                    {% else %}
-                        <button onclick="window.location.href='/lock/{{ sb.ID }}'">Sperren</button>
-                    {% endif %}
-                </td>
-            </tr>
+                <tr>
+                    <td>{{ sb.ID }}</td>
+                    <td>{{ sb.Vorname }}</td>
+                    <td>{{ sb.Nachname }}</td>
+                    <td>{{ sb.Email }}</td>
+                    <td>
+                        <button onclick="window.location.href='/details/{{ sb.ID }}'">Details</button>
+                        <button onclick="window.location.href='/edit/{{ sb.ID }}'">Bearbeiten</button>
+                        {% if sb.Sperre %}
+                            <button onclick="window.location.href='/account_unlock/{{ sb.ID }}'">Entsperren</button>
+                        {% else %}
+                            <button onclick="window.location.href='/account_lock/{{ sb.ID }}'">Sperren</button>
+                        {% endif %}
+                    </td>
+                </tr>
             {% endfor %}
         </table>
+        {% endif %}
+    {% include 'FAN030_show_employee_table.html' %}
+    {% include 'FAN040_show_client_table.html' %}
     </div>
-
-    <iframe src="FAN030_show_employee_table.html" width="100%" height="100%" style="border:none;"></iframe>
-    <iframe src="FAN040_show_client_table.html" width="100%" height="100%" style="border:none;"></iframe>
-
-
 </body>
 </html>

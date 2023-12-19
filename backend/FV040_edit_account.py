@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, redirect, url_for, flash
 from db_query import edit_account, get_person_data
 from FV020_create_account import is_valid_phone, is_valid_date
 
@@ -21,16 +21,16 @@ def edit_account_details(person_id):
         required_fields = ['lastname', 'firstname', 'birthday', 'address', 'phone']
         for field in required_fields:
             if not request.form.get(field):
-                error_message = 'Es müssen alle Felder ausgefüllt werden.'
-                return render_template('FV040_edit_account.html', error_message=error_message, person_id=person_id)
+                flash('Es müssen alle Felder ausgefüllt werden.')
+                return render_template('FV040_edit_account.html', person_id=person_id)
 
         # Überprüfen des Datentyps für Geburtstag und Telefonnummer
         if not is_valid_date(birthday):
-            error_message = 'Das Geburtsdatum ist ungültig.'
-            return render_template('FV040_edit_account.html', error_message=error_message, person_id=person_id)
+            flash('Das Geburtsdatum ist ungültig.')
+            return render_template('FV040_edit_account.html', person_id=person_id)
         if not is_valid_phone(phone):
-            error_message = 'Die Telefonnummer ist ungültig.'
-            return render_template('FV040_edit_account.html', error_message=error_message, person_id=person_id)
+            flash('Die Telefonnummer ist ungültig.')
+            return render_template('FV040_edit_account.html', person_id=person_id)
 
         # Account-Daten aktualisieren
         edit_account(person_id, firstname, lastname, birthday, qualification, address, phone)

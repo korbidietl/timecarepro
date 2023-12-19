@@ -1,13 +1,13 @@
 from flask import Blueprint, render_template, request, session
 from db_query import get_client_table, get_client_table_sb
 
-show_clients_blueprint = Blueprint("show_clients", __name__, template_folder='templates')
+show_clients_blueprint = Blueprint("show_clients", __name__)
 
 
 @show_clients_blueprint.route('/show_clients', methods=['GET', 'POST'])
 def show_clients():
-    person = session['user_id']
-    role = session['user_role']
+    person = session.get('user_id')
+    role = session.get('user_role')
 
     if request.method == 'POST':
         month = request.form['month']

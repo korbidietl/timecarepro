@@ -63,32 +63,35 @@ def client_supervision_hours(client_id):
     user_id = session.get('user_id')
     user_role = session.get('user_role')
 
-    # Überprüfen ob Fallverantwortung hat
-    if fallverantwortung:
+    if request.method == 'POST':
 
-        # Datenbankaufruf für alle anzeigen
-        zeiteintraege_liste = get_zeiteintrag_for_client(client_id, month, year)
-        for zeiteintrag in zeiteintraege_liste:
-            zeiteintrag['ueberschneidung'] = check_for_overlapping_zeiteintrag(2)
-        for zeiteintrag in zeiteintraege_liste:
-            booked = check_booked(zeiteintrag.id)
+        # Überprüfen ob Fallverantwortung hat
+        if fallverantwortung:
 
-        return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id, client_id=client_id,
-                               zeiteintraege_liste=zeiteintraege_liste, booked=booked, client_name=client_name,
-                               user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
-                               kombinationen=kombinationen)
+            # Datenbankaufruf für alle anzeigen
+            zeiteintraege_liste = get_zeiteintrag_for_client(client_id, month, year)
+            for zeiteintrag in zeiteintraege_liste:
+                zeiteintrag['ueberschneidung'] = check_for_overlapping_zeiteintrag(2)
+            for zeiteintrag in zeiteintraege_liste:
+                booked = check_booked(zeiteintrag.id)
 
-    else:
-        zeiteintraege_liste = get_zeiteintrag_for_client_and_person(client_id, user_id, month, year)
-        for zeiteintrag in zeiteintraege_liste:
-            zeiteintrag['ueberschneidung'] = check_for_overlapping_zeiteintrag(2)
-        for zeiteintrag in zeiteintraege_liste:
-            booked = check_booked(zeiteintrag.id)
-        return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id, client_id=client_id,
-                               zeiteintraege_liste=zeiteintraege_liste, booked=booked, client_name=client_name,
-                               client_sachbearbeiter=client_sachbearbeiter_name, fallverantwortung=fallverantwortung,
-                               user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
-                               kombinationen=kombinationen)
+            return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id, client_id=client_id,
+                                   zeiteintraege_liste=zeiteintraege_liste, booked=booked, client_name=client_name,
+                                   user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
+                                   kombinationen=kombinationen)
+
+        else:
+            zeiteintraege_liste = get_zeiteintrag_for_client_and_person(client_id, user_id, month, year)
+            for zeiteintrag in zeiteintraege_liste:
+                zeiteintrag['ueberschneidung'] = check_for_overlapping_zeiteintrag(2)
+            for zeiteintrag in zeiteintraege_liste:
+                booked = check_booked(zeiteintrag.id)
+            return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id, client_id=client_id,
+                                   zeiteintraege_liste=zeiteintraege_liste, booked=booked, client_name=client_name,
+                                   client_sachbearbeiter=client_sachbearbeiter_name,
+                                   fallverantwortung=fallverantwortung,
+                                   user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
+                                   kombinationen=kombinationen)
 
     return render_template('FMOF010_show_supervisionhours_client.html', client_id=client_id, client_name=client_name,
                            client_sachbearbeiter=client_sachbearbeiter_name, fallverantwortung=fallverantwortung,
