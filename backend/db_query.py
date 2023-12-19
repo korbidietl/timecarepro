@@ -678,16 +678,10 @@ def validate_client(vorname, nachname, geburtsdatum):
 
 
 # /FV080
-def get_klient_data(person_id, klient_id):
+def get_klient_data(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("""
-        SELECT * FROM klient 
-        INNER JOIN person ON 
-        (klient.fallverantwortung_id = person.id 
-        OR klient.sachbearbeiter_id = person.id) 
-        WHERE person.id = %s AND klient.id = %s
-    """, (person_id, klient_id))
+    cursor.execute("SELECT * FROM klient WHERE ID = %s", client_id)
     result = cursor.fetchall()
     return result
 
