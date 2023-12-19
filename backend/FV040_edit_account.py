@@ -6,7 +6,7 @@ edit_account_blueprint = Blueprint('edit_account', __name__)
 
 
 @edit_account_blueprint.route('/edit_account/<int:person_id>', methods=['GET', 'POST'])
-def edit_account_details(person_id):
+def edit_account(person_id):
     if request.method == 'POST':
         # Daten aus dem Formular
         lastname = request.form.get('lastname')
@@ -43,6 +43,6 @@ def edit_account_details(person_id):
             return render_template('FV040_edit_account.html', person_id=person_id, return_url=return_url)
 
     person = get_person_data(person_id)
-    return render_template('FV040_edit_account.html', person=person)
+    return render_template('FV040_edit_account.html',person_id=person_id, person=person)
 
 

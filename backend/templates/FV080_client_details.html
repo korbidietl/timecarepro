@@ -11,7 +11,7 @@
 
     <div class="registration-form">
         <h2>Klient: {{firstname}} {{lastname}}</h2>
-        <form action="/client_details/<int:client_id>" method="get">
+        <form action="/client_details/<int:client_id>" method="post">
             <div class="form-row">
                 <div class="form-group2">
                     <label for="lastname">Nachname:</label>
@@ -60,10 +60,9 @@
 
             <!-- Buttons -->
             <div class="form-row">
-                <form action="{{url_for('edit_client.edit_client', client_id = client_id)}}">
+                <form action="{{url_for('edit_client.edit_client', client_id = client_id)}}", method="post">
                     <button type="submit">Bearbeiten</button>
                 </form>
-                Accountverwaltung
                 <button type="button" onclick="window.location.href='{{ return_url }}'">Schließen</button>
             </div>
         </form>

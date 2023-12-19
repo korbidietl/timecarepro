@@ -5,13 +5,18 @@
     <title>Accountdetails einsehen </title>
     <link rel="stylesheet" href="../static/styles.css">
 </head>
+<style>
+.hidden {
+    display: none;
+}
+</style>
 <body>
     <!-- menüleiste -->
     {% include 'FAN020_navbar.html' %}
 
     <div class="registration-form">
         <h2>{{role}}: {{firstname}} {{lastname}}</h2>
-        <form action="/account_details/<int:person_id>" method="get">
+        <form action="/account_details/<int:person_id>" method="post">
             <div class="form-row">
                 <div class="form-group2">
                     <label for="lastname">Nachname:</label>
@@ -58,9 +63,14 @@
             </div>
             <!-- Buttons -->
             <div class="form-row">
-                <form action="{{url_for('edit_account.edit_account_details', person_id=person_id)}}">
+
+                <form action="{{url_for('edit_account.edit_account', person_id=person_id) }}" method="get">
+                    <button type="submit" class="hidden">Bearbeiten</button>
+                </form>
+                <form action="{{ url_for('edit_account.edit_account', person_id=person_id) }}" method="post">
                     <button type="submit">Bearbeiten</button>
                 </form>
+
                 {% if locked %}
                     <!-- Zeigt den "Entsperren"-Button an, wenn der Account gesperrt ist -->
                     <form action="{{ url_for('account_unlock.account_unlock', person_id=person_id) }}" method="post">
