@@ -686,6 +686,15 @@ def get_klient_data(client_id):
     return result
 
 
+# /FV080
+def get_name_by_id(person_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT vorname, nachname FROM person WHERE ID = %s", (person_id,))
+    result = cursor.fetchall()
+    return result
+
+
 # /FV090/
 def edit_klient(person_id, klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                 kontingent_hk, kontingent_fk, fallverantwortung_id):
