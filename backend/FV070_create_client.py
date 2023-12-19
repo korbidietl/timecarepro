@@ -15,8 +15,8 @@ def register_client():
         telefonnummer = request.form.get('number')
         sachbearbeiter_id = request.form.get('sbDropdown')
         adresse = request.form.get('address')
-        kontingent_fk = request.form.get('fkcontingent')
-        kontingent_hk = request.form.get('hkcontingent')
+        kontingent_fk = request.form.get('fkontingent')
+        kontingent_hk = request.form.get('hkontingent')
         fallverantwortung_id = request.form.get('fvDropdown')
 
         required_fields = ['lastname', 'firstname', 'birthday', 'address']
