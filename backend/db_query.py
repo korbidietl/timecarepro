@@ -681,7 +681,7 @@ def validate_client(vorname, nachname, geburtsdatum):
 def get_klient_data(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM klient WHERE ID = %s", client_id)
+    cursor.execute("SELECT * FROM klient WHERE ID = %s", (client_id,))
     result = cursor.fetchall()
     return result
 
