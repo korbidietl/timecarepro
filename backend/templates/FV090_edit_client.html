@@ -11,7 +11,7 @@
 
     <div class = "registration-form">
         <h2>Klient bearbeiten</h2>
-        <form action="/edit_client" method="post">
+        <form action="/edit_client/<int:client_id>" method="post">
             <div class="form-row">
                 <div class="form-group2">
                     <label for="client_id">KlientID:</label>

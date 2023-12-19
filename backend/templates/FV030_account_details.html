@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Accountdetails einsehen </title>
+    <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
     <!-- menüleiste -->
@@ -62,12 +63,12 @@
                 </form>
                 {% if locked %}
                     <!-- Zeigt den "Entsperren"-Button an, wenn der Account gesperrt ist -->
-                    <form action="{{ url_for('entsperren_route', person_id=person_id) }}" method="post">
+                    <form action="{{ url_for('account_unlock.account_unlock', person_id=person_id) }}" method="post">
                         <button type="submit">Entsperren</button>
                     </form>
                 {% else %}
                     <!-- Zeigt den "Sperren"-Button an, wenn der Account nicht gesperrt ist -->
-                    <form action="{{ url_for('sperren_route', person_id=person_id) }}" method="post">
+                    <form action="{{ url_for('account_lock.account_lock', person_id=person_id) }}" method="post">
                         <button type="submit">Sperren</button>
                     </form>
                 {% endif %}

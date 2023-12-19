@@ -4,10 +4,10 @@ from db_query import edit_klient, mitarbeiter_dropdown
 edit_client_blueprint = Blueprint('edit_client', __name__)
 
 
-@edit_client_blueprint.route('/edit_client', methods=['POST', 'GET'])
-def edit_client():
+@edit_client_blueprint.route('/edit_client/<int:client_id>', methods=['POST', 'GET'])
+def edit_client(client_id):
     if request.method == 'POST':
-        client_id = request.form['client_id']
+        # client_id = request.form['client_id']
         vorname = request.form['vorname']
         nachname = request.form['nachname']
         geburtsdatum = request.form['geburtsdatum']
