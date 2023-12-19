@@ -72,10 +72,10 @@ def client_supervision_hours(client_id):
             zeiteintraege_liste = get_zeiteintrag_for_client(client_id, month, year)
             for zeiteintrag in zeiteintraege_liste:
                 zeiteintrag['ueberschneidung'] = check_for_overlapping_zeiteintrag(2)
-            for zeiteintrag in zeiteintraege_liste:
-                booked = check_booked(zeiteintrag.id)
+                for zg in zeiteintraege_liste:
+                    booked = check_booked(zg.id)
 
-            return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id, client_id=client_id,
+                    return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id, client_id=client_id,
                                    zeiteintraege_liste=zeiteintraege_liste, booked=booked, client_name=client_name,
                                    user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
                                    kombinationen=kombinationen)
