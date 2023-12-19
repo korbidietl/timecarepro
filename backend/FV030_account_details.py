@@ -1,17 +1,28 @@
 from flask import Blueprint, request, render_template, url_for
-from db_query import get_firstname_by_email, get_lastname_by_email
+from db_query import get_person_data
 
 account_details_blueprint = Blueprint('account_details', __name__)
 
 
 @account_details_blueprint.route('/account_details/<int:person_id>', methods=['POST', 'GET'])
 def account_details(person_id):
-
     # Datenbankaufruf über person_id
-    # Datenbankaufruf ob gesperrt
-    # Datenbankaufruf nach role
-    locked = True
-    role = 'Mitarbeiter'
-    user_name = 'Hallo'
+    person_data_list = get_person_data(person_id)
+    person_data = person_data_list[0]
 
-    return render_template('FV030_account_details.html', person_id=person_id, locked=locked, role=role)
+    if person_data:
+        firstname = person_data[1]
+        lastname = person_data[2]
+        birthday = person_data[3]
+        qualification = person_data[4]
+        address = person_data[5]
+        role = person_data[6]
+        email = person_data[7]
+        phone = person_data[8]
+        locked = person_data[9]
+
+        return render_template('FV030_account_details.html', person_id=person_id, firstname=firstname,
+                               lastname=lastname, birthday=birthday, qualification=qualification, address=address,
+                               email=email, phone=phone, locked=locked, role=role)
+
+    return render_template('FV030_account_details.html', person_id=person_id)
