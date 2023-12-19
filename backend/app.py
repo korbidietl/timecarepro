@@ -78,6 +78,9 @@ def create_app():
     from FV070_create_client import create_client_blueprint
     app.register_blueprint(create_client_blueprint)
 
+    from FV080_client_details import client_details_blueprint
+    app.register_blueprint(client_details_blueprint)
+
     from FV090_edit_client import edit_client_blueprint
     app.register_blueprint(edit_client_blueprint)
 
