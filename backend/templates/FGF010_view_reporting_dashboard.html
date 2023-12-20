@@ -165,7 +165,6 @@
                     <div class="form-group2">
                         <label for="mitarbeiter">Mitarbeiter:</label>
                         <select class="form-control gray-background" id="mitarbeiter"  name="mitarbeiter">
-                            <!-- Optionen werden durch Python generiert -->
                             {% for fv in fallverantwortung %}
                             <option value="{{fv.id}}">{{fv.nachname}}</option>
                             {% endfor %}
@@ -174,7 +173,6 @@
                     <div class="form-group2">
                         <label for="klient">Klient:</label>
                         <select class="form-control gray-background" id="klient" name="klient">
-                            <!-- Optionen werden durch Python generiert -->
                             {% for fv in fallverantwortung %}
                             <option value="{{fv.id}}">{{fv.nachname}}</option>
                             {% endfor %}
@@ -241,7 +239,7 @@
                 }); -->
 
                 <div class="accordion-button">
-                    <a href="{{ url_for('login.login') }}">Exportieren</a>
+                    <button id="exportButton">Exportieren</button>
                     <button onclick="window.print();">Drucken</button>
                 </div>
 
@@ -259,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var stundenChart = new Chart(stundenCtx, {
         type: 'bar',
         data: {
-            labels: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+            labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
             datasets: [{
                 label: 'Stundenzahl',
                 data: [/* Daten für Stunden aus der Datenbank */],
@@ -284,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var kilometerChart = new Chart(kilometerCtx, {
         type: 'bar',
         data: {
-            labels: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+            labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
             datasets: [{
                 label: 'Kilometeranzahl',
                 data: [/* Daten für Kilometer aus der Datenbank */],
@@ -308,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var terminAbsagenChart = new Chart(terminAbsagenCtx, {
         type: 'bar',
         data: {
-            labels: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+            labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
             datasets: [{
                 label: 'Terminabsagen',
                 data: [/* Daten für Kilometer aus der Datenbank */],
@@ -355,4 +353,45 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         {% endif %}
 </script>
+<script>
+function exportAllTablesToCSV(filename) {
+    var csv = [];
+    var tables = document.querySelectorAll("table");
+
+    tables.forEach(function(table) {
+        var rows = table.querySelectorAll("tr");
+
+        rows.forEach(function(row) {
+            var rowData = [];
+            var cols = row.querySelectorAll("td, th");
+
+            cols.forEach(function(col) {
+                rowData.push(col.innerText);
+            });
+
+            csv.push(rowData.join(","));
+        });
+
+        // Fügt eine leere Zeile zwischen Tabellen hinzu
+        csv.push("");
+    });
+
+    // Erstellen Sie einen Link und starten Sie den Download
+    var csvString = csv.join("\n");
+    var link = document.createElement("a");
+    link.style.display = 'none';
+    link.setAttribute('target', '_blank');
+    link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString));
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+document.getElementById('exportButton').addEventListener('click', function () {
+    exportAllTablesToCSV('gesamteSeite.csv');
+});
+</script>
+
+
 </html>
