@@ -88,6 +88,8 @@ def create_app():
     app.register_blueprint(edit_time_entry_fv_blueprint)
 
     # Geschäftsführung
+    from FGF010_view_reporting_dashboard import reporting_dachboard_blueprint
+    app.register_blueprint(reporting_dachboard_blueprint)
 
     from FGF020_show_protocol import show_protocol_blueprint
     app.register_blueprint(show_protocol_blueprint)

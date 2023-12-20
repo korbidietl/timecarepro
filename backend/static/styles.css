@@ -363,7 +363,53 @@ body {
 
      */
 }
+/* Dashboard Formatierung */
+.dashboard-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Erstellt zwei Spalten */
+  gap: 20px; /* Abstand zwischen den Elementen */
+}
 
+.dashboard-item .chart-container {
+    text-align: center; /* Zentriert den Text */
+    padding: 20px; /* Innenabstand */
+    border-radius: 8px; /* Abgerundete Ecken */
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.dashboard-item canvas {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.dashboard-number {
+    color: #aaa; /* Hellgraue Schriftfarbe für die Zahl */
+    font-size: 6em; /* Größe der Zahl */
+    font-weight: bold; /* Fettdruck für die Zahl */
+    margin: 0;
+
+}
+.dashboard-item h3 {
+    margin-top:0;
+    margin-bottom: 5px; /* Weniger Abstand unter der Überschrift */
+    color: #999; /* Eine noch hellere Schriftfarbe für die Überschrift */
+    font-size: 0.8em; /* Eine kleinere Schriftgröße */
+    font-weight: normal; /* Entfernen des Fettdrucks, falls gewünscht */
+    padding-top: 10px;
+}
+
+/* Tabellen Formatierung */
+.scrollable-container {
+    overflow-x: auto;  /* Erlaubt horizontales Scrollen, wenn der Inhalt zu breit ist */
+    max-width: 100%;  /* oder eine andere feste Breite, je nach Bedarf */
+}
+.scrollable-container table {
+    /* Stellen Sie sicher, dass die Tabelle sich ausdehnt, um ihren Inhalt zu fassen */
+    width: 100%;
+    min-width: 600px;  /* oder eine andere Mindestbreite, die für Ihre Daten sinnvoll ist */
+}
 
 /* vorlage */
 
@@ -372,6 +418,11 @@ body {
     display: flex;
     justify-content: space-between;
     margin-bottom: 2px;
+}
+.form-row button {
+    flex: 0 1 auto; /* oder eine andere geeignete Flex-Einstellung */
+    align-self: center; /* oder 'flex-start', 'flex-end', je nach Bedarf */
+    /* Weitere individuelle Stile für den Button */
 }
 
 .form-group {
@@ -433,3 +484,8 @@ body {
     margin-left: 10px;
 }
 
+
+/* Filter Format */
+.gray-background {
+    background-color: lightgray;
+}

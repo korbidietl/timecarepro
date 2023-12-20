@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporting Dashboard</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+
+    <!-- Menüleiste einbinden-->
+    {% include 'FAN020_navbar.html' %}
+
+    <!-- Flash Nachricht -->
+    <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <div class = "container-tabelle">
+        <div class="leerzeile"></div>
+        <h2>Reporting Dashboard</h2>
+        <div class="leerzeile"></div>
+        <h3>Zeiteinträge</h3>
+        <div class="scrollable-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Mitarbeiter</th>
+                        <th>Sachbearbeiter</th>
+                        <th>Klient</th>
+                        <th>Geleistete Stunden</th>
+                        <th>Gefahrene km</th>
+                        <th>Abrechenbare km</th>
+                        <th>Nicht-abrechenbare km</th>
+                        <th>Absagen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for zeile in tabellen_daten %}
+                    <tr>
+                        <td>{{ zeile.id }}</td>
+                        <td>{{ zeile.mitarbeiter }}</td>
+                        <td>{{ zeile.sachbearbeiter }}</td>
+                        <td>{{ zeile.klient }}</td>
+                        <td>{{ zeile.geleistete_stunden }}</td>
+                        <td>{{ zeile.gefahrene_km }}</td>
+                        <td>{{ zeile.abrechenbare_km }}</td>
+                        <td>{{ zeile.nicht_abrechenbare_km }}</td>
+                        <td>{{ zeile.absagen }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td><strong>Gesamt</strong></td>
+                        <td colspan="3"></td>
+                        <td><strong>{{ mastunden }}</strong></td>
+                        <td><strong>{{ makm }}</strong></td>
+                        <td><strong>{{ gesamt_abrechenbare_km }}</strong></td>
+                        <td><strong>{{ gesamt_nicht_abrechenbare_km }}</strong></td>
+                        <td><strong>{{ maabsage }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="leerzeile"></div>
+        <h3>Mitarbeiter</h3>
+        <div class="scrollable-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Personalnr.</th>
+                        <th>Nachname</th>
+                        <th>Vorname</th>
+                        <th>Geleistete Stunden</th>
+                        <th>Gefahrene km</th>
+                        <th>Abrechenbare km</th>
+                        <th>Nicht-abrechenbare km</th>
+                        <th>Absagen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mitarbeiter in mitarbeiter_daten %}
+                    <tr>
+                        <td>{{ mitarbeiter.personalnr }}</td>
+                        <td>{{ mitarbeiter.nachname }}</td>
+                        <td>{{ mitarbeiter.vorname }}</td>
+                        <td>{{ mitarbeiter.geleistete_stunden }}</td>
+                        <td>{{ mitarbeiter.gefahrene_km }}</td>
+                        <td>{{ mitarbeiter.abrechenbare_km }}</td>
+                        <td>{{ mitarbeiter.nicht_abrechenbare_km }}</td>
+                        <td>{{ mitarbeiter.absagen }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <<td><strong>Gesamt</strong></td>
+                        <td colspan="2"></td>
+                        <td>{{ mastunden }}</td>
+                        <td>{{ makm }}</td>
+                        <!-- Weitere Summenzellen abrechenbar, nicht-->
+                        <td>{{maabsage}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="leerzeile"></div>
+        <h3>Klienten</h3>
+        <div class="scrollable-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nachname</th>
+                        <th>Vorname</th>
+                        <th>geleistete Stunden</th>
+                        <th>Abrechenbare km</th>
+                        <th>Nicht-abrechenbare km</th>
+                        <th>Absagen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for klient in klient_daten %}
+                    <tr>
+                        <td>{{ klient.id }}</td>
+                        <td>{{ klient.nachname }}</td>
+                        <td>{{ klient.vorname }}</td>
+                        <td>{{ klient.geleistete_stunden }}</td>
+                        <td>{{ klient.abrechenbare_km }}</td>
+                        <td>{{ klient.nicht_abrechenbare_km }}</td>
+                        <td>{{ klient.absagen }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <<td><strong>Gesamt</strong></td>
+                        <td colspan="2"></td>
+                        <td>{{ klstunden }}</td>
+                        <!-- Weitere Summenzellen abrechenbar, nicht-->
+                        <td>{{klabsage}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="leerzeile"></div>
+
+
+        <form action="{{url_for('view_reporting_dashboard.reporting_dashboard')}}" method="POST">
+           <div class="mein-eindeutiges-formular">
+                <div class="form-row">
+                    <!-- Filter -->
+                    <div class="form-group2">
+                        <label for="von">von:</label>
+                        <input type="date" id="von" class="gray-background" name="von">
+                    </div>
+                    <div class="form-group2">
+                        <label for="bis">bis:</label>
+                        <input type="date" id="bis" class="gray-background" name="bis">
+                    </div>
+                    <div class="form-group2">
+                        <label for="mitarbeiter">Mitarbeiter:</label>
+                        <select class="form-control gray-background" id="mitarbeiter"  name="mitarbeiter">
+                            <!-- Optionen werden durch Python generiert -->
+                            {% for fv in fallverantwortung %}
+                            <option value="{{fv.id}}">{{fv.nachname}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group2">
+                        <label for="klient">Klient:</label>
+                        <select class="form-control gray-background" id="klient" name="klient">
+                            <!-- Optionen werden durch Python generiert -->
+                            {% for fv in fallverantwortung %}
+                            <option value="{{fv.id}}">{{fv.nachname}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit">Filtern</button>
+                </div>
+                <div class="leerzeile"></div>
+                <div class="dashboard-container">
+                   <div class="dashboard-item">
+                       <h3>Mitarbeiteranzahl</h3>
+                       <div class="dashboard-number">{{maanzahl}}</div> <!-- Die Zahl würde dynamisch aus der Datenbank geladen -->
+                   </div>
+                    <div class="dashboard-item">
+                        <h3>Stundenzahl</h3>
+                        <div class="chart-container">
+                            <canvas id="stundenChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="dashboard-item">
+                        <h3>Kilometerzahl</h3>
+                        <div class="chart-container">
+                            <canvas id="kilometerChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="dashboard-item">
+                        <h3>Terminabsagen</h3>
+                        <div class="chart-container">
+                            <canvas id="terminAbsagenChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+               <!-- Kürzerer JavaScript mit einbindung Daten testen
+               function erstelleDiagramm(canvasId, label, daten, backgroundColor, borderColor, maxTicks) {
+                    var ctx = document.getElementById(canvasId).getContext('2d');
+                    return new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                            datasets: [{
+                                label: label,
+                                data: daten,
+                                backgroundColor: backgroundColor,
+                                borderColor: borderColor,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true,
+                                        suggestedMax: maxTicks
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                }
+                document.addEventListener('DOMContentLoaded', function() {
+                    erstelleDiagramm('stundenChart', 'Stundenzahl', /* Daten für Stunden */, 'rgba(255, 159, 64, 0.2)', 'rgba(255, 159, 64, 1)', 6000);
+                    erstelleDiagramm('kilometerChart', 'Kilometeranzahl', /* Daten für Kilometer */, 'rgba(0, 128, 0, 0.2)', 'rgba(0, 128, 0, 1)', 12000);
+                    erstelleDiagramm('terminAbsagenChart', 'Terminabsagen', /* Daten für Terminabsagen */, 'rgba(225, 0, 0, 0.2)', 'rgba(225, 0, 0, 1)', 14);
+                }); -->
+
+                <div class="accordion-button">
+                    <a href="{{ url_for('login.login') }}">Exportieren</a>
+                    <button onclick="window.print();">Drucken</button>
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var stundenCtx = document.getElementById('stundenChart').getContext('2d');
+    var stundenChart = new Chart(stundenCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+            datasets: [{
+                label: 'Stundenzahl',
+                data: [/* Daten für Stunden aus der Datenbank */],
+                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        suggestedMax: 6000
+                    }
+                }]
+            }
+        }
+    });
+
+    var kilometerCtx = document.getElementById('kilometerChart').getContext('2d');
+    var kilometerChart = new Chart(kilometerCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+            datasets: [{
+                label: 'Kilometeranzahl',
+                data: [/* Daten für Kilometer aus der Datenbank */],
+                backgroundColor: 'rgba(0, 128, 0, 0.2)',
+                borderColor: 'rgba(0, 128, 0, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        suggestedMax: 12000 // Maximalwert an die Daten anpassen
+                    }
+                }]
+            }
+        }
+    });
+    var terminAbsagenCtx = document.getElementById('terminAbsagenChart').getContext('2d');
+    var terminAbsagenChart = new Chart(terminAbsagenCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+            datasets: [{
+                label: 'Terminabsagen',
+                data: [/* Daten für Kilometer aus der Datenbank */],
+                backgroundColor: 'rgba(225, 0, 0, 0.2)',
+                borderColor: 'rgba(225, 0, 0, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        suggestedMax: 14 // Maximalwert an die Daten anpassen
+                    }
+                }]
+            }
+        }
+    });
+});
+</script>
+
+
+<script>
+    window.onload = function() {
+        // Überprüfen, ob Nachrichten vorhanden sind
+        {% if get_flashed_messages() %}
+        let modal = document.getElementById("flashModal");
+        let span = document.getElementsByClassName("close")[0];
+
+        // Modal anzeigen
+        modal.style.display = "block";
+
+        // Schließen, wenn das "X" geklickt wird
+        span.onclick = function() {
+            modal.style.display = "none";
+        };
+
+        // Schließen, wenn außerhalb des Modals geklickt wird
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+        {% endif %}
+</script>
+</html>
