@@ -1,6 +1,9 @@
 from flask import Blueprint, request, redirect, url_for, render_template
 from db_query import get_zeiteintrag_with_fahrten_by_id, edit_zeiteintrag, delete_fahrt, add_fahrt, edit_fahrt
 from datetime import datetime
+from FMOF030_create_time_entry import check_time_entry_constraints
+from FS020_sign_capture import capture_signature
+
 
 edit_time_entry_blueprint = Blueprint('edit_time_entry', __name__)
 
@@ -17,13 +20,9 @@ def edit_time_entry(zeiteintrag_id):
         datum = request.form.get('datum')
         start_zeit = request.form.get('startZeit')
         end_zeit = request.form.get('endZeit')
-        # da müssen wir uns noch überlegen, wie das am besten sinn macht
-        # weil klient name kann ja doppelt sein, aber das dropdown soll ja keine id anzeigen
-        # wie erkennt man aber im dropdown welcher max mustermann der richtige ist?
         klient_id = request.form.get('klient')
         beschreibung = request.form.get('beschreibung')
         interne_notiz = request.form.get('interneNotiz')
-        # hier müssen noch unterschriften rein
         unterschrift_klient = capture_signature()
         unterschrift_mitarbeiter = capture_signature()
         absage = request.form.get('absage')
@@ -33,9 +32,11 @@ def edit_time_entry(zeiteintrag_id):
         start_datetime = datetime.strptime(f"{start_zeit}", '%H:%M')
         end_datetime = datetime.strptime(f"{end_zeit}", '%H:%M')
 
-        # Änderungen am Zeiteintrag speichern
-        edit_zeiteintrag(zeiteintrag_id, datum_datetime, start_datetime, end_datetime, unterschrift_klient, unterschrift_mitarbeiter, klient_id, beschreibung, interne_notiz, absage)
+        if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id):
+            # Änderungen am Zeiteintrag speichern
+            edit_zeiteintrag(zeiteintrag_id, datum_datetime, start_datetime, end_datetime, unterschrift_klient, unterschrift_mitarbeiter, klient_id, beschreibung, interne_notiz, absage)
 
+        # importiere fahrtCounter von html hidden input in python
         fahrtCounter = int(request.form.get('fahrtCounterInput', 1))
 
         # Bearbeite Fahrt-Einträge
