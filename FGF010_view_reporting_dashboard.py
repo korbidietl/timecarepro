@@ -2,18 +2,28 @@ from datetime import datetime
 
 from flask import Blueprint, render_template, url_for, request, flash, redirect
 from db_query import mitarbeiter_dropdown, client_dropdown, sum_mitarbeiter, sum_hours_mitarbeiter, sum_hours_klient, \
-    sum_absage_mitarbeiter, sum_absage_klient, sum_km_mitarbeiter, sum_km_klient, kostentraeger_dropdown
+    sum_absage_mitarbeiter, sum_absage_klient, sum_km_mitarbeiter, sum_km_klient, get_report_zeiteintrag, \
+    get_report_mitarbeiter, get_report_klient
 
 reporting_dachboard_blueprint = Blueprint('view_reporting_dashboard', __name__)
 
 
 @reporting_dachboard_blueprint.route('/reporting_dashboard', methods={'GET', 'POST'})
 def reporting_dashboard():
+    # Dropdown Felder
     mitarbeiter = mitarbeiter_dropdown()
     ma = {'mitarbeiter': mitarbeiter}
 
     client = client_dropdown()
     cl = {'klient': client}
+
+    # Default Datumswerte
+    date_format = "%d.%m.%Y"
+    heute = datetime.now()
+    erster_dieses_monats = datetime(heute.year, heute.month, 1)
+
+    von = erster_dieses_monats.strftime(date_format)
+    bis = heute.strftime(date_format)
 
     if request.method == 'POST':
         # Filter auslesen
@@ -23,7 +33,6 @@ def reporting_dashboard():
         klient = request.form.get('klient')
 
         # Überprüfung Eingaben
-        date_format = "%d.%m.%Y"
         valid = True
 
         try:
@@ -55,54 +64,47 @@ def reporting_dashboard():
         # Auswerten des Datums zur weiterverwendung
         if von:
             von_date = datetime.strptime(von, "%d.%m.%Y")
-            von_day, von_month, von_year = von_date.day, von_date.month, von_date.year
+        else:
+            von_date = von
 
         if bis:
             bis_date = datetime.strptime(bis, "%d.%m.%Y")
-            bis_day, bis_month, bis_year = bis_date.day, bis_date.month, bis_date.year
+        else:
+            bis_date = bis
 
-        anzeigen(von_day, von_month, von_year, bis_day, bis_month, bis_year)
+        # Abruf mit Filter Werten
+        anzeigen(von_date, bis_date)
 
-    # Abruf mit aktuellem Monat
-    heute = datetime.now()
-    erster_dieses_monats = datetime(heute.year, heute.month, 1)
-
-    von_day = erster_dieses_monats.day
-    von_month = erster_dieses_monats.month
-    von_year = erster_dieses_monats.year
-    bis_day = heute.day
-    bis_month = heute.month
-    bis_year = heute.year
-    # anzeigen(von_day, von_month, von_year, bis_day, bis_month, bis_year)
-
+    # Abruf mit Default Werten
+    anzeigen(von, bis)
     return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
 
 
-def anzeigen(von_day, von_month, von_year, bis_day, bis_month, bis_year):
+def anzeigen(von, bis):
     # Tabelle Mitarbeiter
-    mastunden = sum_hours_mitarbeiter(month, year)
-    maabsagen = sum_absage_mitarbeiter(month, year)
+    mastunden = sum_hours_mitarbeiter(von, bis)
+    maabsagen = sum_absage_mitarbeiter(von, bis)
     # abrechenbare km und nicht-abrechenbare km
-    makm = sum_km_mitarbeiter(month, year)
-    # mitarbeiter_liste
+    makm = sum_km_mitarbeiter(von, bis)
+    mitarbeiter_liste = get_report_mitarbeiter(von, bis)
 
     # Tabelle Klient
-    klstunden = sum_hours_klient(month, year)
-    klabsage = sum_absage_klient(month, year)
+    klstunden = sum_hours_klient(von, bis)
+    klabsage = sum_absage_klient(von, bis)
     # km abrechenbar und nicht-abrechenbar
-    klkm = sum_km_klient(month, year)
-    # klienten_liste
+    klkm = sum_km_klient(von, bis)
+    klienten_liste = get_report_klient(von, bis)
 
     # Tabelle Zeiteinträge
 
-    # zeiteintraege_liste = db_abruf_funktion()
+    zeiteintraege_liste = get_report_zeiteintrag(von, bis)
 
     # Diagramme
-    mazahl = sum_mitarbeiter(month, year)
-    stundendaten = get_stundendaten_fuer_jeden_monat()
+    mazahl = sum_mitarbeiter(von, bis)
+    # stundendaten = get_stundendaten_fuer_jeden_monat()
     # kmdaten = km jahr
     # tabsagendaten= terminabsagen jahr
 
-
-    return render_template(zeiteintraege_liste= zeiteintraege_liste, mitarbeiter_liste=mitarbeiter_liste, klienten_liste= klienten_liste, mastunden=mastunden, maabsagen=maabsagen, makm=makm,
-                           klstunden=klstunden, klabsage=klabsage, klkm=klkm, mazahl=mazahl, stundendaten=stundendaten )
+    return render_template('FGF010_view_reporting_dashboard.html', zeiteintraege_liste=zeiteintraege_liste, mitarbeiter_liste=mitarbeiter_liste,
+                           klienten_liste=klienten_liste, mastunden=mastunden, maabsagen=maabsagen, makm=makm,
+                           klstunden=klstunden, klabsage=klabsage, klkm=klkm, mazahl=mazahl)
