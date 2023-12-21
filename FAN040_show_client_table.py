@@ -19,11 +19,12 @@ def show_clients():
             clients = get_client_table(month, year)
 
         if not clients:
-            return render_template('templates/FAN040_show_client_table.html', person=person, clients=[], no_clients_message="Keine Klienten vorhanden.")
+            return render_template('FAN040_show_client_table.html', person=person, clients=[],
+                                   no_clients_message="Keine Klienten vorhanden.")
 
-        return render_template('templates/FAN040_show_client_table.html', person=person, clients=clients)
+        return render_template('FAN040_show_client_table.html', person=person, clients=clients)
 
     else:
-        return render_template('templates/FAN040_show_client_table.html', person=person, clients=[])
+        return render_template('FAN040_show_client_table.html', person=person, clients=[])
 
 

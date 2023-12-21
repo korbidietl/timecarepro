@@ -22,15 +22,15 @@ def edit_account(person_id):
         for field in required_fields:
             if not request.form.get(field):
                 flash('Es müssen alle Felder ausgefüllt werden.')
-                return render_template('templates/FV040_edit_account.html', person_id=person_id)
+                return render_template('FV040_edit_account.html', person_id=person_id)
 
         # Überprüfen des Datentyps für Geburtstag und Telefonnummer
         if not is_valid_date(birthday):
             flash('Das Geburtsdatum ist ungültig.')
-            return render_template('templates/FV040_edit_account.html', person_id=person_id)
+            return render_template('FV040_edit_account.html', person_id=person_id)
         if not is_valid_phone(phone):
             flash('Die Telefonnummer ist ungültig.')
-            return render_template('templates/FV040_edit_account.html', person_id=person_id)
+            return render_template('FV040_edit_account.html', person_id=person_id)
 
         # Account-Daten aktualisieren
         edit_account(person_id, firstname, lastname, birthday, qualification, address, phone)
@@ -40,9 +40,9 @@ def edit_account(person_id):
         # vllt so:
         if request.method == 'GET':
             return_url = request.args.get('return_url', '/default_return_page')
-            return render_template('templates/FV040_edit_account.html', person_id=person_id, return_url=return_url)
+            return render_template('FV040_edit_account.html', person_id=person_id, return_url=return_url)
 
     person = get_person_data(person_id)
-    return render_template('templates/FV040_edit_account.html', person_id=person_id, person=person)
+    return render_template('FV040_edit_account.html', person_id=person_id, person=person)
 
 

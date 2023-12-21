@@ -24,21 +24,21 @@ def register_client():
         for field in required_fields:
             if not request.form.get(field):
                 flash('Es müssen alle Felder ausgefüllt werden.')
-                return render_template('templates/FV070_create_client.html')
+                return render_template('FV070_create_client.html')
 
         # validate client in db_query hinzufügen (validate_email(email))
         if validate_client(vorname, nachname, geburtsdatum):
             flash('Es existiert bereits ein Client mit diesem Namen und dem Geburtsdatum.')
-            return render_template('templates/FV070_create_client.html')
+            return render_template('FV070_create_client.html')
 
         else:
             create_klient(nachname, vorname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                           kontingent_hk, kontingent_fk, fallverantwortung_id)
-            return render_template('templates/FAN010_home.html',
+            return render_template('FAN010_home.html',
                                    success_message="Client wurde erfolgreich angelegt")
     kostentraeger = kostentraeger_dropdown()
     kt = {'kostentraeger': kostentraeger}
     fallverantwortung = mitarbeiter_dropdown()
     fv = {'fallverantwortung': fallverantwortung}
-    return render_template('templates/FV070_create_client.html', **kt, **fv)
+    return render_template('FV070_create_client.html', **kt, **fv)
 

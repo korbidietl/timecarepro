@@ -40,9 +40,15 @@ def create_app():
 
     # Sachbearbeiter/Kostenträger
 
+    from FSK010_access_hours_km_clients import access_hours_km_clients_blueprint
+    app.register_blueprint(access_hours_km_clients_blueprint)
+
     # Mitarbeiter ohne Fallverantwortung
     from FMOF010_show_supervisionhours_client import client_hours_blueprint
     app.register_blueprint(client_hours_blueprint)
+
+    from FMOF020_view_time_entries import view_time_entries_blueprint
+    app.register_blueprint(view_time_entries_blueprint)
 
     from FMOF030_create_time_entry import create_time_entry_blueprint
     app.register_blueprint(create_time_entry_blueprint)
@@ -93,6 +99,10 @@ def create_app():
 
     from FGF020_show_protocol import show_protocol_blueprint
     app.register_blueprint(show_protocol_blueprint)
+
+    # Kostenträger
+    from FSK010_access_hours_km_clients import access_hours_km_clients_blueprint
+    app.register_blueprint(access_hours_km_clients_blueprint)
 
     return app
 

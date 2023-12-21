@@ -28,4 +28,4 @@ def edit_client(client_id):
     sb = {'sachbearbeiter': sachbearbeiter}
     fallverantwortung = mitarbeiter_dropdown()
     fv = {'fallverantwortung': fallverantwortung}
-    return render_template('templates/FV090_edit_client.html', **sb, **fv)
+    return render_template('FV090_edit_client.html', **sb, **fv)

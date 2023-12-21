@@ -50,7 +50,7 @@ def reporting_dashboard():
 
         # Wenn ein Feld ungültig ist erneutes Laden der Seite mit Flash nachricht
         if not valid:
-            return render_template('templates/FGF010_view_reporting_dashboard.html', **ma, **cl)
+            return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
 
         # Auswerten des Datums zur weiterverwendung
         if von:
@@ -75,7 +75,7 @@ def reporting_dashboard():
     bis_year = heute.year
     anzeigen(von_day, von_month, von_year, bis_day, bis_month, bis_year)
 
-    return render_template('templates/FGF010_view_reporting_dashboard.html', **ma, **cl)
+    return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
 
 
 def anzeigen(von_day, von_month, von_year, bis_day, bis_month, bis_year):
@@ -84,22 +84,25 @@ def anzeigen(von_day, von_month, von_year, bis_day, bis_month, bis_year):
     maabsagen = sum_absage_mitarbeiter(month, year)
     # abrechenbare km und nicht-abrechenbare km
     makm = sum_km_mitarbeiter(month, year)
-    # Tabelle Mitarbeiter einbinden
+    # mitarbeiter_liste
 
     # Tabelle Klient
     klstunden = sum_hours_klient(month, year)
     klabsage = sum_absage_klient(month, year)
     # km abrechenbar und nicht-abrechenbar
     klkm = sum_km_klient(month, year)
-    # Tabelle Klient einbinden
+    # klienten_liste
 
     # Tabelle Zeiteinträge
 
-    # tabellen_daten = db_abruf_funktion()
+    # zeiteintraege_liste = db_abruf_funktion()
 
-    # Darstellungen
+    # Diagramme
     mazahl = sum_mitarbeiter(month, year)
     stundendaten = get_stundendaten_fuer_jeden_monat()
+    # km = km jahr
+    # tabsagen= terminabsagen jahr
 
-    return render_template(tabellen_daten=tabellen_daten, mastunden=mastunden, maabsagen=maabsagen, makm=makm,
+
+    return render_template(zeiteintraege_liste= zeiteintraege_liste, mitarbeiter_liste=mitarbeiter_liste, klienten_liste= klienten_liste, mastunden=mastunden, maabsagen=maabsagen, makm=makm,
                            klstunden=klstunden, klabsage=klabsage, klkm=klkm, mazahl=mazahl, stundendaten=stundendaten )

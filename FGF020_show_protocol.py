@@ -19,14 +19,14 @@ def show_protocol():
         nutzer = {'nutzers': nutzers}
 
         if not protocols:
-            return render_template('templates/FGF020_show_protocol.html',
+            return render_template('FGF020_show_protocol.html',
                                    protocols=[], no_clients_message="Keine Protokolle vorhanden.")
 
-        return render_template('templates/FGF020_show_protocol.html', protocols=protocols, **nutzer)
+        return render_template('FGF020_show_protocol.html', protocols=protocols, **nutzer)
 
     else:
         nutzers = person_dropdown()
         nutzer = {'nutzers': nutzers}
-        return render_template('templates/FGF020_show_protocol.html', protocols=[], **nutzer)
+        return render_template('FGF020_show_protocol.html', protocols=[], **nutzer)
 
 

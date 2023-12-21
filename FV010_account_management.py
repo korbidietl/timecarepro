@@ -20,4 +20,4 @@ def account_management():
         # Nach dem Bearbeiten der Accounts die Seite neu laden
         return redirect(url_for('.account_management'))
 
-    return render_template('templates/FV010_account_management.html')
+    return render_template('FV010_account_management.html')

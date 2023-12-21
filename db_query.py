@@ -7,7 +7,6 @@ from passlib.hash import sha1_crypt
 # /FS010/
 
 
-
 # /FS030/
 # /FMOF010/
 # /FMOF030/
@@ -184,7 +183,6 @@ def get_zeiteintrag_for_mitarbeiter(mitarbeiter_id, month, year):
 
 
 # /FAN040/
-# /FSK010/
 def get_client_table_sb(person_id, month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -1005,6 +1003,42 @@ def delete_buchung(buchung_id):
     cursor.execute("DELETE FROM buchung WHERE id = %s", (buchung_id,))
     connection.commit()
 
+
+# /FSK010/
+def get_client_table_client_sb(person_id, month, year, client_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT 
+            z.ID as id, 
+            DATE(z.end_zeit) as Datum, 
+            z.beschreibung as Beschreibung, 
+            SUM(f.kilometer) as Kilometer, 
+            TIME(z.start_zeit) as Anfang, 
+            TIME(z.end_zeit) as Ende, 
+            CONCAT(p.vorname, ' ', p.nachname) as Mitarbeiter, 
+            CASE WHEN z.fachkraft = 1 THEN 'Fachkraft' ELSE 'Hilfskraft' END as Fachkraft_Hilfskraft, 
+            IFNULL(CONVERT(IFNULL(CONVERT(z.unterschrift_klient USING utf8mb4), '') USING latin1), '') 
+            as Unterschrift_Klient, 
+            IFNULL(CONVERT(IFNULL(CONVERT(z.unterschrift_mitarbeiter USING utf8mb4), '') USING latin1), '') 
+            as Unterschrift_Mitarbeiter 
+        FROM 
+            klient k 
+            LEFT JOIN zeiteintrag z ON k.ID = z.klient_id 
+            LEFT JOIN fahrt f ON z.ID = f.zeiteintrag_id 
+            LEFT JOIN person p ON z.mitarbeiter_id = p.ID 
+        WHERE 
+            k.ID = %s AND 
+            k.fallverantwortung_ID = %s AND 
+            MONTH(z.start_zeit) = %s AND 
+            YEAR(z.start_zeit) = %s
+        GROUP BY 
+            z.ID, 
+            p.ID
+    """, (client_id, person_id, month, year))
+    client_table_data = cursor.fetchall()
+    cursor.close()
+    return client_table_data
 
 
 

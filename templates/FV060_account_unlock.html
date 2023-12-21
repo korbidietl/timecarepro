@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Account Lock</title>
-    <link rel="stylesheet" href="../../static/styles.css">
+    <title>Account Unlock</title>
+    <link rel="stylesheet" href="../static/styles.css">
 </head>
 
 <body>
@@ -22,12 +22,12 @@
     </div>
     <div class="center-container">
         <div class ="loginContainer">
-            <h2>Account sperren</h2>
+            <h2>Account entsperren</h2>
             <p>Bitte geben Sie die ID des Accounts ein:</p>
-            <form action="/account_lock" method="post">
+            <form action="/account_unlock" method="post">
                 <label for="person_id">Person ID:</label>
                 <input type="number" id="person_id" name="person_id" required>
-                <button type="submit">Account sperren</button>
+                <button type="submit">Account entsperren</button>
                 <a href="/home">Abbrechen</a>
             </form>
         </div>
@@ -58,38 +58,36 @@
 </script>
 </html>
 
-
-
 <!--
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sperren Bestätigung</title>
+    <title>Entsperren Bestätigung</title>
     <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
-    <p>Wollen Sie den Account wirklich sperren?</p>
+    <p>Wollen Sie den Account wirklich entsperren?</p>
     <button onclick="close_popup()">Nein</button>
-    <button onclick="confirm_lock('{person_id}')">Ja</button>
+    <button onclick="confirm_unlock('{person_id}')">Ja</button>
 
     <script>
-        function confirm_lock(person_id) {
+        function confirm_unlock(person_id) {
             // Hier kann man eine andere URL oder einen anderen API-Aufruf verwenden,
-            // um die edit_account_lock Funktion aufzurufen
+            // um die edit_account_unlock Funktion aufzurufen
             fetch('/db_query.py?person_id=' + person_id, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    function_name: 'edit_account_lock',
+                    function_name: 'edit_account_unlock',
                     person_id: person_id
                 })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Account erfolgreich gesperrt');
+                    alert('Account erfolgreich entsperrt');
                     close_popup();
                 } else {
                     alert('Fehler: ' + data.error);
@@ -106,4 +104,5 @@
     </script>
 </body>
 </html>
+
 -->

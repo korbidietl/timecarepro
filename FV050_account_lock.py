@@ -13,9 +13,9 @@ def account_lock(person_id):
         for field in required_fields:
             if not request.form.get(field):
                 flash('Es müssen alle Felder ausgefüllt werden.')
-                return render_template('templates/FV050_account_lock.html', person_id=person_id)
+                return render_template('FV050_account_lock.html', person_id=person_id)
 
         edit_account_lock(person_id)
-        return render_template('templates/FAN010_home.html',
+        return render_template('FAN010_home.html',
                                success_message="Account wurde erfolgreich gesperrt", person_id=person_id)
-    return render_template('templates/FV050_account_lock.html', person_id=person_id)
+    return render_template('FV050_account_lock.html', person_id=person_id)

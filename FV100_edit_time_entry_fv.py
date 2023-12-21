@@ -10,7 +10,7 @@ def edit_time_entry(zeiteintrag_id):
     if request.method == 'GET':
         # Daten für den zu bearbeitenden Zeiteintrag holen
         zeiteintrag_data = get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id)
-        return render_template("templates/FV100_edit_time_entry_fv.html", zeiteintrag=zeiteintrag_data['zeiteintrag'],
+        return render_template("FV100_edit_time_entry_fv.html", zeiteintrag=zeiteintrag_data['zeiteintrag'],
                                fahrten=zeiteintrag_data['fahrten'], zeiteintrag_id=zeiteintrag_id)
     else:
         # Eingabedaten aus dem Formular holen

@@ -42,9 +42,12 @@ def mitarbeiter():
     # Fehlerbehandlung, wenn keine Mitarbeiter gefunden werden
     if not mitarbeiterliste:
         flash("Keine Mitarbeiter gefunden.")
-        return render_template('templates/FAN030_show_employee_table.html', kombinationen=kombinationen, gewaehlte_kombination=gewaehlte_kombination)
+        return render_template('FAN030_show_employee_table.html',
+                               kombinationen=kombinationen, gewaehlte_kombination=gewaehlte_kombination)
 
-    return render_template('templates/FAN030_show_employee_table.html', mitarbeiterliste=mitarbeiterliste, kombinationen=kombinationen, gewaehlte_kombination=gewaehlte_kombination)
+    return render_template('FAN030_show_employee_table.html',
+                           mitarbeiterliste=mitarbeiterliste, kombinationen=kombinationen,
+                           gewaehlte_kombination=gewaehlte_kombination)
 
 
 
