@@ -94,6 +94,10 @@ def create_app():
     from FGF020_show_protocol import show_protocol_blueprint
     app.register_blueprint(show_protocol_blueprint)
 
+    # Kostenträger
+    from FSK010_access_hours_km_clients import access_hours_km_clients_blueprint
+    app.register_blueprint(access_hours_km_clients_blueprint)
+
     return app
 
 

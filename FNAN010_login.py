@@ -27,7 +27,7 @@ def login():
                 session['user_id'] = get_person_id_by_email(email)
                 session['user_email'] = email
                 session['user_role'] = get_role_by_email(email)
-                return render_template('templates/FAN010_home.html')
+                return render_template('templates/templates/FAN010_home.html')
             # Passwort stimmt nicht
             elif not validate_login(email, password):
                 flash("Die Zugangsdaten sind nicht korrekt.")

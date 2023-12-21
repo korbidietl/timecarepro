@@ -34,7 +34,7 @@ def register_client():
         else:
             create_klient(nachname, vorname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                           kontingent_hk, kontingent_fk, fallverantwortung_id)
-            return render_template('templates/FAN010_home.html',
+            return render_template('templates/templates/FAN010_home.html',
                                    success_message="Client wurde erfolgreich angelegt")
     kostentraeger = kostentraeger_dropdown()
     kt = {'kostentraeger': kostentraeger}
