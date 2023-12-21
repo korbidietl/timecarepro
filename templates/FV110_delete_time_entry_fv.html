@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zeiteintrag löschen</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <div class="center-container">
+        <div class="loginContainer">
+            <div class="reset-container">
+                <div class="reset-content">
+                    <p>Wollen Sie diesen Eintrag wirklich löschen?</p>
+                    <form action="/delete_time_entry_fv" method="post">
+                        <input type="hidden" name="zeiteintrags_ID" value="{{ zeiteintrags_ID }}">
+                        <input type="hidden" name="origin_function" value="{{ origin_function }}">
+                        <div class="accordion-button">
+                            <button type="button" onclick="close_popup()">Nein</button>
+                            <button type="submit">Ja</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function close_popup() {
+                window.history.back();
+            }
+    </script>
+</body>
+</html>
