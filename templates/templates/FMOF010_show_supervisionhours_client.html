@@ -11,7 +11,7 @@
     <!-- Menüleiste einbinden -->
     {% include 'FAN020_navbar.html' %}
 
-    <div class="container-tabelle">
+    <div class="table-form">
         <div class="leerzeile"></div>
         <div class="form-row" style="justify-content: start;">
             <h2 style="margin: 0; font-size: 1.5em; line-height: 1.2em;">Klient: {{client_name[0]}} {{client_name[1]}}</h2>
@@ -40,11 +40,12 @@
             <!-- Button für Buchung und Buchung revidieren -->
             <div class="accordion-button">
                 {% if user_role in ['Verwaltung', 'Geschäftsführung'] %}
-                    <a href="{{ url_for('login.login') }}" class="form-actions">Buchung</a>
+                    <button type="buchung">Buchung</button>
                 {% endif %}
-
+            </div>
+            <div class="accordion-button">
                 {% if user_role == 'Geschäftsführung' %}
-                    <a href="{{ url_for('login.login') }}" class="form-actions">Buchung revidieren</a>
+                    <button type="buchung_revidieren">Buchung revidieren</button>
                 {% endif %}
             </div>
         </div>
@@ -64,7 +65,6 @@
                         {% endif %}
                         <th>Unterschrift Klient</th>
                         <th>Unterschrift Mitarbeiter</th>
-                        <th>Aktion</th>
                     </tr>
                 </thead>
                 <tbody id="tableData">
@@ -87,8 +87,10 @@
                         {% if not booked %}
                             {% if user_role == 'Mitarbeiter' and zeiteintrag.mitarbeiter_id == session['user_id'] %}
                                 <td>
-                                    <a href="{{ url_for('edit_time_entry', zeiteintrag_id=zeiteintrag.id) }}">Bearbeiten</a>
-                                    <a href="{{ url_for('delete_time_entry', zeiteintrag_id=zeiteintrag.id) }}">Löschen</a>
+                                    <button class="edit">Bearbeiten</button>
+                                </td>
+                                <td>
+                                    <button class="delete">Löschen</button>
                                 </td>
                             {% endif %}
                         {% endif %}
