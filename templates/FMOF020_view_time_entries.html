@@ -53,7 +53,7 @@
                             </td>
                             <td>
                                 {% if not entry.buchung_vorhanden %}
-                                    <a href="/delete_time_entry/{{ entry.id }}">Löschen</a>
+                                    <a href="/delete_te/{{ entry.id }}/{{client_id}}/{{view}}">Löschen</a>
                                 {% endif %}
                             </td>
                         </tr>

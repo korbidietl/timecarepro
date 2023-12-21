@@ -4,8 +4,8 @@ from db_query import delete_zeiteintrag, check_booked
 delete_time_entry_blueprint = Blueprint("delete te", __name__)
 
 
-@delete_time_entry_blueprint.route('/delete_te/<int:zeiteintrags_id>', methods=['POST', 'GET'])
-def delete_te(zeiteintrags_id):
+@delete_time_entry_blueprint.route('/delete_te/<int:zeiteintrags_id>/<int:client_id>/<origin>', methods=['POST', 'GET'])
+def delete_te(zeiteintrags_id, client_id, origin):
     if request.method == 'POST':
         # übergebene ID und vermerk von welcher Funktion hierher geleitet
         origin_function = request.form.get('origin_function')
@@ -15,7 +15,8 @@ def delete_te(zeiteintrags_id):
             error = ("Die Stundennachweise für diesen Monat wurden bereits gebucht."
                      " Der Eintrag kann nicht mehr gelöscht werden.")
             flash(error, 'error')
-            redirect(url_for('delete_te'))
+            render_template('FMOF060_delete_time_entry.html', zeiteintrags_id=zeiteintrags_id, client_id=client_id,
+                            origin=origin)
 
         else:
             # Löschen der Zeiteinträge und dazugehörigen Fahrten
@@ -26,9 +27,10 @@ def delete_te(zeiteintrags_id):
             flash(success_message, 'success')
 
             # Rückleitungen zur Herkunftsfunktion
-            if origin_function == 'function1':
-                return redirect(url_for('name_function_1'))
-            elif origin_function == 'function 2':
-                return redirect(url_for('name_function_2'))
+            if origin_function == 'view':
+                return redirect(url_for('view_time_entries.view_time_entries', client_id=client_id))
+            elif origin_function == 'show':
+                return redirect(url_for('client_supervision_hours.client_supervision_hours', client_id=client_id))
 
-    return render_template('FMOF060_delete_time_entry.html')
+    return render_template('FMOF060_delete_time_entry.html', zeiteintrags_id=zeiteintrags_id, client_id=client_id,
+                           origin=origin)
