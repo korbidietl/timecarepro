@@ -40,11 +40,11 @@ def reporting_dashboard():
             flash(f"Eingabe in Feld 'bis' ungültig.", "error")
             valid = False
 
-        if mitarbeiter not in ma:
+        if mitarbeiter and mitarbeiter not in ma:
             flash(f"Eingabe in Feld 'Mitarbeiter' ungültig.", "error")
             valid = False
 
-        if klient not in cl:
+        if klient and klient not in cl:
             flash(f"Eingabe in Feld 'Klient' ungültig.", "error")
             valid = False
 
@@ -73,7 +73,7 @@ def reporting_dashboard():
     bis_day = heute.day
     bis_month = heute.month
     bis_year = heute.year
-    anzeigen(von_day, von_month, von_year, bis_day, bis_month, bis_year)
+    # anzeigen(von_day, von_month, von_year, bis_day, bis_month, bis_year)
 
     return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
 
@@ -100,8 +100,8 @@ def anzeigen(von_day, von_month, von_year, bis_day, bis_month, bis_year):
     # Diagramme
     mazahl = sum_mitarbeiter(month, year)
     stundendaten = get_stundendaten_fuer_jeden_monat()
-    # km = km jahr
-    # tabsagen= terminabsagen jahr
+    # kmdaten = km jahr
+    # tabsagendaten= terminabsagen jahr
 
 
     return render_template(zeiteintraege_liste= zeiteintraege_liste, mitarbeiter_liste=mitarbeiter_liste, klienten_liste= klienten_liste, mastunden=mastunden, maabsagen=maabsagen, makm=makm,

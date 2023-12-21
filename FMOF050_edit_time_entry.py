@@ -34,13 +34,15 @@ def edit_time_entry(zeiteintrag_id):
         end_datetime = datetime.strptime(f"{end_zeit}", '%H:%M')
 
         # Änderungen am Zeiteintrag speichern
-        edit_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime, unterschrift_klient, unterschrift_mitarbeiter, klient_id, beschreibung, interne_notiz, absage)
+        edit_zeiteintrag(zeiteintrag_id, datum_datetime, start_datetime, end_datetime, unterschrift_klient, unterschrift_mitarbeiter, klient_id, beschreibung, interne_notiz, absage)
+
+        fahrtCounter = int(request.form.get('fahrtCounterInput', 1))
 
         # Bearbeite Fahrt-Einträge
         existing_fahrten_ids = request.form.getlist('existing_fahrten_ids')
         for fahrt_id in existing_fahrten_ids:
             # aktualisiere die Fahrt
-            edit_fahrt(fahrt_id, kilometer=request.form[f'kilometer{fahrt_id}'],
+            edit_fahrt(fahrt_id = request.form[f'fahrt_id{fahrt_id}'], kilometer=request.form[f'kilometer{fahrt_id}'],
                        abrechenbar=request.form.get(f'abrechenbarkeit{fahrt_id}', False),
                        start_adresse=request.form[f'start_adresse{fahrt_id}'],
                        end_adresse=request.form[f'end_adresse{fahrt_id}'],
@@ -48,12 +50,18 @@ def edit_time_entry(zeiteintrag_id):
 
         # Füge neue Fahrten hinzu
         for i in range(fahrtCounter):  # fahrtCounter sollte vom Frontend übergeben werden
-            if f'kilometer_new{i}' in request.form:
+            if not f'fahrt_id{i}':
                 add_fahrt(kilometer=request.form[f'kilometer_new{i}'],
                         start_adresse=request.form[f'start_adresse_new{i}'],
                         end_adresse=request.form[f'end_adresse_new{i}'],
                         abrechenbar=request.form.get(f'abrechenbarkeit_new{i}', False),
                         zeiteintrag_id=zeiteintrag_id)
+
+        # fahrt entfernen
+        # wenn fahrt id nicht mehr in bestehenden fahrten ist, dann löschen
+        for i in range(fahrtCounter):
+            if not fahrt_id_existing(f'fahrt_id{i}'):
+                delete_fahrt(f'fahrt_id{i}')
 
 
         # Weiterleitung zurück zur Übersicht der abgelegten Stunden
