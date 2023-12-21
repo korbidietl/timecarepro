@@ -276,7 +276,6 @@ def get_zeiteintrag_for_client_and_person(client_id, person_id, month, year):
             DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
             DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
             CONCAT(p.vorname, ' ', p.nachname) AS Mitarbeiter,
-            z.überschneidung AS Überschneidung,
             z.unterschrift_Klient AS Unterschrift_Klient,
             z.unterschrift_Mitarbeiter AS Unterschrift_Mitarbeiter
         FROM
@@ -310,7 +309,6 @@ def get_zeiteintrag_for_client(client_id, month, year):
                 DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
                 DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
                 CONCAT(p.vorname, ' ', p.nachname) AS Mitarbeiter,
-                z.überschneidung AS Überschneidung,
                 z.unterschrift_Klient AS Unterschrift_Klient,
                 z.unterschrift_Mitarbeiter AS Unterschrift_Mitarbeiter
             FROM
@@ -393,10 +391,10 @@ def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, e
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("INSERT INTO zeiteintrag (unterschrift_Mitarbeiter, unterschrift_Klient, start_zeit, end_zeit, "
-                   "mitarbeiter_ID, klient_ID, fachkraft, beschreibung, interne_notiz, überschneidung, absage) "
+                   "mitarbeiter_ID, klient_ID, fachkraft, beschreibung, interne_notiz, absage) "
                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                    unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time, session['user_id'],
-                   klient_id, fachkraft, beschreibung, interne_notiz, False, absage)
+                   klient_id, fachkraft, beschreibung, interne_notiz, absage)
     zeiteintrag_id = cursor.lastrowid
     connection.commit()
     cursor.close()
@@ -805,6 +803,78 @@ def book_zeiteintrag(client_id):
     """, (client_id, last_entry["end_zeit"], saldo_fk, saldo_hk))
     connection.commit()
     return True
+
+
+# /FGF010/
+def get_report_zeiteintrag():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT
+            CONCAT(Mitarbeiter.vorname, ' ', Mitarbeiter.nachname) AS Mitarbeiter,
+            CONCAT(Sachbearbeiter.vorname, ' ', Sachbearbeiter.nachname) AS Sachbearbeiter, 
+            CONCAT(klient.vorname, ' ', klient.nachname) AS Klient,
+            SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden,
+            SUM(fahrt.kilometer) AS gefahrene_kilometer,
+            SUM(CASE WHEN fahrt.abrechenbar THEN fahrt.kilometer ELSE 0 END) AS abrechenbare_km,
+            SUM(CASE WHEN fahrt.abrechenbar THEN 0 ELSE fahrt.kilometer END) AS nicht_abrechenbare_km,
+            SUM(CASE WHEN zeiteintrag.Absage THEN 1 ELSE 0 END) AS Absage           
+        FROM
+            zeiteintrag
+        INNER JOIN person AS Mitarbeiter ON zeiteintrag.mitarbeiter_id = Mitarbeiter.id
+        INNER JOIN klient ON zeiteintrag.klient_id = klient.id
+        INNER JOIN person AS Sachbearbeiter ON klient.sachbearbeiter_id = Sachbearbeiter.id
+        LEFT JOIN fahrt ON zeiteintrag.id = fahrt.zeiteintrag_id
+        GROUP BY
+            Mitarbeiter.id,
+            Sachbearbeiter.id,
+            klient.id
+    """)
+    return cursor.fetchall()
+
+
+# /FGF010/
+def get_report_mitarbeiter():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT
+            Mitarbeiter.id, 
+            CONCAT(Mitarbeiter.vorname, ' ', Mitarbeiter.nachname) AS Mitarbeiter,
+            SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden,
+            SUM(fahrt.kilometer) AS gefahrene_kilometer,
+            SUM(CASE WHEN fahrt.abrechenbar THEN fahrt.kilometer ELSE 0 END) AS abrechenbare_km,
+            SUM(CASE WHEN fahrt.abrechenbar THEN 0 ELSE fahrt.kilometer END) AS nicht_abrechenbare_km,
+            SUM(CASE WHEN zeiteintrag.Absage THEN 1 ELSE 0 END) AS Absage
+        FROM
+            zeiteintrag
+        INNER JOIN person AS Mitarbeiter ON zeiteintrag.mitarbeiter_id = Mitarbeiter.id
+        LEFT JOIN fahrt ON zeiteintrag.id = fahrt.zeiteintrag_id
+        GROUP BY Mitarbeiter.ID
+    """)
+    return cursor.fetchone()
+
+
+# /FGF010/
+def get_report_klient():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT
+            klient.id, 
+            CONCAT(klient.vorname, ' ', klient.nachname) AS Klient,
+            SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden,
+            SUM(fahrt.kilometer) AS gefahrene_kilometer,
+            SUM(CASE WHEN fahrt.abrechenbar THEN fahrt.kilometer ELSE 0 END) AS abrechenbare_km,
+            SUM(CASE WHEN fahrt.abrechenbar THEN 0 ELSE fahrt.kilometer END) AS nicht_abrechenbare_km,
+            SUM(CASE WHEN zeiteintrag.Absage THEN 1 ELSE 0 END) AS Absage
+        FROM
+            zeiteintrag
+        INNER JOIN klient ON zeiteintrag.mitarbeiter_id = klient.id
+        LEFT JOIN fahrt ON zeiteintrag.id = fahrt.zeiteintrag_id
+        GROUP BY klient.ID
+    """)
+    return cursor.fetchone()
 
 
 # /FGF010/
