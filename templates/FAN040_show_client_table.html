@@ -10,18 +10,24 @@
         <div class="table-container">
             <h3>Kliententabelle</h3>
 
-            <div class="time-selection-container">
-                <form action="/show_clients" method="post">
+            <div class="form-row">
+                <div class="form-group">
                     <label for="month">Monat:</label>
                     <select name="month" id="month">
                         <!-- Optionen für Monat -->
                     </select>
+                </div>
+                <div class="form-group">
                     <label for="year">Jahr:</label>
                     <select name="year" id="year">
                         <!-- Optionen für Jahr -->
                     </select>
-                    <button type="submit">Anzeigen</button>
-                </form>
+                </div>
+                <div class="form-group">
+                    <form action="/show_clients" method="post">
+                        <button type="submit">Anzeigen</button>
+                    </form>
+                </div>
             </div>
 
             <table>
@@ -48,9 +54,17 @@
                             <td>{{ client.saldo_hk }}</td>
                             <!-- Button Logik -->
                             {% if user_role == 'Verwaltung' %}
-                                <td><a href="/bearbeiten/{{ client.id }}">Bearbeiten</a></td>
-                                <td><a href="/details/{{ client.id }}">Details</a></td>
-                            {% endif %}
+                                <td>
+                                    <form action="/bearbeiten/{{ client.id }}" method="post">
+                                        <button type="submit">Bearbeiten</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action="/details/{{ client.id }}" method="post">
+                                        <button type="submit">Details</button>
+                                    </form>
+                                </td>
+                                {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>

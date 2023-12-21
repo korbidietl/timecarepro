@@ -1,7 +1,7 @@
 import time
 
 from flask import Blueprint, request, redirect, url_for, render_template, flash
-from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag
+from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag, check_month_booked
 from datetime import datetime
 from FS020_sign_capture import capture_signature
 

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, url_for, render_template
-from db_query import get_zeiteintrag_with_fahrten_by_id, edit_zeiteintrag, delete_fahrt, add_fahrt, edit_fahrt
+from db_query import get_zeiteintrag_with_fahrten_by_id, edit_zeiteintrag, delete_fahrt, add_fahrt, edit_fahrt, fahrt_id_existing
 from datetime import datetime
 from FMOF030_create_time_entry import check_time_entry_constraints
 from FS020_sign_capture import capture_signature
