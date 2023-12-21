@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kliententabelle</title>
+    <link rel="stylesheet" href="../../static/styles.css">
+</head>
+<body>
+    <div class="center-container-tables">
+        <div class="table-container">
+            <h3>Kliententabelle</h3>
+
+            <div class="time-selection-container">
+                <form action="/show_clients" method="post">
+                    <label for="month">Monat:</label>
+                    <select name="month" id="month">
+                        <!-- Optionen für Monat -->
+                    </select>
+                    <label for="year">Jahr:</label>
+                    <select name="year" id="year">
+                        <!-- Optionen für Jahr -->
+                    </select>
+                    <button type="submit">Anzeigen</button>
+                </form>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Vorname</th>
+                        <th>Nachname</th>
+                        <th>Kontingent FK</th>
+                        <th>Kontingent HK</th>
+                        <th>Saldo FK</th>
+                        <th>Saldo HK</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in clients %}
+                        <tr>
+                            <td>{{ client.id }}</td>
+                            <td>{{ client.vorname }}</td>
+                            <td>{{ client.nachname }}</td>
+                            <td>{{ client.kontingent_fk }}</td>
+                            <td>{{ client.kontingent_hk }}</td>
+                            <td>{{ client.saldo_fk }}</td>
+                            <td>{{ client.saldo_hk }}</td>
+                            <!-- Button Logik -->
+                            {% if user_role == 'Verwaltung' %}
+                                <td><a href="/bearbeiten/{{ client.id }}">Bearbeiten</a></td>
+                                <td><a href="/details/{{ client.id }}">Details</a></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <p id="no-clients-message" style="display: none;">Keine Klienten gefunden.</p>
+        </div>
+    </div>
+</body>
+</html>
+

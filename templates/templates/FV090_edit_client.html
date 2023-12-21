@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../../static/styles.css">
+    <title>Klient bearbeiten</title>
+</head>
+<body>
+    <!-- Menüleiste einbinden -->
+    {% include 'FAN020_navbar.html' %}
+
+    <div class = "registration-form">
+        <h2>Klient bearbeiten</h2>
+        <form action="/edit_client/<int:client_id>" method="post">
+            <div class="form-row">
+                <div class="form-group2">
+                    <label for="client_id">KlientID:</label>
+                    <input type="number" id="client_id" name="client_id">
+                </div>
+
+                <div class="form-group2">
+                    <label for="nachname">Nachname:</label>
+                    <input type="text" id="nachname" name="nachname">
+                </div>
+
+                <div class="form-group2">
+                    <label for="vorname">Vorname:</label>
+                    <input type="text" id="vorname" name="vorname">
+                </div>
+
+                <div class="form-group2">
+                    <label for="adresse">Adresse:</label>
+                    <input type="text" id="adresse" name="adresse">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group2">
+                    <label for="geburtsdatum">Geburtstag:</label>
+                    <input type="date" id="geburtsdatum" name="geburtsdatum">
+                </div>
+
+                <div class="form-group2">
+                    <label for="telefonnummer">Telefonnummer:</label>
+                    <input type="text" id="telefonnummer" name="telefonnummer">
+                </div>
+
+                <div class="form-group2">
+                    <label for="sbDropdown">Sachbearbeiter auswählen:</label>
+                    <select class="form-control" id="sbDropdown" name="sbDropdown">
+                        <!-- Optionen werden durch Python generiert -->
+                        {% for sb in sachbearbeiter %}
+                        <option value="{{sb.id}}">{{sb.nachname}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group2">
+                    <label for="fk">Fachkraftkontingent:</label>
+                    <input type="number" id="fk" name="kontingent_fk">
+                </div>
+
+                <div class="form-group2">
+                    <label for="hk">Hilfskraftkontingent:</label>
+                    <input type="number" id="hk" name="kontingent_hk">
+                </div>
+
+                <div class="form-group2">
+                    <label for="fvDropdown">Fallverantwortung auswählen:</label>
+                    <select class="form-control" id="fvDropdown" name="fvDropdown">
+                        <!-- Optionen werden durch Python generiert -->
+                        {% for fv in fallverantwortung %}
+                        <option value="{{fv.id}}">{{fv.nachname}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <button type="submit">Speichern</button>
+                <button type="button" onclick="window.location.href='{{ return_url }}'">Abbrechen</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

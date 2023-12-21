@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Details eigener Stunden einsehen</title>
+    <link rel="stylesheet" href="../../static/styles.css">
+</head>
+<body>
+    <!-- Menüleiste einbinden -->
+    {% include 'FAN020_navbar.html' %}
+
+    <div class="container-tabelle">
+        <h2>Zeiteintrag Details</h2>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="datum">Datum:</label>
+                <div id="datum">{{zeiteintrag.date}}</div>
+            </div>
+            <div class="form-group">
+                <label for="startZeit">Startzeitpunkt:</label>
+                <div id="startZeit">{{zeiteintrag.start_time}}</div>
+            </div>
+            <div class="form-group">
+                <label for="endZeit">Endzeitpunkt:</label>
+                <div id="endZeit">{{zeiteintrag.end_time}}</div>
+            </div>
+            <div class="form-group">
+                <label for="fachkraft">Fachkraft:</label>
+                <input type="checkbox" id="fachkraft" name="fachkraft" {% if zeiteintrag.fachkraft %} checked {% endif %} disabled>
+            </div>
+            <div class="form-group">
+                <label for="klient">Klient:</label>
+                <div id="klient">{{zeiteintrag.klient}}</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="beschreibung">Beschreibung:</label>
+                <textarea id="beschreibung" name="beschreibung" readonly>{{zeiteintrag.beschreibung}}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="interneNotiz">Interne Notiz:</label>
+                <textarea id="interneNotiz" name="interneNotiz" readonly>{{zeiteintrag.beschreibung}}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="absage">Absage:</label>
+                <input type="checkbox" id="absage" name="absage" {% if zeiteintrag.absage %} checked {% endif %} disabled>
+            </div>
+        </div>
+
+        <!-- Tabelle für Fahrten -->
+        <h3>Fahrten</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Abrechenbar</th>
+                    <th>Start</th>
+                    <th>Ende</th>
+                    <th>Gefahrene KM</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fahrt in fahrten_liste %}
+                    <tr>
+                        <td>{{ 'Ja' if fahrt.abrechenbar else 'Nein' }}</td>
+                        <td>{{ fahrt.start }}</td>
+                        <td>{{ fahrt.ende }}</td>
+                        <td>{{ fahrt.gefahrene_km }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Unterschriften -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>Unterschrift Klient:</label>
+                {% if zeiteintrag.klient != "Unternehmen" %}
+                    <img src="{{ zeiteintrag.unterschrift_klient }}" alt="Unterschrift des Klienten" />
+                {% endif %}
+            </div>
+             <div class="form-group">
+                <label>Unterschrift Mitarbeiter:</label>
+                <img src="{{ zeiteintrag.unterschrift_mitarbeiter }}" alt="Unterschrift des Mitarbeiters" />
+            </div>
+        </div>
+
+        <!-- wenn erst umgewandelt werden muss auf Blob
+        <div class="form-row">
+            <div class="form-group">
+                <label>Unterschrift Klient:</label>
+                {% if zeiteintrag.klient != "Unternehmen" %}
+                    <img src="data:image/png;base64,{{ zeiteintrag.unterschrift_klient|b64encode }}" alt="Unterschrift des Klienten">
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label>Unterschrift Mitarbeiter:</label>
+                <img src="data:image/png;base64,{{ zeiteintrag.unterschrift_mitarbeiter|b64encode }}" alt="Unterschrift des Mitarbeiters">
+            </div>
+        </div>
+
+        @app.template_filter('b64encode')
+        def b64encode_filter(s):
+            return base64.b64encode(s).decode('utf-8') -->
+        <div class="form-actions">
+            <!-- Bearbeiten Button -->
+            <form action="{{ url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag.id) }}" method="post">
+                <button type="submit">Bearbeiten</button>
+            </form>
+
+            <!-- Löschen Button -->
+            <form action="{{ url_for('delete_te.delete_te', zeiteintrag_id=zeiteintrag.id) }}" method="post">
+                <button type="submit">Löschen</button>
+            </form>
+
+            <!-- Schließen Button -->
+            <a href="{{ url_for('view_time_entries.view_time_entries') }}" class="button">Schließen</a>
+        </div>
+
+    </div>
+</body>
+</html>
+
+
+
+

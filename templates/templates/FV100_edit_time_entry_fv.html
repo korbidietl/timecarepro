@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbeitsstunden Bearbeiten</title>
+    <link rel="stylesheet" href="../../static/styles.css">
+</head>
+<body>
+    <div class="registration-form">
+        <h2>Zeiteintrag bearbeiten</h2>
+        <form action="/submit_time_entry" method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="datum">Datum:</label>
+                    <input type="date" id="datum" name="datum" required>
+                </div>
+                <div class="form-group">
+                    <label for="startZeit">Startzeitpunkt:</label>
+                    <input type="time" id="startZeit" name="startZeit" required>
+                </div>
+                <div class="form-group">
+                    <label for="endZeit">Endzeitpunkt:</label>
+                    <input type="time" id="endZeit" name="endZeit" required>
+                </div>
+                <div class="form-group">
+                    <label for="fachkraft">Fachkraft:</label>
+                    <input type="checkbox" id="fachkraft" name="fachkraft">
+                </div>
+                <div class="form-group">
+                    <label for="klient">Klient:</label>
+                    <select id="klient" name="klient">
+                        {% for klient in klienten %}
+                        <option value="{{ klient.id }}">{{ klient.nachname }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="beschreibung">Beschreibung:</label>
+                    <input type="text" id="beschreibung" name="beschreibung" ></input>
+                </div>
+                <div class="form-group">
+                    <label for="interneNotiz">Interne Notiz:</label>
+                    <input type="text" id="interneNotiz" name="interneNotiz" ></input>
+                </div>
+                <div class="form-group">
+                    <label for="absage">Absage:</label>
+                    <input type="checkbox" id="absage" name="absage">
+                </div>
+            </div>
+            <h3>Fahrten:</h3>
+            <div id="fahrtenContainer">
+                <!-- Ursprüngliche Fahrt-Eingabezeile -->
+                <div class="form-row fahrt-row">
+                    <div class="form-group">
+                        <label for="abrechenbarkeit0">Abrechenbarkeit:</label>
+                        <input type="checkbox" id="abrechenbarkeit0" name="abrechenbarkeit0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="start_adresse0">Start Adresse:</label>
+                        <input type="text" id="start_adresse0" name="start_adresse0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end_adresse0">End Adresse:</label>
+                        <input type="text" id="end_adresse0" name="end_adresse0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="kilometer0">Kilometer:</label>
+                        <input type="number" id="kilometer0" name="kilometer0">
+                    </div>
+                    <button type="button" onclick="addFahrt()">+</button>
+                    <button type="button" onclick="removeFahrt(this)">-</button>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <div class="form-group">
+                    <label>Unterschrift Klient:</label>
+                    <button type="button" onclick="window.location='/FS020_sign_capture.html';">Unterschrift Klient</button>
+                </div>
+                <div class="form-group">
+                    <label>Unterschrift Mitarbeiter:</label>
+                    <button type="button" onclick="window.location='/FS020_sign_capture.html';">Unterschrift Mitarbeiter</button>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit">Eintrag hinzufügen</button>
+                <button type="button" onclick="window.location='/FMOF010';">Abbrechen</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let fahrtCounter = 1;
+
+        function addFahrt() {
+            const fahrtContainer = document.getElementById('fahrtenContainer');
+            const newFahrtRow = document.createElement('div');
+            newFahrtRow.classList.add('form-row', 'fahrt-row');
+            newFahrtRow.innerHTML = `
+                        <div class="form-group">
+                           <input type="checkbox" id="abrechenbarkeit${fahrtCounter}" name="abrechenbarkeit${fahrtCounter}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="start_adresse${fahrtCounter}" name="start_adresse${fahrtCounter}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="end_adresse${fahrtCounter}" name="end_adresse${fahrtCounter}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="kilometer${fahrtCounter}" name="kilometer${fahrtCounter}">
+                        </div>
+                        <button type="button" onclick="addFahrt()">+</button>
+                        <button type="button" onclick="removeFahrt(this)">-</button>
+                        </div>
+            `;
+            fahrtContainer.appendChild(newFahrtRow);
+            fahrtCounter++;
+        }
+
+        function removeFahrt(buttonElement) {
+            const fahrtContainer = document.getElementById('fahrtenContainer');
+            const fahrtRows = fahrtContainer.getElementsByClassName('fahrt-row');
+
+            if (fahrtRows.length > 1) {
+                const fahrtRow = buttonElement.closest('.fahrt-row');
+                fahrtRow.remove();
+                fahrtCounter--; // Reduziere den Zähler nur, wenn eine Zeile entfernt wurde
+                }
+        }
+
+
+    </script>
+</body>
+</html>
+
+
