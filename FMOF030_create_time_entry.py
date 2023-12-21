@@ -65,7 +65,7 @@ def submit_arbeitsstunden():
         # prüft auf überschneidung einer bestehenden eintragung in der datenbank
         if check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_zeit, end_zeit):
             # überschneidungs funktion einfügen
-            return
+            return render_template('FS030_check_overlapping_time.html')
 
     # Weiterleitung zurück zur Übersicht der abgelegten Stunden
     return redirect(url_for('show_supervisionhours_client'))
