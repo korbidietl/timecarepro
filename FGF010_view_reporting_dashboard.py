@@ -50,7 +50,7 @@ def reporting_dashboard():
 
         # Wenn ein Feld ungültig ist erneutes Laden der Seite mit Flash nachricht
         if not valid:
-            return render_template('templates/FGF010_view_reporting_dashboard.html', **ma, **cl)
+            return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
 
         # Auswerten des Datums zur weiterverwendung
         if von:
@@ -75,7 +75,7 @@ def reporting_dashboard():
     bis_year = heute.year
     anzeigen(von_day, von_month, von_year, bis_day, bis_month, bis_year)
 
-    return render_template('templates/FGF010_view_reporting_dashboard.html', **ma, **cl)
+    return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
 
 
 def anzeigen(von_day, von_month, von_year, bis_day, bis_month, bis_year):

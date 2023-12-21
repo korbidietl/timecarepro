@@ -19,8 +19,8 @@ def logout():
         session.pop('user_role', None)
         session.pop('user_email', None)
 
-        return render_template('templates/FNAN010_login.html')
+        return render_template('FNAN010_login.html')
 
     else:
         # Benutzer ist nicht eingeloggt
-        return render_template('templates/FNAN010_login.html')
+        return render_template('FNAN010_login.html')

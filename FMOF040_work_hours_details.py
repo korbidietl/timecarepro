@@ -8,4 +8,4 @@ def show_details(zeiteintrag_id):
     # Datenbankaufrufe
     # zeiteintrag = get_zeiteintrag_details(zeiteintrag_id)
     # fahrten =
-    return render_template('templates/FMOF040_work_hours_details.html') # fahrten=fahrten, zeiteintrag=zeiteintrag)
+    return render_template('FMOF040_work_hours_details.html') # fahrten=fahrten, zeiteintrag=zeiteintrag)

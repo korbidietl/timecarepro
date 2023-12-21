@@ -48,7 +48,7 @@ def passwordreset():
         # Es wurde keine E-mail übergeben
         if not email:
             flash("Geben Sie für das Zurücksetzen des Passworts zuerst Ihre E-Mail-Adresse ein.")
-            return render_template("templates/FNAN020_password_reset.html")
+            return render_template("FNAN020_password_reset.html")
 
         if user:
             lastname = get_lastname_by_email(email)
@@ -56,7 +56,7 @@ def passwordreset():
 
             if locked:
                 # Überprüfung ob Nutzer gesperrt ist
-                return render_template("templates/FNAN020_password_reset.html")
+                return render_template("FNAN020_password_reset.html")
             else:
                 # Neues Passwort generieren, abspeichern und Passwort erzwingen auf True setzen
                 new_password = generate_random_password()
@@ -65,12 +65,12 @@ def passwordreset():
                 # E-Mail senden
                 send_email_passwort_reset(email, lastname, new_password)
 
-                return render_template('templates/FNAN010_login.html', email=email,
+                return render_template('FNAN010_login.html', email=email,
                                        success_message="Ein neues Passwort wurde an die "
                                                        "angegebene E-Mail-Adresse "
                                                        "versendet.")
         else:
             # keine E-mail in der Datenbank gefunden
-            return render_template('templates/FNAN010_login.html')
+            return render_template('FNAN010_login.html')
 
-    return render_template('templates/FNAN020_password_reset.html')
+    return render_template('FNAN020_password_reset.html')

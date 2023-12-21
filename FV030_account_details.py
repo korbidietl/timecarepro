@@ -22,8 +22,8 @@ def account_details(person_id):
         phone = person_data[8]
         locked = person_data[9]
 
-        return render_template('templates/FV030_account_details.html', person_id=person_id, firstname=firstname,
+        return render_template('FV030_account_details.html', person_id=person_id, firstname=firstname,
                                lastname=lastname, birthday=birthday, qualification=qualification, address=address,
                                email=email, phone=phone, locked=locked, role=role, return_url=return_url)
 
-    return render_template('templates/FV030_account_details.html', person_id=person_id, return_url=return_url)
+    return render_template('FV030_account_details.html', person_id=person_id, return_url=return_url)

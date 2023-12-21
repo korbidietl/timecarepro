@@ -51,7 +51,7 @@ def create_account():
         for field in required_fields:
             if not request.form.get(field):
                 flash('Es müssen alle Felder ausgefüllt werden.')
-                return render_template('templates/FV020_create_account.html')
+                return render_template('FV020_create_account.html')
 
         # Überprüfung ob alle zusätzlich notwendigen Felder für Mitarbeiter ausgefüllt wurden
         if selected_role == 'Mitarbeiter':
@@ -60,20 +60,20 @@ def create_account():
                 value = request.form.get(field)
                 if not value:
                     flash('Bei der Rolle Mitarbeiter müssen alle benötigten Felder ausgefüllt werden.')
-                    return render_template('templates/FV020_create_account.html')
+                    return render_template('FV020_create_account.html')
 
                     # Überprüfen des Datentyps
                 if field == 'birthday' and not is_valid_date(value):
                     flash(f'Eingabe in Feld {field} ungültig. Bitte geben Sie ein gültiges Datum ein.')
-                    return render_template('templates/FV020_create_account.html')
+                    return render_template('FV020_create_account.html')
                 elif field == 'phone' and not is_valid_phone(value):
                     flash(f'Eingabe in Feld {field} ungültig. Bitte geben Sie eine gültige Telefonnummer ein.')
-                    return render_template('templates/FV020_create_account.html')
+                    return render_template('FV020_create_account.html')
 
         # Überprüfung ob schon ein Account existiert
         if validate_email(email):
             flash('Es existiert bereits ein Account mit dieser E-Mail-Adresse.')
-            return render_template('templates/FV020_create_account.html')
+            return render_template('FV020_create_account.html')
 
         else:
             password = generate_random_password(10)
@@ -83,6 +83,6 @@ def create_account():
                            hashed_password, 0,
                            change_password)
             send_email_create_account(email, lastname, password)
-            return render_template('templates/FV010_account_management.html', email=email,
+            return render_template('FV010_account_management.html', email=email,
                                    success_message="Account wurde erfolgreich angelegt")
-    return render_template('templates/FV020_create_account.html')
+    return render_template('FV020_create_account.html')

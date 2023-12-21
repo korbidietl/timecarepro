@@ -22,8 +22,8 @@ def client_details(client_id):
         hk = client_data[8],
         fv = client_data[9]
 
-        return render_template('templates/FV080_client_details.html', client_id=client_id, firstname=firstname,
+        return render_template('FV080_client_details.html', client_id=client_id, firstname=firstname,
                                lastname=lastname, birthday=birthday, phone=phone, sb=sb, address=address, fk=fk, hk=hk,
                                fv=fv, return_url=return_url)
 
-    return render_template('templates/FV080_client_details.html', client_id=client_id, return_url=return_url)
+    return render_template('FV080_client_details.html', client_id=client_id, return_url=return_url)

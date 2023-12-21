@@ -23,6 +23,6 @@ def view_time_entries(person_id):
                 entry['zeiteintrag']['buchung_vorhanden'] = check_booked(entry['zeiteintrag']['id'])
                 time_entries.append(entry['zeiteintrag'])
 
-        return render_template('templates/FMOF020_view_time_entries.html', person=person, time_entries=time_entries)
+        return render_template('FMOF020_view_time_entries.html', person=person, time_entries=time_entries)
     else:
-        return render_template('templates/FMOF020_view_time_entries.html', person=person, time_entries=[])
+        return render_template('FMOF020_view_time_entries.html', person=person, time_entries=[])
