@@ -52,6 +52,9 @@
             <div id="fahrtenContainer">
                 <!-- Ursprüngliche Fahrt-Eingabezeile -->
                 <div class="form-row fahrt-row">
+                    <div class="form-hidden">
+                        <input type="hidden" id="fahrt_id0" name="fahrt_id0">
+                    </div>
                     <div class="form-group">
                         <label for="abrechenbarkeit0">Abrechenbarkeit:</label>
                         <input type="checkbox" id="abrechenbarkeit0" name="abrechenbarkeit0" required>
@@ -98,6 +101,9 @@
             const newFahrtRow = document.createElement('div');
             newFahrtRow.classList.add('form-row', 'fahrt-row');
             newFahrtRow.innerHTML = `
+                        <div class="form-hidden">
+                           <input type="hidden" id="fahrt_id${fahrtCounter}" name="fahrt_id${fahrtCounter}">
+                        </div>
                         <div class="form-group">
                            <input type="checkbox" id="abrechenbarkeit${fahrtCounter}" name="abrechenbarkeit${fahrtCounter}" required>
                         </div>

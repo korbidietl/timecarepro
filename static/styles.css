@@ -81,6 +81,10 @@ button.hover {
     background-color: #FFA800;
 }
 
+.form-hidden {
+    position: absolute;
+}
+
 a{
     text-align: center;
     display: block;
