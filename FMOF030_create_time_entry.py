@@ -1,3 +1,5 @@
+import time
+
 from flask import Blueprint, request, redirect, url_for, render_template, flash
 from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag
 from datetime import datetime
@@ -6,19 +8,33 @@ from FS020_sign_capture import capture_signature
 create_time_entry_blueprint = Blueprint('create_time_entry', __name__)
 
 
+def check_time_entry_constraints(datum, startZeit, endZeit, klientID):
+    # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
+    if startZeit >= endZeit:
+        flash("Endzeitpunkt muss nach Startzeitpunkt sein.")
+        return render_template("FMOF030_create_time_entry.html")
+
+    # prüft ob startzeitpunkt in der zukunft liegt
+    if startZeit > time.strftime("%H:%M") or datum > time.strftime("%d.%m.%Y"):
+        flash("Der Startzeitpunkt darf nicht in der Zukunft liegen!")
+        return render_template("FMOF030_create_time_entry.html")
+
+    #pürft ob dieser monat schon gebucht wurde
+    datum.strftime("%m.%Y")
+    if check_month_booked(datum, klientID):
+        flash("Dieser Monat wurde von den ausgewählten Klienten bereits gebucht!")
+        return render_template("FMOF030_create_time_entry.html")
+
+
 @create_time_entry_blueprint.route('/create_time_entry', methods=['POST', 'GET'])
 def submit_arbeitsstunden():
     # Eingabedaten aus dem Formular holen
     datum = request.form.get('datum')
     start_zeit = request.form.get('startZeit')
     end_zeit = request.form.get('endZeit')
-    # da müssen wir uns noch überlegen, wie das am besten sinn macht
-    # weil klient name kann ja doppelt sein, aber das dropdown soll ja keine id anzeigen
-    # wie erkennt man aber im dropdown welcher max mustermann der richtige ist?
     klient_id = request.form.get('klient')
     beschreibung = request.form.get('beschreibung')
     interne_notiz = request.form.get('interneNotiz')
-    # hier müssen noch unterschriften rein
     unterschrift_klient = capture_signature()
     unterschrift_mitarbeiter = capture_signature()
     absage = request.form.get('absage')
@@ -29,12 +45,8 @@ def submit_arbeitsstunden():
     end_datetime = datetime.strptime(f"{end_zeit}", '%H:%M')
 
     # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
-    if start_datetime >= end_datetime:
-        flash("Endzeitpunkt muss nach Startzeitpunkt sein.")
-        return render_template("FMOF030_create_time_entry.html")
-
-    # Füge neuen Zeiteintrag hinzu und erhalte die ID
-    else:
+    if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id):
+        # Füge neuen Zeiteintrag hinzu und erhalte die ID
         zeiteintrag_id = add_zeiteintrag(datum_datetime, start_datetime, end_datetime, beschreibung, interne_notiz,
                                          unterschrift_klient, unterschrift_mitarbeiter, absage)
 
