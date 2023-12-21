@@ -29,7 +29,7 @@
     <div class = "registration-form">
         <h2>Account anlegen</h2>
         <div class="mein-eindeutiges-formular">
-            <form method="POST" action="{{url_for('create_account.create_account')}}" >
+            <form action="/create_account" method="post" >
                 <div class="form-row">
                     <div class="form-group2">
                         <label for="lastname">Nachname:</label>
@@ -95,6 +95,29 @@
         elements[i].style.display = role === 'Mitarbeiter' ? 'block' : 'none';
     }
   }
+</script>
+<script>
+    window.onload = function() {
+        // Überprüfen, ob Nachrichten vorhanden sind
+        {% if get_flashed_messages() %}
+        let modal = document.getElementById("flashModal");
+        let span = document.getElementsByClassName("close")[0];
+
+        // Modal anzeigen
+        modal.style.display = "block";
+
+        // Schließen, wenn das "X" geklickt wird
+        span.onclick = function() {
+            modal.style.display = "none";
+        };
+
+        // Schließen, wenn außerhalb des Modals geklickt wird
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+        {% endif %}
 </script>
 </body>
 </html>
