@@ -1,7 +1,7 @@
 import time
 
 from flask import Blueprint, request, redirect, url_for, render_template, flash
-from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag, check_month_booked
+from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag # check_month_booked
 from datetime import datetime
 from FS020_sign_capture import capture_signature
 
@@ -21,9 +21,9 @@ def check_time_entry_constraints(datum, startZeit, endZeit, klientID):
 
     #pürft ob dieser monat schon gebucht wurde
     datum.strftime("%m.%Y")
-    if check_month_booked(datum, klientID):
-        flash("Dieser Monat wurde von den ausgewählten Klienten bereits gebucht!")
-        return render_template("FMOF030_create_time_entry.html")
+    #if check_month_booked(datum, klientID):
+     #   flash("Dieser Monat wurde von den ausgewählten Klienten bereits gebucht!")
+      #  return render_template("FMOF030_create_time_entry.html")
 
 
 @create_time_entry_blueprint.route('/create_time_entry', methods=['POST', 'GET'])
