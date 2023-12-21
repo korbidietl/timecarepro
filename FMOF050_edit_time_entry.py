@@ -48,7 +48,7 @@ def edit_time_entry(zeiteintrag_id):
 
         # Füge neue Fahrten hinzu
         for i in range(fahrtCounter):  # fahrtCounter sollte vom Frontend übergeben werden
-            if f'kilometer_new{i}' in request.form:
+            if not f'fahrt_id{i}':
                 add_fahrt(kilometer=request.form[f'kilometer_new{i}'],
                         start_adresse=request.form[f'start_adresse_new{i}'],
                         end_adresse=request.form[f'end_adresse_new{i}'],
