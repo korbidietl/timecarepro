@@ -25,70 +25,74 @@
 
     <div class = "registration-form">
         <h2>Klient anlegen</h2>
-        <form action="/create_client" method="post">
-            <div class="form-row">
-                 <div class="form-group2">
-                    <label for="lastname">Nachname:</label>
-                    <input type="text" id="lastname" name="lastname" required>
-                </div>
+        <div class="mein-eindeutiges-formular">
+            <form action="/create_client" method="post">
+                <div class="form-row">
+                     <div class="form-group2">
+                        <label for="lastname">Nachname:</label>
+                        <input type="text" id="lastname" name="lastname" required>
+                    </div>
 
-                <div class="form-group2">
-                    <label for="firstname">Vorname:</label>
-                    <input type="text" id="firstname" name="firstname" required>
-                </div>
+                    <div class="form-group2">
+                        <label for="firstname">Vorname:</label>
+                        <input type="text" id="firstname" name="firstname" required>
+                    </div>
 
-                <div class="form-group2">
-                    <label for="address">Adresse:</label>
-                    <input type="text" id="address" name="address" required>
+                    <div class="form-group2">
+                        <label for="address">Adresse:</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
                 </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group2">
-                    <label for="birthday">Geburtstag:</label>
-                    <input type="date" id="birthday" name="birthday" required>
-                </div>
+                <div class="form-row">
+                    <div class="form-group2">
+                        <label for="birthday">Geburtstag:</label>
+                        <input type="date" id="birthday" name="birthday" required>
+                    </div>
 
-                <div class="form-group2">
-                    <label for="number">Telefonnummer:</label>
-                    <input type="text" id="number" name="number">
-                </div>
+                    <div class="form-group2">
+                        <label for="number">Telefonnummer:</label>
+                        <input type="text" id="number" name="number">
+                    </div>
 
-                <div class="form-group2">
-                    <label for="ktDropdown">Kostenträger auswählen:</label>
-                    <select class="form-control" id="ktDropdown" name="ktDropdown">
-                        <!-- Optionen werden durch Python generiert -->
-                        {% for kt in kostentraeger %}
-                        <option value="{{kt.id}}">{{kt.nachname}}</option>
-                        {% endfor %}
-                    </select>
+                    <div class="form-group2">
+                        <label for="ktDropdown">Kostenträger:</label>
+                        <select class="form-control" id="ktDropdown" name="ktDropdown">
+                            <!-- Optionen werden durch Python generiert -->
+                            <option value="" selected disabled>Bitte auswählen</option>
+                            {% for kt in kostentraeger %}
+                            <option value="{{kt.id}}">{{kt.nachname}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group2">
-                    <label for="fk">Fachkraftkontingent:</label>
-                    <input type="number" id="fk" name="fkontingent">
-                </div>
+                <div class="form-row">
+                    <div class="form-group2">
+                        <label for="fk">Fachkraftkontingent:</label>
+                        <input type="number" id="fk" name="fkontingent">
+                    </div>
 
-                <div class="form-group2">
-                    <label for="hk">Hilfskraftkontingent:</label>
-                    <input type="number" id="hk" name="hkontingent">
-                </div>
+                    <div class="form-group2">
+                        <label for="hk">Hilfskraftkontingent:</label>
+                        <input type="number" id="hk" name="hkontingent">
+                    </div>
 
-                <div class="form-group2">
-                    <label for="fvDropdown">Fallverantwortung auswählen:</label>
-                    <select class="form-control" id="fvDropdown" name="fvDropdown">
-                        <!-- Optionen werden durch Python generiert -->
-                        {% for fv in fallverantwortung %}
-                        <option value="{{fv.id}}">{{fv.nachname}}</option>
-                        {% endfor %}
-                    </select>
+                    <div class="form-group2">
+                        <label for="fvDropdown">Fallverantwortung:</label>
+                        <select class="form-control" id="fvDropdown" name="fvDropdown">
+                            <option value="" selected disabled>Bitte auswählen</option>
+                            <!-- Optionen werden durch Python generiert -->
+                            {% for fv in fallverantwortung %}
+                            <option value="{{fv.id}}">{{fv.nachname}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="form-actions">
-                <button type="submit">Speichern</button>
-                <a href="/account_management">Abbrechen</a>
-            </div>
-        </form>
+                <div class="form-actions">
+                    <button type="submit">Speichern</button>
+                    <a href="/account_management">Abbrechen</a>
+                </div>
+            </form>
+        </div>
     </div>
 
 </body>
