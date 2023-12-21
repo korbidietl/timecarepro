@@ -29,124 +29,139 @@
         <h2>Reporting Dashboard</h2>
         <div class="leerzeile"></div>
         <h3>Zeiteinträge</h3>
-        <div class="scrollable-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Mitarbeiter</th>
-                        <th>Sachbearbeiter</th>
-                        <th>Klient</th>
-                        <th>Geleistete Stunden</th>
-                        <th>Gefahrene km</th>
-                        <th>Abrechenbare km</th>
-                        <th>Nicht-abrechenbare km</th>
-                        <th>Absagen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for zeile in tabellen_daten %}
-                    <tr>
-                        <td>{{ zeile.id }}</td>
-                        <td>{{ zeile.mitarbeiter }}</td>
-                        <td>{{ zeile.sachbearbeiter }}</td>
-                        <td>{{ zeile.klient }}</td>
-                        <td>{{ zeile.geleistete_stunden }}</td>
-                        <td>{{ zeile.gefahrene_km }}</td>
-                        <td>{{ zeile.abrechenbare_km }}</td>
-                        <td>{{ zeile.nicht_abrechenbare_km }}</td>
-                        <td>{{ zeile.absagen }}</td>
-                    </tr>
-                    {% endfor %}
-                    <tr>
-                        <td><strong>Gesamt</strong></td>
-                        <td colspan="3"></td>
-                        <td><strong>{{ mastunden }}</strong></td>
-                        <td><strong>{{ makm }}</strong></td>
-                        <td><strong>{{ gesamt_abrechenbare_km }}</strong></td>
-                        <td><strong>{{ gesamt_nicht_abrechenbare_km }}</strong></td>
-                        <td><strong>{{ maabsage }}</strong></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <!-- Tabelle der Zeiteinträge -->
+        {% if zeiteintraege_liste %}
+            <div class="scrollable-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Mitarbeiter</th>
+                            <th>Sachbearbeiter</th>
+                            <th>Klient</th>
+                            <th>Geleistete Stunden</th>
+                            <th>Gefahrene km</th>
+                            <th>Abrechenbare km</th>
+                            <th>Nicht-abrechenbare km</th>
+                            <th>Absagen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for zeile in tabellen_daten %}
+                        <tr>
+                            <td>{{ zeile.id }}</td>
+                            <td>{{ zeile.mitarbeiter }}</td>
+                            <td>{{ zeile.sachbearbeiter }}</td>
+                            <td>{{ zeile.klient }}</td>
+                            <td>{{ zeile.geleistete_stunden }}</td>
+                            <td>{{ zeile.gefahrene_km }}</td>
+                            <td>{{ zeile.abrechenbare_km }}</td>
+                            <td>{{ zeile.nicht_abrechenbare_km }}</td>
+                            <td>{{ zeile.absagen }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td><strong>Gesamt</strong></td>
+                            <td colspan="3"></td>
+                            <td><strong>{{ mastunden }}</strong></td>
+                            <td><strong>{{ makm }}</strong></td>
+                            <td><strong>{{ gesamt_abrechenbare_km }}</strong></td>
+                            <td><strong>{{ gesamt_nicht_abrechenbare_km }}</strong></td>
+                            <td><strong>{{ maabsage }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>Keine Daten gefunden.</p>
+        {% endif %}
         <div class="leerzeile"></div>
         <h3>Mitarbeiter</h3>
-        <div class="scrollable-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Personalnr.</th>
-                        <th>Nachname</th>
-                        <th>Vorname</th>
-                        <th>Geleistete Stunden</th>
-                        <th>Gefahrene km</th>
-                        <th>Abrechenbare km</th>
-                        <th>Nicht-abrechenbare km</th>
-                        <th>Absagen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for mitarbeiter in mitarbeiter_daten %}
-                    <tr>
-                        <td>{{ mitarbeiter.personalnr }}</td>
-                        <td>{{ mitarbeiter.nachname }}</td>
-                        <td>{{ mitarbeiter.vorname }}</td>
-                        <td>{{ mitarbeiter.geleistete_stunden }}</td>
-                        <td>{{ mitarbeiter.gefahrene_km }}</td>
-                        <td>{{ mitarbeiter.abrechenbare_km }}</td>
-                        <td>{{ mitarbeiter.nicht_abrechenbare_km }}</td>
-                        <td>{{ mitarbeiter.absagen }}</td>
-                    </tr>
-                    {% endfor %}
-                    <tr>
-                        <<td><strong>Gesamt</strong></td>
-                        <td colspan="2"></td>
-                        <td>{{ mastunden }}</td>
-                        <td>{{ makm }}</td>
-                        <!-- Weitere Summenzellen abrechenbar, nicht-->
-                        <td>{{maabsage}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <!-- Mitarbeiter Tabelle -->
+        {% if zeiteintraege_liste %}
+            <div class="scrollable-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Personalnr.</th>
+                            <th>Nachname</th>
+                            <th>Vorname</th>
+                            <th>Geleistete Stunden</th>
+                            <th>Gefahrene km</th>
+                            <th>Abrechenbare km</th>
+                            <th>Nicht-abrechenbare km</th>
+                            <th>Absagen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mitarbeiter in mitarbeiter_daten %}
+                        <tr>
+                            <td>{{ mitarbeiter.personalnr }}</td>
+                            <td>{{ mitarbeiter.nachname }}</td>
+                            <td>{{ mitarbeiter.vorname }}</td>
+                            <td>{{ mitarbeiter.geleistete_stunden }}</td>
+                            <td>{{ mitarbeiter.gefahrene_km }}</td>
+                            <td>{{ mitarbeiter.abrechenbare_km }}</td>
+                            <td>{{ mitarbeiter.nicht_abrechenbare_km }}</td>
+                            <td>{{ mitarbeiter.absagen }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <<td><strong>Gesamt</strong></td>
+                            <td colspan="2"></td>
+                            <td>{{ mastunden }}</td>
+                            <td>{{ makm }}</td>
+                            <!-- Weitere Summenzellen abrechenbar, nicht-->
+                            <td>{{maabsage}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>Keine Daten gefunden.</p>
+        {% endif %}
         <div class="leerzeile"></div>
         <h3>Klienten</h3>
-        <div class="scrollable-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nachname</th>
-                        <th>Vorname</th>
-                        <th>geleistete Stunden</th>
-                        <th>Abrechenbare km</th>
-                        <th>Nicht-abrechenbare km</th>
-                        <th>Absagen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for klient in klient_daten %}
-                    <tr>
-                        <td>{{ klient.id }}</td>
-                        <td>{{ klient.nachname }}</td>
-                        <td>{{ klient.vorname }}</td>
-                        <td>{{ klient.geleistete_stunden }}</td>
-                        <td>{{ klient.abrechenbare_km }}</td>
-                        <td>{{ klient.nicht_abrechenbare_km }}</td>
-                        <td>{{ klient.absagen }}</td>
-                    </tr>
-                    {% endfor %}
-                    <tr>
-                        <<td><strong>Gesamt</strong></td>
-                        <td colspan="2"></td>
-                        <td>{{ klstunden }}</td>
-                        <!-- Weitere Summenzellen abrechenbar, nicht-->
-                        <td>{{klabsage}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <!-- Klienten Tabelle-->
+        {% if klienten_liste %}
+            <div class="scrollable-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nachname</th>
+                            <th>Vorname</th>
+                            <th>geleistete Stunden</th>
+                            <th>Abrechenbare km</th>
+                            <th>Nicht-abrechenbare km</th>
+                            <th>Absagen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for klient in klient_daten %}
+                        <tr>
+                            <td>{{ klient.id }}</td>
+                            <td>{{ klient.nachname }}</td>
+                            <td>{{ klient.vorname }}</td>
+                            <td>{{ klient.geleistete_stunden }}</td>
+                            <td>{{ klient.abrechenbare_km }}</td>
+                            <td>{{ klient.nicht_abrechenbare_km }}</td>
+                            <td>{{ klient.absagen }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <<td><strong>Gesamt</strong></td>
+                            <td colspan="2"></td>
+                            <td>{{ klstunden }}</td>
+                            <!-- Weitere Summenzellen abrechenbar, nicht-->
+                            <td>{{klabsage}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>Keine Daten gefunden.</p>
+        {% endif %}
         <div class="leerzeile"></div>
 
 
@@ -182,28 +197,44 @@
                 </div>
                 <div class="leerzeile"></div>
                 <div class="dashboard-container">
-                   <div class="dashboard-item">
-                       <h3>Mitarbeiteranzahl</h3>
-                       <div class="dashboard-number">{{maanzahl}}</div> <!-- Die Zahl würde dynamisch aus der Datenbank geladen -->
-                   </div>
-                    <div class="dashboard-item">
-                        <h3>Stundenzahl</h3>
-                        <div class="chart-container">
-                            <canvas id="stundenChart"></canvas>
+                    {% if mazahl %}
+                       <div class="dashboard-item">
+                           <h3>Mitarbeiteranzahl</h3>
+                           <div class="dashboard-number">{{maanzahl}}</div> <!-- Die Zahl würde dynamisch aus der Datenbank geladen -->
+                       </div>
+                    {% else %}
+                        <p>Keine Daten gefunden.</p>
+                    {% endif %}
+                    {% if stundendaten %}
+                        <div class="dashboard-item">
+                            <h3>Stundenzahl</h3>
+                            <div class="chart-container">
+                                <canvas id="stundenChart"></canvas>
+                            </div>
                         </div>
-                    </div>
-                    <div class="dashboard-item">
-                        <h3>Kilometerzahl</h3>
-                        <div class="chart-container">
-                            <canvas id="kilometerChart"></canvas>
+                    {% else %}
+                        <p>Keine Daten gefunden.</p>
+                    {% endif %}
+                    {% if km %}
+                        <div class="dashboard-item">
+                            <h3>Kilometerzahl</h3>
+                            <div class="chart-container">
+                                <canvas id="kilometerChart"></canvas>
+                            </div>
                         </div>
-                    </div>
-                    <div class="dashboard-item">
-                        <h3>Terminabsagen</h3>
-                        <div class="chart-container">
-                            <canvas id="terminAbsagenChart"></canvas>
+                    {% else %}
+                        <p>Keine Daten gefunden.</p>
+                    {% endif %}
+                    {% if tabsagen %}
+                        <div class="dashboard-item">
+                            <h3>Terminabsagen</h3>
+                            <div class="chart-container">
+                                <canvas id="terminAbsagenChart"></canvas>
+                            </div>
                         </div>
-                    </div>
+                    {% else %}
+                        <p>Keine Daten gefunden.</p>
+                    {% endif %}
                 </div>
                <!-- Kürzerer JavaScript mit einbindung Daten testen
                function erstelleDiagramm(canvasId, label, daten, backgroundColor, borderColor, maxTicks) {
