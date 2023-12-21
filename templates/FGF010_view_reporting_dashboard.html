@@ -407,7 +407,7 @@ function exportAllTablesToCSV(filename) {
             var cols = row.querySelectorAll("td, th");
 
             cols.forEach(function(col) {
-                rowData.push(col.innerText);
+                rowData.push('"' + col.innerText + '"');
             });
 
             csv.push(rowData.join(","));
@@ -416,6 +416,18 @@ function exportAllTablesToCSV(filename) {
         // Fügt eine leere Zeile zwischen Tabellen hinzu
         csv.push("");
     });
+    // Exportieren der Diagrammdaten als zusätzliche "Tabellen"
+    csv.push("Stundendaten");
+    csv.push(stundendaten.join(","));
+    csv.push("");
+
+    csv.push("Kilometerdaten");
+    csv.push(kmdaten.join(","));
+    csv.push("");
+
+    csv.push("Terminabsagendaten");
+    csv.push(terminabsagendaten.join(","));
+    csv.push("");
 
     // Erstellen Sie einen Link und starten Sie den Download
     var csvString = csv.join("\n");
@@ -430,7 +442,7 @@ function exportAllTablesToCSV(filename) {
 }
 
 document.getElementById('exportButton').addEventListener('click', function () {
-    exportAllTablesToCSV('gesamteSeite.csv');
+    exportAllTablesToCSV('gesamteSeite.csv', {{ stundendaten|tojson }}, {{ kmdaten|tojson }}, {{ terminabsagendaten|tojson }}););
 });
 </script>
 
