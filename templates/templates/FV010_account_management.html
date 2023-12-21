@@ -9,7 +9,7 @@
      <!-- Menüleiste einbinden -->
     {% include 'FAN020_navbar.html' %}
 
-    <div class="registration-form">
+    <div class="table-form">
         <h2>Accountverwaltung</h2>
         <button onclick="window.location.href='/create_account';">Account anlegen</button>
         <button onclick="window.location.href='/create_client';">Klient anlegen</button>
@@ -32,13 +32,19 @@
                 <td>{{ steuerbuero.Email }}</td>
                 <td>
                     <button onclick="window.location.href='/details/{{ steuerbuero.ID }}'">Details</button>
-                    <button onclick="window.location.href='/edit/{{ steuerbuero.ID }}'">Bearbeiten</button>
-                    {% if steuerbuero.Sperre %}
-                        <button onclick="window.location.href='/account_unlock/{{ steuerbuero.ID }}'">Entsperren</button>
-                    {% else %}
-                        <button onclick="window.location.href='/account_lock/{{ steuerbuero.ID }}'">Sperren</button>
-                    {% endif %}
                 </td>
+                <td>
+                    <button onclick="window.location.href='/edit/{{ steuerbuero.ID }}'">Bearbeiten</button>
+                </td>
+                {% if steuerbuero.Sperre %}
+                <td>
+                    <button onclick="window.location.href='/account_unlock/{{ steuerbuero.ID }}'">Entsperren</button>
+                </td>
+                {% else %}
+                <td>
+                    <button onclick="window.location.href='/account_lock/{{ steuerbuero.ID }}'">Sperren</button>
+                </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </table>
@@ -64,13 +70,19 @@
                     <td>{{ sb.Email }}</td>
                     <td>
                         <button onclick="window.location.href='/details/{{ sb.ID }}'">Details</button>
-                        <button onclick="window.location.href='/edit/{{ sb.ID }}'">Bearbeiten</button>
-                        {% if sb.Sperre %}
-                            <button onclick="window.location.href='/account_unlock/{{ sb.ID }}'">Entsperren</button>
-                        {% else %}
-                            <button onclick="window.location.href='/account_lock/{{ sb.ID }}'">Sperren</button>
-                        {% endif %}
                     </td>
+                    <td>
+                        <button onclick="window.location.href='/edit/{{ sb.ID }}'">Bearbeiten</button>
+                    </td>
+                    {% if sb.Sperre %}
+                    <td>
+                        <button onclick="window.location.href='/account_unlock/{{ sb.ID }}'">Entsperren</button>
+                    </td>
+                    {% else %}
+                    <td>
+                        <button onclick="window.location.href='/account_lock/{{ sb.ID }}'">Sperren</button>
+                    </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </table>

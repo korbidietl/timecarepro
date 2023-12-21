@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/styles.css">
+    <title>Zugriff auf Stunden und Kilometer</title>
+</head>
+<body>
+    {% include 'FAN020_navbar.html' %}
+
+    <div class="table-form">
+        <h2>Zeiteinträge deiner Klienten</h2>
+
+        <form action="/access_hours_km_clients" method="post">
+            <div class="form-group-table">
+                <label for="month">Monat:</label>
+                <select id="month" name="month">
+                    <!-- Optionen für Monate -->
+                </select>
+
+                <label for="year">Jahr:</label>
+                <select id="year" name="year">
+                    <!-- Optionen für Jahre -->
+                </select>
+
+                <button type="submit">Anzeigen</button>
+                <button onclick="exportTableToCSV()">
+                    Export as CSV
+                </button>
+                <button onclick="window.print()">
+                    Zugriff auf Stunden und Kilometer
+                </button>
+            </div>
+        </form>
+
+        {% if error %}
+            <p>{{ error }}</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Beschreibung</th>
+                        <th>Kilometer</th>
+                        <th>Anfang</th>
+                        <th>Ende</th>
+                        <th>Mitarbeiter</th>
+                        <th>Fach-/Hilfskraft</th>
+                        <th>Unterschrift Klient</th>
+                        <th>Unterschrift Mitarbeiter</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in zeiteintrag %}
+                        <tr>
+                            <td>{{ entry.Datum }}</td>
+                            <td>{{ entry.Beschreibung }}</td>
+                            <td>{{ entry.Kilometer }}</td>
+                            <td>{{ entry.Anfang }}</td>
+                            <td>{{ entry.Ende }}</td>
+                            <td>{{ entry.Mitarbeiter }}</td>
+                            <td>{{ entry.Fachkraft_Hilfskraft }}</td>
+                            <td>{{ entry.Unterschrift_Klient }}</td>
+                            <td>{{ entry.Unterschrift_Mitarbeiter }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+    <div class="messages">
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+</div>
+    <script>
+function exportTableToCSV() {
+    var csv = [];
+    var rows = document.querySelectorAll("table tr");
+
+    for (var i = 0; i < rows.length; i++) {
+        var row = [], cols = rows[i].querySelectorAll("td, th");
+
+        for (var j = 0; j < cols.length; j++)
+            row.push(cols[j].innerText);
+
+        csv.push(row.join(","));
+    }
+
+    // Download CSV file
+    var csvContent = csv.join("\n");
+    var encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "export.csv");
+    document.body.appendChild(link); // Required for FF
+
+    link.click(); // This will download the data file named "my_data.csv".
+}
+</script>
+
+</body>
+</html>
