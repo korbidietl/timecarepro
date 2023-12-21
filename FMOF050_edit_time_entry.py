@@ -36,6 +36,8 @@ def edit_time_entry(zeiteintrag_id):
         # Änderungen am Zeiteintrag speichern
         edit_zeiteintrag(zeiteintrag_id, datum_datetime, start_datetime, end_datetime, unterschrift_klient, unterschrift_mitarbeiter, klient_id, beschreibung, interne_notiz, absage)
 
+        fahrtCounter = int(request.form.get('fahrtCounterInput', 1))
+
         # Bearbeite Fahrt-Einträge
         existing_fahrten_ids = request.form.getlist('existing_fahrten_ids')
         for fahrt_id in existing_fahrten_ids:

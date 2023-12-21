@@ -73,6 +73,7 @@
                     </div>
                     <button type="button" onclick="addFahrt()">+</button>
                     <button type="button" onclick="removeFahrt(this)">-</button>
+                    <input type="hidden" id="fahrtCounterInput" name="fahrtCounterInput">
                 </div>
             </div>
 
@@ -95,6 +96,7 @@
 
     <script>
         let fahrtCounter = 1;
+        document.getElementById('fahrtCounterInput').value = fahrtCounter;
 
         function addFahrt() {
             const fahrtContainer = document.getElementById('fahrtenContainer');
@@ -122,6 +124,7 @@
             `;
             fahrtContainer.appendChild(newFahrtRow);
             fahrtCounter++;
+            document.getElementById('fahrtCounterInput').value = fahrtCounter;
         }
 
         function removeFahrt(buttonElement) {
@@ -131,7 +134,8 @@
             if (fahrtRows.length > 1) {
                 const fahrtRow = buttonElement.closest('.fahrt-row');
                 fahrtRow.remove();
-                fahrtCounter--; // Reduziere den Zähler nur, wenn eine Zeile entfernt wurde
+                fahrtCounter--;// Reduziere den Zähler nur, wenn eine Zeile entfernt wurde
+                document.getElementById('fahrtCounterInput').value = fahrtCounter;
                 }
         }
 
