@@ -47,7 +47,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for zeile in tabellen_daten %}
+                        {% for zeile in zeiteintraege_liste %}
                         <tr>
                             <td>{{ zeile.id }}</td>
                             <td>{{ zeile.mitarbeiter }}</td>
@@ -180,16 +180,18 @@
                     <div class="form-group2">
                         <label for="mitarbeiter">Mitarbeiter:</label>
                         <select class="form-control gray-background" id="mitarbeiter"  name="mitarbeiter">
-                            {% for fv in fallverantwortung %}
-                            <option value="{{fv.id}}">{{fv.nachname}}</option>
+                            <option value="" selected disabled>Bitte auswählen</option>
+                            {% for ma in mitarbeiter %}
+                            <option value="{{ma.id}}">{{ma.nachname}}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="form-group2">
                         <label for="klient">Klient:</label>
                         <select class="form-control gray-background" id="klient" name="klient">
-                            {% for fv in fallverantwortung %}
-                            <option value="{{fv.id}}">{{fv.nachname}}</option>
+                            <option value="" selected disabled>Bitte auswählen</option>
+                            {% for cl in client %}
+                            <option value="{{cl.id}}">{{cl.nachname}}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -199,14 +201,16 @@
                 <div class="dashboard-container">
                     {% if mazahl %}
                        <div class="dashboard-item">
+                           <!-- Diagramm Mitarbeiterzahl -->
                            <h3>Mitarbeiteranzahl</h3>
-                           <div class="dashboard-number">{{maanzahl}}</div> <!-- Die Zahl würde dynamisch aus der Datenbank geladen -->
+                           <div class="dashboard-number">{{maanzahl}}</div>
                        </div>
                     {% else %}
                         <p>Keine Daten gefunden.</p>
                     {% endif %}
                     {% if stundendaten %}
                         <div class="dashboard-item">
+                            <!-- Diagramm Studenzahl -->
                             <h3>Stundenzahl</h3>
                             <div class="chart-container">
                                 <canvas id="stundenChart"></canvas>
@@ -217,6 +221,7 @@
                     {% endif %}
                     {% if km %}
                         <div class="dashboard-item">
+                            <!-- Diagramm Kilometeranzahl -->
                             <h3>Kilometerzahl</h3>
                             <div class="chart-container">
                                 <canvas id="kilometerChart"></canvas>
@@ -227,6 +232,7 @@
                     {% endif %}
                     {% if tabsagen %}
                         <div class="dashboard-item">
+                            <!-- Diagramm Terminabsagen -->
                             <h3>Terminabsagen</h3>
                             <div class="chart-container">
                                 <canvas id="terminAbsagenChart"></canvas>
@@ -264,9 +270,9 @@
                     });
                 }
                 document.addEventListener('DOMContentLoaded', function() {
-                    erstelleDiagramm('stundenChart', 'Stundenzahl', /* Daten für Stunden */, 'rgba(255, 159, 64, 0.2)', 'rgba(255, 159, 64, 1)', 6000);
-                    erstelleDiagramm('kilometerChart', 'Kilometeranzahl', /* Daten für Kilometer */, 'rgba(0, 128, 0, 0.2)', 'rgba(0, 128, 0, 1)', 12000);
-                    erstelleDiagramm('terminAbsagenChart', 'Terminabsagen', /* Daten für Terminabsagen */, 'rgba(225, 0, 0, 0.2)', 'rgba(225, 0, 0, 1)', 14);
+                    erstelleDiagramm('stundenChart', 'Stundenzahl', stundendaten, 'rgba(255, 159, 64, 0.2)', 'rgba(255, 159, 64, 1)', 6000);
+                    erstelleDiagramm('kilometerChart', 'Kilometeranzahl', kmdaten, 'rgba(0, 128, 0, 0.2)', 'rgba(0, 128, 0, 1)', 12000);
+                    erstelleDiagramm('terminAbsagenChart', 'Terminabsagen', terminabsagendaten, 'rgba(225, 0, 0, 0.2)', 'rgba(225, 0, 0, 1)', 14);
                 }); -->
 
                 <div class="accordion-button">
@@ -281,7 +287,11 @@
 
 </body>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
-
+<script type="text/javascript">
+    var stundendaten = {{ stundendaten|tojson }};
+    var kmdaten = {{ km|tojson }};
+    var terminabsagendaten = {{ tabsagen|tojson }};
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var stundenCtx = document.getElementById('stundenChart').getContext('2d');
@@ -291,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
             labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
             datasets: [{
                 label: 'Stundenzahl',
-                data: [/* Daten für Stunden aus der Datenbank */],
+                data: stundendaten,
                 backgroundColor: 'rgba(255, 159, 64, 0.2)',
                 borderColor: 'rgba(255, 159, 64, 1)',
                 borderWidth: 1
@@ -316,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
             labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
             datasets: [{
                 label: 'Kilometeranzahl',
-                data: [/* Daten für Kilometer aus der Datenbank */],
+                data: kmdaten,
                 backgroundColor: 'rgba(0, 128, 0, 0.2)',
                 borderColor: 'rgba(0, 128, 0, 1)',
                 borderWidth: 1
@@ -340,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
             labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
             datasets: [{
                 label: 'Terminabsagen',
-                data: [/* Daten für Kilometer aus der Datenbank */],
+                data: terminabsagendaten,
                 backgroundColor: 'rgba(225, 0, 0, 0.2)',
                 borderColor: 'rgba(225, 0, 0, 1)',
                 borderWidth: 1
