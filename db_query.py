@@ -1041,10 +1041,7 @@ def get_client_table_client_sb(person_id, month, year, client_id):
     return client_table_data
 
 
-
-
 # Folgende Methoden sind nicht Teil des Pflichtenhefts, sind aber evtl. nützlich!
-
 
 
 # Methode, die die Rolle basierend auf der E-Mail aus der Datenbank abruft.
@@ -1161,3 +1158,14 @@ def get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id):
         zeiteintrag_fahrten[zeiteintrag_id]['fahrten'].append(row[8:])
 
     return list(zeiteintrag_fahrten.values())  # Die Ergebnisse werden dann nach Zeiteintrag-IDs gruppiert.
+
+
+def fahrt_id_existing(fahrt_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM fahrt WHERE id = %s",
+                   (fahrt_id,))
+    result = cursor.fetchone()
+    if result:
+        return True
+    return False
