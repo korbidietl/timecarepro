@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, url_for
-from db_query import get_klient_data
+from db_query import get_klient_data, get_name_by_id
 
 client_details_blueprint = Blueprint('client_details', __name__)
 
@@ -22,8 +22,16 @@ def client_details(client_id):
         hk = client_data[8],
         fv = client_data[9]
 
+        sb_id = sb[0]
+        fv_id = fv
+
+        sachbearbeiter_data = get_name_by_id(sb_id)
+        sachbearbeiter = sachbearbeiter_data[0]
+        fallverantwortung_data = get_name_by_id(fv_id)
+        fallverantwortung = fallverantwortung_data[0]
+
         return render_template('FV080_client_details.html', client_id=client_id, firstname=firstname,
-                               lastname=lastname, birthday=birthday, phone=phone, sb=sb, address=address, fk=fk, hk=hk,
-                               fv=fv, return_url=return_url)
+                               lastname=lastname, birthday=birthday, phone=phone, sb=sachbearbeiter, address=address, fk=fk, hk=hk,
+                               fv=fallverantwortung, return_url=return_url)
 
     return render_template('FV080_client_details.html', client_id=client_id, return_url=return_url)
