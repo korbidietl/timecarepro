@@ -38,11 +38,6 @@ def create_app():
     from FAN060_password_change import password_change_blueprint
     app.register_blueprint(password_change_blueprint)
 
-    # Sachbearbeiter/Kostenträger
-
-    from FSK010_access_hours_km_clients import access_hours_km_clients_blueprint
-    app.register_blueprint(access_hours_km_clients_blueprint)
-
     # Mitarbeiter ohne Fallverantwortung
     from FMOF010_show_supervisionhours_client import client_hours_blueprint
     app.register_blueprint(client_hours_blueprint)
@@ -100,7 +95,7 @@ def create_app():
     from FGF020_show_protocol import show_protocol_blueprint
     app.register_blueprint(show_protocol_blueprint)
 
-    # Kostenträger
+    # Kostenträger/Sachbearbeiter
     from FSK010_access_hours_km_clients import access_hours_km_clients_blueprint
     app.register_blueprint(access_hours_km_clients_blueprint)
 
