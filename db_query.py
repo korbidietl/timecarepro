@@ -806,7 +806,7 @@ def book_zeiteintrag(client_id):
 
 
 # /FGF010/
-def get_report_zeiteintrag():
+def get_report_zeiteintrag(date_from, date_to):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
@@ -825,16 +825,19 @@ def get_report_zeiteintrag():
         INNER JOIN klient ON zeiteintrag.klient_id = klient.id
         INNER JOIN person AS Sachbearbeiter ON klient.sachbearbeiter_id = Sachbearbeiter.id
         LEFT JOIN fahrt ON zeiteintrag.id = fahrt.zeiteintrag_id
+        WHERE
+            zeiteintrag.start_zeit >= %s AND
+            zeiteintrag.start_zeit < %s
         GROUP BY
             Mitarbeiter.id,
             Sachbearbeiter.id,
             klient.id
-    """)
+    """, (date_from, date_to))
     return cursor.fetchall()
 
 
 # /FGF010/
-def get_report_mitarbeiter():
+def get_report_mitarbeiter(date_from, date_to):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
@@ -850,13 +853,16 @@ def get_report_mitarbeiter():
             zeiteintrag
         INNER JOIN person AS Mitarbeiter ON zeiteintrag.mitarbeiter_id = Mitarbeiter.id
         LEFT JOIN fahrt ON zeiteintrag.id = fahrt.zeiteintrag_id
+        WHERE
+            zeiteintrag.start_zeit >= %s AND
+            zeiteintrag.start_zeit < %s
         GROUP BY Mitarbeiter.ID
-    """)
+    """, (date_from, date_to))
     return cursor.fetchone()
 
 
 # /FGF010/
-def get_report_klient():
+def get_report_klient(date_from, date_to):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
@@ -872,8 +878,11 @@ def get_report_klient():
             zeiteintrag
         INNER JOIN klient ON zeiteintrag.mitarbeiter_id = klient.id
         LEFT JOIN fahrt ON zeiteintrag.id = fahrt.zeiteintrag_id
+        WHERE
+            zeiteintrag.start_zeit >= %s AND
+            zeiteintrag.start_zeit < %s
         GROUP BY klient.ID
-    """)
+    """, (date_from, date_to))
     return cursor.fetchone()
 
 
