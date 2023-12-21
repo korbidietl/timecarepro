@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Pop-up Beispiel</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <!-- Pop-up Modal -->
+    <div class="table-form">
+        <div class="modal-content">
+            <h2>Achtung - Terminüberschneidung</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Zeiteintrag_ID</th>
+                        <th>Datum</th>
+                        <th>Start</th>
+                        <th>Ende</th>
+                        <th>Beschreibung</th>
+                        <th>Mitarbeiter</th>
+                        <th>Klient</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ zeiteintrag.id }}</td>
+                        <td>{{ zeiteintrag.datum }}</td>
+                        <td>{{ zeiteintrag.start }}</td>
+                        <td>{{ zeiteintrag.ende }}</td>
+                        <td>{{ zeiteintrag.beschreibung }}</td>
+                        <td>{{ zeiteintrag.mitarbeiter }}</td>
+                        <td>{{ zeiteintrag.klient }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="form-actions">
+                <button type="button" onclick="window.location='/FMOF010_show_supervisionhours_client.html';">Speichern</button>
+                <button type="button" onclick="window.location='/FMOF050_edit_time_entry.html';">Abbrechen</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+
+
