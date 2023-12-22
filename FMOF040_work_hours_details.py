@@ -12,12 +12,15 @@ def show_details(zeiteintrag_id, person_id):
     zeiteintrag_liste = get_zeiteintrag_by_id(zeiteintrag_id)
     zeiteintrag = zeiteintrag_liste[0]
     datum = zeiteintrag[3].strftime("%Y-%m-%d")
-    fahrten_liste = get_fahrt_by_zeiteintrag(zeiteintrag_id)
+    von = zeiteintrag[3].strftime("%H:%M")
+    bis = zeiteintrag[4].strftime("%H:%M")
+
+    fahrten = get_fahrt_by_zeiteintrag(zeiteintrag_id)
 
     # Name Klient
     klient_id = zeiteintrag[6]
     klient_data = get_klient_data(klient_id)
-    klient_name = klient_data[0][1] + klient_data[0][2]
+    klient_name = klient_data[0][1] +' '+ klient_data[0][2]
 
 
 
@@ -32,7 +35,8 @@ def show_details(zeiteintrag_id, person_id):
     else:
         unterschrift_klient = ""
 
-    return render_template('FMOF040_work_hours_details.html', zeiteintrag=zeiteintrag, fahrten_liste=fahrten_liste,
-                           klient_name=klient_name, datum=datum, unterschrift_klient=unterschrift_klient,
+    return render_template('FMOF040_work_hours_details.html', zeiteintrag=zeiteintrag, fahrten=fahrten,
+                           klient_name=klient_name, datum=datum, von=von, bis=bis,
+                           unterschrift_klient=unterschrift_klient,
                            unterschrift_mitarbeiter=unterschrift_mitarbeiter, zeiteintrag_id=zeiteintrag_id,
                            person_id=person_id)

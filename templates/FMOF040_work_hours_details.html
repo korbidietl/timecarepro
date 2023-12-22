@@ -14,15 +14,16 @@
         <div class="form-row">
             <div class="form-group">
                 <label for="datum">Datum:</label>
-                <input type="text" id="datum" value="{{datum}}" readonly>
+                <input type="date" id="datum" name="datum" value="{{datum}}" readonly >
+
             </div>
             <div class="form-group">
                 <label for="startZeit">Startzeitpunkt:</label>
-                <input type="text" id="startZeit" value="{{zeiteintrag[3]}}" readonly>
+                <input type="time" id="startZeit" value="{{von}}" readonly>
             </div>
             <div class="form-group">
                 <label for="endZeit">Endzeitpunkt:</label>
-                <input type="text" id="endZeit" value="{{zeiteintrag[4]}}" readonly>
+                <input type="time" id="endZeit" value="{{bis}}" readonly>
             </div>
             <div class="form-group">
                 <label for="fachkraft">Fachkraft:</label>
@@ -37,52 +38,70 @@
         <div class="form-row">
             <div class="form-group">
                 <label for="beschreibung">Beschreibung:</label>
-                <textarea id="beschreibung" name="beschreibung" readonly>{{zeiteintrag[8]}}</textarea>
+                <input id="beschreibung" name="beschreibung" value="{{zeiteintrag[8] if zeiteintrag[8] else ''}}" readonly>
             </div>
             <div class="form-group">
                 <label for="interneNotiz">Interne Notiz:</label>
-                <textarea id="interneNotiz" name="interneNotiz" readonly>{{zeiteintrag[9]}}</textarea>
+                <input id="interneNotiz" name="interneNotiz" value="{{zeiteintrag[9] if zeiteintrag[9] else ''}}" readonly>
             </div>
             <div class="form-group">
                 <label for="absage">Absage:</label>
                 <input type="checkbox" id="absage" name="absage" {% if zeiteintrag[11] %} checked {% endif %} disabled>
             </div>
         </div>
+        <div class="leerzeile"></div>
 
         <!-- Tabelle für Fahrten -->
-        <h3>Fahrten</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Abrechenbar</th>
-                    <th>Start</th>
-                    <th>Ende</th>
-                    <th>Gefahrene KM</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for fahrt in fahrten_liste %}
-                    <tr>
-                        <td>{{ 'Ja' if fahrt[4] else 'Nein' }}</td>
-                        <td>{{ fahrt[2] }}</td>
-                        <td>{{ fahrt[3] }}</td>
-                        <td>{{ fahrt[1] }}</td>
-                    </tr>
+        <div class="new-row">
+            <h3>Fahrten:</h3>
+            <div id="fahrtenContainer">
+                 <div class="form-row">
+                    <div class="form-group">
+                        <label>Abrechenbarkeit:</label>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Adresse:</label>
+                    </div>
+                    <div class="form-group">
+                        <label>End Adresse:</label>
+                    </div>
+                    <div class="form-group">
+                        <label>Kilometer:</label>
+                    </div>
+                </div>
+                {% set index = 0 %}
+                {% for fahrt in fahrten %}
+                <div class="form-row fahrt-row">
+                    <div class="form-group">
+                        <input type="checkbox" id="abrechenbarkeit{{ index }}" name="abrechenbarkeit{{ index }}" {% if fahrt[4] %} checked {% endif %} readonly disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="start_adresse{{ index }}" name="start_adresse{{ index }}" value="{{ fahrt[2] }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="end_adresse{{ index }}" name="end_adresse{{ index }}" value="{{ fahrt[3] }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="kilometer{{ index }}" name="kilometer{{ index }}" value="{{ fahrt[1] }}" readonly>
+                    </div>
+                </div>
+                {% set index = index + 1 %}
                 {% endfor %}
-            </tbody>
-        </table>
+            </div>
+        </div>
+
 
         <!-- Unterschriften -->
         <div class="form-row">
             <div class="form-group">
                 <label>Unterschrift Klient:</label>
                 {% if klient_name != "Unternehmen" %}
-                    <img src="{{ unterschrift_klient }}" alt="Unterschrift des Klienten" />
+                    <img src="src="data:image/png;base64,{{ unterschrift_klient }}" alt="Unterschrift des Klienten" />
                 {% endif %}
             </div>
              <div class="form-group">
                 <label>Unterschrift Mitarbeiter:</label>
-                <img src="{{ unterschrift_mitarbeiter}}" alt="Unterschrift des Mitarbeiters" />
+                <img src="src="data:image/png;base64{{ unterschrift_mitarbeiter}}" alt="Unterschrift des Mitarbeiters" />
             </div>
         </div>
 
@@ -101,7 +120,6 @@
             <!-- Schließen Button -->
             <a href="{{ url_for('view_time_entries.view_time_entries', person_id=person_id) }}" class="button">Schließen</a>
         </div>
-
     </div>
 </body>
 </html>
