@@ -1,10 +1,10 @@
 from flask import Blueprint, request, flash, redirect, url_for, render_template
 from db_query import delete_zeiteintrag, check_booked
 
-delete_time_entry_blueprint = Blueprint("delete te", __name__)
+delete_time_entry_blueprint = Blueprint("delete_te", __name__)
 
 
-@delete_time_entry_blueprint.route('/delete_te/<int:zeiteintrags_id>/<int:client_id>/<origin>', methods=['POST', 'GET'])
+@delete_time_entry_blueprint.route('/delete_te/<int:zeiteintrags_id>/<origin>', methods=['POST', 'GET'])
 def delete_te(zeiteintrags_id, client_id, origin):
     if request.method == 'POST':
         # übergebene ID und vermerk von welcher Funktion hierher geleitet
