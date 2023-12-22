@@ -1205,6 +1205,20 @@ def get_fallverantwortung_id(client_id):
         return None
 
 
+def check_month_booked(datum, client_id):
+    date_month = datum.strftime('%m')
+    date_year = datum.strftime('%Y')
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM buchung WHERE EXTRACT(MONTH FROM monat) = %s AND EXTRACT(YEAR FROM monat) = %s "
+                   "AND klient_ID = %s",
+                   (date_month, date_year, client_id,))
+    result = cursor.fetchone()
+    if result:
+        return True
+    return False
+
+
 # Gibt alle IDs der Zeiteinträge der übergebenen Person ID aus
 def get_zeiteintrag_id(person_id):
     connection = get_database_connection()
