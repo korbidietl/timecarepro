@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="../static/styles.css">
     <title>Zeiteinträge ansehen</title>
+    <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
     {% include 'FAN020_navbar.html' %}
@@ -46,6 +46,9 @@
                             <td>{{ entry.end_zeit }}</td>
                             <td>{{ entry.beschreibung }}</td>
                             <td>{{ entry.kilometer }}</td>
+                            <td>
+                                <a href="/work_hours_details/{{entry.id}}/{{person_id}}">Details</a>
+                            </td>
                             <td>
                                 {% if not entry.buchung_vorhanden %}
                                     <a href="/edit_time_entry/{{ entry.id }}">Bearbeiten</a>

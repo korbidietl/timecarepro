@@ -85,14 +85,16 @@ button.f {
     position: absolute;
 }
 
+
 a{
     text-align: center;
     display: block;
-    margin-top: 16px;
     text-decoration: none;
     color: #FFA500;
 
 }
+
+
 
 .modal {
     display: none;
@@ -183,6 +185,10 @@ a{
     justify-content: space-between;
 }
 
+.new-row {
+    width: 100%;
+}
+
 .table-form {
     max-width: 1200px;
     margin: 0 auto;
@@ -256,11 +262,15 @@ a{
 .form-actions button, .form-actions a {
     background-color: #FFA500;
     color: #fff;
-    padding: 12px;
+    padding: 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     text-decoration: none;
+    min-width: 100px;
+    white-space: nowrap;
+    font-size: 16px;
+    margin-right: 40px;
 }
 
 {
@@ -432,8 +442,10 @@ body {
 .form-row {
     display: flex;
     justify-content: space-between;
+    width: 100%;
     margin-bottom: 2px;
 }
+
 .form-row button {
     flex: 0 1 auto; /* oder eine andere geeignete Flex-Einstellung */
     align-self: center; /* oder 'flex-start', 'flex-end', je nach Bedarf */
