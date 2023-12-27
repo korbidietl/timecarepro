@@ -1,5 +1,6 @@
 from flask import Blueprint, request, redirect, url_for, render_template
-from db_query import get_zeiteintrag_with_fahrten_by_id, edit_zeiteintrag, delete_fahrt, add_fahrt, edit_fahrt, fahrt_id_existing
+from db_query import (get_zeiteintrag_with_fahrten_by_id, edit_zeiteintrag, delete_fahrt, add_fahrt, edit_fahrt,
+                      fahrt_id_existing, check_for_overlapping_zeiteintrag)
 from datetime import datetime
 from FMOF030_create_time_entry import check_time_entry_constraints
 from FS020_sign_capture import capture_signature
@@ -35,6 +36,9 @@ def edit_time_entry(zeiteintrag_id):
         if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id):
             # Änderungen am Zeiteintrag speichern
             edit_zeiteintrag(zeiteintrag_id, datum_datetime, start_datetime, end_datetime, unterschrift_klient, unterschrift_mitarbeiter, klient_id, beschreibung, interne_notiz, absage)
+            check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_datetime, end_datetime)
+        else:
+            check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id)
 
         # importiere fahrtCounter von html hidden input in python
         fahrtCounter = int(request.form.get('fahrtCounterInput', 1))

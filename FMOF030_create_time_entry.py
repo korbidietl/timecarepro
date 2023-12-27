@@ -19,7 +19,7 @@ def check_time_entry_constraints(datum, startZeit, endZeit, klientID):
         flash("Der Startzeitpunkt darf nicht in der Zukunft liegen!")
         return render_template("FMOF030_create_time_entry.html")
 
-    #pürft ob dieser monat schon gebucht wurde
+    # prüft ob dieser monat schon gebucht wurde
     datum.strftime("%m.%Y")
     if check_month_booked(datum, klientID):
         flash("Dieser Monat wurde von den ausgewählten Klienten bereits gebucht!")
