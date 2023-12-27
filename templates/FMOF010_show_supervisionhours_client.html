@@ -23,7 +23,7 @@
             <div class="mein-eindeutiges-formular">
 
                 <!-- Drop-Down für Monat auswahl, initial akutelles Monat-->
-                <form action="{{ url_for('client_hours_blueprint.client_supervision_hours', client_id = client_id) }}" method="post" style="display: flex;flex-direction: row; align-items: center; gap: 10px">
+                <form action="/client_supervision_hours/<int:client_id>" method="post" style="display: flex;flex-direction: row; align-items: center; gap: 10px">
                     <label for="monat_jahr"></label>
                     <select name="monat_jahr" id="monat_jahr">
                         {% for kombination in kombinationen %}
@@ -40,7 +40,9 @@
             <!-- Button für Buchung und Buchung revidieren -->
             <div class="accordion-button">
                 {% if user_role in ['Verwaltung', 'Geschäftsführung'] %}
-                    <button type="buchung">Buchen</button>
+                <form action="/book_time_entries/<int:client_id>" method="post">
+                    <button type="submit">Buchen</button>
+                </form>
                 {% endif %}
             </div>
             <div class="accordion-button">
