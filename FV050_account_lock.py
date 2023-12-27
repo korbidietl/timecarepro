@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, flash
-from db_query import edit_account_lock
+from db_query import edit_account_lock, check_account_locked, edit_account_unlock
 
 account_lock_blueprint = Blueprint('account_lock', __name__)
 
@@ -15,7 +15,13 @@ def account_lock(person_id):
                 flash('Es müssen alle Felder ausgefüllt werden.')
                 return render_template('FV050_account_lock.html', person_id=person_id)
 
-        edit_account_lock(person_id)
-        return render_template('FAN010_home.html',
-                               success_message="Account wurde erfolgreich gesperrt", person_id=person_id)
+        if check_account_locked(person_id):
+            edit_account_unlock(person_id)
+            return render_template('FAN010_home.html',
+                                   success_message="Account wurde erfolgreich entsperrt", person_id=person_id)
+        else:
+            edit_account_lock(person_id)
+            return render_template('FAN010_home.html',
+                                   success_message="Account wurde erfolgreich gesperrt", person_id=person_id)
+
     return render_template('FV050_account_lock.html', person_id=person_id)

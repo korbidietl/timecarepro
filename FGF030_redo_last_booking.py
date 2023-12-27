@@ -5,7 +5,7 @@ from db_query import get_last_buchung, delete_buchung
 redo_booking_blueprint = Blueprint('redo_booking_blueprint', __name__, template_folder='templates')
 
 
-@redo_booking_blueprint.route('/redo__last_booking', methods=['POST')
+@redo_booking_blueprint.route('/redo_last_booking/<int:client_id>', methods=['POST'])
 def revidieren_buchung(client_id):
     last_buchung = get_last_buchung(client_id)
     if last_buchung:

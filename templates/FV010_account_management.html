@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Accountverwaltung</title>
@@ -14,6 +14,11 @@
         <button onclick="window.location.href='/create_account';">Account anlegen</button>
         <button onclick="window.location.href='/create_client';">Klient anlegen</button>
 
+        </b><br/>
+
+        {% include 'FAN040_show_client_table.html' %}
+        {% include 'FAN030_show_employee_table.html' %}
+
         <!-- Steuerbüro Tabelle -->
         {% if session['user_role'] == 'Steuerbuero' %}
         <h3>Steuerbüro</h3>
@@ -26,25 +31,25 @@
             </tr>
             {% for steuerbuero in steuerbueros %}
             <tr>
-                <td>{{ steuerbuero.ID }}</td>
-                <td>{{ steuerbuero.Vorname }}</td>
-                <td>{{ steuerbuero.Nachname }}</td>
-                <td>{{ steuerbuero.Email }}</td>
+                <td>{{ person.ID }}</td>
+                <td>{{ person.Vorname }}</td>
+                <td>{{ person.Nachname }}</td>
+                <td>{{ person.Email }}</td>
                 <td>
-                    <button onclick="window.location.href='/details/{{ steuerbuero.ID }}'">Details</button>
+                    <form action="/account_details/{{ person.id }}" method="post">
+                        <button type="submit">Details</button>
+                    </form>
                 </td>
                 <td>
-                    <button onclick="window.location.href='/edit/{{ steuerbuero.ID }}'">Bearbeiten</button>
+                    <form action="/account_edit/{{ person.id }}" method="post">
+                        <button type="submit">Bearbeiten</button>
+                    </form>
                 </td>
-                {% if steuerbuero.Sperre %}
                 <td>
-                    <button onclick="window.location.href='/account_unlock/{{ steuerbuero.ID }}'">Entsperren</button>
+                    <form action="/account_lock/{{ person.id }}" method="post">
+                        <button id="toggleButton">Sperren</button>
+                    </form>
                 </td>
-                {% else %}
-                <td>
-                    <button onclick="window.location.href='/account_lock/{{ steuerbuero.ID }}'">Sperren</button>
-                </td>
-                {% endif %}
             </tr>
             {% endfor %}
         </table>
@@ -64,31 +69,42 @@
             </tr>
             {% for sb in sachbearbeiter %}
                 <tr>
-                    <td>{{ sb.ID }}</td>
-                    <td>{{ sb.Vorname }}</td>
-                    <td>{{ sb.Nachname }}</td>
-                    <td>{{ sb.Email }}</td>
+                    <td>{{ person.ID }}</td>
+                    <td>{{ person.Vorname }}</td>
+                    <td>{{ person.Nachname }}</td>
+                    <td>{{ person.Email }}</td>
                     <td>
-                        <button onclick="window.location.href='/details/{{ sb.ID }}'">Details</button>
+                    <form action="/account_details/{{ person.id }}" method="post">
+                        <button type="submit">Details</button>
+                    </form>
                     </td>
                     <td>
-                        <button onclick="window.location.href='/edit/{{ sb.ID }}'">Bearbeiten</button>
+                        <form action="/account_edit/{{ person.id }}" method="post">
+                            <button type="submit">Bearbeiten</button>
+                        </form>
                     </td>
-                    {% if sb.Sperre %}
                     <td>
-                        <button onclick="window.location.href='/account_unlock/{{ sb.ID }}'">Entsperren</button>
-                    </td>
-                    {% else %}
-                    <td>
-                        <button onclick="window.location.href='/account_lock/{{ sb.ID }}'">Sperren</button>
+                        <form action="/account_lock/{{ person.id }}" method="post">
+                            <button id="toggleButton">Sperren</button>
+                        </form>
                     </td>
                     {% endif %}
                 </tr>
             {% endfor %}
         </table>
         {% endif %}
-    {% include 'FAN030_show_employee_table.html' %}
-    {% include 'FAN040_show_client_table.html' %}
     </div>
+
+    <script>
+        // JavaScript-Code zur wechselnden beschriftung des "sperren" / "entsperren" buttons
+        document.getElementById("toggleButton").addEventListener("click", function() {
+            var button = document.getElementById("toggleButton");
+            if (button.innerHTML === "Sperren") {
+                button.innerHTML = "Entsperren";
+            } else {
+                button.innerHTML = "Sperren";
+            }
+        });
+    </script>
 </body>
 </html>

@@ -47,25 +47,32 @@
                             <td>{{ entry.beschreibung }}</td>
                             <td>{{ entry.kilometer }}</td>
                             <td>
-                                <a href="/work_hours_details/{{entry.id}}/{{person_id}}">Details</a>
+                                <form action="/work_hours_details/<int:zeiteintrag_id>/<int:person_id>" method="post">
+                                    <button type="submit">Details</button>
+                                </form>
                             </td>
                             <td>
                                 {% if not entry.buchung_vorhanden %}
-                                    <a href="/edit_time_entry/{{ entry.id }}">Bearbeiten</a>
+                                <form action="/edit_time_entry/<int:zeiteintrag_id>" method="post">
+                                    <button type="submit">Bearbeiten</button>
+                                </form>
                                 {% endif %}
                             </td>
                             <td>
                                 {% if not entry.buchung_vorhanden %}
-                                    <a href="/delete_te/{{ entry.id }}/{{client_id}}/{{view}}">Löschen</a>
+                                <form action="/delete_te/<int:zeiteintrags_id>/<origin>">
+                                    <button type="submit">Löschen</button>
+                                </form>
                                 {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            <a href="/add_time_entry/{{ person.id }}">Zeiteintrag hinzufügen</a>
+        <form action="/create_time_entry" method="post">
+            <button type="submit">Zeiteintrag hinzufügen</button>
+        </form>
         {% endif %}
     </div>
-
 </body>
 </html>

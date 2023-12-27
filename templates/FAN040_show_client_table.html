@@ -53,18 +53,23 @@
                             <td>{{ client.saldo_fk }}</td>
                             <td>{{ client.saldo_hk }}</td>
                             <!-- Button Logik -->
+                            <td>
+                                <form action="/client_supervision_hours/<int:client_id>" method="post">
+                                    <button type="submit">Zeiteintrag ansehen</button>
+                                </form>
+                            </td>
                             {% if user_role == 'Verwaltung' %}
-                                <td>
-                                    <form action="/bearbeiten/{{ client.id }}" method="post">
-                                        <button type="submit">Bearbeiten</button>
-                                    </form>
-                                </td>
-                                <td>
-                                    <form action="/client_supervision_hours/{{ client.id }}" method="post">
-                                        <button type="submit">Details</button>
-                                    </form>
-                                </td>
-                                {% endif %}
+                            <td>
+                                <form action="/edit_client/<int:client_id>" method="post">
+                                    <button type="submit">Bearbeiten</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form action="/client_details/<int:client_id>" method="post">
+                                    <button type="submit">Details</button>
+                                </form>
+                            </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>

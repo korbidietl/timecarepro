@@ -5,7 +5,7 @@ from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintr
 from datetime import datetime
 from FS020_sign_capture import capture_signature
 
-create_time_entry_blueprint = Blueprint('create_time_entry', __name__)
+create_time_entry_blueprint = Blueprint('/create_time_entry', __name__)
 
 
 def check_time_entry_constraints(datum, startZeit, endZeit, klientID):
