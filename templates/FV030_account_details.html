@@ -67,7 +67,7 @@
                     <button type="submit">Bearbeiten</button>
                 </form>
 
-                {% if locked == True %}
+                {% if locked == 1 %}
                     <!-- Zeigt den "Entsperren"-Button an, wenn der Account gesperrt ist -->
                     <form action="{{ url_for('account_unlock.account_unlock', person_id=person_id) }}" method="get">
                         <button type="submit">Entsperren</button>
