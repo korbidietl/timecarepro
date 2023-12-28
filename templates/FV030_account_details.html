@@ -16,7 +16,7 @@
 
     <div class="registration-form">
         <h2>{{role}} {{firstname}} {{lastname}}</h2>
-        <form action="/account_details/<int:person_id>" method="post">
+
             <div class="form-row">
                 <div class="form-group2">
                     <label for="lastname">Nachname:</label>
@@ -63,27 +63,23 @@
             <!-- Buttons -->
             <div class="form-row">
 
-                <form action="{{url_for('edit_account.edit_account', person_id=person_id) }}" method="get">
-                    <button type="submit" class="hidden">Bearbeiten</button>
-                </form>
-                <form action="{{ url_for('edit_account.edit_account', person_id=person_id) }}" method="post">
+                <form action="{{ url_for('edit_account.edit_account', person_id=person_id) }}" method="get">
                     <button type="submit">Bearbeiten</button>
                 </form>
 
                 {% if locked == True %}
                     <!-- Zeigt den "Entsperren"-Button an, wenn der Account gesperrt ist -->
-                    <form action="{{ url_for('account_unlock.account_unlock', person_id=person_id) }}" method="post">
+                    <form action="{{ url_for('account_unlock.account_unlock', person_id=person_id) }}" method="get">
                         <button type="submit">Entsperren</button>
                     </form>
                 {% else %}
                     <!-- Zeigt den "Sperren"-Button an, wenn der Account nicht gesperrt ist -->
-                    <form action="{{ url_for('account_lock.account_lock', person_id=person_id) }}" method="post">
+                    <form action="{{ url_for('account_lock.account_lock', person_id=person_id) }}" method="get">
                         <button type="submit">Sperren</button>
                     </form>
                 {% endif %}
                 <button type="button" onclick="window.location.href='{{ return_url }}'">Schließen</button>
             </div>
-        </form>
     </div>
 </body>
 </html>
