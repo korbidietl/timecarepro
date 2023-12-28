@@ -10,6 +10,5 @@ def account_unlock(person_id):
 
         edit_account_unlock(person_id)
         flash("Account wurde erfolgreich entsperrt")
-        return render_template('FAN010_home.html',
-                               person_id=person_id)
+        return render_template('FAN010_home.html', person_id=person_id)
     return render_template('FV060_account_unlock.html', person_id=person_id)
