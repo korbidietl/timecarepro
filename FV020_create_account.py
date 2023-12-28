@@ -35,6 +35,7 @@ def send_email_create_account(email, lastname, new_password):
 
 @create_account_blueprint.route('/create_account', methods=['POST', 'GET'])
 def create_account():
+    print("In der Funktion")
     if request.method == 'POST':
         selected_role = request.form.get('role')
         lastname = request.form.get('lastname')
@@ -76,6 +77,7 @@ def create_account():
             return render_template('FV020_create_account.html')
 
         else:
+            print("Hallo")
             password = generate_random_password(10)
             hashed_password = sha1_crypt.encrypt(password)
             change_password = set_password_required_true(email)

@@ -29,7 +29,7 @@
     <div class = "registration-form">
         <h2>Account anlegen</h2>
         <div class="mein-eindeutiges-formular">
-            <form action="/create_account" method="post" >
+            <form action="{{ url_for('create_account.create_account') }}" method="post" >
                 <div class="form-row">
                     <div class="form-group2">
                         <label for="lastname">Nachname:</label>
