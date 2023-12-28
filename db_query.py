@@ -593,7 +593,7 @@ def rolle_dropdown():
 
 
 # /FV020/
-def create_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
+def create_account_db(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
                    telefonnummer, passwort, sperre, passwort_erzwingen):
     connection = get_database_connection()
     cursor = connection.cursor()

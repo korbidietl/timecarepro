@@ -1,7 +1,8 @@
+import hashlib
+
 from FNAN020_password_reset import generate_random_password, send_email
 from flask import Blueprint, render_template, request, flash
-from db_query import validate_email, create_account, set_password_required_true
-from passlib.hash import sha1_crypt
+from db_query import validate_email, create_account_db, set_password_required_true
 from datetime import datetime
 
 create_account_blueprint = Blueprint('create_account', __name__)
@@ -9,7 +10,7 @@ create_account_blueprint = Blueprint('create_account', __name__)
 
 def is_valid_date(date_string):
     try:
-        date_object = datetime.strptime(date_string, "%d.%m.%Y")
+        date_object = datetime.strptime(date_string, "%Y-%m-%d")
         return True
     except ValueError:
         return False
@@ -20,6 +21,12 @@ def is_valid_phone(phone_number):
         return True
     else:
         return False
+
+
+def sha1_hash_password(password):
+    # Erzeugen eines SHA-1 Hashes des Passworts
+    sha1_hash = hashlib.sha1(password.encode()).hexdigest()
+    return sha1_hash
 
 
 def send_email_create_account(email, lastname, new_password):
@@ -35,7 +42,6 @@ def send_email_create_account(email, lastname, new_password):
 
 @create_account_blueprint.route('/create_account', methods=['POST', 'GET'])
 def create_account():
-    print("In der Funktion")
     if request.method == 'POST':
         selected_role = request.form.get('role')
         lastname = request.form.get('lastname')
@@ -79,11 +85,9 @@ def create_account():
         else:
             print("Hallo")
             password = generate_random_password(10)
-            hashed_password = sha1_crypt.encrypt(password)
-            change_password = set_password_required_true(email)
-            create_account(firstname, lastname, birthday, qualification, address, selected_role, email, phone,
-                           hashed_password, 0,
-                           change_password)
+            hashed_password = sha1_hash_password(password)
+            change_password = 1
+            create_account_db(firstname, lastname, birthday, qualification, address, selected_role, email, phone, hashed_password, 0, change_password)
             send_email_create_account(email, lastname, password)
             return render_template('FV010_account_management.html', email=email,
                                    success_message="Account wurde erfolgreich angelegt")

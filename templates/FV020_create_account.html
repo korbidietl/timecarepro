@@ -41,14 +41,14 @@
                     </div>
                     <div class="form-group2 for-mitarbeiter">
                         <label for="address">Adresse:</label>
-                        <input type="text" id="address" name="address" required>
+                        <input type="text" id="address" name="address" >
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group2">
-                        <label for="role-select">Rolle:</label>
-                        <select id="role-select" required onchange="toggleFieldsBasedOnRole()">
+                        <label for="role">Rolle:</label>
+                        <select id="role" name="role" required onchange="toggleFieldsBasedOnRole()">
                             <option value="" disabled selected>Bitte wählen</option>
                             <option value="Mitarbeiter">Mitarbeiter</option>
                             <option value="Verwaltung">Verwaltung</option>
@@ -63,7 +63,7 @@
                     </div>
                     <div class="form-group2 for-mitarbeiter">
                         <label for="phone">Telefonnummer:</label>
-                        <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}">
+                        <input type="tel" id="phone" name="phone"  pattern="[0-9]{10}">
                     </div>
                 </div>
                 <div class="form-row">
@@ -88,7 +88,7 @@
 
 <script>
   function toggleFieldsBasedOnRole() {
-    let role = document.getElementById('role-select').value;
+    let role = document.getElementById('role').value;
     let elements = document.getElementsByClassName('for-mitarbeiter');
 
     for (let i = 0; i < elements.length; i++) {
@@ -99,7 +99,7 @@
 <script>
     window.onload = function() {
         // Überprüfen, ob Nachrichten vorhanden sind
-        {% if get_flashed_messages() %}
+        {%if get_flashed_messages() %}
         let modal = document.getElementById("flashModal");
         let span = document.getElementsByClassName("close")[0];
 
@@ -107,17 +107,18 @@
         modal.style.display = "block";
 
         // Schließen, wenn das "X" geklickt wird
-        span.onclick = function() {
+        span.onclick = function () {
             modal.style.display = "none";
         };
 
         // Schließen, wenn außerhalb des Modals geklickt wird
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target == modal) {
                 modal.style.display = "none";
             }
         };
-        {% endif %}
+        {%endif %}
+    }
 </script>
 </body>
 </html>
