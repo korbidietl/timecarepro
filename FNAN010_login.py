@@ -14,8 +14,8 @@ def login():
 
         # Überprüfen, ob alle Felder ausgefüllt wurden
         if not email or not password:
-            error = "Alle Felder müssen ausgefüllt werden"
-            return render_template('FNAN010_login.html', error=error)
+            flash("Alle Felder müssen ausgefüllt werden")
+            return render_template('FNAN010_login.html')
 
         # wenn email in datenbank gefunden wird
         user = validate_email(email)
