@@ -15,6 +15,9 @@ def create_app():
     from FS020_sign_capture import signature_blueprint
     app.register_blueprint(signature_blueprint)
 
+    from FS030_check_overlapping_time import check_overlapping_time_blueprint
+    app.register_blueprint(check_overlapping_time_blueprint)
+
     # Nicht-angemeldete Nutzer
     from FNAN010_login import login_blueprint
     app.register_blueprint(login_blueprint)
@@ -88,12 +91,22 @@ def create_app():
     from FV100_edit_time_entry_fv import edit_time_entry_fv_blueprint
     app.register_blueprint(edit_time_entry_fv_blueprint)
 
+    from FV110_delete_time_entry_fv import delete_time_entry_fv_blueprint
+    app.register_blueprint(delete_time_entry_fv_blueprint)
+
+    from FV120_book_time_entries import book_time_entry_blueprint
+    app.register_blueprint(book_time_entry_blueprint)
+
     # Geschäftsführung
     from FGF010_view_reporting_dashboard import reporting_dachboard_blueprint
     app.register_blueprint(reporting_dachboard_blueprint)
 
     from FGF020_show_protocol import show_protocol_blueprint
     app.register_blueprint(show_protocol_blueprint)
+
+    from FGF030_redo_last_booking import redo_booking_blueprint
+    app.register_blueprint(redo_booking_blueprint)
+
 
     # Kostenträger/Sachbearbeiter
     from FSK010_access_hours_km_clients import access_hours_km_clients_blueprint

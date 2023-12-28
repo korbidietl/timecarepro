@@ -8,102 +8,28 @@
 
 <body>
 
-    <div id="flashModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <p>{{ message }}</p>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+     <div class="center-container">
+        <div class="loginContainer">
+            <div class="reset-container">
+                <div class="reset-content">
+                    <p>Wollen Sie diesen Account wirklich sperren?</p>
+                    <form action="{{ url_for('account_lock.account_lock', person_id=person_id) }}" method="post">
+
+                        <div class="accordion-button">
+                            <button type="button" onclick="close_popup()">Nein</button>
+                            <button type="submit">Ja</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
         </div>
     </div>
-    <div class="center-container">
-        <div class ="loginContainer">
-            <h2>Account sperren</h2>
-            <p>Bitte geben Sie die ID des Accounts ein:</p>
-            <form action="/account_lock" method="post">
-                <label for="person_id">Person ID:</label>
-                <input type="number" id="person_id" name="person_id" required>
-                <button type="submit">Account sperren</button>
-                <a href="/home">Abbrechen</a>
-            </form>
-        </div>
-    </div>
-</body>
-<script>
-    window.onload = function() {
-        // Überprüfen, ob Nachrichten vorhanden sind
-        {% if get_flashed_messages() %}
-        let modal = document.getElementById("flashModal");
-        let span = document.getElementsByClassName("close")[0];
-
-        // Modal anzeigen
-        modal.style.display = "block";
-
-        // Schließen, wenn das "X" geklickt wird
-        span.onclick = function() {
-            modal.style.display = "none";
-        };
-
-        // Schließen, wenn außerhalb des Modals geklickt wird
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        };
-        {% endif %}
-</script>
-</html>
-
-
-
-<!--
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sperren Bestätigung</title>
-    <link rel="stylesheet" href="../static/styles.css">
-</head>
-<body>
-    <p>Wollen Sie den Account wirklich sperren?</p>
-    <button onclick="close_popup()">Nein</button>
-    <button onclick="confirm_lock('{person_id}')">Ja</button>
-
     <script>
-        function confirm_lock(person_id) {
-            // Hier kann man eine andere URL oder einen anderen API-Aufruf verwenden,
-            // um die edit_account_lock Funktion aufzurufen
-            fetch('/db_query.py?person_id=' + person_id, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    function_name: 'edit_account_lock',
-                    person_id: person_id
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Account erfolgreich gesperrt');
-                    close_popup();
-                } else {
-                    alert('Fehler: ' + data.error);
-                }
-            })
-            .catch(error => {
-                alert('Fehler: ' + error);
-            });
-        }
-
-        function close_popup() {
-            window.close();
-        }
+    function close_popup() {
+                window.history.back();
+            }
     </script>
 </body>
 </html>
--->
+

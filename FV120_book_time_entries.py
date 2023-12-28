@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from db_query import (get_database_connection, book_zeiteintrag, check_signatures, check_month_booked, get_last_buchung,
-                      is_booked_client, get_first_time_entry, get_zeiteintrag_for_client)
+from db_query import (book_zeiteintrag, check_signatures, check_month_booked, get_last_buchung,
+                      is_booked_client,  get_zeiteintrag_for_client) # get_first_time_entry,
 from FNAN010_login import logged_in_users
 from datetime import datetime
 
@@ -34,7 +34,8 @@ def book_client_time_entry(client_id):
     next_month_to_book = get_next_month_to_book(last_month_booked)
     # es wurde noch kein monat gebucht
     if not is_booked_client(client_id, datum):
-        next_month_to_book = get_first_time_entry(client_id)
+        print("Hallo")
+        # next_month_to_book = get_first_time_entry(client_id)
 
     # ausgewählter monat ist nicht last_month_booked + 1 / es wurde noch kein monat gebucht
     if datum != next_month_to_book:

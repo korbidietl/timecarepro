@@ -7,21 +7,8 @@ account_lock_blueprint = Blueprint('account_lock', __name__)
 @account_lock_blueprint.route('/account_lock/<int:person_id>', methods=['POST', 'GET'])
 def account_lock(person_id):
     if request.method == 'POST':
-
-        required_fields = ['person_id']
-
-        for field in required_fields:
-            if not request.form.get(field):
-                flash('Es müssen alle Felder ausgefüllt werden.')
-                return render_template('FV050_account_lock.html', person_id=person_id)
-
-        if check_account_locked(person_id):
-            edit_account_unlock(person_id)
-            return render_template('FAN010_home.html',
-                                   success_message="Account wurde erfolgreich entsperrt", person_id=person_id)
-        else:
-            edit_account_lock(person_id)
-            return render_template('FAN010_home.html',
-                                   success_message="Account wurde erfolgreich gesperrt", person_id=person_id)
+        edit_account_lock(person_id)
+        flash("Account wurde erfolgreich gesperrt")
+        return render_template('FAN010_home.html', person_id=person_id)
 
     return render_template('FV050_account_lock.html', person_id=person_id)
