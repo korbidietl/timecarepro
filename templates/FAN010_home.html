@@ -27,7 +27,7 @@
             <iframe src="/show_clients" style="width:100%; height:300px; border:none;"></iframe>
          {% endif %}
          {% if session['user_id'] != 'Sachbearbeiter/Kostenträger' %}
-             <iframe src="/show_employee_table" style="width:100%; height:300px; border:none;"></iframe>
+             <iframe src="/show_employee_table/<int:person_id>" style="width:100%; height:300px; border:none;"></iframe>
          {% endif %}
      </div>
 

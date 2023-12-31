@@ -7,12 +7,15 @@ from FMOF010_show_supervisionhours_client import generate_month_year_combination
 show_employee_table_blueprint = Blueprint('show_employee_table', __name__)
 
 
-@show_employee_table_blueprint.route('/show_employee_table', methods=['GET', 'POST'])
-def mitarbeiter():
-    user_role = get_role_by_id(session.get('user_id'))
+@show_employee_table_blueprint.route('/show_employee_table/<int:person_id>', methods=['GET', 'POST'])
+def mitarbeiter(person_id):
+    user_role = get_role_by_id(person_id)
+    # user_role = get_role_by_id(session.get('user_id'))
     mitarbeiterliste = []
 
     kombinationen = generate_month_year_combinations()
+    aktuelles_jahr = datetime.now().year
+    aktueller_monat = datetime.now().month
 
     # auswahl des angezeigten Zeitraums
     if request.method == 'POST':
@@ -21,23 +24,18 @@ def mitarbeiter():
         # Standardmäßig aktuelles Monat und Jahr
         monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
                   'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
-        aktuelles_jahr = datetime.now().year
-        aktueller_monat = datetime.now().month
+
         gewaehlte_kombination = f"{monate[aktueller_monat - 1]} {aktuelles_jahr}"
 
     month, year = extrahiere_jahr_und_monat(gewaehlte_kombination)
 
-    if request.method == 'POST':
-
-        monat = request.form['zeitraum']
-
-        if user_role in ["Steuerbüro", "Geschäftsführung"]:
-            mitarbeiterliste = account_table(monat)
-        elif user_role == "Mitarbeiter":
-            mitarbeiterliste = account_table_mitarbeiter(monat, session['user_id'])
-        else:
-            # Optionale Handhabung für andere Rollen oder Fehlermeldung
-            pass
+    if user_role in ["Steuerbüro", "Geschäftsführung"]:
+        mitarbeiterliste = account_table(month, year)
+    elif user_role == "Mitarbeiter":
+        mitarbeiterliste = account_table_mitarbeiter(month, year, session['user_id'])
+    else:
+        # Optionale Handhabung für andere Rollen oder Fehlermeldung
+        pass
 
     # Fehlerbehandlung, wenn keine Mitarbeiter gefunden werden
     if not mitarbeiterliste:
