@@ -70,4 +70,4 @@ def edit_time_entry(zeiteintrag_id):
 
 
         # Weiterleitung zurück zur Übersicht der abgelegten Stunden
-        return redirect(url_for('show_supervisionhours_client'))
+        return redirect(url_for('show_supervisionhours_client.show_supervisionhours_client'))

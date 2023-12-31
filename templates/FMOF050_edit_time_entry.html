@@ -49,6 +49,8 @@
                 </div>
             </div>
             <h3>Fahrten:</h3>
+            {% set index = 0 %}
+            {% for fahrt in fahrten %}
             <div id="fahrtenContainer">
                 <!-- Ursprüngliche Fahrt-Eingabezeile -->
                 <div class="form-row fahrt-row">
@@ -56,26 +58,28 @@
                         <input type="hidden" id="fahrt_id0" name="fahrt_id0">
                     </div>
                     <div class="form-group">
-                        <label for="abrechenbarkeit0">Abrechenbarkeit:</label>
-                        <input type="checkbox" id="abrechenbarkeit0" name="abrechenbarkeit0" required>
+                        <label for="abrechenbarkeit{{ index }}">Abrechenbarkeit:</label>
+                        <input type="checkbox" id="abrechenbarkeit{{ index }}" name="abrechenbarkeit{{ index }}" value="{{ fahrt[0] }}"required>
                     </div>
                     <div class="form-group">
-                        <label for="start_adresse0">Start Adresse:</label>
-                        <input type="text" id="start_adresse0" name="start_adresse0" required>
+                        <label for="start_adresse{{ index }}">Start Adresse:</label>
+                        <input type="text" id="start_adresse{{ index }}" name="start_adresse{{ index }}" value="{{ fahrt[2] }}" required>
                     </div>
                     <div class="form-group">
-                        <label for="end_adresse0">End Adresse:</label>
-                        <input type="text" id="end_adresse0" name="end_adresse0" required>
+                        <label for="end_adresse{{ index }}">End Adresse:</label>
+                        <input type="text" id="end_adresse{{ index }}" name="end_adresse{{ index }}" value="{{ fahrt[3] }}" required>
                     </div>
                     <div class="form-group">
-                        <label for="kilometer0">Kilometer:</label>
-                        <input type="number" id="kilometer0" name="kilometer0" required>
+                        <label for="kilometer{{ index }}">Kilometer:</label>
+                        <input type="text" id="kilometer{{ index }}" name="kilometer{{ index }}" value="{{ fahrt[1] }}" required>
                     </div>
                     <button type="button" onclick="addFahrt()">+</button>
                     <button type="button" onclick="removeFahrt(this)">-</button>
                     <input type="hidden" id="fahrtCounterInput" name="fahrtCounterInput">
                 </div>
             </div>
+            {% set index = index + 1 %}
+            {% endfor %}
 
             <div class="form-actions">
                 <div class="form-group">
