@@ -10,7 +10,6 @@ show_employee_table_blueprint = Blueprint('show_employee_table', __name__)
 @show_employee_table_blueprint.route('/show_employee_table/<int:person_id>', methods=['GET', 'POST'])
 def mitarbeiter(person_id):
     user_role = get_role_by_id(person_id)
-    # user_role = get_role_by_id(session.get('user_id'))
     mitarbeiterliste = []
 
     kombinationen = generate_month_year_combinations()

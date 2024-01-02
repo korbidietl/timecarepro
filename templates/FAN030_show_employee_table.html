@@ -35,50 +35,54 @@
                     <button type="submit">Anzeigen</button>
                 </form>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Personalnr.</th>
-                        <th>Vorname</th>
-                        <th>Nachname</th>
-                        <th>Geleistete Stunden</th>
-                        <th>Gefahrene Kilometer</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for mitarbeiter in mitarbeiterliste %}
-                    <tr>
-                        <td>{{ person.id }}</td>
-                        <td>{{ person.vorname }}</td>
-                        <td>{{ person.nachname }}</td>
-                        <td>{{ person.geleistete_stunden }}</td>
-                        <td>{{ person.gefahrene_kilometer }}</td>
-                        <td>
-                            <form action="/view_time_entries/<int:person_id>" method="post">
-                                <button type="submit">Zeiteintrag ansehen</button>
-                            </form>
-                        </td>
-                        {% if user_role == 'Verwaltung' %}
-                        <td>
-                            <form action="/edit_account/<int:person_id>" method="post">
-                                <button type="submit">Bearbeiten</button>
-                            </form>
-                        </td>
-                        <td>
-                            <form action="/account_lock/<int:person_id>" method="post">
-                                <button id="toggleButton">Sperren</button>
-                            </form>
-                        </td>
-                        <td>
-                            <form action="/account_details/<int:person_id>" method="post">
-                                <button type="submit">Details</button>
-                            </form>
-                        </td>
-                        {% endif %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            {% if mitarbeiterliste %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Personalnr.</th>
+                            <th>Vorname</th>
+                            <th>Nachname</th>
+                            <th>Geleistete Stunden</th>
+                            <th>Gefahrene Kilometer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mitarbeiter in mitarbeiterliste %}
+                        <tr>
+                            <td>{{ person.id }}</td>
+                            <td>{{ person.vorname }}</td>
+                            <td>{{ person.nachname }}</td>
+                            <td>{{ person.geleistete_stunden }}</td>
+                            <td>{{ person.gefahrene_kilometer }}</td>
+                            <td>
+                                <form action="/view_time_entries/<int:person_id>" method="post">
+                                    <button type="submit">Zeiteintrag ansehen</button>
+                                </form>
+                            </td>
+                            {% if user_role == 'Verwaltung' %}
+                            <td>
+                                <form action="/edit_account/<int:person_id>" method="post">
+                                    <button type="submit">Bearbeiten</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form action="/account_lock/<int:person_id>" method="post">
+                                    <button id="toggleButton">Sperren</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form action="/account_details/<int:person_id>" method="post">
+                                    <button type="submit">Details</button>
+                                </form>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Keine Mitarbeiter gefunden.</p>
+            {% endif %}
             </b><br/>
             {% if session['user_role'] in ['Steuerbüro', 'Geschäftsführung'] %}
             <div class="export-print-buttons">
