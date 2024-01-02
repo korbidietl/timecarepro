@@ -7,4 +7,6 @@ home_blueprint = Blueprint('home', __name__)
 def home():
     user_id = session.get('user_id')
 
+    print(session.get('user_role'))
+
     return render_template('FAN010_home.html', user_id=user_id)

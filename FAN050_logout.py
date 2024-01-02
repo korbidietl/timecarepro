@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, session
 from FNAN010_login import logged_in_users
 
-
 logout_blueprint = Blueprint("logout", __name__)
 
 
@@ -12,12 +11,14 @@ def logout():
     # Überprüfen, ob der Benutzer eingeloggt ist
     if 'user_id' in session:
         # Benutzer aus Liste eingeloggter Benutzer entfernen
-        logged_in_users.remove(email)
+        if email in logged_in_users:
+            logged_in_users.remove(email)
 
         # Session löschen
         session.pop('user_id', None)
         session.pop('user_role', None)
         session.pop('user_email', None)
+        session.pop('last_activity', None)
 
         return render_template('FNAN010_login.html')
 

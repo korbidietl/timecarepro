@@ -18,7 +18,7 @@ def reporting_dashboard():
     cl = {'klient': client}
 
     # Default Datumswerte
-    date_format = "%d.%m.%Y"
+    date_format = "%Y-%m-%d"
     heute = datetime.now()
     erster_dieses_monats = datetime(heute.year, heute.month, 1)
 
@@ -63,12 +63,12 @@ def reporting_dashboard():
 
         # Auswerten des Datums zur weiterverwendung
         if von:
-            von_date = datetime.strptime(von, "%d.%m.%Y")
+            von_date = datetime.strptime(von, "%d.%m.%Y").strftime('%Y-%m-%d')
         else:
             von_date = von
 
         if bis:
-            bis_date = datetime.strptime(bis, "%d.%m.%Y")
+            bis_date = datetime.strptime(bis, "%d.%m.%Y").strftime('%Y-%m-%d')
         else:
             bis_date = bis
 
@@ -101,9 +101,10 @@ def anzeigen(von, bis):
 
     # Diagramme
     mazahl = sum_mitarbeiter(von, bis)
-    # stundendaten = get_stundendaten_fuer_jeden_monat()
-    # kmdaten = km jahr
-    # tabsagendaten= terminabsagen jahr
+
+    # stundendaten = get_stundendaten_fuer_jeden_monat() or []
+    # kmdaten = km jahr or []
+    # tabsagendaten= terminabsagen jahr or []
 
     return render_template('FGF010_view_reporting_dashboard.html', zeiteintraege_liste=zeiteintraege_liste, mitarbeiter_liste=mitarbeiter_liste,
                            klienten_liste=klienten_liste, mastunden=mastunden, maabsagen=maabsagen, makm=makm,

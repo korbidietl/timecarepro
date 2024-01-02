@@ -41,7 +41,6 @@ def login():
                 session['user_role'] = get_role_by_email(email)
                 return redirect(url_for('home.home'))
 
-
         # Nutzer nicht gefunden
         else:
             flash("Die Zugangsdaten sind nicht korrekt.")

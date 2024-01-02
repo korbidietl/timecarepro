@@ -288,86 +288,86 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
 <script type="text/javascript">
-    var stundendaten = {{ stundendaten|tojson }};
-    var kmdaten = {{ km|tojson }};
-    var terminabsagendaten = {{ tabsagen|tojson }};
+    var stundendaten = {{ stundendaten|tojson|default('[]', true) }};
+    var kmdaten = {{ km|tojson|default('[]', true) }};
+    var terminabsagendaten = {{ tabsagen|tojson|default('[]', true) }};
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var stundenCtx = document.getElementById('stundenChart').getContext('2d');
-    var stundenChart = new Chart(stundenCtx, {
-        type: 'bar',
-        data: {
-            labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-            datasets: [{
-                label: 'Stundenzahl',
-                data: stundendaten,
-                backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                borderColor: 'rgba(255, 159, 64, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true,
-                        suggestedMax: 6000
-                    }
+    document.addEventListener('DOMContentLoaded', function() {
+        var stundenCtx = document.getElementById('stundenChart').getContext('2d');
+        var stundenChart = new Chart(stundenCtx, {
+            type: 'bar',
+            data: {
+                labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                datasets: [{
+                    label: 'Stundenzahl',
+                    data: stundendaten,
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1
                 }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            suggestedMax: 6000
+                        }
+                    }]
+                }
             }
-        }
-    });
+        });
 
-    var kilometerCtx = document.getElementById('kilometerChart').getContext('2d');
-    var kilometerChart = new Chart(kilometerCtx, {
-        type: 'bar',
-        data: {
-            labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-            datasets: [{
-                label: 'Kilometeranzahl',
-                data: kmdaten,
-                backgroundColor: 'rgba(0, 128, 0, 0.2)',
-                borderColor: 'rgba(0, 128, 0, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true,
-                        suggestedMax: 12000 // Maximalwert an die Daten anpassen
-                    }
+        var kilometerCtx = document.getElementById('kilometerChart').getContext('2d');
+        var kilometerChart = new Chart(kilometerCtx, {
+            type: 'bar',
+            data: {
+                labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                datasets: [{
+                    label: 'Kilometeranzahl',
+                    data: kmdaten,
+                    backgroundColor: 'rgba(0, 128, 0, 0.2)',
+                    borderColor: 'rgba(0, 128, 0, 1)',
+                    borderWidth: 1
                 }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            suggestedMax: 12000 // Maximalwert an die Daten anpassen
+                        }
+                    }]
+                }
             }
-        }
-    });
-    var terminAbsagenCtx = document.getElementById('terminAbsagenChart').getContext('2d');
-    var terminAbsagenChart = new Chart(terminAbsagenCtx, {
-        type: 'bar',
-        data: {
-            labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-            datasets: [{
-                label: 'Terminabsagen',
-                data: terminabsagendaten,
-                backgroundColor: 'rgba(225, 0, 0, 0.2)',
-                borderColor: 'rgba(225, 0, 0, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true,
-                        suggestedMax: 14 // Maximalwert an die Daten anpassen
-                    }
+        });
+        var terminAbsagenCtx = document.getElementById('terminAbsagenChart').getContext('2d');
+        var terminAbsagenChart = new Chart(terminAbsagenCtx, {
+            type: 'bar',
+            data: {
+                labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                datasets: [{
+                    label: 'Terminabsagen',
+                    data: terminabsagendaten,
+                    backgroundColor: 'rgba(225, 0, 0, 0.2)',
+                    borderColor: 'rgba(225, 0, 0, 1)',
+                    borderWidth: 1
                 }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            suggestedMax: 14 // Maximalwert an die Daten anpassen
+                        }
+                    }]
+                }
             }
-        }
+        });
     });
-});
 </script>
 
 

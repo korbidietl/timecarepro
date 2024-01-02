@@ -2,7 +2,7 @@ from flask import session, redirect, url_for, flash
 from datetime import datetime, timedelta
 
 
-def make_session_permanent():
+def make_session_not_permanent():
     session.permanent = False
 
 
