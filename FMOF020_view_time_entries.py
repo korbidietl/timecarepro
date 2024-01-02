@@ -6,7 +6,9 @@ view_time_entries_blueprint = Blueprint("view_time_entries", __name__)
 
 @view_time_entries_blueprint.route('/view_time_entries/<int:person_id>', methods=['GET', 'POST'])
 def view_time_entries(person_id):
-    person = session['user_id']
+    person = session.get('user_id')
+
+    session['url'] = url_for('view_time_entries.view_time_entries', person_id=person_id)
     if request.method == 'POST':
         monat = request.form['month']
         jahr = request.form['year']
