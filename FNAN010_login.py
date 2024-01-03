@@ -39,6 +39,9 @@ def login():
                 session['user_id'] = get_person_id_by_email(email)
                 session['user_email'] = email
                 session['user_role'] = get_role_by_email(email)
+                #Nutzer muss Passwort ändern
+                #if TRUE:
+                #    return redirect(url_for('password_change.password_change'))
                 return redirect(url_for('home.home'))
 
         # Nutzer nicht gefunden
