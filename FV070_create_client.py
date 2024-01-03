@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, Blueprint, flash
+from flask import Flask, render_template, request, jsonify, Blueprint, flash, redirect, url_for
 from db_query import mitarbeiter_dropdown, create_klient, validate_client, kostentraeger_dropdown
 
 # app = Flask(__name__)
@@ -34,8 +34,8 @@ def register_client():
         else:
             create_klient(nachname, vorname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                           kontingent_hk, kontingent_fk, fallverantwortung_id)
-            return render_template('FAN010_home.html',
-                                   success_message="Client wurde erfolgreich angelegt")
+            return redirect(url_for('account_management.account_management', success_message="Client wurde erfolgreich angelegt"))
+
     kostentraeger = kostentraeger_dropdown()
     kt = {'kostentraeger': kostentraeger}
     fallverantwortung = mitarbeiter_dropdown()
