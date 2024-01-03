@@ -58,4 +58,4 @@ def delete_time_entry_fv(zeiteintrags_id):
             elif origin_function == 'function 2':
                 return redirect(url_for('name_function_2'))
 
-    return render_template('FV110_delete_time_entry_fv.html')
+    return render_template('FV110_delete_time_entry_fv.html', zeiteintrags_id=zeiteintrags_id)
