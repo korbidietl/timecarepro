@@ -11,7 +11,7 @@
             <div class="reset-container">
                 <div class="reset-content">
                     <p>Wollen Sie diesen Eintrag wirklich löschen?</p>
-                    <form action="/delete_te" method="post">
+                    <form action="{{url_for('delete_te.delete_te', zeiteintrags_id = zeiteintrags_id)}}" method="post">
                         <input type="hidden" name="zeiteintrags_ID" value="{{ zeiteintrags_ID }}">
                         <input type="hidden" name="origin_function" value="{{ origin_function }}">
                         <div class="accordion-button">
