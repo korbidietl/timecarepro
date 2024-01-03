@@ -23,17 +23,19 @@
         <div class="table-container">
             <h3>Mitarbeitertabelle</h3>
             <div class="time-selection-container">
-                <form action="/show_employee_table" method="post" >
-                    <label for="monat_jahr"></label>
-                    <select name="monat_jahr" id="monat_jahr">
-                        {% for kombination in kombinationen %}
-                        <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
-                            {{ kombination }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                    <button type="submit">Anzeigen</button>
-                </form>
+                <div class="mein-eindeutiges-formular">
+                    <form action="/show_employee_table" method="post" style="display: flex;flex-direction: row; align-items: center; gap: 10px">
+                        <label for="monat_jahr"></label>
+                        <select name="monat_jahr" id="monat_jahr">
+                            {% for kombination in kombinationen %}
+                            <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
+                                {{ kombination }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">Anzeigen</button>
+                    </form>
+                </div>
             </div>
             {% if mitarbeiterliste %}
                 <table>

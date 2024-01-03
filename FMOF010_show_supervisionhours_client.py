@@ -45,7 +45,6 @@ def client_supervision_hours(client_id):
 
     session['url'] = url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id)
 
-
     # auswahl des angezeigten Zeitraums
     if request.method == 'POST':
         gewaehlte_kombination = request.form.get('monat_jahr')
