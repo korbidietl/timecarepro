@@ -69,7 +69,7 @@ def submit_arbeitsstunden():
                 return render_template('FS030_check_overlapping_time.html')
 
         # Weiterleitung zurück zur Übersicht der abgelegten Stunden
-        return redirect(url_for('show_supervisionhours_client'))
+        return redirect(url_for('client_hours_blueprint.client_supervision_hours', client_id=klient_id))
     return render_template('FMOF030_create_time_entry.html')
 
 
