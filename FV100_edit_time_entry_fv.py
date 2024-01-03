@@ -1,10 +1,12 @@
+import base64
 import smtplib
 from datetime import datetime
 from email.mime.text import MIMEText
 
 from flask import Blueprint, request, render_template, redirect, url_for, flash
 from db_query import get_zeiteintrag_with_fahrten_by_id, edit_zeiteintrag, get_email_by_zeiteintrag, \
-    get_lastname_by_email, check_for_overlapping_zeiteintrag
+    get_lastname_by_email, check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id, get_fahrt_by_zeiteintrag, \
+    get_klient_data
 
 edit_time_entry_fv_blueprint = Blueprint('edit_time_entry_fv', __name__)
 
@@ -36,12 +38,32 @@ def send_email_edit_time_entry(email, lastname, id):
 def edit_time_entry(zeiteintrag_id):
     email = get_email_by_zeiteintrag(zeiteintrag_id)
     lastname = get_lastname_by_email(email)
-    if request.method == 'GET':
-        # Daten für den zu bearbeitenden Zeiteintrag holen
-        zeiteintrag_data = get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id)
-        return render_template("FV100_edit_time_entry_fv.html",
-                               zeiteintrag=zeiteintrag_data['zeiteintrag'], zeiteintrag_id=zeiteintrag_id)
+
+    zeiteintrag_liste = get_zeiteintrag_by_id(zeiteintrag_id)
+    zeiteintrag = zeiteintrag_liste[0]
+    datum = zeiteintrag[3].strftime("%Y-%m-%d")
+    von = zeiteintrag[3].strftime("%H:%M")
+    bis = zeiteintrag[4].strftime("%H:%M")
+
+    fahrten = get_fahrt_by_zeiteintrag(zeiteintrag_id)
+
+    # Name Klient
+    klient_id = zeiteintrag[6]
+    klient_data = get_klient_data(klient_id)
+    klient_name = klient_data[0][1] + ' ' + klient_data[0][2]
+
+    # Umwandlung Unterschriften
+    if zeiteintrag[1]:
+        unterschrift_mitarbeiter = base64.b64encode(zeiteintrag[1]).decode('utf-8')
     else:
+        unterschrift_mitarbeiter = ""
+
+    if zeiteintrag[2]:
+        unterschrift_klient = base64.b64encode(zeiteintrag[2]).decode('utf-8')
+    else:
+        unterschrift_klient = ""
+
+    if request.method == 'POST':
         # Eingabedaten aus dem Formular holen
         datum = request.form.get('datum')
         start_zeit = request.form.get('startZeit')
@@ -66,3 +88,9 @@ def edit_time_entry(zeiteintrag_id):
         flash(success_message, 'success')
         # Weiterleitung zurück zur Übersicht der abgelegten Stunden
         return redirect(url_for('/FMOF010_show_supervisionhours_client'))
+
+    return render_template("FV100_edit_time_entry_fv.html",
+                           zeiteintrag=zeiteintrag, fahrten=fahrten,
+                           klient_name=klient_name, datum=datum, von=von, bis=bis,
+                           unterschrift_klient=unterschrift_klient,
+                           unterschrift_mitarbeiter=unterschrift_mitarbeiter, zeiteintrag_id=zeiteintrag_id)
