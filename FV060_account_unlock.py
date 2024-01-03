@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, flash
+from flask import Blueprint, request, render_template, flash, redirect, url_for
 from db_query import edit_account_unlock
 
 account_unlock_blueprint = Blueprint('account_unlock', __name__)
@@ -10,5 +10,5 @@ def account_unlock(person_id):
 
         edit_account_unlock(person_id)
         flash("Account wurde erfolgreich entsperrt")
-        return render_template('FAN010_home.html', person_id=person_id)
+        return redirect(url_for('home.home'))
     return render_template('FV060_account_unlock.html', person_id=person_id)
