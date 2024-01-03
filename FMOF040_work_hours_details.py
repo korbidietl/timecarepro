@@ -1,6 +1,6 @@
 import base64
 
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, url_for
 from db_query import get_zeiteintrag_by_id, get_fahrt_by_zeiteintrag, get_klient_data
 
 work_hours_details_blueprint = Blueprint('work_hours_details', __name__)
@@ -8,6 +8,7 @@ work_hours_details_blueprint = Blueprint('work_hours_details', __name__)
 
 @work_hours_details_blueprint.route('/work_hours_details/<int:zeiteintrag_id>/<int:person_id>')
 def show_details(zeiteintrag_id, person_id):
+    session['url'] = url_for('work_hours_details.show_details', zeiteintrag_id=zeiteintrag_id, person_id=person_id)
     # Datenbankaufrufe
     zeiteintrag_liste = get_zeiteintrag_by_id(zeiteintrag_id)
     zeiteintrag = zeiteintrag_liste[0]
