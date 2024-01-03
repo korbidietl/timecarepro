@@ -89,14 +89,16 @@ def get_role_by_id(person_id):
 
 
 # /FAN030/
-def account_table_mitarbeiter(monat, person_id):
+def account_table_mitarbeiter(monat, year, person_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute(
         "SELECT person.ID, person.nachname, person.vorname, "
         "SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
-        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s AND person.ID = %s GROUP BY person.ID", (monat, person_id))
+        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
+        "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
+        "AND person.ID = %s GROUP BY person.ID ", (monat, year, person_id))
     time_table_mitarbeiter = cursor.fetchall()
 
     cursor.execute(
@@ -104,7 +106,9 @@ def account_table_mitarbeiter(monat, person_id):
         "SUM(fahrt.kilometer) AS gefahrene_kilometer "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
         "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
-        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s AND person.ID = %s GROUP BY person.ID", (monat, person_id))
+        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
+        "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
+        "AND person.ID = %s GROUP BY person.ID", (monat, year, person_id))
     distance_table_mitarbeiter = cursor.fetchall()
     # Zusammenfügen der Tabellen
     report_table = []
@@ -123,14 +127,16 @@ def account_table_mitarbeiter(monat, person_id):
 
 
 # /FAN030/
-def account_table(monat):
+def account_table(monat, year):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute(
         "SELECT person.ID, person.nachname, person.vorname, "
         "SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
-        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s GROUP BY person.ID", (monat,))
+        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
+        "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
+        "GROUP BY person.ID", (monat, year,))
     time_table = cursor.fetchall()
 
     cursor.execute(
@@ -138,7 +144,9 @@ def account_table(monat):
         "SUM(fahrt.kilometer) AS gefahrene_kilometer "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
         "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
-        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s GROUP BY person.ID", (monat,))
+        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
+        "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
+        "GROUP BY person.ID", (monat, year,))
     distance_table = cursor.fetchall()
     # Zusammenfügen der Tabellen
     report_table = []
