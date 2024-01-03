@@ -1,7 +1,7 @@
 import hashlib
 
 from FNAN020_password_reset import generate_random_password, send_email
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from db_query import validate_email, create_account_db, set_password_required_true
 from datetime import datetime
 
@@ -76,6 +76,11 @@ def create_account():
                 elif field == 'phone' and not is_valid_phone(value):
                     flash(f'Eingabe in Feld {field} ungültig. Bitte geben Sie eine gültige Telefonnummer ein.')
                     return render_template('FV020_create_account.html')
+        else:
+            jahr = 1990
+            monat = 1
+            tag = 1
+            birthday = datetime(jahr, monat, tag)
 
         # Überprüfung ob schon ein Account existiert
         if validate_email(email):
@@ -83,12 +88,13 @@ def create_account():
             return render_template('FV020_create_account.html')
 
         else:
-            print("Hallo")
+
             password = generate_random_password(10)
             hashed_password = sha1_hash_password(password)
             change_password = 1
             create_account_db(firstname, lastname, birthday, qualification, address, selected_role, email, phone, hashed_password, 0, change_password)
             send_email_create_account(email, lastname, password)
-            return render_template('FV010_account_management.html', email=email,
-                                   success_message="Account wurde erfolgreich angelegt")
+            flash("Account wurde erfolgreich angelegt", "success")
+            return redirect(url_for('account_management.account_management'))
+
     return render_template('FV020_create_account.html')
