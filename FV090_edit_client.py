@@ -1,11 +1,16 @@
 from flask import Blueprint, request, jsonify, render_template
-from db_query import edit_klient, mitarbeiter_dropdown
+from db_query import edit_klient, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data
 
 edit_client_blueprint = Blueprint('edit_client', __name__)
 
 
 @edit_client_blueprint.route('/edit_client/<int:client_id>', methods=['POST', 'GET'])
 def edit_client(client_id):
+    # Datenbankaufruf über client_id
+    client_data_list = get_klient_data(client_id)
+    client_data = client_data_list[0]
+
+
     if request.method == 'POST':
         # client_id = request.form['client_id']
         vorname = request.form['vorname']
@@ -24,8 +29,29 @@ def edit_client(client_id):
             return jsonify({'message': 'Client successfully updated'}), 200
         except Exception as e:
             return jsonify({'message': 'Error updating client: ' + str(e)}), 500
-    sachbearbeiter = mitarbeiter_dropdown()
-    sb = {'sachbearbeiter': sachbearbeiter}
+    kostentraeger = kostentraeger_dropdown()
+    kt = {'kostentraeger': kostentraeger}
     fallverantwortung = mitarbeiter_dropdown()
     fv = {'fallverantwortung': fallverantwortung}
-    return render_template('FV090_edit_client.html', **sb, **fv, client_id=client_id)
+    if client_data:
+        firstname = client_data[1],
+        lastname = client_data[2],
+        birthday = client_data[3],
+        phone = client_data[4],
+        sb = client_data[5],
+        address = client_data[6],
+        fk = client_data[7],
+        hk = client_data[8],
+        fv_ = client_data[9]
+
+        sb_id = sb[0]
+        fv_id = fv_
+
+        sachbearbeiter_data = get_name_by_id(sb_id)
+        sachbearbeiter = sachbearbeiter_data[0]
+        fallverantwortung_data = get_name_by_id(fv_id)
+        fallverantwortung = fallverantwortung_data[0]
+        return render_template('FV090_edit_client.html', **kt, **fv, client_id=client_id, firstname=firstname,
+                               lastname=lastname, birthday=birthday, phone=phone, sb=sachbearbeiter, address=address, fk=fk, hk=hk,
+                               fv=fallverantwortung)
+
