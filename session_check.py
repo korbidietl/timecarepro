@@ -7,9 +7,11 @@ def make_session_not_permanent():
 
 
 def check_session_timeout():
-    session_timeout = 30  # Inaktivitätszeit in Minuten
+    # 30 Minuten inaktivität
+    session_timeout = 30
     now = datetime.utcnow()
 
+    #Automatisches Ausloggen
     last_activity = session.get('last_activity')
     if last_activity:
         last_activity = datetime.strptime(last_activity, '%Y-%m-%d %H:%M:%S')

@@ -53,8 +53,8 @@ def check_account_locked(email):
 
 
 # /FNAN020/
-def set_password_mail(email, new_passwort):
-    hashed_password = sha1_crypt.encrypt(new_passwort)
+def set_password_mail(email, new_password):
+    hashed_password = hashlib.sha1(new_password.encode()).hexdigest()
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("UPDATE person SET passwort = %s WHERE email = %s",

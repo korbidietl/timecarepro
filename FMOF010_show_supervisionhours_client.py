@@ -67,8 +67,14 @@ def client_supervision_hours(client_id):
     fallverantwortung_id = get_fallverantwortung_id(client_id)
     fallverantwortung = client_id == fallverantwortung_id
 
-    sum_hours = sum_hours_klient(aktueller_monat, aktuelles_jahr)
-    sum_km = sum_km_klient(aktueller_monat, aktuelles_jahr)
+    sum_hours_list = sum_hours_klient(month, year)
+    sum_hours=[]
+    if sum_hours_list:
+        sum_hours=sum_hours_list[0]
+    sum_km_list = sum_km_klient(month, year)
+    sum_km=[]
+    if sum_km_list:
+        sum_km =sum_km_list[0]
 
     # Überprüfen ob Fallverantwortung hat
     if fallverantwortung:
@@ -77,29 +83,62 @@ def client_supervision_hours(client_id):
         zeiteintraege_liste = get_zeiteintrag_for_client(client_id, month, year)
 
         booked_status = False
+        hours =""
         for zeiteintrag in zeiteintraege_liste:
             z_id = zeiteintrag[0]
-            z_von = zeiteintrag[3]
-            z_bis = zeiteintrag[4]
+            von = zeiteintrag[4]
+            bis = zeiteintrag[5]
+            datum_format = "%H:%M"
+
+            z_von = datetime.strptime(von, datum_format)
+            z_bis = datetime.strptime(bis, datum_format)
+            z_hours = z_bis - z_von
+            gesamt_sekunden = z_hours.total_seconds()
+
+            # Umrechnen in Stunden und Minuten
+            stunden = int(gesamt_sekunden // 3600)
+            minuten = int((gesamt_sekunden % 3600) // 60)
+
+            # Formatieren als HH:MM
+            hours = f"{stunden:02d}:{minuten:02d}"
+
 
             ueberschneidung = check_for_overlapping_zeiteintrag(z_id, z_von, z_bis, client_id)
+            #if ueberschneidung:
+                # Einbindung Überschneidungsfunktion ausgabe
             booked_status = check_booked(z_id)
 
         return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id,
                                client_id=client_id,
                                zeiteintraege_liste=zeiteintraege_liste, booked=booked_status,
                                client_name=client_name,
+                               client_sachbearbeiter=client_sachbearbeiter_name,
                                user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
-                               kombinationen=kombinationen, sum_km=sum_km, sum_hours=sum_hours)
+                               kombinationen=kombinationen, sum_km=sum_km, sum_hours=sum_hours, hours=hours)
 
     else:
         zeiteintraege_liste = get_zeiteintrag_for_client_and_person(client_id, user_id, month, year)
         booked_status = False
+        hours =""
         for zeiteintrag in zeiteintraege_liste:
             z_id = zeiteintrag[0]
-            z_von = zeiteintrag[3]
-            z_bis = zeiteintrag[4]
-            ueberschneidung = check_for_overlapping_zeiteintrag(z_id, z_von, z_bis, client_id)
+            von = zeiteintrag[4]
+            bis = zeiteintrag[5]
+            datum_format = "%H:%M"
+
+            z_von = datetime.strptime(von, datum_format)
+            z_bis = datetime.strptime(bis, datum_format)
+            z_hours = z_bis-z_von
+            gesamt_sekunden = z_hours.total_seconds()
+
+            # Umrechnen in Stunden und Minuten
+            stunden = int(gesamt_sekunden // 3600)
+            minuten = int((gesamt_sekunden % 3600) // 60)
+
+            # Formatieren als HH:MM
+            hours = f"{stunden:02d}:{minuten:02d}"
+
+            # ueberschneidung = check_for_overlapping_zeiteintrag(z_id, z_von, z_bis, client_id)
             booked_status = check_booked(z_id)
 
         return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id,
@@ -109,4 +148,4 @@ def client_supervision_hours(client_id):
                                client_sachbearbeiter=client_sachbearbeiter_name,
                                fallverantwortung=fallverantwortung,
                                user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
-                               kombinationen=kombinationen, sum_km=sum_km, sum_hours=sum_hours)
+                               kombinationen=kombinationen, sum_km=sum_km, sum_hours=sum_hours, hours=hours)

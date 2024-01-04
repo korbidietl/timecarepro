@@ -23,9 +23,8 @@ def send_email(email, subject, body):
     msg['To'] = email
 
     with smtplib.SMTP('132.231.36.210', 1103) as smtp:
-        smtp.starttls()
-    smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
-    smtp.sendmail('resetyourpassword@timecarepro.de', [email], msg.as_string())
+        smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
+        smtp.sendmail('resetyourpassword@timecarepro.de', [email], msg.as_string())
 
 
 def send_email_passwort_reset(email, lastname, new_password):
@@ -56,6 +55,7 @@ def passwordreset():
 
             if locked:
                 # Überprüfung ob Nutzer gesperrt ist
+                flash("Passwort zurücksetzen fehlgeschlagen. Wenden Sie sich an die Verwaltung")
                 return render_template("FNAN020_password_reset.html")
             else:
                 # Neues Passwort generieren, abspeichern und Passwort erzwingen auf True setzen
@@ -64,11 +64,12 @@ def passwordreset():
                 set_password_required_true(email)
                 # E-Mail senden
                 send_email_passwort_reset(email, lastname, new_password)
+                flash(
+                    "Ein neues Passwort wurde an die angegebene E-Mail-Adresse versendet, falls diese im System "
+                    "vorhanden ist.",
+                    "success")
 
-                return render_template('FNAN010_login.html', email=email,
-                                       success_message="Ein neues Passwort wurde an die "
-                                                       "angegebene E-Mail-Adresse "
-                                                       "versendet.")
+                return render_template('FNAN010_login.html', email=email)
         else:
             # keine E-mail in der Datenbank gefunden
             return render_template('FNAN010_login.html')

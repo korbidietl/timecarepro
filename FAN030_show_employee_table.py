@@ -28,7 +28,7 @@ def mitarbeiter(person_id):
 
     month, year = extrahiere_jahr_und_monat(gewaehlte_kombination)
 
-    if user_role in ["Steuerbüro", "Geschäftsführung"]:
+    if user_role in ["Steuerbüro", "Verwaltung", "Geschäftsführung"]:
         mitarbeiterliste = account_table(month, year)
     elif user_role == "Mitarbeiter":
         mitarbeiterliste = account_table_mitarbeiter(month, year, session['user_id'])
@@ -40,11 +40,11 @@ def mitarbeiter(person_id):
     if not mitarbeiterliste:
         flash("Keine Mitarbeiter gefunden.")
         return render_template('FAN030_show_employee_table.html',
-                               kombinationen=kombinationen, gewaehlte_kombination=gewaehlte_kombination)
+                               kombinationen=kombinationen, gewaehlte_kombination=gewaehlte_kombination, user_role=user_role, person_id=person_id)
 
     return render_template('FAN030_show_employee_table.html',
                            mitarbeiterliste=mitarbeiterliste, kombinationen=kombinationen,
-                           gewaehlte_kombination=gewaehlte_kombination)
+                           gewaehlte_kombination=gewaehlte_kombination, user_role=user_role, person_id=person_id)
 
 
 

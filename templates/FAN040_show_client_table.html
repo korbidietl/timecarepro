@@ -42,27 +42,27 @@
                         <tbody>
                             {% for client in clients %}
                                 <tr>
-                                    <td>{{ client.id }}</td>
-                                    <td>{{ client.vorname }}</td>
-                                    <td>{{ client.nachname }}</td>
-                                    <td>{{ client.kontingent_fk }}</td>
-                                    <td>{{ client.kontingent_hk }}</td>
+                                    <td>{{ client[0] }}</td>
+                                    <td>{{ client[2] }}</td>
+                                    <td>{{ client[1] }}</td>
+                                    <td>{{ client[3] }}</td>
+                                    <td>{{ client[4] }}</td>
                                     <td>{{ client.saldo_fk }}</td>
                                     <td>{{ client.saldo_hk }}</td>
                                     <!-- Button Logik -->
                                     <td>
-                                        <form action="/client_supervision_hours/<int:client_id>" method="post">
+                                        <form action="{{url_for('client_hours_blueprint.client_supervision_hours', client_id=client[0])}}" method="get">
                                             <button type="submit">Zeiteintrag ansehen</button>
                                         </form>
                                     </td>
-                                    {% if user_role == 'Verwaltung' %}
+                                    {% if role == 'Verwaltung' %}
                                     <td>
-                                        <form action="/edit_client/<int:client_id>" method="post">
+                                        <form action="{{url_for('edit_client.edit_client', client_id=client[0])}}" method="get">
                                             <button type="submit">Bearbeiten</button>
                                         </form>
                                     </td>
                                     <td>
-                                        <form action="/client_details/<int:client_id>" method="post">
+                                        <form action="{{url_for('client_details.client_details', client_id=client[0])}}" method="get">
                                             <button type="submit">Details</button>
                                         </form>
                                     </td>

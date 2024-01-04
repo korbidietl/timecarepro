@@ -1,7 +1,7 @@
 import smtplib
 from email.mime.text import MIMEText
 
-from flask import Blueprint, request, flash, redirect, url_for, render_template
+from flask import Blueprint, request, flash, redirect, url_for, render_template, session
 from db_query import check_booked, delete_zeiteintrag, get_email_by_zeiteintrag, get_lastname_by_email
 
 delete_time_entry_fv_blueprint = Blueprint("delete", __name__)
@@ -15,9 +15,8 @@ def send_email(email, subject, body):
     msg['To'] = email
 
     with smtplib.SMTP('132.231.36.210', 1103) as smtp:
-        smtp.starttls()
-    smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
-    smtp.sendmail('deletetimeentry@timecarepro.de', [email], msg.as_string())
+        smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
+        smtp.sendmail('deletetimeentry@timecarepro.de', [email], msg.as_string())
 
 
 def send_email_delete_time_entry(email, lastname, id):
@@ -53,9 +52,6 @@ def delete_time_entry_fv(zeiteintrags_id):
             flash(success_message, 'success')
 
             # Rückleitungen zur Herkunftsfunktion
-            if origin_function == 'function1':
-                return redirect(url_for('name_function_1'))
-            elif origin_function == 'function 2':
-                return redirect(url_for('name_function_2'))
+            return redirect(session.pop('url', None))
 
-    return render_template('FV110_delete_time_entry_fv.html')
+    return render_template('FV110_delete_time_entry_fv.html', zeiteintrags_id=zeiteintrags_id)

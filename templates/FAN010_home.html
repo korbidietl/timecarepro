@@ -21,15 +21,14 @@
             {% endwith %}
         </div>
     </div>
-     <div class="container-tabelle">
 
-         {% if session['user_id'] != 'Steuerbüro' %}
-            <iframe src="/show_clients" style="width:100%; height:300px; border:none;"></iframe>
+         {% if role != 'Steuerbüro' %}
+            <iframe src="/show_clients" style="width:100%; border:none;"></iframe>
          {% endif %}
-         {% if session['user_id'] != 'Sachbearbeiter/Kostenträger' %}
-             <iframe src={{url_for('show_employee_table.mitarbeiter', person_id=user_id)}} style="width:100%; height:300px; border:none;"></iframe>
+         {% if role != 'Sachbearbeiter/Kostenträger' %}
+             <iframe src={{url_for('show_employee_table.mitarbeiter', person_id=user_id)}} style="width:100%;border:none;"></iframe>
          {% endif %}
-     </div>
+
 
     <script>
         window.onload = function() {

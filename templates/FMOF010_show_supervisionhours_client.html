@@ -23,7 +23,7 @@
             <div class="mein-eindeutiges-formular">
 
                 <!-- Drop-Down für Monat auswahl, initial akutelles Monat-->
-                <form action="/client_supervision_hours/<int:client_id>" method="post" style="display: flex;flex-direction: row; align-items: center; gap: 10px">
+                <form action="{{ url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id) }}" method="post" style="display: flex;flex-direction: row; align-items: center; gap: 10px">
                     <label for="monat_jahr"></label>
                     <select name="monat_jahr" id="monat_jahr">
                         {% for kombination in kombinationen %}
@@ -40,14 +40,16 @@
             <!-- Button für Buchung und Buchung revidieren -->
             <div class="accordion-button">
                 {% if user_role in ['Verwaltung', 'Geschäftsführung'] %}
-                <form action="/book_time_entries/<int:client_id>" method="post">
+                <form action="{{url_for('book_time_entry.book_client_time_entry', client_id=client_id)}}" method="post">
                     <button type="submit">Buchen</button>
                 </form>
                 {% endif %}
             </div>
             <div class="accordion-button">
                 {% if user_role == 'Geschäftsführung' %}
+                <form action="{{url_for('redo_booking_blueprint.revidieren_buchung', client_id=client_id)}}" method="post">
                     <button type="buchung_revidieren">Buchung revidieren</button>
+                </form>
                 {% endif %}
             </div>
         </div>
@@ -61,6 +63,7 @@
                         <th>Kilometer</th>
                         <th>Anfang</th>
                         <th>Ende</th>
+                        <th>geleistete Stunden</th>
                         <th>Mitarbeiter</th>
                         {% if user_role in ['Verwaltung','Geschäftsführung'] or fallverantwortung == True %}
                         <th>Überschneidung</th>
@@ -73,12 +76,13 @@
                     {% for zeiteintrag in zeiteintraege_liste %}
                     <tr>
                         <!-- Füllen Sie jede Zelle mit Daten aus zeiteintrag -->
-                        <td>{{ zeiteintrag.datum }}</td>
-                        <td>{{ zeiteintrag[8] }}</td>
-                        <td>{{ zeiteintrag.kilometer }}</td>
-                        <td>{{ zeiteintrag.anfang }}</td>
-                        <td>{{ zeiteintrag.ende }}</td>
-                        <td>{{ zeiteintrag.mitarbeiter }}</td>
+                        <td>{{ zeiteintrag[1]}}</td>
+                        <td>{{ zeiteintrag[2] }}</td>
+                        <td>{{ zeiteintrag[3] }}</td>
+                        <td>{{ zeiteintrag[4] }}</td>
+                        <td>{{ zeiteintrag[5] }}</td>
+                        <td>{{hours}}</td>
+                        <td>{{ zeiteintrag[6] }}</td>
                         {% if user_role in ['Verwaltung','Geschäftsführung'] or fallverantwortung == True %}
                             <td>{{ zeiteintrag.überschneidung }}</td>
                         {% endif %}
@@ -102,6 +106,14 @@
                         {% endif %}
                     </tr>
                     {% endfor %}
+                    <tr>
+                        <td><strong>Gesamt</strong></td>
+                        <td colspan="1"></td>
+                        <td>{{sum_km[3]}}</td>
+                        <td colspan="2"></td>
+                        <td>{{ sum_hours }}</td>
+
+                    </tr>
                 </tbody>
             </table>
         <!-- keine Daten für ausgewählten Monat -->

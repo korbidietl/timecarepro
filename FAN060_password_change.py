@@ -1,4 +1,4 @@
-from flask import render_template, request, Blueprint, session, flash
+from flask import render_template, request, Blueprint, session, flash, redirect, url_for
 from db_query import validate_login, set_password_mail
 from FNAN020_password_reset import send_email
 
@@ -44,6 +44,7 @@ def change_password():
 
         # Überprüfen, ob das aktuelle Passwort korrekt ist
         elif not validate_login(session['user_email'], current_password):
+            print("aktuelle Passwort korrekt")
             flash("Das aktuelle Passwort ist nicht korrekt.")
             return render_template("FAN060_password_change.html")
 
@@ -51,8 +52,10 @@ def change_password():
         else:
             set_password_mail(session['user_email'], new_password)
             send_email_passwort_change(session['user_email'], new_password)
+            flash(
+                "Das Passwort wurde erfolgreich geändert.",
+                "success")
 
-        return render_template("FAN060_password_change.html",
-                               success_message="Das Passwort wurde erfolgreich geändert.")
+            return redirect(url_for('home.home'))
 
     return render_template("FAN060_password_change.html")
