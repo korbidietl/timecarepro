@@ -12,18 +12,20 @@
         <h2>Deine Zeiteinträge</h2>
 
         <form action="/view_time_entries/{{ person.id }}" method="post">
-            <div class="form-group-table">
-                <label for="month">Monat:</label>
-                <select id="month" name="month">
-                    <!-- Optionen für Monate -->
-                </select>
-
-                <label for="year">Jahr:</label>
-                <select id="year" name="year">
-                    <!-- Optionen für Jahre -->
-                </select>
-
-                <button type="submit">Anzeigen</button>
+            <div class="time-selection-container">
+                <div class="form-group-table">
+                    <form action="{{url_for('show_employee_table.mitarbeiter', person_id=person_id)}}" method="post" style="display: flex;flex-direction: row; align-items: center; gap: 10px">
+                        <label for="monat_jahr"></label>
+                        <select name="monat_jahr" id="monat_jahr">
+                            {% for kombination in kombinationen %}
+                            <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
+                                {{ kombination }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">Anzeigen</button>
+                    </form>
+                </div>
             </div>
         </form>
 
