@@ -1,10 +1,78 @@
 import hashlib
+import json
 from flask import session
 from database_connection import get_database_connection
 from passlib.hash import sha1_crypt
 
 
 # /FS010/
+def get_current_person(person_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM person WHERE ID = %s", (person_id,))
+    old_state = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    if old_state is None:
+        return None
+    return old_state
+
+
+# /FS010/
+def get_current_client(client_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM klient WHERE ID = %s", (client_id,))
+    old_state = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    if old_state is None:
+        return None
+    return old_state
+
+
+# /FS010/
+def get_new_person(person_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM person WHERE ID = %s", (person_id,))
+    new_state = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    if new_state is None:
+        return None
+    return new_state
+
+
+# /FS010/
+def get_new_client(client_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM klient WHERE ID = %s", (client_id,))
+    new_state = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    if new_state is None:
+        return None
+    return new_state
+
+
+# /FS010/
+def save_change_log(person_id, table_type, old_state, new_state):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    # Den alten Zustand als JSON-String speichern
+    old_state_json = json.dumps(old_state)
+    # Den neuen Zustand als JSON-String speichern
+    new_state_json = json.dumps(new_state)
+    # Die Änderungsprotokolle in der Datenbank speichern
+    cursor.execute(
+        "INSERT INTO protokoll (person_id, eintragungsart, eintrag_vorher, eintrag_nachher) VALUES (%s, %s, %s, %s)",
+        (person_id, table_type, old_state_json, new_state_json))
+
+    connection.commit()
+    cursor.close()
+    connection.close()
 
 
 # /FS030/
