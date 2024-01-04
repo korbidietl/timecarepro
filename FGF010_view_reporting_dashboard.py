@@ -73,11 +73,12 @@ def reporting_dashboard():
             bis_date = bis
 
         # Abruf mit Filter Werten
-        anzeigen(von_date, bis_date)
+        daten= anzeigen(von_date, bis_date)
+        return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, **daten)
 
     # Abruf mit Default Werten
-    anzeigen(von, bis)
-    return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
+    daten= anzeigen(von, bis)
+    return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, **daten)
 
 
 def anzeigen(von, bis):
@@ -102,10 +103,22 @@ def anzeigen(von, bis):
     # Diagramme
     mazahl = sum_mitarbeiter(von, bis)
 
-    # stundendaten = get_stundendaten_fuer_jeden_monat() or []
-    # kmdaten = km jahr or []
-    # tabsagendaten= terminabsagen jahr or []
+    stundendaten =  []
+    kmdaten = []
+    tabsagendaten= []
 
-    return render_template('FGF010_view_reporting_dashboard.html', zeiteintraege_liste=zeiteintraege_liste, mitarbeiter_liste=mitarbeiter_liste,
-                           klienten_liste=klienten_liste, mastunden=mastunden, maabsagen=maabsagen, makm=makm,
-                           klstunden=klstunden, klabsage=klabsage, klkm=klkm, mazahl=mazahl)
+    return {
+        'zeiteintraege_liste': zeiteintraege_liste,
+        'mitarbeiter_liste': mitarbeiter_liste,
+        'klienten_liste': klienten_liste,
+        'mastunden': mastunden,
+        'maabsagen': maabsagen,
+        'makm': makm,
+        'klstunden': klstunden,
+        'klabsage': klabsage,
+        'klkm': klkm,
+        'mazahl': mazahl,
+        'stundendaten': stundendaten,
+        'kmdaten': kmdaten,
+        'tabsagendaten': tabsagendaten
+    }

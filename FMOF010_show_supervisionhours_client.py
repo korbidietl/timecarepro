@@ -102,6 +102,7 @@ def client_supervision_hours(client_id):
             # Formatieren als HH:MM
             hours = f"{stunden:02d}:{minuten:02d}"
 
+            #Umwandlung in Datetime mit Datum
 
             ueberschneidung = check_for_overlapping_zeiteintrag(z_id, z_von, z_bis, client_id)
             #if ueberschneidung:
