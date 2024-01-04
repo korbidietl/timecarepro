@@ -68,9 +68,11 @@ def client_supervision_hours(client_id):
     fallverantwortung = client_id == fallverantwortung_id
 
     sum_hours_list = sum_hours_klient(month, year)
+    sum_hours=[]
     if sum_hours_list:
         sum_hours=sum_hours_list[0]
     sum_km_list = sum_km_klient(month, year)
+    sum_km=[]
     if sum_km_list:
         sum_km =sum_km_list[0]
 
@@ -81,6 +83,7 @@ def client_supervision_hours(client_id):
         zeiteintraege_liste = get_zeiteintrag_for_client(client_id, month, year)
 
         booked_status = False
+        hours =""
         for zeiteintrag in zeiteintraege_liste:
             z_id = zeiteintrag[0]
             von = zeiteintrag[4]
@@ -109,6 +112,7 @@ def client_supervision_hours(client_id):
                                client_id=client_id,
                                zeiteintraege_liste=zeiteintraege_liste, booked=booked_status,
                                client_name=client_name,
+                               client_sachbearbeiter=client_sachbearbeiter_name,
                                user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
                                kombinationen=kombinationen, sum_km=sum_km, sum_hours=sum_hours, hours=hours)
 
