@@ -1,11 +1,13 @@
 from flask import Blueprint, request, jsonify, render_template
-from db_query import edit_klient, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data
+from db_query import edit_klient, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data, get_current_client, get_new_client, save_change_log
 
 edit_client_blueprint = Blueprint('edit_client', __name__)
 
 
 @edit_client_blueprint.route('/edit_client/<int:client_id>', methods=['POST', 'GET'])
 def edit_client(client_id):
+    # account zustand vor änderung speichern
+    current_client = get_current_client(client_id)
     # Datenbankaufruf über client_id
     client_data_list = get_klient_data(client_id)
     client_data = client_data_list[0]
@@ -26,6 +28,10 @@ def edit_client(client_id):
         try:
             edit_klient(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                         kontingent_hk, kontingent_fk, fallverantwortung_id)
+            # änderungen in protokoll speichern
+            new_client = get_new_client(client_id)
+            save_change_log(session['user_id'], "Klient", current_client, new_client)
+
             return jsonify({'message': 'Client successfully updated'}), 200
         except Exception as e:
             return jsonify({'message': 'Error updating client: ' + str(e)}), 500
