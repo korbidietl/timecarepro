@@ -68,7 +68,7 @@
                 <div class="form-row fahrt-row">
                     <div class="form-group">
                         <label for="abrechenbarkeit0">Abrechenbarkeit:</label>
-                        <input type="checkbox" id="abrechenbarkeit0" name="abrechenbarkeit0" required>
+                        <input type="checkbox" id="abrechenbarkeit0" name="abrechenbarkeit0">
                     </div>
                     <div class="form-group">
                         <label for="start_adresse0">Start Adresse:</label>
@@ -99,7 +99,7 @@
             </div>
             <div class="form-actions">
                 <button type="submit">Eintrag hinzufügen</button>
-                <button type="button" onclick="window.location='/client_supervision_hours';">Abbrechen</button>
+                <button type="button" onclick="window.location='/client_supervision_hours/<int:client_id>';">Abbrechen</button>
             </div>
         </form>
     </div>
@@ -113,7 +113,7 @@
             newFahrtRow.classList.add('form-row', 'fahrt-row');
             newFahrtRow.innerHTML = `
                         <div class="form-group">
-                           <input type="checkbox" id="abrechenbarkeit${fahrtCounter}" name="abrechenbarkeit${fahrtCounter}" required>
+                           <input type="checkbox" id="abrechenbarkeit${fahrtCounter}" name="abrechenbarkeit${fahrtCounter}">
                         </div>
                         <div class="form-group">
                             <input type="text" id="start_adresse${fahrtCounter}" name="start_adresse${fahrtCounter}" required>
@@ -142,6 +142,7 @@
                 fahrtCounter--; // Reduziere den Zähler nur, wenn eine Zeile entfernt wurde
                 }
         }
+
         window.onload = function() {
             // Überprüfen, ob Nachrichten vorhanden sind
             {% if get_flashed_messages() %}
@@ -163,7 +164,7 @@
                     }
                 };
             {% endif %}
-
+            }
 
     </script>
 </body>
