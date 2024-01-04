@@ -43,23 +43,26 @@
             </tr>
             {% for steuerbuero in steuerbueros %}
             <tr>
-                <td>{{ person.ID }}</td>
-                <td>{{ person.Vorname }}</td>
-                <td>{{ person.Nachname }}</td>
-                <td>{{ person.Email }}</td>
+                <td>{{ steuerbuero[0] }}</td> <!-- id -->
+                <td>{{ steuerbuero[1] }}</td> <!-- vorname -->
+                <td>{{ steuerbuero[2] }}</td> <!-- nachname -->
+                <td>{{ steuerbuero[7] }}</td> <!-- email -->
                 <td>
-                    <form action="/account_details/{{ person.id }}" method="post">
+                    <input type="hidden" name="lock_account" value="{{ steuerbuero[10] }}" /> <!-- hidden attribut lock -->
+                </td>
+                <td>
+                    <form action="/account_details/{{ steuerbuero[0] }}" method="post">
                         <button type="submit">Details</button>
                     </form>
                 </td>
                 <td>
-                    <form action="/account_edit/{{ person.id }}" method="post">
+                    <form action="/account_edit/{{ steuerbuero[0] }}" method="post">
                         <button type="submit">Bearbeiten</button>
                     </form>
                 </td>
                 <td>
-                    <form action="/account_lock/{{ person.id }}" method="post">
-                        <button id="toggleButton">Sperren</button>
+                    <form action="/account_lock/{{ steuerbuero[0] }}" method="post">
+                        <button id="lock_steuer">{{ 'Sperren' if steuerbuero[10] == 0 else 'Entsperren' }}</button>
                     </form>
                 </td>
             </tr>
@@ -81,23 +84,26 @@
             </tr>
             {% for sb in sachbearbeiter %}
                 <tr>
-                    <td>{{ person.ID }}</td>
-                    <td>{{ person.Vorname }}</td>
-                    <td>{{ person.Nachname }}</td>
-                    <td>{{ person.Email }}</td>
+                    <td>{{ sb[0] }}</td> <!-- id -->
+                    <td>{{ sb[1] }}</td> <!-- vorname -->
+                    <td>{{ sb[2] }}</td> <!-- nachname -->
+                    <td>{{ sb[7] }}</td> <!-- email -->
                     <td>
-                    <form action="/account_details/{{ person.id }}" method="post">
+                        <input type="hidden" name="lock_account" value="{{sb[10] }}" /> <!-- hidden attribut lock -->
+                    </td>
+                    <td>
+                    <form action="/account_details/{{ sb[0] }}" method="post">
                         <button type="submit">Details</button>
                     </form>
                     </td>
                     <td>
-                        <form action="/account_edit/{{ person.id }}" method="post">
+                        <form action="/account_edit/{{ sb[0] }}" method="post">
                             <button type="submit">Bearbeiten</button>
                         </form>
                     </td>
                     <td>
                         <form action="/account_lock/{{ person.id }}" method="post">
-                            <button id="toggleButton">Sperren</button>
+                            <button id="lock_sb">{{ 'Sperren' if sb[10] == 0 else 'Entsperren' }}</button>
                         </form>
                     </td>
                 </tr>
@@ -108,14 +114,14 @@
 
     <script>
         // JavaScript-Code zur wechselnden beschriftung des "sperren" / "entsperren" buttons
-        document.getElementById("toggleButton").addEventListener("click", function() {
-            var button = document.getElementById("toggleButton");
-            if (button.innerHTML === "Sperren") {
-                button.innerHTML = "Entsperren";
-            } else {
-                button.innerHTML = "Sperren";
-            }
-        });
+        // document.getElementById("toggleButton").addEventListener("click", function() {
+            // var button = document.getElementById("toggleButton");
+            // if (button.innerHTML === "Sperren") {
+                // button.innerHTML = "Entsperren";
+            // } else {
+                // button.innerHTML = "Sperren";
+            // }
+        // });
     </script>
 
     <script>

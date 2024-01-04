@@ -52,18 +52,18 @@
                         {% for mitarbeiter in mitarbeiterliste %}
                         <tr>
                             <td>{{ mitarbeiter[0] }}</td>
-                            <td>{{ person.vorname }}</td>
-                            <td>{{ person.nachname }}</td>
-                            <td>{{ person.geleistete_stunden }}</td>
-                            <td>{{ person.gefahrene_kilometer }}</td>
+                            <td>{{ mitarbeiter[1] }}</td>
+                            <td>{{ mitarbeiter[2] }}</td>
+                            <td>{{ mitarbeiter[3] }}</td>
+                            <td>{{ mitarbeiter[4] }}</td>
                             <td>
-                                <form action="/view_time_entries/<int:person_id>" method="post">
+                                <form action="/view_time_entries/<int:mitarbeiter[0]>" method="post">
                                     <button type="submit">Zeiteintrag ansehen</button>
                                 </form>
                             </td>
                             {% if user_role == 'Verwaltung' %}
                             <td>
-                                <form action="/edit_account/<int:person_id>" method="post">
+                                <form action="/edit_account/<int:mitarbeiter[0]>" method="post">
                                     <button type="submit">Bearbeiten</button>
                                 </form>
                             </td>
