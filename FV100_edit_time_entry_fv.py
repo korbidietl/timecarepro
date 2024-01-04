@@ -81,7 +81,8 @@ def edit_time_entry(zeiteintrag_id):
         # Änderungen am Zeiteintrag speichern
         edit_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime, klient_id, fachkraft,
                          beschreibung, interne_notiz, absage)
-        check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_datetime, end_datetime)
+        if check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_datetime, end_datetime):
+            return redirect(url_for('/check_overlapping_time', zeiteintrag_id=zeiteintrag_id))
         send_email_edit_time_entry(email, lastname, zeiteintrag_id)
         # Erfolgsmeldung
         success_message = "Eintrag erfolgreich bearbeitet."

@@ -64,9 +64,8 @@ def submit_arbeitsstunden():
                 fahrt_index += 1
 
             # prüft auf überschneidung einer bestehenden eintragung in der datenbank
-            if check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_zeit, end_zeit):
-                # überschneidungs funktion einfügen
-                return render_template('FS030_check_overlapping_time.html')
+            if check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_datetime, end_datetime):
+                return redirect(url_for('/check_overlapping_time', zeiteintrag_id=zeiteintrag_id))
 
         # Weiterleitung zurück zur Übersicht der abgelegten Stunden
         return redirect(url_for('client_supervision_hours', client_id=klient_id))
