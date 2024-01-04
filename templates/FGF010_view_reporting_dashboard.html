@@ -289,8 +289,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
 <script type="text/javascript">
     var stundendaten = {{ stundendaten|tojson|default('[]', true) }};
-    var kmdaten = {{ km|tojson|default('[]', true) }};
-    var terminabsagendaten = {{ tabsagen|tojson|default('[]', true) }};
+    var kmdaten = {{ kmdaten|tojson|default('[]', true) }};
+    var terminabsagendaten = {{ tabsagendaten|tojson|default('[]', true) }};
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
