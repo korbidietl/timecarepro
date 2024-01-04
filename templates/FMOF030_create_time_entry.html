@@ -10,6 +10,8 @@
     <div id="overlay" style="display:none;"></div>
     <!-- Menüleiste einbinden -->
     {% include 'FAN020_navbar.html' %}
+
+    <!-- Flash Nachrichten anzeigen -->
     <div id="flashModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -22,8 +24,9 @@
             {% endwith %}
         </div>
     </div>
+
     <div class="registration-form">
-        <h2>Erbrachte Arbeitsleistung hinzufügen</h2>
+        <h2>Zeiteintrag hinzufügen</h2>
         <form action="/client_hours_blueprint.client_supervision_hours" method="post">
             <div class="form-row">
                 <div class="form-group">
@@ -47,7 +50,7 @@
                     <select class="form-control" id="klientDropdown" name="klientDropdown">
                         <option value="" selected disabled>Bitte auswählen</option>
                         {% for klient in klienten %}
-                        <option value="{{ klient.id }}">{{ klient.nachname }}, {{ klient.vorname }}</option>
+                            <option value="{{ klient.id }}">{{ klient.nachname }}, {{ klient.vorname }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -91,42 +94,43 @@
                 </div>
             </div>
 
-
-                <div class="form-row">
-                    <div class="signature-container" type="button" onclick="openSignaturePopup('Klient')">
-                        <img id="signatureImageKlient" src="{{ signature_data_klient }}" alt="Unterschrift Klient" style="{% if signature_data_klient %}display: block;{% else %}display: none;{% endif %}">
-                        <p>Unterschrift Klient</p>
-                    </div>
-
-                    <div class="signature-container" type="button" onclick="openSignaturePopup('Mitarbeiter')">
-                        <img id="signatureImageMitarbeiter" src="{{ signature_data_mitarbeiter }}" alt="Unterschrift Mitarbeiter" style="{% if signature_data_mitarbeiter %}display: block;{% else %}display: none;{% endif %}">
-                        <p>Unterschrift Mitarbeiter</p>
-                    </div>
-                </div>
-                    <!-- Pop-up für Unterschrift Klient -->
-                <div id="signaturePopupKlient" class="signature-popup" style="display:none;">
-                    <canvas id="signatureCanvasKlient" width="400" height="200" style="border:1px solid #000;"></canvas>
-                    <div class="signature-actions">
-                        <button type="button" onclick="saveSignature('Klient')">Speichern</button>
-                        <button type="button" onclick="clearSignature('Klient')">Leeren</button>
-                        <button type="button" onclick="closePopup('Klient')">Schließen</button>
-                    </div>
+            <!--Unterschriften Felder -->
+            <div class="form-row">
+                <div class="signature-container" type="button" onclick="openSignaturePopup('Klient')">
+                    <img id="signatureImageKlient" src="{{ signature_data_klient }}" alt="Unterschrift Klient" style="{% if signature_data_klient %}display: block;{% else %}display: none;{% endif %}">
+                    <p>Unterschrift Klient</p>
                 </div>
 
-
-                <!-- Pop-up für Unterschrift Mitarbeiter -->
-                <div id="signaturePopupMitarbeiter" class="signature-popup" style="display:none;">
-                    <canvas id="signatureCanvasMitarbeiter" width="400" height="200" style="border:1px solid #000;"></canvas>
-                    <div class="signature-actions">
-                        <button type="button" onclick="saveSignature('Mitarbeiter')">Speichern</button>
-                        <button type="button" onclick="clearSignature('Mitarbeiter')">Leeren</button>
-                        <button type="button" onclick="closePopup('Mitarbeiter')">Schließen</button>
-                    </div>
+                <div class="signature-container" type="button" onclick="openSignaturePopup('Mitarbeiter')">
+                    <img id="signatureImageMitarbeiter" src="{{ signature_data_mitarbeiter }}" alt="Unterschrift Mitarbeiter" style="{% if signature_data_mitarbeiter %}display: block;{% else %}display: none;{% endif %}">
+                    <p>Unterschrift Mitarbeiter</p>
                 </div>
+            </div>
 
-                <!-- Versteckte Formularfelder für Unterschriftsdaten -->
-                <input type="hidden" id="signatureDataKlient" name="signatureDataKlient">
-                <input type="hidden" id="signatureDataMitarbeiter" name="signatureDataMitarbeiter">
+            <!-- Pop-up für Unterschrift Klient -->
+            <div id="signaturePopupKlient" class="signature-popup" style="display:none;">
+                <canvas id="signatureCanvasKlient" width="400" height="200" style="border:1px solid #000;"></canvas>
+                <div class="signature-actions">
+                    <button type="button" onclick="saveSignature('Klient')">Speichern</button>
+                    <button type="button" onclick="clearSignature('Klient')">Leeren</button>
+                    <button type="button" onclick="closePopup('Klient')">Schließen</button>
+                </div>
+            </div>
+
+
+            <!-- Pop-up für Unterschrift Mitarbeiter -->
+            <div id="signaturePopupMitarbeiter" class="signature-popup" style="display:none;">
+                <canvas id="signatureCanvasMitarbeiter" width="400" height="200" style="border:1px solid #000;"></canvas>
+                <div class="signature-actions">
+                    <button type="button" onclick="saveSignature('Mitarbeiter')">Speichern</button>
+                    <button type="button" onclick="clearSignature('Mitarbeiter')">Leeren</button>
+                    <button type="button" onclick="closePopup('Mitarbeiter')">Schließen</button>
+                </div>
+            </div>
+
+            <!-- Versteckte Formularfelder für Unterschriftsdaten -->
+            <input type="hidden" id="signatureDataKlient" name="signatureDataKlient">
+            <input type="hidden" id="signatureDataMitarbeiter" name="signatureDataMitarbeiter">
 
 
             <div class="form-actions">
@@ -200,6 +204,7 @@
 
     </script>
     <script>
+        //Einrichten des Canvas
         function setupCanvas(canvasId) {
             let canvas = document.getElementById(canvasId);
             let context = canvas.getContext('2d');
@@ -233,13 +238,13 @@
             document.getElementById(`signaturePopup${type}`).style.display = "block";
             document.getElementById("overlay").style.display = "block";
         }
-
+        // Schließen Popup
         function closePopup(type) {
             event.preventDefault();
             document.getElementById(`signaturePopup${type}`).style.display = "none";
             document.getElementById("overlay").style.display = "none";
         }
-
+        // Leeren Popup
         function clearSignature(type) {
             event.preventDefault();
             let canvas = document.getElementById(`signatureCanvas${type}`);
@@ -247,7 +252,7 @@
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.beginPath();
         }
-
+        //Speichern Popup
         function saveSignature(type) {
             event.preventDefault();
             let canvas = document.getElementById(`signatureCanvas${type}`);
@@ -258,7 +263,6 @@
             closePopup(type);
         }
 
-        // Ergänzen Sie hier den Code zum Erfassen der Unterschrift auf beiden Canvas-Elementen
     </script>
 </body>
 </html>

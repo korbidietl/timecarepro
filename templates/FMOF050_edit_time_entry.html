@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
+    <div id="overlay" style="display:none;"></div>
     <!-- Menüleiste einbinden -->
     {% include 'FAN020_navbar.html' %}
+
     <div class="registration-form">
         <h2>Zeiteintrag bearbeiten</h2>
         <form action="/submit_time_entry" method="post">
@@ -31,9 +33,13 @@
                 </div>
                 <div class="form-group">
                     <label for="klient">Klient:</label>
-                    <input id="klient" name="klient" value="{{klient_name}}">
-                        <!-- Klienten DROPDOWN -->
-                    </input>
+                    <select id="klient" name="klient">
+                        <!-- Hier Name übergen -->
+                        <option value="" selected >{{klient.name}}</option>
+                        {% for klient in klienten %}
+                            <option value="{{ klient.id }}">{{ klient.nachname }}, {{ klient.vorname }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
             <div class="form-row">
@@ -53,46 +59,76 @@
             <h3>Fahrten:</h3>
             {% set index = 0 %}
             {% for fahrt in fahrten %}
-            <div id="fahrtenContainer">
-                <!-- Ursprüngliche Fahrt-Eingabezeile -->
-                <div class="form-row fahrt-row">
-                    <div class="form-hidden">
-                        <input type="hidden" id="fahrt_id0" name="fahrt_id0">
+                <div id="fahrtenContainer">
+                    <!-- Ursprüngliche Fahrt-Eingabezeile -->
+                    <div class="form-row fahrt-row">
+                        <div class="form-hidden">
+                            <input type="hidden" id="fahrt_id0" name="fahrt_id0">
+                        </div>
+                        <div class="form-group">
+                            <label for="abrechenbarkeit{{ index }}">Abrechenbarkeit:</label>
+                            <input type="checkbox" id="abrechenbarkeit{{ index }}" name="abrechenbarkeit{{ index }}" {% if fahrt[4] %} checked {% endif %}required>
+                        </div>
+                        <div class="form-group">
+                            <label for="start_adresse{{ index }}">Start Adresse:</label>
+                            <input type="text" id="start_adresse{{ index }}" name="start_adresse{{ index }}" value="{{ fahrt[2] }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="end_adresse{{ index }}">End Adresse:</label>
+                            <input type="text" id="end_adresse{{ index }}" name="end_adresse{{ index }}" value="{{ fahrt[3] }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="kilometer{{ index }}">Kilometer:</label>
+                            <input type="text" id="kilometer{{ index }}" name="kilometer{{ index }}" value="{{ fahrt[1] }}" required>
+                        </div>
+                        <button type="button" onclick="addFahrt()">+</button>
+                        <button type="button" onclick="removeFahrt(this)">-</button>
+                        <input type="hidden" id="fahrtCounterInput" name="fahrtCounterInput">
                     </div>
-                    <div class="form-group">
-                        <label for="abrechenbarkeit{{ index }}">Abrechenbarkeit:</label>
-                        <input type="checkbox" id="abrechenbarkeit{{ index }}" name="abrechenbarkeit{{ index }}" {% if fahrt[4] %} checked {% endif %}required>
-                    </div>
-                    <div class="form-group">
-                        <label for="start_adresse{{ index }}">Start Adresse:</label>
-                        <input type="text" id="start_adresse{{ index }}" name="start_adresse{{ index }}" value="{{ fahrt[2] }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="end_adresse{{ index }}">End Adresse:</label>
-                        <input type="text" id="end_adresse{{ index }}" name="end_adresse{{ index }}" value="{{ fahrt[3] }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="kilometer{{ index }}">Kilometer:</label>
-                        <input type="text" id="kilometer{{ index }}" name="kilometer{{ index }}" value="{{ fahrt[1] }}" required>
-                    </div>
-                    <button type="button" onclick="addFahrt()">+</button>
-                    <button type="button" onclick="removeFahrt(this)">-</button>
-                    <input type="hidden" id="fahrtCounterInput" name="fahrtCounterInput">
                 </div>
-            </div>
             {% set index = index + 1 %}
             {% endfor %}
 
-            <div class="form-actions">
-                <div class="form-group">
-                    <label>Unterschrift Klient:</label>
-                    <button type="button" onclick="window.location='/sign_capture';">Unterschrift Klient</button>
+            <!--Unterschriften Felder -->
+            <div class="form-row">
+                <div class="signature-container" onclick="openSignaturePopup('Klient')">
+                    <img id="signatureImageKlient" src="data:image/png;base64,{{ signature_data_klient }}" alt="Unterschrift Klient" style="{% if signature_data_klient %}display: block;{% endif %}">
+                    <p>Unterschrift Klient</p>
+
                 </div>
-                <div class="form-group">
-                    <label>Unterschrift Mitarbeiter:</label>
-                    <button type="button" onclick="window.location='/sign_capture';">Unterschrift Mitarbeiter</button>
+
+                <div class="signature-container" onclick="openSignaturePopup('Mitarbeiter')">
+                    <img id="signatureImageMitarbeiter" src="data:image/png;base64,{{ signature_data_mitarbeiter }}" alt="Unterschrift Mitarbeiter" style="{% if signature_data_mitarbeiter %}display: block;{% endif %}">
+                    <p>Unterschrift Mitarbeiter</p>
                 </div>
             </div>
+
+            <!-- Pop-up für Unterschrift Klient -->
+            <div id="signaturePopupKlient" class="signature-popup" style="display:none;">
+                <canvas id="signatureCanvasKlient" width="400" height="200" style="border:1px solid #000;"></canvas>
+                <div class="signature-actions">
+                    <button type="button" onclick="saveSignature('Klient')">Speichern</button>
+                    <button type="button" onclick="clearSignature('Klient')">Leeren</button>
+                    <button type="button" onclick="closePopup('Klient')">Schließen</button>
+                </div>
+            </div>
+
+
+            <!-- Pop-up für Unterschrift Mitarbeiter -->
+            <div id="signaturePopupMitarbeiter" class="signature-popup" style="display:none;">
+                <canvas id="signatureCanvasMitarbeiter" width="400" height="200" style="border:1px solid #000;"></canvas>
+                <div class="signature-actions">
+                    <button type="button" onclick="saveSignature('Mitarbeiter')">Speichern</button>
+                    <button type="button" onclick="clearSignature('Mitarbeiter')">Leeren</button>
+                    <button type="button" onclick="closePopup('Mitarbeiter')">Schließen</button>
+                </div>
+            </div>
+
+            <!-- Versteckte Formularfelder für Unterschriftsdaten -->
+            <input type="hidden" id="signatureDataKlient" name="signatureDataKlient">
+            <input type="hidden" id="signatureDataMitarbeiter" name="signatureDataMitarbeiter">
+
+
             <div class="form-actions">
                 <button type="submit">Bestätigen</button>
                 <button type="button" onclick="window.location='/FMOF010';">Abbrechen</button>
@@ -145,6 +181,67 @@
                 }
         }
 
+
+    </script>
+    <script>
+        //Einrichten des Canvas
+        function setupCanvas(canvasId) {
+            let canvas = document.getElementById(canvasId);
+            let context = canvas.getContext('2d');
+            let drawing = false;
+
+            canvas.addEventListener('mousedown', function(e) {
+                drawing = true;
+                context.moveTo(e.offsetX, e.offsetY);
+            });
+
+            canvas.addEventListener('mousemove', function(e) {
+                if (drawing) {
+                    context.lineTo(e.offsetX, e.offsetY);
+                    context.stroke();
+                }
+            });
+
+            canvas.addEventListener('mouseup', function(e) {
+                drawing = false;
+            });
+
+            canvas.addEventListener('mouseleave', function(e) {
+                drawing = false;
+            });
+        }
+
+        // Initialisiere beide Canvas-Elemente
+        setupCanvas('signatureCanvasKlient');
+        setupCanvas('signatureCanvasMitarbeiter');
+        function openSignaturePopup(type) {
+            document.getElementById(`signaturePopup${type}`).style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+        // Schließen Popup
+        function closePopup(type) {
+            event.preventDefault();
+            document.getElementById(`signaturePopup${type}`).style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+        // Leeren Popup
+        function clearSignature(type) {
+            event.preventDefault();
+            let canvas = document.getElementById(`signatureCanvas${type}`);
+            let context = canvas.getContext("2d");
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.beginPath();
+        }
+        // Speichern Popup
+        function saveSignature(type) {
+            event.preventDefault();
+            let canvas = document.getElementById(`signatureCanvas${type}`);
+            let signatureData = canvas.toDataURL();
+            document.getElementById(`signatureData${type}`).value = signatureData;
+            document.getElementById(`signatureImage${type}`).src = signatureData;
+            document.getElementById(`signatureImage${type}`).style.display = "block";
+            closePopup(type);
+        }
 
     </script>
 </body>

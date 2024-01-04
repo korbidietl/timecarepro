@@ -60,9 +60,9 @@ def submit_arbeitsstunden():
 
         # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
         if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id):
+            # Umwandlung der Unterschriften
             if unterschrift_klient:
                 unterschrift_klient = base64_to_blob(unterschrift_klient)
-
             if unterschrift_mitarbeiter:
                 unterschrift_mitarbeiter = base64_to_blob(unterschrift_mitarbeiter)
 

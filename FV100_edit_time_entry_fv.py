@@ -79,6 +79,8 @@ def edit_time_entry(zeiteintrag_id):
         start_datetime = datetime.strptime(f"{datum} {start_zeit}", '%Y-%m-%d %H:%M')
         end_datetime = datetime.strptime(f"{datum} {end_zeit}", '%Y-%m-%d %H:%M')
 
+
+
         # Änderungen am Zeiteintrag speichern
         edit_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime, klient_id, fachkraft,
                          beschreibung, interne_notiz, absage)
