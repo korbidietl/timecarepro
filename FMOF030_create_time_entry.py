@@ -70,6 +70,7 @@ def submit_arbeitsstunden():
 
         # Weiterleitung zurück zur Übersicht der abgelegten Stunden
         return redirect(url_for('client_supervision_hours', client_id=klient_id))
+
     return render_template('FMOF030_create_time_entry.html')
 
 

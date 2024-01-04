@@ -42,9 +42,12 @@
                     <input type="checkbox" id="fachkraft" name="fachkraft">
                 </div>
                 <div class="form-group">
-                    <label for="klient">Klient:</label>
-                    <select id="klient" name="klient">
-                        <!-- Klienten DROPDOWN -->
+                    <label for="klientDropdown">Klient:</label>
+                    <select class="form-control" id="klientDropdown" name="klientDropdown">
+                        <option value="" selected disabled>Bitte auswählen</option>
+                        {% for klient in klienten %}
+                        <option value="{{ klient.id }}">{{ klient.nachname }}, {{ klient.vorname }}</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>
