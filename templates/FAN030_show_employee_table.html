@@ -24,7 +24,7 @@
             <h3>Mitarbeitertabelle</h3>
             <div class="time-selection-container">
                 <div class="mein-eindeutiges-formular">
-                    <form action="/show_employee_table" method="post" style="display: flex;flex-direction: row; align-items: center; gap: 10px">
+                    <form action="{{url_for('show_employee_table.mitarbeiter', person_id=person_id)}}" method="post" style="display: flex;flex-direction: row; align-items: center; gap: 10px">
                         <label for="monat_jahr"></label>
                         <select name="monat_jahr" id="monat_jahr">
                             {% for kombination in kombinationen %}
@@ -51,7 +51,7 @@
                     <tbody>
                         {% for mitarbeiter in mitarbeiterliste %}
                         <tr>
-                            <td>{{ person.id }}</td>
+                            <td>{{ mitarbeiter[0] }}</td>
                             <td>{{ person.vorname }}</td>
                             <td>{{ person.nachname }}</td>
                             <td>{{ person.geleistete_stunden }}</td>
