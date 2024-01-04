@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for
-from db_query import edit_account_lock, edit_account_unlock
+from db_query import edit_account_lock, edit_account_unlock, get_steuerbuero_table, get_sachbearbeiter_table
 
 account_management_blueprint = Blueprint("account_management", __name__)
 
@@ -7,6 +7,8 @@ account_management_blueprint = Blueprint("account_management", __name__)
 @account_management_blueprint.route('/account_management', methods=['GET', 'POST'])
 def account_management():
     # accounts = get_all_accounts()
+    steuerbueros = get_steuerbuero_table()
+    sachbearbeiter = get_sachbearbeiter_table()
 
     if request.method == 'POST':
         if 'lock_account' in request.form:
@@ -20,4 +22,6 @@ def account_management():
         # Nach dem Bearbeiten der Accounts die Seite neu laden
         return redirect(url_for('.account_management'))
 
-    return render_template('FV010_account_management.html')
+    return render_template('FV010_account_management.html',
+                           steuerbueros=steuerbueros,
+                           sachbearbeiter=sachbearbeiter)
