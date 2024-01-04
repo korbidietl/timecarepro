@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
+    <div id="overlay" style="display:none;"></div>
     <!-- Menüleiste einbinden -->
     {% include 'FAN020_navbar.html' %}
     <div id="flashModal" class="modal">
@@ -90,16 +91,44 @@
                 </div>
             </div>
 
-            <div class="form-actions">
-                <div class="form-group">
-                    <label>Unterschrift Klient:</label>
-                    <button type="button" onclick="window.location='/sign_capture';">Unterschrift Klient</button>
+
+                <div class="form-row">
+                    <div class="signature-container" type="button" onclick="openSignaturePopup('Klient')">
+                        <img id="signatureImageKlient" src="{{ signature_data_klient }}" alt="Unterschrift Klient" style="{% if signature_data_klient %}display: block;{% else %}display: none;{% endif %}">
+                        <p>Unterschrift Klient</p>
+                    </div>
+
+                    <div class="signature-container" type="button" onclick="openSignaturePopup('Mitarbeiter')">
+                        <img id="signatureImageMitarbeiter" src="{{ signature_data_mitarbeiter }}" alt="Unterschrift Mitarbeiter" style="{% if signature_data_mitarbeiter %}display: block;{% else %}display: none;{% endif %}">
+                        <p>Unterschrift Mitarbeiter</p>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Unterschrift Mitarbeiter:</label>
-                    <button type="button" onclick="window.location='/sign_capture';">Unterschrift Mitarbeiter</button>
+                    <!-- Pop-up für Unterschrift Klient -->
+                <div id="signaturePopupKlient" class="signature-popup" style="display:none;">
+                    <canvas id="signatureCanvasKlient" width="400" height="200" style="border:1px solid #000;"></canvas>
+                    <div class="signature-actions">
+                        <button type="button" onclick="saveSignature('Klient')">Speichern</button>
+                        <button type="button" onclick="clearSignature('Klient')">Leeren</button>
+                        <button type="button" onclick="closePopup('Klient')">Schließen</button>
+                    </div>
                 </div>
-            </div>
+
+
+                <!-- Pop-up für Unterschrift Mitarbeiter -->
+                <div id="signaturePopupMitarbeiter" class="signature-popup" style="display:none;">
+                    <canvas id="signatureCanvasMitarbeiter" width="400" height="200" style="border:1px solid #000;"></canvas>
+                    <div class="signature-actions">
+                        <button type="button" onclick="saveSignature('Mitarbeiter')">Speichern</button>
+                        <button type="button" onclick="clearSignature('Mitarbeiter')">Leeren</button>
+                        <button type="button" onclick="closePopup('Mitarbeiter')">Schließen</button>
+                    </div>
+                </div>
+
+                <!-- Versteckte Formularfelder für Unterschriftsdaten -->
+                <input type="hidden" id="signatureDataKlient" name="signatureDataKlient">
+                <input type="hidden" id="signatureDataMitarbeiter" name="signatureDataMitarbeiter">
+
+
             <div class="form-actions">
                 <button type="submit">Eintrag hinzufügen</button>
                 <button type="button" onclick="window.location='/client_supervision_hours/<int:client_id>';">Abbrechen</button>
@@ -169,6 +198,67 @@
             {% endif %}
             }
 
+    </script>
+    <script>
+        function setupCanvas(canvasId) {
+            let canvas = document.getElementById(canvasId);
+            let context = canvas.getContext('2d');
+            let drawing = false;
+
+            canvas.addEventListener('mousedown', function(e) {
+                drawing = true;
+                context.moveTo(e.offsetX, e.offsetY);
+            });
+
+            canvas.addEventListener('mousemove', function(e) {
+                if (drawing) {
+                    context.lineTo(e.offsetX, e.offsetY);
+                    context.stroke();
+                }
+            });
+
+            canvas.addEventListener('mouseup', function(e) {
+                drawing = false;
+            });
+
+            canvas.addEventListener('mouseleave', function(e) {
+                drawing = false;
+            });
+        }
+
+        // Initialisiere beide Canvas-Elemente
+        setupCanvas('signatureCanvasKlient');
+        setupCanvas('signatureCanvasMitarbeiter');
+        function openSignaturePopup(type) {
+            document.getElementById(`signaturePopup${type}`).style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        function closePopup(type) {
+            event.preventDefault();
+            document.getElementById(`signaturePopup${type}`).style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+
+        function clearSignature(type) {
+            event.preventDefault();
+            let canvas = document.getElementById(`signatureCanvas${type}`);
+            let context = canvas.getContext("2d");
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.beginPath();
+        }
+
+        function saveSignature(type) {
+            event.preventDefault();
+            let canvas = document.getElementById(`signatureCanvas${type}`);
+            let signatureData = canvas.toDataURL();
+            document.getElementById(`signatureData${type}`).value = signatureData;
+            document.getElementById(`signatureImage${type}`).src = signatureData;
+            document.getElementById(`signatureImage${type}`).style.display = "block";
+            closePopup(type);
+        }
+
+        // Ergänzen Sie hier den Code zum Erfassen der Unterschrift auf beiden Canvas-Elementen
     </script>
 </body>
 </html>

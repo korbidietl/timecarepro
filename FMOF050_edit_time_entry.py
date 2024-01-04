@@ -1,6 +1,6 @@
 import base64
 
-from flask import Blueprint, request, redirect, url_for, render_template
+from flask import Blueprint, request, redirect, url_for, render_template, session
 from db_query import (get_zeiteintrag_with_fahrten_by_id, edit_zeiteintrag, delete_fahrt, add_fahrt, edit_fahrt,
                       fahrt_id_existing, check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id,
                       get_fahrt_by_zeiteintrag, get_klient_data)
@@ -14,6 +14,7 @@ edit_time_entry_blueprint = Blueprint('edit_time_entry', __name__)
 
 @edit_time_entry_blueprint.route('/edit_time_entry/<int:zeiteintrag_id>', methods=['GET', 'POST'])
 def edit_time_entry(zeiteintrag_id):
+    session['url'] = url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag_id)
 
     zeiteintrag_liste = get_zeiteintrag_by_id(zeiteintrag_id)
     zeiteintrag = zeiteintrag_liste[0]

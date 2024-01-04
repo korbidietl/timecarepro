@@ -11,10 +11,9 @@
             <div class="reset-container">
                 <div class="reset-content">
                     <h2>Unterschrift einfügen</h2>
-                    <form id="signatureForm" action="/sign_capture" method="post" onsubmit="prepareSignature(); return true;">
+                    <form id="signatureForm" action="{{url_for('siganture.capture_signature',signature_index=signature_index)}}" method="post" onsubmit="prepareSignature(); return true;">
                         <canvas id="signatureCanvas" width="400" height="200" style="border:1px solid #000;"></canvas>
                         <input type="hidden" id="signatureData" name="signatureData" value="{{origin_function}}">
-                        <input type="hidden" name="origin_function" value="create_time_entry">
                         <div class="accordion-button">
                             <button type="submit">Speichern</button>
                             <button type="button" onclick="clearSignature()">Leeren</button>

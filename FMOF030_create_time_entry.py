@@ -1,6 +1,7 @@
+import base64
 import time
 
-from flask import Blueprint, request, redirect, url_for, render_template, flash
+from flask import Blueprint, request, redirect, url_for, render_template, flash, session
 from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag, check_month_booked
 from datetime import datetime
 from FS020_sign_capture import capture_signature
@@ -26,18 +27,30 @@ def check_time_entry_constraints(datum, startZeit, endZeit, klientID):
         return render_template("FMOF030_create_time_entry.html")
 
 
+def base64_to_blob(base64_string):
+    # Entfernen des Base64-Header-Teils (wenn vorhanden)
+    if "base64," in base64_string:
+        base64_string = base64_string.split('base64,')[1]
+
+    # Decodieren des Base64-Strings in Binärdaten
+    return base64.b64decode(base64_string)
+
+
 @create_time_entry_blueprint.route('/create_time_entry', methods=['POST', 'GET'])
 def submit_arbeitsstunden():
+    session['url'] = url_for('/create_time_entry.submit_arbeitsstunden')
+
     if request.method == 'POST':
         # Eingabedaten aus dem Formular holen
         datum = request.form.get('datum')
         start_zeit = request.form.get('startZeit')
         end_zeit = request.form.get('endZeit')
+        fachkraft = request.form.get('fachkraft')
         klient_id = request.form.get('klient')
         beschreibung = request.form.get('beschreibung')
         interne_notiz = request.form.get('interneNotiz')
-        unterschrift_klient = capture_signature()
-        unterschrift_mitarbeiter = capture_signature()
+        unterschrift_klient = request.form.get('signatureDataKlient')
+        unterschrift_mitarbeiter = capture_signature('signatureDataKlient')
         absage = request.form.get('absage')
 
         # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
@@ -47,9 +60,16 @@ def submit_arbeitsstunden():
 
         # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
         if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id):
+            if unterschrift_klient:
+                unterschrift_klient = base64_to_blob(unterschrift_klient)
+
+            if unterschrift_mitarbeiter:
+                unterschrift_mitarbeiter = base64_to_blob(unterschrift_mitarbeiter)
+
             # Füge neuen Zeiteintrag hinzu und erhalte die ID
-            zeiteintrag_id = add_zeiteintrag(datum_datetime, start_datetime, end_datetime, beschreibung, interne_notiz,
-                                             unterschrift_klient, unterschrift_mitarbeiter, absage)
+            zeiteintrag_id = add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_datetime,
+                                             end_datetime, klient_id, fachkraft, beschreibung, interne_notiz,
+                                             absage)
 
             # Iteriere über alle Fahrt-Einträge und füge sie hinzu
             fahrt_index = 0
@@ -71,6 +91,3 @@ def submit_arbeitsstunden():
         return redirect(url_for('client_supervision_hours', client_id=klient_id))
 
     return render_template('FMOF030_create_time_entry.html')
-
-
-

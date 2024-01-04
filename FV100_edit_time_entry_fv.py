@@ -3,7 +3,7 @@ import smtplib
 from datetime import datetime
 from email.mime.text import MIMEText
 
-from flask import Blueprint, request, render_template, redirect, url_for, flash
+from flask import Blueprint, request, render_template, redirect, url_for, flash, session
 from db_query import get_zeiteintrag_with_fahrten_by_id, edit_zeiteintrag, get_email_by_zeiteintrag, \
     get_lastname_by_email, check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id, get_fahrt_by_zeiteintrag, \
     get_klient_data
@@ -36,6 +36,7 @@ def send_email_edit_time_entry(email, lastname, id):
 
 @edit_time_entry_fv_blueprint.route('/edit_time_entry_fv/<int:zeiteintrag_id>', methods=['GET', 'POST'])
 def edit_time_entry(zeiteintrag_id):
+    session['url'] = url_for('edit_time_entry_fv.edit_time_entry', zeiteintrag_id=zeiteintrag_id)
     email = get_email_by_zeiteintrag(zeiteintrag_id)
     lastname = get_lastname_by_email(email)
 
