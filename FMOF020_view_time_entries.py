@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from db_query import get_zeiteintrag_for_client, get_zeiteintrag_with_fahrten_by_id, check_booked
+from db_query import get_zeiteintrag_for_person, get_zeiteintrag_with_fahrten_by_id, check_booked
+from FMOF010_show_supervisionhours_client import generate_month_year_combinations, extrahiere_jahr_und_monat
+from datetime import datetime
 
 view_time_entries_blueprint = Blueprint("view_time_entries", __name__)
 
@@ -10,11 +12,24 @@ def view_time_entries(person_id):
 
     session['url'] = url_for('view_time_entries.view_time_entries', person_id=person_id)
     if request.method == 'POST':
-        monat = request.form['month']
-        jahr = request.form['year']
 
-        # funktionsnamen get_zeiteintrag... noch ändern --> ist nicht aktuell
-        zeiteintrag_ids = get_zeiteintrag_for_client(monat, jahr)
+        kombinationen = generate_month_year_combinations()
+        aktuelles_jahr = datetime.now().year
+        aktueller_monat = datetime.now().month
+
+        # auswahl des angezeigten Zeitraums
+        if request.method == 'POST':
+            gewaehlte_kombination = request.form.get('monat_jahr')
+        else:
+            # Standardmäßig aktuelles Monat und Jahr
+            monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+                      'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
+
+            gewaehlte_kombination = f"{monate[aktueller_monat - 1]} {aktuelles_jahr}"
+
+        month, year = extrahiere_jahr_und_monat(gewaehlte_kombination)
+
+        zeiteintrag_ids = get_zeiteintrag_for_person(person_id, month, year)
 
         time_entries = []
 
