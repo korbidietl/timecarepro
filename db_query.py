@@ -1270,3 +1270,15 @@ def fahrt_id_existing(fahrt_id):
     if result:
         return True
     return False
+
+
+def is_password_required(email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT passwort_erzwingen FROM person WHERE email = %s", (email,))
+    result = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    if result is None:
+        return False
+    return result[0] == 1
