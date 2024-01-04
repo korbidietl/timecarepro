@@ -1282,3 +1282,14 @@ def is_password_required(email):
     if result is None:
         return False
     return result[0] == 1
+
+
+def check_person_locked(person_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT sperre FROM person WHERE ID = %s", (person_id,))
+    result = cursor.fetchone()
+    if result:
+        if result[0] == 1:
+            return True
+    return False
