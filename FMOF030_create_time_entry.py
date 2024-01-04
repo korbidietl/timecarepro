@@ -4,7 +4,6 @@ import time
 from flask import Blueprint, request, redirect, url_for, render_template, flash, session
 from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag, check_month_booked
 from datetime import datetime
-from FS020_sign_capture import capture_signature
 
 create_time_entry_blueprint = Blueprint('/create_time_entry', __name__)
 
@@ -50,7 +49,7 @@ def submit_arbeitsstunden():
         beschreibung = request.form.get('beschreibung')
         interne_notiz = request.form.get('interneNotiz')
         unterschrift_klient = request.form.get('signatureDataKlient')
-        unterschrift_mitarbeiter = capture_signature('signatureDataKlient')
+        unterschrift_mitarbeiter = request.form.get('signatureDataKlient')
         absage = request.form.get('absage')
 
         # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
