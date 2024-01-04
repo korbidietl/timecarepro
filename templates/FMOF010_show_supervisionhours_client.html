@@ -63,6 +63,7 @@
                         <th>Kilometer</th>
                         <th>Anfang</th>
                         <th>Ende</th>
+                        <th>geleistete Stunden</th>
                         <th>Mitarbeiter</th>
                         {% if user_role in ['Verwaltung','Geschäftsführung'] or fallverantwortung == True %}
                         <th>Überschneidung</th>
@@ -75,12 +76,13 @@
                     {% for zeiteintrag in zeiteintraege_liste %}
                     <tr>
                         <!-- Füllen Sie jede Zelle mit Daten aus zeiteintrag -->
-                        <td>{{ zeiteintrag.datum }}</td>
-                        <td>{{ zeiteintrag[8] }}</td>
-                        <td>{{ zeiteintrag.kilometer }}</td>
-                        <td>{{ zeiteintrag.anfang }}</td>
-                        <td>{{ zeiteintrag.ende }}</td>
-                        <td>{{ zeiteintrag.mitarbeiter }}</td>
+                        <td>{{ zeiteintrag[1]}}</td>
+                        <td>{{ zeiteintrag[2] }}</td>
+                        <td>{{ zeiteintrag[3] }}</td>
+                        <td>{{ zeiteintrag[4] }}</td>
+                        <td>{{ zeiteintrag[5] }}</td>
+                        <td>{{hours}}</td>
+                        <td>{{ zeiteintrag[6] }}</td>
                         {% if user_role in ['Verwaltung','Geschäftsführung'] or fallverantwortung == True %}
                             <td>{{ zeiteintrag.überschneidung }}</td>
                         {% endif %}
@@ -104,6 +106,14 @@
                         {% endif %}
                     </tr>
                     {% endfor %}
+                    <tr>
+                        <td><strong>Gesamt</strong></td>
+                        <td colspan="1"></td>
+                        <td>{{sum_km[3]}}</td>
+                        <td colspan="2"></td>
+                        <td>{{ sum_hours }}</td>
+
+                    </tr>
                 </tbody>
             </table>
         <!-- keine Daten für ausgewählten Monat -->
