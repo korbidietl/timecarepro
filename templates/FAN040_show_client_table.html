@@ -83,6 +83,15 @@
             <p id="no-clients-message" style="display: none;">Keine Klienten gefunden.</p>
         </div>
     </div>
+    <script>
+        window.onload = function() {
+            var height = document.documentElement.scrollHeight || document.body.scrollHeight;
+            window.parent.postMessage({
+                'iframeHeight': height,
+                'iframeId': 'clientsIframe'
+            }, '*');
+        };
+    </script>
 </body>
 </html>
 

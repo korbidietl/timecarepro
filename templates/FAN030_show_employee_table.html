@@ -94,7 +94,15 @@
             {% endif %}
         </div>
     </div>
-
+     <script>
+        window.onload = function() {
+            var height = document.documentElement.scrollHeight || document.body.scrollHeight;
+            window.parent.postMessage({
+                'iframeHeight': height,
+                'iframeId': 'mitarbeiterIframe'
+            }, '*');
+        };
+    </script>
     <script>
         // JavaScript-Code zur wechselnden beschriftung des "sperren" / "entsperren" buttons
         // hat mal funktioniet jetzt nicht mehr
