@@ -1,7 +1,5 @@
 import base64
 import datetime
-import io
-import csv
 
 from flask import Blueprint, render_template, request, session, Response, flash, redirect, url_for
 from datetime import datetime
@@ -73,6 +71,7 @@ def check_ueberschneidung_liste(zeiteintraege_liste, client_id):
         ueberschneidung_liste.append(ueberschneidungs_status)
 
     return ueberschneidung_liste
+
 
 def convert_blob_to_base64(blob):
     if blob is not None:
