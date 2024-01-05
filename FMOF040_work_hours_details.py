@@ -6,6 +6,12 @@ from db_query import get_zeiteintrag_by_id, get_fahrt_by_zeiteintrag, get_klient
 work_hours_details_blueprint = Blueprint('work_hours_details', __name__)
 
 
+def convert_blob_to_base64(blob):
+    if blob is not None:
+        return base64.b64encode(blob).decode()
+    return None
+
+
 @work_hours_details_blueprint.route('/work_hours_details/<int:zeiteintrag_id>/<int:person_id>')
 def show_details(zeiteintrag_id, person_id):
     session['url'] = url_for('work_hours_details.show_details', zeiteintrag_id=zeiteintrag_id, person_id=person_id)
@@ -21,18 +27,16 @@ def show_details(zeiteintrag_id, person_id):
     # Name Klient
     klient_id = zeiteintrag[6]
     klient_data = get_klient_data(klient_id)
-    klient_name = klient_data[0][1] +' '+ klient_data[0][2]
-
-
+    klient_name = klient_data[0][1] + ' ' + klient_data[0][2]
 
     # Umwandlung Unterschriften
     if zeiteintrag[1]:
-        unterschrift_mitarbeiter = base64.b64encode(zeiteintrag[1]).decode('utf-8')
+        unterschrift_mitarbeiter = convert_blob_to_base64(zeiteintrag[1])
     else:
         unterschrift_mitarbeiter = ""
 
     if zeiteintrag[2]:
-        unterschrift_klient = base64.b64encode(zeiteintrag[2]).decode('utf-8')
+        unterschrift_klient = convert_blob_to_base64(zeiteintrag[2])
     else:
         unterschrift_klient = ""
 
