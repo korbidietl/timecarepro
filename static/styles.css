@@ -228,6 +228,17 @@ a{
     flex-wrap: wrap;
     justify-content: space-between;
 }
+.registration-form_2 {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
 
 .new-row {
     width: 100%;
@@ -466,7 +477,9 @@ body {
     color: #aaa; /* Hellgraue Schriftfarbe für die Zahl */
     font-size: 6em; /* Größe der Zahl */
     font-weight: bold; /* Fettdruck für die Zahl */
-    margin: 0;
+    justify-content: center;
+    text-align: center;
+    margin-top: 80px;
 
 }
 .dashboard-item h3 {
