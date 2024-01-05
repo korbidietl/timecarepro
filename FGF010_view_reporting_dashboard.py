@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from flask import Blueprint, render_template, url_for, request, flash, redirect
-from db_query import mitarbeiter_dropdown, client_dropdown, sum_mitarbeiter, sum_hours_mitarbeiter, sum_hours_klient, \
+from db_query import mitarbeiter_dropdown, client_dropdown, sum_mitarbeiter, sum_hours_mitarbeiter_zeitspanne, \
+    sum_hours_klient_zeitspanne, \
     sum_absage_mitarbeiter, sum_absage_klient, sum_km_mitarbeiter, sum_km_klient, get_report_zeiteintrag, \
     get_report_mitarbeiter, get_report_klient
 
@@ -73,52 +74,152 @@ def reporting_dashboard():
             bis_date = bis
 
         # Abruf mit Filter Werten
-        daten= anzeigen(von_date, bis_date)
-        return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, **daten)
+        von_formatiert, bis_formatiert = eingabe_formatieren(von, bis)
+        kl_tabelle = klienten_tabelle(von_formatiert, bis_formatiert, klient)
+        ma_tabelle = mitarbeiter_tabelle(von_formatiert, bis_formatiert, mitarbeiter)
+        ze_tabelle = get_report_zeiteintrag(von_formatiert, bis_formatiert)
+
+        return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
 
     # Abruf mit Default Werten
-    daten= anzeigen(von, bis)
-    return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, **daten)
+    von_formatiert, bis_formatiert = eingabe_formatieren(von, bis)
+    kl_tabelle = klienten_tabelle(von_formatiert, bis_formatiert, None)
+    ma_tabelle = mitarbeiter_tabelle(von_formatiert, bis_formatiert, None)
+    ze_tabelle = get_report_zeiteintrag(von_formatiert, bis_formatiert)
+
+    return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
 
 
-def anzeigen(von, bis):
-    # Tabelle Mitarbeiter
-    mastunden = sum_hours_mitarbeiter(von, bis)
-    maabsagen = sum_absage_mitarbeiter(von, bis)
-    # abrechenbare km und nicht-abrechenbare km
-    makm = sum_km_mitarbeiter(von, bis)
-    mitarbeiter_liste = get_report_mitarbeiter(von, bis)
+def eingabe_formatieren(von, bis):
+    von_date = datetime.strptime(von, '%Y-%m-%d').date()
+    bis_date = datetime.strptime(bis, '%Y-%m-%d').date()
+    von = datetime.combine(von_date, datetime.min.time())
+    bis = datetime.combine(bis_date, datetime.min.time())
+    return von, bis
 
-    # Tabelle Klient
-    klstunden = sum_hours_klient(von, bis)
+
+def stunden_addieren(data):
+    total_hours = 0
+    total_minutes = 0
+
+    for _, _, _, duration in data:
+        hours, minutes = duration.split(':')
+
+        total_hours += int(hours)
+        total_minutes += int(minutes)
+
+    # Minuten in Stunden umrechnen und zur Gesamtstundenanzahl hinzufügen
+    total_hours += total_minutes // 60
+    total_minutes = total_minutes % 60
+
+    return f"{total_hours:02d}:{total_minutes:02d}"
+
+
+def absagen_addieren(data):
+    total_absagen = 0
+
+    for _, _, _, absagen in data:
+        total_absagen += absagen
+
+    return total_absagen
+
+
+def km_addieren(data):
+    total_kilometer = 0
+    abrechenbare_kilometer = 0
+    nicht_abrechenbare_kilometer = 0
+
+    for _, _, _, gesamt_km, abrechenbar_km, nicht_abrechenbar_km in data:
+        total_kilometer += gesamt_km
+        abrechenbare_kilometer += abrechenbar_km
+        nicht_abrechenbare_kilometer += nicht_abrechenbar_km
+
+    return total_kilometer, abrechenbare_kilometer, nicht_abrechenbare_kilometer
+
+
+def klienten_tabelle(von, bis, client_id):
+    # Gesamt Stunden
+    klstunden = sum_hours_klient_zeitspanne(von, bis)
+    if client_id:
+        filtered_data_s = [record for record in klstunden if record[0] == client_id]
+        klient_stunden = stunden_addieren(filtered_data_s)
+    else:
+        klient_stunden = stunden_addieren(klstunden)
+
+    # Gesamt Absagen
     klabsage = sum_absage_klient(von, bis)
-    # km abrechenbar und nicht-abrechenbar
+    if client_id:
+        filtered_data_a = [record for record in klabsage if record[0] == client_id]
+        klient_absagen = absagen_addieren(filtered_data_a)
+    else:
+        klient_absagen = absagen_addieren(klabsage)
+
+    # Gesamt KM
     klkm = sum_km_klient(von, bis)
+    if client_id:
+        filtered_data_k = [record for record in klkm if record[0] == client_id]
+        klient_km_total, klient_km_abrechenbar, klient_km_nicht_abrechenbar = km_addieren(filtered_data_k)
+    else:
+        klient_km_total, klient_km_abrechenbar, klient_km_nicht_abrechenbar = km_addieren(klkm)
+
+    # Tabellen aufruf
     klienten_liste = get_report_klient(von, bis)
 
-    # Tabelle Zeiteinträge
+    return klienten_liste, klient_km_total, klient_km_abrechenbar, klient_km_nicht_abrechenbar, klient_absagen, klient_stunden
 
-    zeiteintraege_liste = get_report_zeiteintrag(von, bis)
 
-    # Diagramme
-    mazahl = sum_mitarbeiter(von, bis)
+def mitarbeiter_tabelle(von, bis, user_id):
+    # Gesamt Stunden
+    mastunden = sum_hours_mitarbeiter_zeitspanne(von, bis)
+    if user_id:
+        filtered_data_s = [record for record in mastunden if record[0] == user_id]
+        mitarbeiter_stunden = stunden_addieren(filtered_data_s)
+    else:
+        mitarbeiter_stunden = stunden_addieren(mastunden)
 
-    stundendaten =  []
-    kmdaten = []
-    tabsagendaten= []
+    # Gesamt Absagen
+    maabsage = sum_absage_mitarbeiter(von, bis)
+    if user_id:
+        filtered_data_a = [record for record in maabsage if record[0] == user_id]
+        mitarbeiter_absagen = absagen_addieren(filtered_data_a)
+    else:
+        mitarbeiter_absagen = absagen_addieren(maabsage)
 
-    return {
-        'zeiteintraege_liste': zeiteintraege_liste,
-        'mitarbeiter_liste': mitarbeiter_liste,
-        'klienten_liste': klienten_liste,
-        'mastunden': mastunden,
-        'maabsagen': maabsagen,
-        'makm': makm,
-        'klstunden': klstunden,
-        'klabsage': klabsage,
-        'klkm': klkm,
-        'mazahl': mazahl,
-        'stundendaten': stundendaten,
-        'kmdaten': kmdaten,
-        'tabsagendaten': tabsagendaten
-    }
+    # Gesamt KM
+    makm = sum_km_mitarbeiter(von, bis)
+    if user_id:
+        filtered_data_k = [record for record in makm if record[0] == user_id]
+        mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar = km_addieren(
+            filtered_data_k)
+    else:
+        mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar = km_addieren(makm)
+
+    # Tabellen Aufruf
+    mitarbeiter_liste = get_report_mitarbeiter(von, bis)
+
+    return mitarbeiter_liste, mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar, mitarbeiter_absagen, mitarbeiter_stunden
+
+
+def get_stundendaten(von, bis):
+    stunden_liste = []
+    return stunden_liste
+
+
+def get_kmdaten(von, bis):
+    km_liste = []
+    return km_liste
+
+
+def get_tabsagen(von, bis):
+    absagen_liste = []
+    return absagen_liste
+
+
+def mitarbeiter_anzahl():
+    # aktuellen Monat und Jahr
+    jetzt = datetime.now()
+    aktueller_monat = jetzt.month
+    aktuelles_jahr = jetzt.year
+
+    mazahl = sum_mitarbeiter(aktueller_monat, aktuelles_jahr)
+    return mazahl
