@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify, Blueprint, flash, redirect, url_for
 from db_query import mitarbeiter_dropdown, create_klient, validate_client, kostentraeger_dropdown
 
-# app = Flask(__name__)
 
 create_client_blueprint = Blueprint("create_client", __name__)
 
@@ -19,22 +18,24 @@ def register_client():
         kontingent_hk = request.form.get('hkontingent')
         fallverantwortung_id = request.form.get('fvDropdown')
 
-        required_fields = ['lastname', 'firstname', 'birthday', 'address']
+        required_fields = ['lastname', 'firstname', 'birthday', 'address',
+                           'fkontingent', 'hkontingent']
 
         for field in required_fields:
             if not request.form.get(field):
                 flash('Es müssen alle Felder ausgefüllt werden.')
                 return render_template('FV070_create_client.html')
 
-        # validate client in db_query hinzufügen (validate_email(email))
+        # überprüfung ob Klient existiert
         if validate_client(vorname, nachname, geburtsdatum):
             flash('Es existiert bereits ein Client mit diesem Namen und dem Geburtsdatum.')
             return render_template('FV070_create_client.html')
 
         else:
-            create_klient(nachname, vorname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
+            create_klient(vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                           kontingent_hk, kontingent_fk, fallverantwortung_id)
-            return redirect(url_for('account_management.account_management', success_message="Client wurde erfolgreich angelegt"))
+            flash("Klient wurde erfolgreich angelegt", "success")
+            return redirect(url_for('account_management.account_management'))
 
     kostentraeger = kostentraeger_dropdown()
     kt = {'kostentraeger': kostentraeger}
