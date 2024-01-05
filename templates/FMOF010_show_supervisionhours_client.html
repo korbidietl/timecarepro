@@ -11,6 +11,7 @@
     <!-- Menüleiste einbinden -->
     {% include 'FAN020_navbar.html' %}
 
+
     <div class="table-form">
         <div class="leerzeile"></div>
         <div class="form-row" style="justify-content: start;">
@@ -53,73 +54,89 @@
                 {% endif %}
             </div>
         </div>
-        <!-- Tabelle der Zeiteinträge -->
-        {% if zeiteintraege_liste %}
-            <table id="client_hours">
-                <thead>
-                    <tr>
-                        <th>Datum</th>
-                        <th>Beschreibung</th>
-                        <th>Kilometer</th>
-                        <th>Anfang</th>
-                        <th>Ende</th>
-                        <th>geleistete Stunden</th>
-                        <th>Mitarbeiter</th>
-                        {% if user_role in ['Verwaltung','Geschäftsführung'] or fallverantwortung == True %}
-                        <th>Überschneidung</th>
-                        {% endif %}
-                        <th>Unterschrift Klient</th>
-                        <th>Unterschrift Mitarbeiter</th>
-                    </tr>
-                </thead>
-                <tbody id="tableData">
-                    {% for zeiteintrag in zeiteintraege_liste %}
-                    <tr>
-                        <!-- Füllen Sie jede Zelle mit Daten aus zeiteintrag -->
-                        <td>{{ zeiteintrag[1]}}</td>
-                        <td>{{ zeiteintrag[2] }}</td>
-                        <td>{{ zeiteintrag[3] }}</td>
-                        <td>{{ zeiteintrag[4] }}</td>
-                        <td>{{ zeiteintrag[5] }}</td>
-                        <td>{{hours}}</td>
-                        <td>{{ zeiteintrag[6] }}</td>
-                        {% if user_role in ['Verwaltung','Geschäftsführung'] or fallverantwortung == True %}
-                            <td>{{ zeiteintrag.überschneidung }}</td>
-                        {% endif %}
-                        <td>{{ zeiteintrag.unterschrift_klient }}</td>
-                        <td>{{ zeiteintrag.unterschrift_mitarbeiter }}</td>
-
-                        <!-- Buttons Bearbeiten und Löschen in jeder Zeile -->
-                        {% if not booked %}
-                            {% if user_role == 'Mitarbeiter' and zeiteintrag.mitarbeiter_id == session['user_id'] %}
-                                <td>
-                                    <form action="{{url_for('edit_time_entry.edit_time_entry', client_id = client_id)}}" method="get">
-                                        <button type="submit">Bearbeiten</button>
-                                    </form>
-                                </td>
-                                <td>
-                                    <form action="{{url_for('delete_te.delete_te', zeiteintrags_id = zeiteintrags_id, client_id = client_id, origin = show)}}" method="get">
-                                        <button type="submit">Löschen</button>
-                                    </form>
-                                </td>
+        <div class="scrollable-container">
+            <!-- Tabelle der Zeiteinträge -->
+            {% if kombinierte_liste %}
+                <table id="client_hours">
+                    <thead>
+                        <tr>
+                            <th>Datum</th>
+                            <th>Beschreibung</th>
+                            <th>Kilometer</th>
+                            <th>Anfang</th>
+                            <th>Ende</th>
+                            <th>geleistete Stunden</th>
+                            <th>Mitarbeiter</th>
+                            {% if user_role in ['Verwaltung','Geschäftsführung'] or fallverantwortung == True %}
+                            <th>Überschneidung</th>
                             {% endif %}
-                        {% endif %}
-                    </tr>
-                    {% endfor %}
-                    <tr>
-                        <td><strong>Gesamt</strong></td>
-                        <td colspan="1"></td>
-                        <td>{{sum_km[3]}}</td>
-                        <td colspan="2"></td>
-                        <td>{{ sum_hours }}</td>
+                            <th>Unterschrift Klient</th>
+                            <th>Unterschrift Mitarbeiter</th>
 
-                    </tr>
-                </tbody>
-            </table>
-        <!-- keine Daten für ausgewählten Monat -->
-        {% else %}
-            <p>Noch keine Einträge vorhanden.</p>
-        {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody id="tableData">
+                        {% for zeiteintrag, ueberschneidungs_status, booked_status, unterschrift in kombinierte_liste %}
+                        <tr>
+                            <!-- Füllen Sie jede Zelle mit Daten aus zeiteintrag -->
+                            <td>{{ zeiteintrag[1] }}</td>
+                            <td>{{ zeiteintrag[2] | default('', true) }}</td>
+                            <td>{{ zeiteintrag[3] }}</td>
+                            <td>{{ zeiteintrag[4] }}</td>
+                            <td>{{ zeiteintrag[5] }}</td>
+                            <td>{{ zeiteintrag[6] }}</td>
+                            <td>{{ zeiteintrag[7] }}</td>
+                            {% if user_role in ['Verwaltung','Geschäftsführung'] or fallverantwortung == True %}
+                                <td>{{ ueberschneidungs_status }}</td>
+                            {% endif %}
+                            <td>
+                                {% if unterschrift[0] %}
+                                    <img src="data:image/png;base64,{{ unterschrift[0] }}" alt="Unterschrift Klient" width="150"/>
+                                {% else %}
+                                    Keine Unterschrift vorhanden
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if unterschrift[1] %}
+                                    <img src="data:image/png;base64,{{ unterschrift[1] }}" alt="Unterschrift Mitarbeiter" width="150"/>
+                                {% else %}
+                                    Keine Unterschrift vorhanden
+                                {% endif %}
+                            </td>
+
+                            <!-- Buttons Bearbeiten und Löschen in jeder Zeile -->
+                            {% if not booked_status %}
+                                {% if user_role == 'Mitarbeiter' and zeiteintrag[8] == session['user_id'] %}
+                                    <td>
+                                        <form action="{{url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag[0])}}" method="get">
+                                            <button type="submit">Bearbeiten</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form action="{{url_for('delete_te.delete_te', zeiteintrags_id =zeiteintrag[0], client_id = client_id)}}" method="get">
+                                            <button type="submit">Löschen</button>
+                                        </form>
+                                    </td>
+                                {% endif %}
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td><strong>Gesamt</strong></td>
+                            <td colspan="1"></td>
+                            <td>{{sum_km[3]}}</td>
+                            <td colspan="2"></td>
+                            <td>{{ sum_hours[3] }}</td>
+                            <td colspan="4"> </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            <!-- keine Daten für ausgewählten Monat -->
+            {% else %}
+                <p>Noch keine Einträge vorhanden.</p>
+            {% endif %}
+        </div>
 
         <!-- Buttons export und drucken -->
         <div class="leerzeile"> </div>
@@ -140,39 +157,39 @@
         </div>
     </body>
     <script>
-    function exportTableToCSV(tableId, filename) {
-        var csv = [];
-        var rows = document.querySelectorAll(tableId + ' tr');
+        function exportTableToCSV(tableId, filename) {
+            var csv = [];
+            var rows = document.querySelectorAll(tableId + ' tr');
 
-        for (var i = 0; i < rows.length; i++) {
-            var row = [], cols = rows[i].querySelectorAll("td, th");
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll("td, th");
 
-            for (var j = 0; j < cols.length; j++) {
-                // Prüfen, ob das Element ein Button ist
-                if (!cols[j].querySelector("button")) {
-                    row.push('"' + cols[j].innerText + '"');
+                for (var j = 0; j < cols.length; j++) {
+                    // Prüfen, ob das Element ein Button ist
+                    if (!cols[j].querySelector("button")) {
+                        row.push('"' + cols[j].innerText + '"');
+                    }
+                }
+
+                if (row.length > 0) {
+                    csv.push(row.join(","));
                 }
             }
 
-            if (row.length > 0) {
-                csv.push(row.join(","));
-            }
+            // Download-Link erstellen und klicken
+            var csvString = csv.join("\n");
+            var link = document.createElement("a");
+            link.setAttribute('target', '_blank');
+            link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString));
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
-        // Download-Link erstellen und klicken
-        var csvString = csv.join("\n");
-        var link = document.createElement("a");
-        link.setAttribute('target', '_blank');
-        link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString));
-        link.setAttribute('download', filename);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    document.getElementById('exportButton').addEventListener('click', function () {
-        exportTableToCSV('client_hours', 'exportierteDaten.csv');
-    });
+        document.getElementById('exportButton').addEventListener('click', function () {
+            exportTableToCSV('#client_hours', 'client_hours.csv');
+        });
     </script>
 
 </html>

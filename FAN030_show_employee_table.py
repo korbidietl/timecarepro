@@ -7,8 +7,9 @@ from FMOF010_show_supervisionhours_client import generate_month_year_combination
 show_employee_table_blueprint = Blueprint('show_employee_table', __name__)
 
 
-@show_employee_table_blueprint.route('/show_employee_table/<int:person_id>', methods=['GET', 'POST'])
-def mitarbeiter(person_id):
+@show_employee_table_blueprint.route('/show_employee_table', methods=['GET', 'POST'])
+def mitarbeiter():
+    person_id = session.get('user_id')
     user_role = get_role_by_id(person_id)
     mitarbeiterliste = []
 
@@ -28,23 +29,17 @@ def mitarbeiter(person_id):
 
     month, year = extrahiere_jahr_und_monat(gewaehlte_kombination)
 
+    # Füllen der Mitarbeiterliste
     if user_role in ["Steuerbüro", "Verwaltung", "Geschäftsführung"]:
         mitarbeiterliste = account_table(month, year)
+        print(mitarbeiterliste)
     elif user_role == "Mitarbeiter":
-        mitarbeiterliste = account_table_mitarbeiter(month, year, session['user_id'])
+        mitarbeiterliste = account_table_mitarbeiter(month, year, person_id)
+        print(mitarbeiterliste)
     else:
         # Optionale Handhabung für andere Rollen oder Fehlermeldung
         pass
 
-    # Fehlerbehandlung, wenn keine Mitarbeiter gefunden werden
-    if not mitarbeiterliste:
-        flash("Keine Mitarbeiter gefunden.")
-        return render_template('FAN030_show_employee_table.html',
-                               kombinationen=kombinationen, gewaehlte_kombination=gewaehlte_kombination, user_role=user_role, person_id=person_id)
-
     return render_template('FAN030_show_employee_table.html',
                            mitarbeiterliste=mitarbeiterliste, kombinationen=kombinationen,
                            gewaehlte_kombination=gewaehlte_kombination, user_role=user_role, person_id=person_id)
-
-
-

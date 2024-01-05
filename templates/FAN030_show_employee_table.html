@@ -24,7 +24,7 @@
             <h3>Mitarbeitertabelle</h3>
             <div class="time-selection-container">
                 <div class="mein-eindeutiges-formular">
-                    <form action="{{url_for('show_employee_table.mitarbeiter', person_id=person_id)}}" method="post" style="display: flex;flex-direction: row; align-items: center; gap: 10px">
+                    <form action="{{url_for('show_employee_table.mitarbeiter')}}" method="post" style="display: flex;flex-direction: row; align-items: center; gap: 10px">
                         <label for="monat_jahr"></label>
                         <select name="monat_jahr" id="monat_jahr">
                             {% for kombination in kombinationen %}
@@ -42,41 +42,46 @@
                     <thead>
                         <tr>
                             <th>Personalnr.</th>
-                            <th>Vorname</th>
                             <th>Nachname</th>
-                            <th>Geleistete Stunden</th>
-                            <th>Gefahrene Kilometer</th>
+                            <th>Vorname</th>
+                            <th>geleistete Stunden</th>
+                            <th>gefahrene Kilometer</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for mitarbeiter in mitarbeiterliste %}
                         <tr>
                             <td>{{ mitarbeiter[0] }}</td>
-                            <td>{{ person.vorname }}</td>
-                            <td>{{ person.nachname }}</td>
-                            <td>{{ person.geleistete_stunden }}</td>
-                            <td>{{ person.gefahrene_kilometer }}</td>
+                            <td>{{ mitarbeiter[1] }}</td>
+                            <td>{{ mitarbeiter[2] }}</td>
+                            <td>{{ mitarbeiter[3] }}</td>
+                            <td>{{ mitarbeiter[4] }}</td>
+                            {% if user_role == 'Verwaltung' %}
+                                <td>
+                                    <form action="{{url_for('account_details.account_details',person_id=mitarbeiter[0])}}" method="post">
+                                        <button type="submit">Details</button>
+                                    </form>
+                                </td>
+                            {% endif %}
                             <td>
-                                <form action="/view_time_entries/<int:person_id>" method="post">
+                                <form action="{{url_for('view_time_entries.view_time_entries', person_id = mitarbeiter[0])}}" method="post">
                                     <button type="submit">Zeiteintrag ansehen</button>
                                 </form>
                             </td>
                             {% if user_role == 'Verwaltung' %}
-                            <td>
-                                <form action="/edit_account/<int:person_id>" method="post">
-                                    <button type="submit">Bearbeiten</button>
-                                </form>
-                            </td>
-                            <td>
-                                <form action="/account_lock/<int:person_id>" method="post">
-                                    <button id="toggleButton">Sperren</button>
-                                </form>
-                            </td>
-                            <td>
-                                <form action="/account_details/<int:person_id>" method="post">
-                                    <button type="submit">Details</button>
-                                </form>
-                            </td>
+                                <td>
+                                    <form action="{{url_for('edit_account.edit_account', person_id=mitarbeiter[0])}}" method="post">
+                                        <button type="submit">Bearbeiten</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action="{{url_for('account_lock.account_lock', person_id=mitarbeiter[0])}}" method="post">
+                                        <button id="toggleButton">Sperren</button>
+                                    </form>
+                                </td>
+                                <td>
+
+                                </td>
                             {% endif %}
                         </tr>
                         {% endfor %}
@@ -94,7 +99,15 @@
             {% endif %}
         </div>
     </div>
-
+     <script>
+        window.onload = function() {
+            var height = document.documentElement.scrollHeight || document.body.scrollHeight;
+            window.parent.postMessage({
+                'iframeHeight': height,
+                'iframeId': 'mitarbeiterIframe'
+            }, '*');
+        };
+    </script>
     <script>
         // JavaScript-Code zur wechselnden beschriftung des "sperren" / "entsperren" buttons
         // hat mal funktioniet jetzt nicht mehr

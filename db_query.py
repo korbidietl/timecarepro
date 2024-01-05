@@ -162,7 +162,7 @@ def account_table_mitarbeiter(monat, year, person_id):
     cursor = connection.cursor()
     cursor.execute(
         "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
+        "SUM(TIMESTAMPDIFF(MINUTE , zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
         "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
         "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
@@ -181,13 +181,17 @@ def account_table_mitarbeiter(monat, year, person_id):
     # Zusammenfügen der Tabellen
     report_table = []
     for time_spalte, distance_spalte in zip(time_table_mitarbeiter, distance_table_mitarbeiter):
+        geleistete_stunden = int(time_spalte[3])
+        stunden = geleistete_stunden // 60  # Ganzzahlige Division für Stunden
+        minuten = geleistete_stunden % 60  # Rest für Minuten
         if time_spalte[0] == distance_spalte[0]:  # IDs müssen übereinstimmen
+
             report_table.append(
                 (
                     time_spalte[0],  # ID
                     time_spalte[1],  # vorname
                     time_spalte[2],  # nachname
-                    time_spalte[3],  # geleistete_stunden
+                    f"{stunden}h {minuten}min",  # geleistete_stunden
                     distance_spalte[3],  # gefahrene_kilometer
                 )
             )
@@ -200,7 +204,7 @@ def account_table(monat, year):
     cursor = connection.cursor()
     cursor.execute(
         "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
+        "SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
         "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
         "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
@@ -219,13 +223,16 @@ def account_table(monat, year):
     # Zusammenfügen der Tabellen
     report_table = []
     for time_spalte, distance_spalte in zip(time_table, distance_table):
+        geleistete_stunden = int(time_spalte[3])
+        stunden = geleistete_stunden // 60  # Ganzzahlige Division für Stunden
+        minuten = geleistete_stunden % 60  # Rest für Minuten
         if time_spalte[0] == distance_spalte[0]:  # IDs müssen übereinstimmen
             report_table.append(
                 (
                     time_spalte[0],  # ID
                     time_spalte[1],  # vorname
                     time_spalte[2],  # nachname
-                    time_spalte[3],  # geleistete_stunden
+                    f"{stunden}:{minuten}",  # geleistete_stunden
                     distance_spalte[3],  # gefahrene_kilometer
                 )
             )
@@ -351,7 +358,9 @@ def get_zeiteintrag_for_client_and_person(client_id, person_id, month, year):
             SUM(f.kilometer) AS Kilometer,
             DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
             DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
+            DATE_FORMAT(TIMEDIFF(end_zeit, start_zeit),'%H:%i') AS dauer,
             CONCAT(p.vorname, ' ', p.nachname) AS Mitarbeiter,
+            p.id AS Mitarbeiter_id,
             z.unterschrift_Klient AS Unterschrift_Klient,
             z.unterschrift_Mitarbeiter AS Unterschrift_Mitarbeiter
         FROM
@@ -384,7 +393,9 @@ def get_zeiteintrag_for_client(client_id, month, year):
                 SUM(f.kilometer) AS Kilometer,
                 DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
                 DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
+                DATE_FORMAT(TIMEDIFF(end_zeit, start_zeit),'%H:%i') AS dauer,
                 CONCAT(p.vorname, ' ', p.nachname) AS Mitarbeiter,
+                p.id AS Mitarbeiter_id,
                 z.unterschrift_Klient AS Unterschrift_Klient,
                 z.unterschrift_Mitarbeiter AS Unterschrift_Mitarbeiter
             FROM
@@ -670,7 +681,7 @@ def rolle_dropdown():
 
 # /FV020/
 def create_account_db(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
-                   telefonnummer, passwort, sperre, passwort_erzwingen):
+                      telefonnummer, passwort, sperre, passwort_erzwingen):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("INSERT INTO person (vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email, "
@@ -919,8 +930,9 @@ def get_report_mitarbeiter(date_from, date_to):
     cursor.execute("""
         SELECT
             Mitarbeiter.id, 
-            CONCAT(Mitarbeiter.vorname, ' ', Mitarbeiter.nachname) AS Mitarbeiter,
-            SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden,
+            Mitarbeiter.nachname,
+            Mitarbeiter.vorname,
+            TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit) * 60)), '%H:%i') AS geleistete_stunden,
             SUM(fahrt.kilometer) AS gefahrene_kilometer,
             SUM(CASE WHEN fahrt.abrechenbar THEN fahrt.kilometer ELSE 0 END) AS abrechenbare_km,
             SUM(CASE WHEN fahrt.abrechenbar THEN 0 ELSE fahrt.kilometer END) AS nicht_abrechenbare_km,
@@ -944,8 +956,9 @@ def get_report_klient(date_from, date_to):
     cursor.execute("""
         SELECT
             klient.id, 
-            CONCAT(klient.vorname, ' ', klient.nachname) AS Klient,
-            SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden,
+            klient.nachname,
+            klient.vorname,
+            TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit) * 60)), '%H:%i') AS geleistete_stunden,
             SUM(fahrt.kilometer) AS gefahrene_kilometer,
             SUM(CASE WHEN fahrt.abrechenbar THEN fahrt.kilometer ELSE 0 END) AS abrechenbare_km,
             SUM(CASE WHEN fahrt.abrechenbar THEN 0 ELSE fahrt.kilometer END) AS nicht_abrechenbare_km,
@@ -981,7 +994,7 @@ def sum_hours_klient(month, year):
     cursor = connection.cursor()
     cursor.execute("""
         SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, 
-        SUM(TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)) AS anzahl_Stunden 
+        TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i') AS anzahl_Stunden 
         FROM klient k 
         JOIN zeiteintrag z ON k.ID = z.Klient_ID 
         WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s 
@@ -992,53 +1005,70 @@ def sum_hours_klient(month, year):
 
 
 # /FGF010/
-def sum_hours_mitarbeiter(month, year):
+def sum_hours_klient_zeitspanne(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT p.ID AS Mitarbeiter_ID, p.Vorname, p.Nachname, 
-        SUM(TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)) AS anzahl_Stunden 
-        FROM person p 
-        JOIN zeiteintrag z ON p.ID = z.Mitarbeiter_ID 
-        WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s 
-        GROUP BY p.ID 
-        ORDER BY p.ID
-    """, (month, year))
+        SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, 
+        TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i') AS anzahl_Stunden 
+        FROM klient k 
+        JOIN zeiteintrag z ON k.ID = z.Klient_ID 
+        WHERE z.end_zeit BETWEEN %s AND %s 
+        GROUP BY k.ID 
+        ORDER BY k.ID
+    """, (start_date, end_date))
+
     return cursor.fetchall()
 
 
 # /FGF010/
-def sum_absage_klient(month, year):
+def sum_hours_mitarbeiter_zeitspanne(start_date, end_date):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT p.ID AS Mitarbeiter_ID, p.Vorname, p.Nachname, 
+        TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i') AS anzahl_Stunden 
+        FROM person p 
+        JOIN zeiteintrag z ON p.ID = z.Mitarbeiter_ID 
+        WHERE z.end_zeit BETWEEN %s AND %s 
+        GROUP BY p.ID 
+        ORDER BY p.ID
+    """, (start_date, end_date))
+    return cursor.fetchall()
+
+
+# /FGF010/
+def sum_absage_klient(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
         SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, COUNT(z.ID) AS anzahl_Absagen 
         FROM klient k 
         JOIN zeiteintrag z ON k.ID = z.Klient_ID 
-        WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s AND z.absage = 1 
+        WHERE z.end_zeit BETWEEN %s AND %s AND z.absage = 1 
         GROUP BY k.ID 
         ORDER BY k.ID
-    """, (month, year))
+    """, (start_date, end_date))
     return cursor.fetchall()
 
 
 # /FGF010/
-def sum_absage_mitarbeiter(month, year):
+def sum_absage_mitarbeiter(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
         SELECT p.ID AS Mitarbeiter_ID, p.Vorname, p.Nachname, COUNT(z.ID) AS anzahl_Absagen 
         FROM person p 
         JOIN zeiteintrag z ON p.ID = z.Mitarbeiter_ID 
-        WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s AND z.absage = 1 
+        WHERE z.end_zeit BETWEEN %s AND %s AND z.absage = 1
         GROUP BY p.ID 
         ORDER BY p.ID
-    """, (month, year))
+    """, (start_date, end_date))
     return cursor.fetchall()
 
 
 # /FGF010/
-def sum_km_klient(month, year):
+def sum_km_klient(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
@@ -1048,15 +1078,15 @@ def sum_km_klient(month, year):
         FROM klient k 
         JOIN zeiteintrag z ON k.ID = z.Klient_ID 
         JOIN fahrt f ON z.ID = f.Zeiteintrag_ID 
-        WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s 
+        WHERE z.end_zeit BETWEEN %s AND %s
         GROUP BY k.ID 
         ORDER BY k.ID
-    """, (month, year))
+    """, (start_date, end_date))
     return cursor.fetchall()
 
 
 # /FGF010/
-def sum_km_mitarbeiter(month, year):
+def sum_km_mitarbeiter(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
@@ -1066,10 +1096,10 @@ def sum_km_mitarbeiter(month, year):
         FROM person p 
         JOIN zeiteintrag z ON p.ID = z.Mitarbeiter_ID 
         JOIN fahrt f ON z.ID = f.Zeiteintrag_ID 
-        WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s 
+        WHERE z.end_zeit BETWEEN %s AND %s
         GROUP BY p.ID 
         ORDER BY p.ID
-    """, (month, year))
+    """, (start_date, end_date))
     return cursor.fetchall()
 
 

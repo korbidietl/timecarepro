@@ -12,8 +12,6 @@ def create_app():
     app.before_request(check_session_timeout)
 
     # Systemweite Anforderungen
-    from FS020_sign_capture import signature_blueprint
-    app.register_blueprint(signature_blueprint)
 
     from FS030_check_overlapping_time import check_overlapping_time_blueprint
     app.register_blueprint(check_overlapping_time_blueprint)

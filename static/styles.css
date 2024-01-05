@@ -170,11 +170,55 @@ a{
     border-radius: 4px;
     cursor: pointer;
 }
+.signature-popup {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    justify-content: center;
+    align-items: center;
+    transform: translate(-50%, -50%); /
+    border: 1px solid #000;
+    background-color: white;
+    padding: 20px;
+    z-index: 1000;
 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.signature-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin-top:10px;
+}
+.signature-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 15px;
+    margin-right: 30px;
+    margin-left: 10px;
+    width: 400px;
+    height: 200px;
+    border-radius: 8px;
+}
+
+.signature-container img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    margin: 0 auto;
+}
 /* Website Desing */
 /* Hinzugefügte Stile für das verbesserte Formular */
 .registration-form {
-    max-width: 600px;
+    max-width: 900px;
     margin: 0 auto;
     background-color: #fff;
     padding: 20px;
@@ -342,6 +386,15 @@ a{
 /* Grundlegendes Styling */
 body {
     font-family: Arial, sans-serif;
+}
+#overlay {
+    position: fixed; /* Fixiert über dem gesamten Bildschirm */
+    top: 0;
+    left: 0;
+    width: 100%; /* Ganze Bildschirmbreite */
+    height: 100%; /* Ganze Bildschirmhöhe */
+    background-color: rgba(0, 0, 0, 0.5); /* Schwarzer Hintergrund mit Transparenz */
+    z-index: 999; /* Unter dem Pop-up */
 }
 
 /* Styling der Navigationsleiste */

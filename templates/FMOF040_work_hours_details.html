@@ -93,17 +93,17 @@
 
         <!-- Unterschriften -->
         <div class="form-row">
-            <div class="form-group">
-                <label>Unterschrift Klient:</label>
-                {% if klient_name != "Unternehmen" %}
-                    <img src="src="data:image/png;base64,{{ unterschrift_klient }}" alt="Unterschrift des Klienten" />
-                {% endif %}
+            <div class="signature-container" type="button" onclick="openSignaturePopup('Klient')">
+                <img id="signatureImageKlient" src="data:image/png;base64,{{ unterschrift_klient }}" alt="Unterschrift Klient" style="{% if unterschrift_klient %}display: block;{% else %}display: none;{% endif %}">
+                <p>Unterschrift Klient</p>
             </div>
-             <div class="form-group">
-                <label>Unterschrift Mitarbeiter:</label>
-                <img src="src="data:image/png;base64{{ unterschrift_mitarbeiter}}" alt="Unterschrift des Mitarbeiters" />
+
+            <div class="signature-container" type="button" onclick="openSignaturePopup('Mitarbeiter')">
+                <img id="signatureImageMitarbeiter"  src="data:image/png;base64,{{ unterschrift_mitarbeiter }}" alt="Unterschrift Mitarbeiter" style="{% if unterschrift_mitarbeiter %}display: block;{% else %}display: none;{% endif %}">
+                <p>Unterschrift Mitarbeiter</p>
             </div>
         </div>
+
 
 
         <div class="form-actions">
@@ -113,7 +113,7 @@
             </form>
 
             <!-- Löschen Button -->
-            <form action="{{ url_for('delete_te.delete_te',origin=view, zeiteintrags_id=zeiteintrag_id) }}" method="get">
+            <form action="{{ url_for('delete_te.delete_te', zeiteintrags_id=zeiteintrag_id) }}" method="get">
                 <button type="submit">Löschen</button>
             </form>
 

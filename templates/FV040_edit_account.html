@@ -24,7 +24,10 @@
     {% include 'FAN020_navbar.html' %}
 
     <div class="registration-form">
-        <h2>Account bearbeiten</h2>
+        <div class="form-row">
+            <h2>Account bearbeiten</h2>
+        </div>
+
         <form action="{{url_for('edit_account.edit_account', person_id=person_id)}}" method="post">
             <div class="form-row">
                 <div class="form-group2">
