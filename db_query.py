@@ -162,7 +162,7 @@ def account_table_mitarbeiter(monat, year, person_id):
     cursor = connection.cursor()
     cursor.execute(
         "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
+        "SUM(TIMESTAMPDIFF(MINUTE , zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
         "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
         "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
@@ -181,14 +181,18 @@ def account_table_mitarbeiter(monat, year, person_id):
     # Zusammenfügen der Tabellen
     report_table = []
     for time_spalte, distance_spalte in zip(time_table_mitarbeiter, distance_table_mitarbeiter):
+        geleistete_stunden = int(time_spalte[3])
+        stunden = geleistete_stunden // 60  # Ganzzahlige Division für Stunden
+        minuten = geleistete_stunden % 60  # Rest für Minuten
         if time_spalte[0] == distance_spalte[0]:  # IDs müssen übereinstimmen
+
             report_table.append(
                 (
                     time_spalte[0],  # ID
                     time_spalte[1],  # vorname
                     time_spalte[2],  # nachname
-                    time_spalte[3],  # geleistete_stunden
-                    distance_spalte[4],  # gefahrene_kilometer
+                    f"{stunden}h {minuten}min",  # geleistete_stunden
+                    distance_spalte[3],  # gefahrene_kilometer
                 )
             )
     return report_table
@@ -200,7 +204,7 @@ def account_table(monat, year):
     cursor = connection.cursor()
     cursor.execute(
         "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
+        "SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
         "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
         "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
@@ -219,14 +223,17 @@ def account_table(monat, year):
     # Zusammenfügen der Tabellen
     report_table = []
     for time_spalte, distance_spalte in zip(time_table, distance_table):
+        geleistete_stunden = int(time_spalte[3])
+        stunden = geleistete_stunden // 60  # Ganzzahlige Division für Stunden
+        minuten = geleistete_stunden % 60  # Rest für Minuten
         if time_spalte[0] == distance_spalte[0]:  # IDs müssen übereinstimmen
             report_table.append(
                 (
                     time_spalte[0],  # ID
                     time_spalte[1],  # vorname
                     time_spalte[2],  # nachname
-                    time_spalte[3],  # geleistete_stunden
-                    distance_spalte[4],  # gefahrene_kilometer
+                    f"{stunden}:{minuten}",  # geleistete_stunden
+                    distance_spalte[3],  # gefahrene_kilometer
                 )
             )
     return report_table
@@ -674,7 +681,7 @@ def rolle_dropdown():
 
 # /FV020/
 def create_account_db(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
-                   telefonnummer, passwort, sperre, passwort_erzwingen):
+                      telefonnummer, passwort, sperre, passwort_erzwingen):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("INSERT INTO person (vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email, "

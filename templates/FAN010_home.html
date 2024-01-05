@@ -26,7 +26,7 @@
         <iframe id="clientsIframe" src="/show_clients" style="width:100%; border:none;"></iframe>
      {% endif %}
      {% if role != 'Sachbearbeiter/Kostenträger' %}
-        <iframe id="mitarbeiterIframe" src={{url_for('show_employee_table.mitarbeiter', person_id=user_id)}} style="width:100%;border:none;"></iframe>
+        <iframe id="mitarbeiterIframe" src={{url_for('show_employee_table.mitarbeiter')}} style="width:100%;border:none;"></iframe>
      {% endif %}
 
     <script>
