@@ -188,7 +188,7 @@ def account_table_mitarbeiter(monat, year, person_id):
                     time_spalte[1],  # vorname
                     time_spalte[2],  # nachname
                     time_spalte[3],  # geleistete_stunden
-                    distance_spalte[4],  # gefahrene_kilometer
+                    distance_spalte[3],  # gefahrene_kilometer
                 )
             )
     return report_table
@@ -226,7 +226,7 @@ def account_table(monat, year):
                     time_spalte[1],  # vorname
                     time_spalte[2],  # nachname
                     time_spalte[3],  # geleistete_stunden
-                    distance_spalte[4],  # gefahrene_kilometer
+                    distance_spalte[3],  # gefahrene_kilometer
                 )
             )
     return report_table
@@ -468,7 +468,7 @@ def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, e
     cursor = connection.cursor()
     cursor.execute("INSERT INTO zeiteintrag (unterschrift_Mitarbeiter, unterschrift_Klient, start_zeit, end_zeit, "
                    "mitarbeiter_ID, klient_ID, fachkraft, beschreibung, interne_notiz, absage) "
-                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                    unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time, session['user_id'],
                    klient_id, fachkraft, beschreibung, interne_notiz, absage)
     zeiteintrag_id = cursor.lastrowid
@@ -826,7 +826,7 @@ def check_signatures(client_id, month, year):
     if not results:
         return False
     for result in results:
-        if not result["unterschrift_Klient"].is_null() or not result["unterschrift_Mitarbeiter"].is_null():
+        if result["unterschrift_Klient"].is_null() or result["unterschrift_Mitarbeiter"].is_null():
             return False
     return True
 
