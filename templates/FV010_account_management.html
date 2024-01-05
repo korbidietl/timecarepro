@@ -28,8 +28,8 @@
 
         </b><br/>
 
-        {% include 'FAN040_show_client_table.html' %}
-        {% include 'FAN030_show_employee_table.html' %}
+        <iframe id="clientsIframe" src="/show_clients" style="width:100%; border:none;"></iframe>
+        <iframe id="mitarbeiterIframe" src={{url_for('show_employee_table.mitarbeiter')}} style="width:100%;border:none;"></iframe>
 
         <!-- Steuerbüro Tabelle -->
         {% if session['user_role'] == 'Steuerbuero' %}
