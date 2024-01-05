@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, url_for, session
 from db_query import get_zeiteintrag_for_person, get_zeiteintrag_with_fahrten_by_id, check_booked
 from FMOF010_show_supervisionhours_client import generate_month_year_combinations, extrahiere_jahr_und_monat
 from datetime import datetime
