@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, session, flash, url_for, redirect
-from db_query import check_account_locked, validate_login, validate_email, get_role_by_email, get_person_id_by_email
+from db_query import check_account_locked, validate_login, validate_email, get_role_by_email, get_person_id_by_email, \
+    is_password_required
 
 login_blueprint = Blueprint("login", __name__, template_folder='templates')
 
@@ -39,9 +40,10 @@ def login():
                 session['user_id'] = get_person_id_by_email(email)
                 session['user_email'] = email
                 session['user_role'] = get_role_by_email(email)
-                #Nutzer muss Passwort ändern
-                #if TRUE:
-                #    return redirect(url_for('password_change.password_change'))
+
+                # Nutzer muss Passwort ändern
+                if is_password_required(email):
+                    return redirect(url_for('password_change.change_password'))
                 return redirect(url_for('home.home'))
 
         # Nutzer nicht gefunden

@@ -351,7 +351,9 @@ def get_zeiteintrag_for_client_and_person(client_id, person_id, month, year):
             SUM(f.kilometer) AS Kilometer,
             DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
             DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
+            DATE_FORMAT(TIMEDIFF(end_zeit, start_zeit),'%H:%i') AS dauer,
             CONCAT(p.vorname, ' ', p.nachname) AS Mitarbeiter,
+            p.id AS Mitarbeiter_id,
             z.unterschrift_Klient AS Unterschrift_Klient,
             z.unterschrift_Mitarbeiter AS Unterschrift_Mitarbeiter
         FROM
@@ -384,7 +386,9 @@ def get_zeiteintrag_for_client(client_id, month, year):
                 SUM(f.kilometer) AS Kilometer,
                 DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
                 DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
+                DATE_FORMAT(TIMEDIFF(end_zeit, start_zeit),'%H:%i') AS dauer,
                 CONCAT(p.vorname, ' ', p.nachname) AS Mitarbeiter,
+                p.id AS Mitarbeiter_id,
                 z.unterschrift_Klient AS Unterschrift_Klient,
                 z.unterschrift_Mitarbeiter AS Unterschrift_Mitarbeiter
             FROM
@@ -976,12 +980,13 @@ def sum_mitarbeiter(month, year):
 
 
 # /FGF010/
+# /FMOF010/
 def sum_hours_klient(month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
         SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, 
-        SUM(TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)) AS anzahl_Stunden 
+        TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i') AS anzahl_Stunden 
         FROM klient k 
         JOIN zeiteintrag z ON k.ID = z.Klient_ID 
         WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s 
