@@ -96,7 +96,7 @@
             </b><br/>
             {% if session['user_role'] in ['Steuerbüro', 'Geschäftsführung'] %}
             <div class="export-print-buttons">
-                <button onclick="exportToCSV()">Exportieren</button>
+                <button onclick="exportTableToCSV()">Exportieren</button>
                 <button onclick="printTable()">Drucken</button>
             </div>
             {% endif %}
@@ -123,12 +123,43 @@
             // }
         // });
 
-        function exportToCSV() {
-            // Implementieren Sie die Logik zum Exportieren der Tabelle in CSV-Format
+        function exportTableToCSV(tableId, filename) {
+            var csv = [];
+            var rows = document.querySelectorAll(tableId + ' tr');
+
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll("td, th");
+
+                for (var j = 0; j < cols.length; j++) {
+                    // Prüfen, ob das Element ein Button ist
+                    if (!cols[j].querySelector("button")) {
+                        row.push('"' + cols[j].innerText + '"');
+                    }
+                }
+
+                if (row.length > 0) {
+                    csv.push(row.join(","));
+                }
+            }
+
+            // Download-Link erstellen und klicken
+            var csvString = csv.join("\n");
+            var link = document.createElement("a");
+            link.setAttribute('target', '_blank');
+            link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString));
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
+
+        document.getElementById('exportButton').addEventListener('click', function () {
+            exportTableToCSV('#client_hours', 'client_hours.csv');
+        });
         function printTable() {
             // Implementieren Sie die Logik zum Drucken der Tabelle
         }
+
         window.onload = function() {
             // Überprüfen, ob Nachrichten vorhanden sind
             {% if get_flashed_messages() %}
