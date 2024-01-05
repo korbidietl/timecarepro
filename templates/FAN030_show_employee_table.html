@@ -56,6 +56,9 @@
                             <td>{{ mitarbeiter[2] }}</td>
                             <td>{{ mitarbeiter[3] }}</td>
                             <td>{{ mitarbeiter[4] }}</td>
+                            <td>
+                                <input type="hidden" name="lock_account" value="{{ mitarbeiter[5] }}" /> <!-- hidden attribut lock -->
+                            </td>
                             {% if user_role == 'Verwaltung' %}
                                 <td>
                                     <form action="{{url_for('account_details.account_details',person_id=mitarbeiter[0])}}" method="post">
@@ -76,7 +79,7 @@
                                 </td>
                                 <td>
                                     <form action="{{url_for('account_lock.account_lock', person_id=mitarbeiter[0])}}" method="post">
-                                        <button id="toggleButton">Sperren</button>
+                                        <button id="lock_mitarbeiter">{{ 'Sperren' if mitarbeiter[5] == 0 else 'Entsperren' }}</button>
                                     </form>
                                 </td>
                                 <td>
