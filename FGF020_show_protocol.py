@@ -8,10 +8,10 @@ show_protocol_blueprint = Blueprint("show_protocol", __name__)
 def show_protocol():
 
     if request.method == 'POST':
-        von = request.form['von']
-        bis = request.form['bis']
-        aendernder_nutzer = request.form['nutzer']
-        eintrags_id = request.form['eintrags_id']
+        von = request.form.get('von')
+        bis = request.form.get('bis')
+        aendernder_nutzer = request.form.get('nutzer')
+        eintrags_id = request.form.get('eintrags_id')
 
         protocols = get_protokoll(von, bis, aendernder_nutzer, eintrags_id)
 

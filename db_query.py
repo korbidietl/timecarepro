@@ -1147,7 +1147,7 @@ def get_protokoll(von=None, bis=None, aendernder_nutzer=None, eintrags_id=None):
         query += " AND pk.person_id = %s"
         parameters.append(aendernder_nutzer)
     if eintrags_id:
-        query += " AND pk.eintrags_id = %s"
+        query += " AND pk.eintrag_id = %s"
         parameters.append(eintrags_id)
 
     query += " ORDER BY Zeit DESC"
