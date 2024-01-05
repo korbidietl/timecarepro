@@ -1,17 +1,37 @@
 from flask import Blueprint, render_template, request, url_for, session
-from db_query import get_zeiteintrag_for_person, get_zeiteintrag_with_fahrten_by_id, check_booked
-from FMOF010_show_supervisionhours_client import generate_month_year_combinations, extrahiere_jahr_und_monat
+from db_query import get_zeiteintrag_for_person, get_zeiteintrag_with_fahrten_by_id, check_booked, get_name_by_id, \
+    get_role_by_id
+from FMOF010_show_supervisionhours_client import generate_month_year_combinations, extrahiere_jahr_und_monat, \
+    convert_blob_to_base64
 from datetime import datetime
 
 view_time_entries_blueprint = Blueprint("view_time_entries", __name__)
 
 
+def unterschriften_liste(zeiteintrag):
+    u_liste = []
+    for eintrag in zeiteintrag:
+        # Blob der Unterschriften
+        u_k = eintrag[7]
+        u_m = eintrag[8]
+        # Umwandlung Blob
+        u_k_base64 = convert_blob_to_base64(u_k)
+        u_m_base64 = convert_blob_to_base64(u_m)
+        # Hinzufügen zu Liste
+        u_liste.append((u_k_base64, u_m_base64))
+    return u_liste
+
+
 @view_time_entries_blueprint.route('/view_time_entries/<int:person_id>', methods=['GET', 'POST'])
 def view_time_entries(person_id):
-
     # session daten speichern
     person = session.get('user_id')
     session['url'] = url_for('view_time_entries.view_time_entries', person_id=person_id)
+
+    # Name und Role für Überschrift
+    name_list = get_name_by_id(person_id)
+    name = name_list[0]
+    role = get_role_by_id(person_id)
 
     # Dropdown Feld Zeitauswahl
     kombinationen = generate_month_year_combinations()
@@ -30,15 +50,9 @@ def view_time_entries(person_id):
     month, year = extrahiere_jahr_und_monat(gewaehlte_kombination)
 
     # Abfragen der Zeiteinträge
-    zeiteintrag_ids = get_zeiteintrag_for_person(person_id, month, year)
-    time_entries = []
+    zeiteintrag = get_zeiteintrag_for_person(person_id, month, year)
+    u_liste = unterschriften_liste(zeiteintrag)
 
-    for zeiteintrag_id in zeiteintrag_ids:
-        zeiteintrag_with_fahrten = get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id)
-        for entry in zeiteintrag_with_fahrten:
-            entry['zeiteintrag']['kilometer'] = sum([fahrt['kilometer'] for fahrt in entry['fahrten']])
-            entry['zeiteintrag']['buchung_vorhanden'] = check_booked(entry['zeiteintrag']['id'])
-            time_entries.append(entry['zeiteintrag'])
-
-    return render_template('FMOF020_view_time_entries.html', person=person, time_entries=time_entries, kombinationen=kombinationen, gewaehlte_kombination=gewaehlte_kombination)
-
+    return render_template('FMOF020_view_time_entries.html', person_id=person_id, name=name, role=role,
+                           kombinationen=kombinationen, gewaehlte_kombination=gewaehlte_kombination,
+                           zeiteintraege=zeiteintrag, unterschriften=u_liste)

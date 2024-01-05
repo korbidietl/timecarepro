@@ -143,10 +143,9 @@ def validate_email(email):
     return False
 
 
-# /FAN010/
-# /FAN020/
+
 # /FAN030/
-# /FAN040/
+# /FMOF020/
 def get_role_by_id(person_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -768,8 +767,9 @@ def get_klient_data(client_id):
     result = cursor.fetchall()
     return result
 
-
+# /FMOF020
 # /FV080
+# /FV090
 def get_name_by_id(person_id):
     connection = get_database_connection()
     cursor = connection.cursor()
