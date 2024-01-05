@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 import random
 import string
 import smtplib
 from email.mime.text import MIMEText
-from db_query import (validate_email, check_account_locked, set_password_mail, set_password_required_true,
-                      get_lastname_by_email)
+from db_query import validate_email, check_account_locked, set_password_mail, set_password_required_true, \
+    get_lastname_by_email, get_firstname_by_email
 
 password_reset_blueprint = Blueprint("password_reset", __name__)
 
@@ -15,6 +15,7 @@ def generate_random_password(length=10):
     return ''.join(random.choice(characters) for _ in range(length))
 
 
+# Versand Email
 def send_email(email, subject, body):
     msg = MIMEText(body)
 
@@ -27,13 +28,14 @@ def send_email(email, subject, body):
         smtp.sendmail('resetyourpassword@timecarepro.de', [email], msg.as_string())
 
 
-def send_email_passwort_reset(email, lastname, new_password):
+# Nachricht wird erzeugt
+def send_email_passwort_reset(email, firstname, lastname, new_password):
     subject = "Ihr neues Passwort"
-    body = (f"Sehr geehrte/r Frau/Mann {lastname}, \n\n"
-            f"Ihr Passwort wurde erfolgreich zurückgesetzt. "
+    body = (f"Sehr geehrte/r {firstname} {lastname}, \n\n"
+            f"Sie haben Ihr Passwort erfolgreich zurückgesetzt.\n "
             f"Das automatisch generierte Passwort ist: {new_password} \n"
             f"Bitte ändern Sie dieses Passwort schnellstmöglich.\n\n"
-            f"Mit freundlichen Grüßen\n"
+            f"Freundliche Grüße\n"
             f"Ihr TimeCare Pro-Team")
     send_email(email, subject, body)
 
@@ -42,36 +44,41 @@ def send_email_passwort_reset(email, lastname, new_password):
 def passwordreset():
     if request.method == "POST":
         email = request.form["email"]
-        user = validate_email(email)
 
-        # Es wurde keine E-mail übergeben
+        # Keine E-Mail übergeben
         if not email:
             flash("Geben Sie für das Zurücksetzen des Passworts zuerst Ihre E-Mail-Adresse ein.")
             return render_template("FNAN020_password_reset.html")
 
-        if user:
-            lastname = get_lastname_by_email(email)
-            locked = check_account_locked(email)
+        # Nutzer in Datenbank suchen
+        user = validate_email(email)
 
+        if user:
+            # Persöhnliche Daten für Email
+            lastname = get_lastname_by_email(email)
+            firstname = get_firstname_by_email(email)
+
+            # Überprüfung ob Nutzer gesperrt
+            locked = check_account_locked(email)
             if locked:
-                # Überprüfung ob Nutzer gesperrt ist
+                # Nutzer ist gesperrt
                 flash("Passwort zurücksetzen fehlgeschlagen. Wenden Sie sich an die Verwaltung")
                 return render_template("FNAN020_password_reset.html")
             else:
-                # Neues Passwort generieren, abspeichern und Passwort erzwingen auf True setzen
+                # Passwort zurücksetzen
                 new_password = generate_random_password()
                 set_password_mail(email, new_password)
                 set_password_required_true(email)
-                # E-Mail senden
-                send_email_passwort_reset(email, lastname, new_password)
-                flash(
-                    "Ein neues Passwort wurde an die angegebene E-Mail-Adresse versendet, falls diese im System "
-                    "vorhanden ist.",
-                    "success")
 
-                return render_template('FNAN010_login.html', email=email)
+                # E-Mail senden
+                send_email_passwort_reset(email, firstname, lastname, new_password)
+                flash("Ein neues Passwort wurde an die angegebene E-Mail-Adresse versendet, falls diese im System "
+                      "vorhanden ist.", "success")
+
+                # Weiterleitung zum Login
+                return redirect(url_for('login.login'))
         else:
-            # keine E-mail in der Datenbank gefunden
-            return render_template('FNAN010_login.html')
+            # kein Nutzer gefunden
+            return redirect(url_for('login.login'))
 
     return render_template('FNAN020_password_reset.html')

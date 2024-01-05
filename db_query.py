@@ -1411,7 +1411,7 @@ def get_role_by_email(email):
     cursor.close()
     return result[0] if result else None
 
-
+# FNAN020
 # Methode gibt Vornamen zurück, wenn er in der Datenbank gefunden wird. Andernfalls gibt sie None zurück.
 def get_firstname_by_email(email):
     connection = get_database_connection()
