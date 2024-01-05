@@ -22,12 +22,16 @@
         </div>
     </div>
 
-     {% if role != 'Steuerbüro' %}
+    <div class="table-form">
+        {% if role != 'Steuerbüro' %}
         <iframe id="clientsIframe" src="/show_clients" style="width:100%; border:none;"></iframe>
-     {% endif %}
-     {% if role != 'Sachbearbeiter/Kostenträger' %}
+        {% endif %}
+        {% if role != 'Sachbearbeiter/Kostenträger' %}
         <iframe id="mitarbeiterIframe" src={{url_for('show_employee_table.mitarbeiter')}} style="width:100%;border:none;"></iframe>
-     {% endif %}
+        {% endif %}
+    </div>
+
+    </b><br/>
 
     <script>
         window.addEventListener('message', function(e) {
