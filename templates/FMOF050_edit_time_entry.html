@@ -32,12 +32,11 @@
                     <input type="checkbox" id="fachkraft" name="fachkraft" {% if zeiteintrag[7] %} checked {% endif %} >
                 </div>
                 <div class="form-group">
-                    <label for="klient">Klient:</label>
-                    <select id="klient" name="klient">
-                        <!-- Hier Name übergen -->
-                        <option value="" selected >{{klient.name}}</option>
+                    <label for="klientDropdown">Klient:</label>
+                    <select class="form-control" id="klientDropdown" name="klientDropdown">
+                        <option value="" selected disabled>Bitte auswählen</option>
                         {% for klient in klienten %}
-                            <option value="{{ klient.id }}">{{ klient.nachname }}, {{ klient.vorname }}</option>
+                            <option value="{{ klient[0] }}">{{ klient[0] }}, {{ klient[1] }}, {{ klient[2] }}</option>
                         {% endfor %}
                     </select>
                 </div>
