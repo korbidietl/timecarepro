@@ -232,7 +232,7 @@
                     {% else %}
                         <p>Keine Daten gefunden.</p>
                     {% endif %}
-                    {% if tabsagendaten %}
+                    {% if terminabsagendaten %}
                         <div class="dashboard-item">
                             <!-- Diagramm Terminabsagen -->
                             <h3>Terminabsagen</h3>
@@ -248,134 +248,134 @@
 
                 <div class="accordion-button">
                     <button id="exportButton" type="button">Exportieren</button>
-                    <button onclick="window.print();">Drucken</button>
+                    <button type="button" onclick="window.print();">Drucken</button>
                 </div>
 
 
             </div>
         </form>
     </div>
-
-</body>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
-<script type="text/javascript">
-    var stundendaten = {{ stundendaten|tojson|default('[]', true) }};
-    var kmdaten = {{ kmdaten|tojson|default('[]', true) }};
-    var terminabsagendaten = {{ tabsagendaten|tojson|default('[]', true) }};
-</script>
-<script>
-    function erstelleDiagramm(canvasId, label, daten, backgroundColor, borderColor, maxTicks) {
-        var ctx = document.getElementById(canvasId).getContext('2d');
-        return new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-                datasets: [{
-                    label: label,
-                    data: daten,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            suggestedMax: maxTicks
-                        }
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+    <script type="text/javascript">
+        var stundendaten = {{ stundendaten|tojson|default('[]', true) }}
+        var kmdaten = {{ kmdaten|tojson|default('[]', true) }}
+        var terminabsagendaten = {{ terminabsagendaten|tojson|default('[]', true) }}
+    </script>
+    <script>
+        function erstelleDiagramm(canvasId, label, daten, backgroundColor, borderColor, maxTicks) {
+            var ctx = document.getElementById(canvasId).getContext('2d');
+            return new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                    datasets: [{
+                        label: label,
+                        data: daten,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: 1
                     }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                suggestedMax: maxTicks
+                            }
+                        }]
+                    }
                 }
-            }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            erstelleDiagramm('stundenChart', 'Stundenzahl', stundendaten, 'rgba(255, 159, 64, 0.2)', 'rgba(255, 159, 64, 1)', 50);
+            erstelleDiagramm('kilometerChart', 'Kilometeranzahl', kmdaten, 'rgba(0, 128, 0, 0.2)', 'rgba(0, 128, 0, 1)', 500);
+            erstelleDiagramm('terminAbsagenChart', 'Terminabsagen', terminabsagendaten, 'rgba(225, 0, 0, 0.2)', 'rgba(225, 0, 0, 1)', 14);
         });
-    }
-    document.addEventListener('DOMContentLoaded', function() {
-        erstelleDiagramm('stundenChart', 'Stundenzahl', stundendaten, 'rgba(255, 159, 64, 0.2)', 'rgba(255, 159, 64, 1)', 50);
-        erstelleDiagramm('kilometerChart', 'Kilometeranzahl', kmdaten, 'rgba(0, 128, 0, 0.2)', 'rgba(0, 128, 0, 1)', 500);
-        erstelleDiagramm('terminAbsagenChart', 'Terminabsagen', terminabsagendaten, 'rgba(225, 0, 0, 0.2)', 'rgba(225, 0, 0, 1)', 14);
-    });
 
-</script>
+    </script>
 
 
-<script>
-    window.onload = function() {
-        // Überprüfen, ob Nachrichten vorhanden sind
-        {% if get_flashed_messages() %}
-        let modal = document.getElementById("flashModal");
-        let span = document.getElementsByClassName("close")[0];
+    <script>
+        window.onload = function() {
+            // Überprüfen, ob Nachrichten vorhanden sind
+            {%if get_flashed_messages() %}
+            let modal = document.getElementById("flashModal");
+            let span = document.getElementsByClassName("close")[0];
 
-        // Modal anzeigen
-        modal.style.display = "block";
+            // Modal anzeigen
+            modal.style.display = "block";
 
-        // Schließen, wenn das "X" geklickt wird
-        span.onclick = function() {
-            modal.style.display = "none";
-        };
-
-        // Schließen, wenn außerhalb des Modals geklickt wird
-        window.onclick = function(event) {
-            if (event.target == modal) {
+            // Schließen, wenn das "X" geklickt wird
+            span.onclick = function () {
                 modal.style.display = "none";
-            }
-        };
-        {% endif %}
-</script>
-<script>
-function exportAllTablesToCSV(filename) {
-    var csv = [];
-    var tables = document.querySelectorAll("table");
+            };
 
-    tables.forEach(function(table) {
-        var rows = table.querySelectorAll("tr");
+            // Schließen, wenn außerhalb des Modals geklickt wird
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            };
+            {%endif %}
+        }
+    </script>
+    <script>
+    function exportAllTablesToCSV(filename) {
+        var csv = [];
+        var tables = document.querySelectorAll("table");
 
-        rows.forEach(function(row) {
-            var rowData = [];
-            var cols = row.querySelectorAll("td, th");
+        tables.forEach(function(table) {
+            var rows = table.querySelectorAll("tr");
 
-            cols.forEach(function(col) {
-                rowData.push('"' + col.innerText + '"');
+            rows.forEach(function(row) {
+                var rowData = [];
+                var cols = row.querySelectorAll("td, th");
+
+                cols.forEach(function(col) {
+                    rowData.push('"' + col.innerText + '"');
+                });
+
+                csv.push(rowData.join(","));
             });
 
-            csv.push(rowData.join(","));
+            // Fügt eine leere Zeile zwischen Tabellen hinzu
+            csv.push("");
         });
-
-        // Fügt eine leere Zeile zwischen Tabellen hinzu
+        // Exportieren der Diagrammdaten als zusätzliche "Tabellen"
+        csv.push("Stundendaten");
+        csv.push(stundendaten.join(","));
         csv.push("");
-    });
-    // Exportieren der Diagrammdaten als zusätzliche "Tabellen"
-    csv.push("Stundendaten");
-    csv.push(stundendaten.join(","));
-    csv.push("");
 
-    csv.push("Kilometerdaten");
-    csv.push(kmdaten.join(","));
-    csv.push("");
+        csv.push("Kilometerdaten");
+        csv.push(kmdaten.join(","));
+        csv.push("");
 
-    csv.push("Terminabsagendaten");
-    csv.push(terminabsagendaten.join(","));
-    csv.push("");
+        csv.push("Terminabsagendaten");
+        csv.push(terminabsagendaten.join(","));
+        csv.push("");
 
-    // Erstellen Sie einen Link und starten Sie den Download
-    var csvString = csv.join("\n");
-    var link = document.createElement("a");
-    link.style.display = 'none';
-    link.setAttribute('target', '_blank');
-    link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString));
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-</script>
-<script type="text/javascript">
-    document.getElementById('exportButton').addEventListener('click', function (event) {
-        console.log('Export-Button geklickt');
-        event.preventDefault();
-        exportAllTablesToCSV('gesamteSeite.csv', {{ stundendaten }}, {{ kmdaten }}, {{ terminabsagendaten}}););
-    });
-</script>
+        // Erstellen Sie einen Link und starten Sie den Download
+        var csvString = csv.join("\n");
+        var link = document.createElement("a");
+        link.style.display = 'none';
+        link.setAttribute('target', '_blank');
+        link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString));
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    </script>
+    <script type="text/javascript">
+        document.getElementById('exportButton').addEventListener('click', function (event) {
+            event.preventDefault();
+            exportAllTablesToCSV('reporting_dashboard.csv', {{ stundendaten }}, {{ kmdaten }}, {{ terminabsagendaten}});
+        });
+    </script>
+</body>
+
 
 
 </html>

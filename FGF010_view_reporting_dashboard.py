@@ -120,7 +120,7 @@ def reporting_dashboard():
 
     return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, klienten_daten=klienten_liste,
                            mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste, klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt, stundendaten=stundendaten,
-                           tabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
+                           terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
 
 
 def eingabe_formatieren(von, bis):
