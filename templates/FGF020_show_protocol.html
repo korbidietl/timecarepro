@@ -9,31 +9,33 @@
     <!-- Menüleiste einbinden-->
     {% include 'FAN020_navbar.html' %}
 
-    <div class="center-container-tables">
+    <div class="table-form">
         <div class="table-container">
             <h3>Protokoll</h3>
 
-            <div class="time-selection-container">
+            <div class="form">
                 <form action="/show_protocol" method="post">
-                    <label for="von">Von:</label>
-                    <input type="datetime-local" id="von" name="von">
-
-                    <label for="bis">Bis:</label>
-                    <input type="datetime-local" id="bis" name="bis">
-
-                    <div class="form-group2">
-                    <label for="nutzer">Ändernder Nutzer:</label>
-                    <select class="form-control" id="nutzer" name="nutzer">
-                        <!-- Optionen werden durch Python generiert -->
-                        {% for nutzer in nutzers %}
-                        <option value="{{nutzer.id}}">{{nutzer.nachname}}</option>
-                        {% endfor %}
-                    </select>
+                    <div>
+                        <label for="von">Von:</label>
+                        <input type="datetime-local" id="von" name="von">
                     </div>
-
-                    <label for="eintrags_id">Eintrags ID:</label>
-                    <input type="number" id="eintrags_id" name="eintrags_id">
-
+                    <div>
+                        <label for="bis">Bis:</label>
+                        <input type="datetime-local" id="bis" name="bis">
+                    </div>
+                    <div class="form-group2">
+                        <label for="nutzer">Ändernder Nutzer:</label>
+                        <select class="form-control" id="nutzer" name="nutzer">
+                            <!-- Optionen werden durch Python generiert -->
+                            {% for nutzer in nutzers %}
+                            <option value="{{nutzer.id}}">{{nutzer.nachname}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="eintrags_id">Eintrags ID:</label>
+                        <input type="number" id="eintrags_id" name="eintrags_id">
+                    </div>
                     <button type="submit">Anzeigen</button>
                 </form>
             </div>

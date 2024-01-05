@@ -44,10 +44,10 @@
                 <tbody>
                     {% for entry in time_entries %}
                         <tr>
-                            <td>{{ entry.start_zeit }}</td>
-                            <td>{{ entry.end_zeit }}</td>
-                            <td>{{ entry.beschreibung }}</td>
-                            <td>{{ entry.kilometer }}</td>
+                            <td>{{ entry[4] }}</td>
+                            <td>{{ entry[5] }}</td>
+                            <td>{{ entry[2] }}</td>
+                            <td>{{ entry['zeiteintrag']['kilometer'] }}</td>
                             <td>
                                 <form action="/work_hours_details/<int:zeiteintrag_id>/<int:person_id>" method="post">
                                     <button type="submit">Details</button>

@@ -50,7 +50,7 @@
                     <select class="form-control" id="klientDropdown" name="klientDropdown">
                         <option value="" selected disabled>Bitte auswählen</option>
                         {% for klient in klienten %}
-                            <option value="{{ klient.id }}">{{ klient.nachname }}, {{ klient.vorname }}</option>
+                            <option value="{{ klient[0] }}">{{ klient[0] }}, {{ klient[1] }}, {{ klient[2] }}</option>
                         {% endfor %}
                     </select>
                 </div>

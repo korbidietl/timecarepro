@@ -3,7 +3,7 @@ import base64
 from flask import Blueprint, request, redirect, url_for, render_template, session
 from db_query import (edit_zeiteintrag, delete_fahrt, add_fahrt, edit_fahrt,
                       fahrt_id_existing, check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id,
-                      get_fahrt_by_zeiteintrag, get_klient_data)
+                      get_fahrt_by_zeiteintrag, get_klient_data, client_dropdown)
 from datetime import datetime
 from FMOF030_create_time_entry import check_time_entry_constraints, base64_to_blob
 
@@ -12,7 +12,12 @@ edit_time_entry_blueprint = Blueprint('edit_time_entry', __name__)
 
 @edit_time_entry_blueprint.route('/edit_time_entry/<int:zeiteintrag_id>', methods=['GET', 'POST'])
 def edit_time_entry(zeiteintrag_id):
+
+    # session speichern für rückleitung
     session['url'] = url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag_id)
+
+    # klienten für client_dropdown
+    klienten = client_dropdown()
 
     zeiteintrag_liste = get_zeiteintrag_by_id(zeiteintrag_id)
     zeiteintrag = zeiteintrag_liste[0]
@@ -104,4 +109,4 @@ def edit_time_entry(zeiteintrag_id):
     return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
                            klient_name=klient_name, datum=datum, von=von, bis=bis,
                            unterschrift_klient=unterschrift_klient,
-                           unterschrift_mitarbeiter=unterschrift_mitarbeiter, zeiteintrag_id=zeiteintrag_id)
+                           unterschrift_mitarbeiter=unterschrift_mitarbeiter, zeiteintrag_id=zeiteintrag_id, klienten=klienten)
