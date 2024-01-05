@@ -78,7 +78,7 @@
                                     </form>
                                 </td>
                                 <td>
-                                    <form action="{{url_for('account_lock.account_lock', person_id=mitarbeiter[0])}}" method="post">
+                                    <form action="{{ url_for('account_lock.account_lock', person_id=mitarbeiter[0]) }}" method="post">
                                         <button id="lock_mitarbeiter">{{ 'Sperren' if mitarbeiter[5] == 0 else 'Entsperren' }}</button>
                                     </form>
                                 </td>
