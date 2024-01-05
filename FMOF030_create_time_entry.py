@@ -2,7 +2,7 @@ import base64
 import time
 
 from flask import Blueprint, request, redirect, url_for, render_template, flash, session
-from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag, check_month_booked
+from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag, check_month_booked, client_dropdown
 from datetime import datetime
 
 create_time_entry_blueprint = Blueprint('/create_time_entry', __name__)
@@ -37,7 +37,11 @@ def base64_to_blob(base64_string):
 
 @create_time_entry_blueprint.route('/create_time_entry', methods=['POST', 'GET'])
 def submit_arbeitsstunden():
+    # session speichern für rückleitung
     session['url'] = url_for('/create_time_entry.submit_arbeitsstunden')
+
+    # klienten für client_dropdown
+    klienten = client_dropdown()
 
     if request.method == 'POST':
         # Eingabedaten aus dem Formular holen
@@ -89,4 +93,4 @@ def submit_arbeitsstunden():
         # Weiterleitung zurück zur Übersicht der abgelegten Stunden
         return redirect(session.pop('url', None))
 
-    return render_template('FMOF030_create_time_entry.html')
+    return render_template('FMOF030_create_time_entry.html', klienten = klienten)

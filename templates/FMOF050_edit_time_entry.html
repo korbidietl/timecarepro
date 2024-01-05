@@ -32,12 +32,11 @@
                     <input type="checkbox" id="fachkraft" name="fachkraft" {% if zeiteintrag[7] %} checked {% endif %} >
                 </div>
                 <div class="form-group">
-                    <label for="klient">Klient:</label>
-                    <select id="klient" name="klient">
-                        <!-- Hier Name übergen -->
-                        <option value="" selected >{{klient.name}}</option>
+                    <label for="klientDropdown">Klient:</label>
+                    <select class="form-control" id="klientDropdown" name="klientDropdown">
+                        <option value="" selected disabled>Bitte auswählen</option>
                         {% for klient in klienten %}
-                            <option value="{{ klient.id }}">{{ klient.nachname }}, {{ klient.vorname }}</option>
+                            <option value="{{ klient[0] }}">{{ klient[0] }}, {{ klient[1] }}, {{ klient[2] }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -57,37 +56,47 @@
                 </div>
             </div>
             <h3>Fahrten:</h3>
-            {% set index = 0 %}
-            {% for fahrt in fahrten %}
                 <div id="fahrtenContainer">
+                    <div>
+                        <label for="abrechenbarkeit{{ index }}">Anrechenbarkeit:</label>
+                    </div>
+                    <div>
+                        <label for="start_adresse{{ index }}">Start Adresse:</label>
+                    </div>
+                    <div>
+                        <label for="end_adresse{{ index }}">End Adresse:</label>
+                    </div>
+                    <div>
+                        <label for="kilometer{{ index }}">Kilometer:</label>
+                    </div>
+                    <div>
+                        <input type="hidden" id="fahrtCounterInput" name="fahrtCounterInput">
+                    </div>
+                {% set index = 0 %}
+                {% for fahrt in fahrten %}
                     <!-- Ursprüngliche Fahrt-Eingabezeile -->
                     <div class="form-row fahrt-row">
                         <div class="form-hidden">
                             <input type="hidden" id="fahrt_id0" name="fahrt_id0">
                         </div>
                         <div class="form-group">
-                            <label for="abrechenbarkeit{{ index }}">Abrechenbarkeit:</label>
                             <input type="checkbox" id="abrechenbarkeit{{ index }}" name="abrechenbarkeit{{ index }}" {% if fahrt[4] %} checked {% endif %}required>
                         </div>
                         <div class="form-group">
-                            <label for="start_adresse{{ index }}">Start Adresse:</label>
                             <input type="text" id="start_adresse{{ index }}" name="start_adresse{{ index }}" value="{{ fahrt[2] }}" required>
                         </div>
                         <div class="form-group">
-                            <label for="end_adresse{{ index }}">End Adresse:</label>
                             <input type="text" id="end_adresse{{ index }}" name="end_adresse{{ index }}" value="{{ fahrt[3] }}" required>
                         </div>
                         <div class="form-group">
-                            <label for="kilometer{{ index }}">Kilometer:</label>
                             <input type="text" id="kilometer{{ index }}" name="kilometer{{ index }}" value="{{ fahrt[1] }}" required>
                         </div>
                         <button type="button" onclick="addFahrt()">+</button>
                         <button type="button" onclick="removeFahrt(this)">-</button>
-                        <input type="hidden" id="fahrtCounterInput" name="fahrtCounterInput">
                     </div>
+                {% set index = index + 1 %}
+                {% endfor %}
                 </div>
-            {% set index = index + 1 %}
-            {% endfor %}
 
             <!--Unterschriften Felder -->
             <div class="form-row">

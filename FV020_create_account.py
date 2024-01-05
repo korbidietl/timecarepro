@@ -59,6 +59,11 @@ def create_account():
             if not request.form.get(field):
                 flash('Es müssen alle Felder ausgefüllt werden.')
                 return render_template('FV020_create_account.html')
+        # Überprüfen ob Email Umlaute enthält
+        umlaute = {'ä', 'ö', 'ü', 'ß'}
+        if any(umlaut in email for umlaut in umlaute):
+            flash('In der E-Mail Adresse dürfen keine Umlaute sein', 'error')
+            return render_template('FV020_create_account.html')
 
         # Überprüfung ob alle zusätzlich notwendigen Felder für Mitarbeiter ausgefüllt wurden
         if selected_role == 'Mitarbeiter':

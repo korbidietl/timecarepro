@@ -49,25 +49,25 @@
                     <tbody>
                         {% for zeile in zeiteintraege_liste %}
                         <tr>
-                            <td>{{ zeile.id }}</td>
-                            <td>{{ zeile.mitarbeiter }}</td>
-                            <td>{{ zeile.sachbearbeiter }}</td>
-                            <td>{{ zeile.klient }}</td>
-                            <td>{{ zeile.geleistete_stunden }}</td>
-                            <td>{{ zeile.gefahrene_km }}</td>
-                            <td>{{ zeile.abrechenbare_km }}</td>
-                            <td>{{ zeile.nicht_abrechenbare_km }}</td>
-                            <td>{{ zeile.absagen }}</td>
+                            <td>{{ 0 }}</td>
+                            <td>{{ zeile[0] }}</td>
+                            <td>{{ zeile[1] }}</td>
+                            <td>{{ zeile[2] }}</td>
+                            <td>{{ zeile[3] }}</td>
+                            <td>{{ zeile[4] if zeile[4] is not none else '0.0' }}</td>
+                            <td>{{ zeile[5] if zeile[5] is not none else '0.0' }}</td>
+                            <td>{{ zeile[6] if zeile[6] is not none else '0.0' }}</td>
+                            <td>{{ zeile[7] }}</td>
                         </tr>
                         {% endfor %}
                         <tr>
                             <td><strong>Gesamt</strong></td>
                             <td colspan="3"></td>
-                            <td><strong>{{ mastunden }}</strong></td>
-                            <td><strong>{{ makm }}</strong></td>
-                            <td><strong>{{ gesamt_abrechenbare_km }}</strong></td>
-                            <td><strong>{{ gesamt_nicht_abrechenbare_km }}</strong></td>
-                            <td><strong>{{ maabsage }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[4] }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[0] }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[1] }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[2] }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[3] }}</strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -78,7 +78,7 @@
         <div class="leerzeile"></div>
         <h3>Mitarbeiter</h3>
         <!-- Mitarbeiter Tabelle -->
-        {% if zeiteintraege_liste %}
+        {% if mitarbeiter_daten %}
             <div class="scrollable-container">
                 <table>
                     <thead>
@@ -96,23 +96,24 @@
                     <tbody>
                         {% for mitarbeiter in mitarbeiter_daten %}
                         <tr>
-                            <td>{{ mitarbeiter.personalnr }}</td>
-                            <td>{{ mitarbeiter.nachname }}</td>
-                            <td>{{ mitarbeiter.vorname }}</td>
-                            <td>{{ mitarbeiter.geleistete_stunden }}</td>
-                            <td>{{ mitarbeiter.gefahrene_km }}</td>
-                            <td>{{ mitarbeiter.abrechenbare_km }}</td>
-                            <td>{{ mitarbeiter.nicht_abrechenbare_km }}</td>
-                            <td>{{ mitarbeiter.absagen }}</td>
+                            <td>{{ mitarbeiter[0] }}</td>
+                            <td>{{ mitarbeiter[1] }}</td>
+                            <td>{{ mitarbeiter[2] }}</td>
+                            <td>{{ mitarbeiter[3] }}</td>
+                            <td>{{ mitarbeiter[4] if mitarbeiter[4] is not none else '0.0'}}</td>
+                            <td>{{ mitarbeiter[5] if mitarbeiter[5] is not none else '0.0'}}</td>
+                            <td>{{ mitarbeiter[6] if mitarbeiter[6] is not none else '0.0'}}</td>
+                            <td>{{ mitarbeiter[7] }}</td>
                         </tr>
                         {% endfor %}
                         <tr>
-                            <<td><strong>Gesamt</strong></td>
+                            <td><strong>Gesamt</strong></td>
                             <td colspan="2"></td>
-                            <td>{{ mastunden }}</td>
-                            <td>{{ makm }}</td>
-                            <!-- Weitere Summenzellen abrechenbar, nicht-->
-                            <td>{{maabsage}}</td>
+                            <td><strong>{{ mitarbeiter_gesamt[4] }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[0] }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[1] }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[2] }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[3] }}</strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -123,7 +124,7 @@
         <div class="leerzeile"></div>
         <h3>Klienten</h3>
         <!-- Klienten Tabelle-->
-        {% if klienten_liste %}
+        {% if klienten_daten %}
             <div class="scrollable-container">
                 <table>
                     <thead>
@@ -138,23 +139,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for klient in klient_daten %}
+                        {% for klient in klienten_daten %}
                         <tr>
-                            <td>{{ klient.id }}</td>
-                            <td>{{ klient.nachname }}</td>
-                            <td>{{ klient.vorname }}</td>
-                            <td>{{ klient.geleistete_stunden }}</td>
-                            <td>{{ klient.abrechenbare_km }}</td>
-                            <td>{{ klient.nicht_abrechenbare_km }}</td>
-                            <td>{{ klient.absagen }}</td>
+                            <td>{{ klient[0] }}</td>
+                            <td>{{ klient[1] }}</td>
+                            <td>{{ klient[2] }}</td>
+                            <td>{{ klient[3] }}</td>
+                            <td>{{ klient[5] if klient[5] is not none else '0.0'}}</td>
+                            <td>{{ klient[6] if klient[6] is not none else '0.0'}}</td>
+                            <td>{{ klient[7] }}</td>
                         </tr>
                         {% endfor %}
                         <tr>
-                            <<td><strong>Gesamt</strong></td>
+                            <td><strong>Gesamt</strong></td>
                             <td colspan="2"></td>
-                            <td>{{ klstunden }}</td>
-                            <!-- Weitere Summenzellen abrechenbar, nicht-->
-                            <td>{{klabsage}}</td>
+                            <td><strong>{{ klient_gesamt[4] }}</strong></td>
+                            <td><strong>{{ klient_gesamt[1] }}</strong></td>
+                            <td><strong>{{ klient_gesamt[2] }}</strong></td>
+                            <td><strong>{{ klient_gesamt[3] }}</strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -182,7 +184,7 @@
                         <select class="form-control gray-background" id="mitarbeiter"  name="mitarbeiter">
                             <option value="" selected disabled>Bitte auswählen</option>
                             {% for ma in mitarbeiter %}
-                            <option value="{{ma.id}}">{{ma.nachname}}</option>
+                            <option value="{{ma.id}}">{{ma.vorname}} {{ma.nachname}}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -190,8 +192,8 @@
                         <label for="klient">Klient:</label>
                         <select class="form-control gray-background" id="klient" name="klient">
                             <option value="" selected disabled>Bitte auswählen</option>
-                            {% for cl in client %}
-                            <option value="{{cl.id}}">{{cl.nachname}}</option>
+                            {% for cl in klient %}
+                            <option value="{{cl.id}}">{{cl.vorname}} {{cl.nachname}}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -203,7 +205,7 @@
                        <div class="dashboard-item">
                            <!-- Diagramm Mitarbeiterzahl -->
                            <h3>Mitarbeiteranzahl</h3>
-                           <div class="dashboard-number">{{maanzahl}}</div>
+                           <div class="dashboard-number">{{mazahl}}</div>
                        </div>
                     {% else %}
                         <p>Keine Daten gefunden.</p>
@@ -219,7 +221,7 @@
                     {% else %}
                         <p>Keine Daten gefunden.</p>
                     {% endif %}
-                    {% if km %}
+                    {% if kmdaten %}
                         <div class="dashboard-item">
                             <!-- Diagramm Kilometeranzahl -->
                             <h3>Kilometerzahl</h3>
@@ -230,7 +232,7 @@
                     {% else %}
                         <p>Keine Daten gefunden.</p>
                     {% endif %}
-                    {% if tabsagen %}
+                    {% if terminabsagendaten %}
                         <div class="dashboard-item">
                             <!-- Diagramm Terminabsagen -->
                             <h3>Terminabsagen</h3>
@@ -242,209 +244,138 @@
                         <p>Keine Daten gefunden.</p>
                     {% endif %}
                 </div>
-               <!-- Kürzerer JavaScript mit einbindung Daten testen
-               function erstelleDiagramm(canvasId, label, daten, backgroundColor, borderColor, maxTicks) {
-                    var ctx = document.getElementById(canvasId).getContext('2d');
-                    return new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-                            datasets: [{
-                                label: label,
-                                data: daten,
-                                backgroundColor: backgroundColor,
-                                borderColor: borderColor,
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                yAxes: [{
-                                    ticks: {
-                                        beginAtZero: true,
-                                        suggestedMax: maxTicks
-                                    }
-                                }]
-                            }
-                        }
-                    });
-                }
-                document.addEventListener('DOMContentLoaded', function() {
-                    erstelleDiagramm('stundenChart', 'Stundenzahl', stundendaten, 'rgba(255, 159, 64, 0.2)', 'rgba(255, 159, 64, 1)', 6000);
-                    erstelleDiagramm('kilometerChart', 'Kilometeranzahl', kmdaten, 'rgba(0, 128, 0, 0.2)', 'rgba(0, 128, 0, 1)', 12000);
-                    erstelleDiagramm('terminAbsagenChart', 'Terminabsagen', terminabsagendaten, 'rgba(225, 0, 0, 0.2)', 'rgba(225, 0, 0, 1)', 14);
-                }); -->
+
 
                 <div class="accordion-button">
-                    <button id="exportButton">Exportieren</button>
-                    <button onclick="window.print();">Drucken</button>
+                    <button id="exportButton" type="button">Exportieren</button>
+                    <button type="button" onclick="window.print();">Drucken</button>
                 </div>
 
 
             </div>
         </form>
     </div>
-
-</body>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
-<script type="text/javascript">
-    var stundendaten = {{ stundendaten|tojson|default('[]', true) }};
-    var kmdaten = {{ kmdaten|tojson|default('[]', true) }};
-    var terminabsagendaten = {{ tabsagendaten|tojson|default('[]', true) }};
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var stundenCtx = document.getElementById('stundenChart').getContext('2d');
-        var stundenChart = new Chart(stundenCtx, {
-            type: 'bar',
-            data: {
-                labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-                datasets: [{
-                    label: 'Stundenzahl',
-                    data: stundendaten,
-                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                    borderColor: 'rgba(255, 159, 64, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            suggestedMax: 6000
-                        }
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+    <script type="text/javascript">
+        var stundendaten = {{ stundendaten|tojson|default('[]', true) }}
+        var kmdaten = {{ kmdaten|tojson|default('[]', true) }}
+        var terminabsagendaten = {{ terminabsagendaten|tojson|default('[]', true) }}
+    </script>
+    <script>
+        function erstelleDiagramm(canvasId, label, daten, backgroundColor, borderColor, maxTicks) {
+            var ctx = document.getElementById(canvasId).getContext('2d');
+            return new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                    datasets: [{
+                        label: label,
+                        data: daten,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: 1
                     }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                suggestedMax: maxTicks
+                            }
+                        }]
+                    }
                 }
-            }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            erstelleDiagramm('stundenChart', 'Stundenzahl', stundendaten, 'rgba(255, 159, 64, 0.2)', 'rgba(255, 159, 64, 1)', 50);
+            erstelleDiagramm('kilometerChart', 'Kilometeranzahl', kmdaten, 'rgba(0, 128, 0, 0.2)', 'rgba(0, 128, 0, 1)', 500);
+            erstelleDiagramm('terminAbsagenChart', 'Terminabsagen', terminabsagendaten, 'rgba(225, 0, 0, 0.2)', 'rgba(225, 0, 0, 1)', 14);
         });
 
-        var kilometerCtx = document.getElementById('kilometerChart').getContext('2d');
-        var kilometerChart = new Chart(kilometerCtx, {
-            type: 'bar',
-            data: {
-                labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-                datasets: [{
-                    label: 'Kilometeranzahl',
-                    data: kmdaten,
-                    backgroundColor: 'rgba(0, 128, 0, 0.2)',
-                    borderColor: 'rgba(0, 128, 0, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            suggestedMax: 12000 // Maximalwert an die Daten anpassen
-                        }
-                    }]
-                }
-            }
-        });
-        var terminAbsagenCtx = document.getElementById('terminAbsagenChart').getContext('2d');
-        var terminAbsagenChart = new Chart(terminAbsagenCtx, {
-            type: 'bar',
-            data: {
-                labels: ['','Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-                datasets: [{
-                    label: 'Terminabsagen',
-                    data: terminabsagendaten,
-                    backgroundColor: 'rgba(225, 0, 0, 0.2)',
-                    borderColor: 'rgba(225, 0, 0, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            suggestedMax: 14 // Maximalwert an die Daten anpassen
-                        }
-                    }]
-                }
-            }
-        });
-    });
-</script>
+    </script>
 
 
-<script>
-    window.onload = function() {
-        // Überprüfen, ob Nachrichten vorhanden sind
-        {% if get_flashed_messages() %}
-        let modal = document.getElementById("flashModal");
-        let span = document.getElementsByClassName("close")[0];
+    <script>
+        window.onload = function() {
+            // Überprüfen, ob Nachrichten vorhanden sind
+            {%if get_flashed_messages() %}
+            let modal = document.getElementById("flashModal");
+            let span = document.getElementsByClassName("close")[0];
 
-        // Modal anzeigen
-        modal.style.display = "block";
+            // Modal anzeigen
+            modal.style.display = "block";
 
-        // Schließen, wenn das "X" geklickt wird
-        span.onclick = function() {
-            modal.style.display = "none";
-        };
-
-        // Schließen, wenn außerhalb des Modals geklickt wird
-        window.onclick = function(event) {
-            if (event.target == modal) {
+            // Schließen, wenn das "X" geklickt wird
+            span.onclick = function () {
                 modal.style.display = "none";
-            }
-        };
-        {% endif %}
-</script>
-<script>
-function exportAllTablesToCSV(filename) {
-    var csv = [];
-    var tables = document.querySelectorAll("table");
+            };
 
-    tables.forEach(function(table) {
-        var rows = table.querySelectorAll("tr");
+            // Schließen, wenn außerhalb des Modals geklickt wird
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            };
+            {%endif %}
+        }
+    </script>
+    <script>
+    function exportAllTablesToCSV(filename) {
+        var csv = [];
+        var tables = document.querySelectorAll("table");
 
-        rows.forEach(function(row) {
-            var rowData = [];
-            var cols = row.querySelectorAll("td, th");
+        tables.forEach(function(table) {
+            var rows = table.querySelectorAll("tr");
 
-            cols.forEach(function(col) {
-                rowData.push('"' + col.innerText + '"');
+            rows.forEach(function(row) {
+                var rowData = [];
+                var cols = row.querySelectorAll("td, th");
+
+                cols.forEach(function(col) {
+                    rowData.push('"' + col.innerText + '"');
+                });
+
+                csv.push(rowData.join(","));
             });
 
-            csv.push(rowData.join(","));
+            // Fügt eine leere Zeile zwischen Tabellen hinzu
+            csv.push("");
         });
-
-        // Fügt eine leere Zeile zwischen Tabellen hinzu
+        // Exportieren der Diagrammdaten als zusätzliche "Tabellen"
+        csv.push("Stundendaten");
+        csv.push(stundendaten.join(","));
         csv.push("");
-    });
-    // Exportieren der Diagrammdaten als zusätzliche "Tabellen"
-    csv.push("Stundendaten");
-    csv.push(stundendaten.join(","));
-    csv.push("");
 
-    csv.push("Kilometerdaten");
-    csv.push(kmdaten.join(","));
-    csv.push("");
+        csv.push("Kilometerdaten");
+        csv.push(kmdaten.join(","));
+        csv.push("");
 
-    csv.push("Terminabsagendaten");
-    csv.push(terminabsagendaten.join(","));
-    csv.push("");
+        csv.push("Terminabsagendaten");
+        csv.push(terminabsagendaten.join(","));
+        csv.push("");
 
-    // Erstellen Sie einen Link und starten Sie den Download
-    var csvString = csv.join("\n");
-    var link = document.createElement("a");
-    link.style.display = 'none';
-    link.setAttribute('target', '_blank');
-    link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString));
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
+        // Erstellen Sie einen Link und starten Sie den Download
+        var csvString = csv.join("\n");
+        var link = document.createElement("a");
+        link.style.display = 'none';
+        link.setAttribute('target', '_blank');
+        link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString));
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    </script>
+    <script type="text/javascript">
+        document.getElementById('exportButton').addEventListener('click', function (event) {
+            event.preventDefault();
+            exportAllTablesToCSV('reporting_dashboard.csv', {{ stundendaten }}, {{ kmdaten }}, {{ terminabsagendaten}});
+        });
+    </script>
+</body>
 
-document.getElementById('exportButton').addEventListener('click', function () {
-    exportAllTablesToCSV('gesamteSeite.csv', {{ stundendaten|tojson }}, {{ kmdaten|tojson }}, {{ terminabsagendaten|tojson }}););
-});
-</script>
 
 
 </html>

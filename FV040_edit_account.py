@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash
+from flask import Blueprint, request, render_template, redirect, url_for, flash, session
 from db_query import edit_account, get_person_data, get_current_person, get_new_person, save_change_log
 from FV020_create_account import is_valid_phone, is_valid_date
 
@@ -7,8 +7,10 @@ edit_account_blueprint = Blueprint('edit_account', __name__)
 
 @edit_account_blueprint.route('/edit_account/<int:person_id>', methods=['GET', 'POST'])
 def edit_account(person_id):
+
     # account zustand vor änderung speichern
     current_person = get_current_person(person_id)
+    person = session.get('user_id')
 
     person_data_list = get_person_data(person_id)
     person_data = person_data_list[0]
@@ -49,6 +51,7 @@ def edit_account(person_id):
             return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
                                lastname=lastname, birthday=birthday, qualification=qualification, address=address,
                                email=email, phone=phone, locked=locked, role=role)
+
         if not is_valid_phone(phone):
             flash('Die Telefonnummer ist ungültig.')
             return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
@@ -57,18 +60,20 @@ def edit_account(person_id):
 
         # Account-Daten aktualisieren
         edit_account(person_id, firstname, lastname, birthday, qualification, address, phone)
+
         # änderungen in protokoll speichern
         new_person = get_new_person(person_id)
-        save_change_log(session['user_id'], "Account", current_person, new_person)
+        save_change_log(person, "Account", current_person, new_person)
 
         # Rückleitung zur vorherigen Seite
-        # weiß noch nicht wie das implementiert werden soll
-        # vllt so:
-        if request.method == 'GET':
-            return_url = request.args.get('return_url', '/default_return_page')
-            return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
-                               lastname=lastname, birthday=birthday, qualification=qualification, address=address,
-                               email=email, phone=phone, locked=locked, role=role, return_url=return_url)
+        return redirect(session.pop('url', None))
+
+        # rückleitung: weiß noch nicht wie das implementiert werden soll
+        # if request.method == 'GET':
+            # return_url = request.args.get('return_url', '/default_return_page')
+            # return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
+                               # lastname=lastname, birthday=birthday, qualification=qualification, address=address,
+                               # email=email, phone=phone, locked=locked, role=role, return_url=return_url)
 
     return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
                                lastname=lastname, birthday=birthday, qualification=qualification, address=address,

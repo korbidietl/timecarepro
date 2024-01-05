@@ -530,10 +530,10 @@ def is_booked_client(client_id, monat, jahr):
 def client_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT id, nachname FROM klient")
+    cursor.execute("SELECT id, vorname, nachname FROM klient")
     items = []
-    for (ID, nachname) in cursor.fetchall():
-        items.append({'id': ID, 'nachname': nachname})
+    for (ID, vorname, nachname) in cursor.fetchall():
+        items.append({'id': ID, 'vorname': vorname, 'nachname': nachname})
     connection.close()
     return items
 
@@ -901,7 +901,7 @@ def get_report_zeiteintrag(date_from, date_to):
             CONCAT(Mitarbeiter.vorname, ' ', Mitarbeiter.nachname) AS Mitarbeiter,
             CONCAT(Sachbearbeiter.vorname, ' ', Sachbearbeiter.nachname) AS Sachbearbeiter, 
             CONCAT(klient.vorname, ' ', klient.nachname) AS Klient,
-            SUM(TIMESTAMPDIFF(HOUR, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden,
+            TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit) * 60)), '%H:%i') AS geleistete_stunden,
             SUM(fahrt.kilometer) AS gefahrene_kilometer,
             SUM(CASE WHEN fahrt.abrechenbar THEN fahrt.kilometer ELSE 0 END) AS abrechenbare_km,
             SUM(CASE WHEN fahrt.abrechenbar THEN 0 ELSE fahrt.kilometer END) AS nicht_abrechenbare_km,
@@ -924,10 +924,10 @@ def get_report_zeiteintrag(date_from, date_to):
 
 
 # /FGF010/
-def get_report_mitarbeiter(date_from, date_to):
+def get_report_mitarbeiter(date_from, date_to, client_id=None, mitarbeiter_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("""
+    query = """
         SELECT
             Mitarbeiter.id, 
             Mitarbeiter.nachname,
@@ -944,16 +944,28 @@ def get_report_mitarbeiter(date_from, date_to):
         WHERE
             zeiteintrag.start_zeit >= %s AND
             zeiteintrag.start_zeit < %s
-        GROUP BY Mitarbeiter.ID
-    """, (date_from, date_to))
-    return cursor.fetchone()
+        GROUP BY Mitarbeiter.ID 
+        ORDER BY Mitarbeiter.ID ASC
+    """
+    params = [date_from, date_to]
+
+    if mitarbeiter_id:
+        query += " AND Mitarbeiter.id = %s"
+        params.append(client_id)
+
+    if client_id:
+        query += " AND zeiteintrag.klient_id = %s"
+        params.append(mitarbeiter_id)
+
+    cursor.execute(query, tuple(params))
+    return cursor.fetchall()
 
 
 # /FGF010/
-def get_report_klient(date_from, date_to):
+def get_report_klient(date_from, date_to, client_id=None, mitarbeiter_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("""
+    query = """
         SELECT
             klient.id, 
             klient.nachname,
@@ -965,14 +977,26 @@ def get_report_klient(date_from, date_to):
             SUM(CASE WHEN zeiteintrag.Absage THEN 1 ELSE 0 END) AS Absage
         FROM
             zeiteintrag
-        INNER JOIN klient ON zeiteintrag.mitarbeiter_id = klient.id
+        INNER JOIN klient ON zeiteintrag.klient_ID = klient.id
         LEFT JOIN fahrt ON zeiteintrag.id = fahrt.zeiteintrag_id
         WHERE
             zeiteintrag.start_zeit >= %s AND
             zeiteintrag.start_zeit < %s
-        GROUP BY klient.ID
-    """, (date_from, date_to))
-    return cursor.fetchone()
+        GROUP BY klient.id
+        ORDER BY klient.id ASC 
+    """
+    params = [date_from, date_to]
+
+    if client_id:
+        query += " AND klient.id = %s"
+        params.append(client_id)
+
+    if mitarbeiter_id:
+        query += " AND zeiteintrag.mitarbeiter_id = %s"
+        params.append(mitarbeiter_id)
+
+    cursor.execute(query, tuple(params))
+    return cursor.fetchall()
 
 
 # /FGF010/
@@ -988,7 +1012,7 @@ def sum_mitarbeiter(month, year):
     return len(mitarbeiter_ids)
 
 
-# /FGF010/
+# /FMOF010/
 def sum_hours_klient(month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -1038,6 +1062,58 @@ def sum_hours_mitarbeiter_zeitspanne(start_date, end_date):
 
 
 # /FGF010/
+def monatliche_gesamtstunden(start_date, end_date, mitarbeiter_id=None, klient_id=None):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    query = """
+    SELECT EXTRACT(MONTH FROM z.start_zeit) AS Monat, 
+        COALESCE(
+           ROUND(
+                SUM(
+                    HOUR(TIMEDIFF(z.end_zeit, z.start_zeit)) + 
+                    MINUTE(TIMEDIFF(z.end_zeit, z.start_zeit)) / 60.0
+                ), 2
+            ), 0.0
+        ) AS gesamtstunden
+    FROM zeiteintrag z
+    """
+
+    where_clauses = ["z.start_zeit BETWEEN %s AND %s"]
+    params = [start_date, end_date]
+
+    if mitarbeiter_id:
+        where_clauses.append("z.mitarbeiter_ID = %s")
+        params.append(mitarbeiter_id)
+
+    if klient_id:
+        where_clauses.append("z.Klient_ID = %s")
+        params.append(klient_id)
+
+    query += " WHERE " + " AND ".join(where_clauses)
+    query += " GROUP BY Monat ORDER BY Monat"
+
+    cursor.execute(query, tuple(params))
+    results = cursor.fetchall()
+
+    # Erstellen einer Liste mit 12 Elementen für jeden Monat des Jahres
+    monatliche_stunden = [0.0] * 12
+    for row in results:
+        monat, stunden = row
+        monatliche_stunden[monat - 1] = stunden  # Monate sind 1-basiert, Listen sind 0-basiert
+
+    # Werte außerhalb übergebenen Zeitraum 0.0
+    start_monat = start_date.month
+    end_monat = end_date.month
+    for i in range(0, start_monat - 1):
+        monatliche_stunden[i] = 0.0
+    for i in range(end_monat, 12):
+        monatliche_stunden[i] = 0.0
+
+    return monatliche_stunden
+
+
+# /FGF010/
 def sum_absage_klient(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -1065,6 +1141,52 @@ def sum_absage_mitarbeiter(start_date, end_date):
         ORDER BY p.ID
     """, (start_date, end_date))
     return cursor.fetchall()
+
+
+# /FGF010/
+def sum_absagen_monatlich(start_date, end_date, mitarbeiter_id=None, klient_id=None):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    query = """
+    SELECT EXTRACT(MONTH FROM z.start_zeit) AS Monat, COUNT(z.ID) AS anzahl_Absagen
+    FROM zeiteintrag z 
+    WHERE z.absage = 1
+    AND z.start_zeit BETWEEN %s AND %s
+    """
+
+    conditions = []
+    parameters = [start_date, end_date]
+
+    if mitarbeiter_id:
+        conditions.append("z.mitarbeiter_ID = %s")
+        parameters.append(mitarbeiter_id)
+
+    if klient_id:
+        conditions.append("z.Klient_ID = %s")
+        parameters.append(klient_id)
+
+    if conditions:
+        query += " AND " + " AND ".join(conditions)
+
+    query += " GROUP BY Monat ORDER BY Monat"
+
+    cursor.execute(query, tuple(parameters))
+
+    absagen_pro_monat = [0] * 12  # Initialisiere eine Liste mit 12 Elementen für jeden Monat
+    for row in cursor:
+        monat_index = row[0] - 1  # Der Monatindex (Januar=0, Februar=1, ...)
+        absagen_pro_monat[monat_index] = row[1]
+
+    # Werte außerhalb übergebenen Zeitraum 0.0
+    start_monat = start_date.month
+    end_monat = end_date.month
+    for i in range(0, start_monat - 1):
+        absagen_pro_monat[i] = 0
+    for i in range(end_monat, 12):
+        absagen_pro_monat[i] = 0
+
+    return absagen_pro_monat
 
 
 # /FGF010/
@@ -1104,18 +1226,67 @@ def sum_km_mitarbeiter(start_date, end_date):
 
 
 # /FGF010/
+def sum_km_monatlich(start_date, end_date, mitarbeiter_id=None, klient_id=None):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    query = """
+    SELECT EXTRACT(MONTH FROM z.start_zeit) AS Monat,
+           SUM(f.kilometer) AS KM
+    FROM zeiteintrag z
+    JOIN fahrt f ON z.ID = f.zeiteintrag_ID
+    WHERE z.start_zeit BETWEEN %s AND %s
+    """
+
+    conditions = []
+    parameters = [start_date, end_date]
+
+    if mitarbeiter_id:
+        conditions.append("z.mitarbeiter_ID = %s")
+        parameters.append(mitarbeiter_id)
+
+    if klient_id:
+        conditions.append("z.Klient_ID = %s")
+        parameters.append(klient_id)
+
+    if conditions:
+        query += " AND " + " AND ".join(conditions)
+
+    query += " GROUP BY Monat ORDER BY Monat"
+
+    cursor.execute(query, tuple(parameters))
+
+    km_pro_monat = [0 for _ in range(12)]
+
+    for row in cursor:
+        monat_index = row[0] - 1
+        km_pro_monat[monat_index] = row[1] if row[1] else 0
+
+    # Werte außerhalb übergebenen Zeitraum 0.0
+    start_monat = start_date.month
+    end_monat = end_date.month
+    for i in range(0, start_monat - 1):
+        km_pro_monat[i] = 0
+    for i in range(end_monat, 12):
+        km_pro_monat[i] = 0
+
+    return km_pro_monat
+
+
+# /FGF010/
 def mitarbeiter_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT id, nachname FROM person WHERE rolle LIKE '%%Mitarbeiter%%'")
+    cursor.execute("SELECT id, vorname, nachname FROM person WHERE rolle LIKE '%%Mitarbeiter%%'")
     items = []
-    for (ID, nachname) in cursor.fetchall():
-        items.append({'id': ID, 'nachname': nachname})
+    for (ID, vorname, nachname) in cursor.fetchall():
+        items.append({'id': ID, 'vorname': vorname, 'nachname': nachname})
     connection.close()
     return items
 
 
-# /FGF010/
+# /FV070/
+# /FV090/
 def kostentraeger_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()

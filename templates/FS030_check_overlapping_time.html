@@ -23,15 +23,17 @@
                     </tr>
                 </thead>
                 <tbody>
+                {% for entry in time_entries %}
                     <tr>
-                        <td>{{ zeiteintrag.id }}</td>
-                        <td>{{ zeiteintrag.datum }}</td>
-                        <td>{{ zeiteintrag.start }}</td>
-                        <td>{{ zeiteintrag.ende }}</td>
-                        <td>{{ zeiteintrag.beschreibung }}</td>
-                        <td>{{ zeiteintrag.mitarbeiter }}</td>
-                        <td>{{ zeiteintrag.klient }}</td>
+                        <td>{{ overlapping_entries[0] }}</td>
+                        <td>{{ overlapping_entries[1] }}</td>
+                        <td>{{ overlapping_entries[2] }}</td>
+                        <td>{{ overlapping_entries[3] }}</td>
+                        <td>{{ overlapping_entries[4] }}</td>
+                        <td>{{ overlapping_entries[5] }}</td>
+                        <td>{{ overlapping_entries[6] }}</td>
                     </tr>
+                {% endfor %}}
                 </tbody>
             </table>
             <div class="form-actions">

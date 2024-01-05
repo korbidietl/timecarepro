@@ -1,10 +1,11 @@
 from datetime import datetime
+from decimal import Decimal
 
 from flask import Blueprint, render_template, url_for, request, flash, redirect
 from db_query import mitarbeiter_dropdown, client_dropdown, sum_mitarbeiter, sum_hours_mitarbeiter_zeitspanne, \
     sum_hours_klient_zeitspanne, \
     sum_absage_mitarbeiter, sum_absage_klient, sum_km_mitarbeiter, sum_km_klient, get_report_zeiteintrag, \
-    get_report_mitarbeiter, get_report_klient
+    get_report_mitarbeiter, get_report_klient, monatliche_gesamtstunden, sum_absagen_monatlich, sum_km_monatlich
 
 reporting_dachboard_blueprint = Blueprint('view_reporting_dashboard', __name__)
 
@@ -18,34 +19,45 @@ def reporting_dashboard():
     client = client_dropdown()
     cl = {'klient': client}
 
-    # Default Datumswerte
+    # Default Werten aktuelles Monat
     date_format = "%Y-%m-%d"
     heute = datetime.now()
     erster_dieses_monats = datetime(heute.year, heute.month, 1)
-
     von = erster_dieses_monats.strftime(date_format)
     bis = heute.strftime(date_format)
 
+
+    # Default Werte Jahr
+    jahr = datetime.now().year
+    start = datetime(jahr, 1, 1)
+    end = datetime(jahr, 12, 31)
+    start_datum = start.strftime(date_format)
+    end_datum = end.strftime(date_format)
+
     if request.method == 'POST':
         # Filter auslesen
-        von = request.form.get('von')
-        bis = request.form.get('bis')
+        von_ = request.form.get('von')
+        bis_ = request.form.get('bis')
         mitarbeiter = request.form.get('mitarbeiter')
         klient = request.form.get('klient')
+
+        print(klient)
+        print(mitarbeiter)
+        print(von_)
 
         # Überprüfung Eingaben
         valid = True
 
         try:
-            if von:
-                datetime.strptime(von, date_format)
+            if von_:
+                datetime.strptime(von_, date_format)
         except ValueError:
             flash(f"Eingabe in Feld 'von' ungültig.", "error")
             valid = False
 
         try:
-            if bis:
-                datetime.strptime(bis, date_format)
+            if bis_:
+                datetime.strptime(bis_, date_format)
         except ValueError:
             flash(f"Eingabe in Feld 'bis' ungültig.", "error")
             valid = False
@@ -63,31 +75,65 @@ def reporting_dashboard():
             return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
 
         # Auswerten des Datums zur weiterverwendung
-        if von:
-            von_date = datetime.strptime(von, "%d.%m.%Y").strftime('%Y-%m-%d')
+        if von_:
+            von_date = von_
+            start_datum = von_date
         else:
             von_date = von
 
-        if bis:
-            bis_date = datetime.strptime(bis, "%d.%m.%Y").strftime('%Y-%m-%d')
+        if bis_:
+            bis_date = bis_
+            end_datum = bis_date
         else:
             bis_date = bis
 
-        # Abruf mit Filter Werten
-        von_formatiert, bis_formatiert = eingabe_formatieren(von, bis)
-        kl_tabelle = klienten_tabelle(von_formatiert, bis_formatiert, klient)
-        ma_tabelle = mitarbeiter_tabelle(von_formatiert, bis_formatiert, mitarbeiter)
-        ze_tabelle = get_report_zeiteintrag(von_formatiert, bis_formatiert)
+        # Umwandlung Filter Werte
+        von_formatiert, bis_formatiert = eingabe_formatieren(von_date, bis_date)
+        start_datum_formatiert, end_datum_formatiert = eingabe_formatieren(start_datum, end_datum)
 
-        return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
+        # Ausgabe Tabellen
+        kl_tabelle_gesamt = klienten_tabelle(von_formatiert, bis_formatiert, klient)
+        klienten_liste = get_report_klient(von_formatiert, bis_formatiert, klient, mitarbeiter)
+        ma_tabelle_gesamt = mitarbeiter_tabelle(von_formatiert, bis_formatiert, mitarbeiter)
+        mitarbeiter_liste = get_report_mitarbeiter(von_formatiert, bis_formatiert, klient, mitarbeiter)
+        zeiteintraege_liste = get_report_zeiteintrag(von_formatiert, bis_formatiert)
 
-    # Abruf mit Default Werten
+        # Ausgabe Diagramme
+        maanzahl = mitarbeiter_anzahl()
+        stunden_diagramm = monatliche_gesamtstunden(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
+        absagen_diagramm = sum_absagen_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
+        km_diagramm = sum_km_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
+
+        return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, klienten_daten=klienten_liste,
+                               mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste,
+                               klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt,
+                               stundendaten=stunden_diagramm,
+                               terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
+
+    # Umwandlung Default Werte
     von_formatiert, bis_formatiert = eingabe_formatieren(von, bis)
-    kl_tabelle = klienten_tabelle(von_formatiert, bis_formatiert, None)
-    ma_tabelle = mitarbeiter_tabelle(von_formatiert, bis_formatiert, None)
-    ze_tabelle = get_report_zeiteintrag(von_formatiert, bis_formatiert)
+    start_datum_formatiert, end_datum_formatiert = eingabe_formatieren(start_datum, end_datum
+                                                                       )
+    # Ausgaben Tabellen
+    kl_tabelle_gesamt = klienten_tabelle(von_formatiert, bis_formatiert, None)
+    klienten_liste = get_report_klient(von_formatiert, bis_formatiert)
+    ma_tabelle_gesamt = mitarbeiter_tabelle(von_formatiert, bis_formatiert, None)
+    mitarbeiter_liste = get_report_mitarbeiter(von_formatiert, bis_formatiert)
+    zeiteintraege_liste = get_report_zeiteintrag(von_formatiert, bis_formatiert)
 
-    return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
+    # Ausgabe Diagramme
+    maanzahl = mitarbeiter_anzahl()
+    stunden_diagramm = monatliche_gesamtstunden(start_datum_formatiert, end_datum_formatiert)
+    stundendaten = [float(d) if isinstance(d, Decimal) else d for d in stunden_diagramm]
+    absagen_diagramm = sum_absagen_monatlich(start_datum_formatiert, end_datum_formatiert)
+    km_diagramm = sum_km_monatlich(start_datum_formatiert, end_datum_formatiert)
+
+
+    return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, klienten_daten=klienten_liste,
+                           mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste,
+                           klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt,
+                           stundendaten=stundendaten,
+                           terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
 
 
 def eingabe_formatieren(von, bis):
@@ -162,10 +208,7 @@ def klienten_tabelle(von, bis, client_id):
     else:
         klient_km_total, klient_km_abrechenbar, klient_km_nicht_abrechenbar = km_addieren(klkm)
 
-    # Tabellen aufruf
-    klienten_liste = get_report_klient(von, bis)
-
-    return klienten_liste, klient_km_total, klient_km_abrechenbar, klient_km_nicht_abrechenbar, klient_absagen, klient_stunden
+    return klient_km_total, klient_km_abrechenbar, klient_km_nicht_abrechenbar, klient_absagen, klient_stunden
 
 
 def mitarbeiter_tabelle(von, bis, user_id):
@@ -194,25 +237,7 @@ def mitarbeiter_tabelle(von, bis, user_id):
     else:
         mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar = km_addieren(makm)
 
-    # Tabellen Aufruf
-    mitarbeiter_liste = get_report_mitarbeiter(von, bis)
-
-    return mitarbeiter_liste, mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar, mitarbeiter_absagen, mitarbeiter_stunden
-
-
-def get_stundendaten(von, bis):
-    stunden_liste = []
-    return stunden_liste
-
-
-def get_kmdaten(von, bis):
-    km_liste = []
-    return km_liste
-
-
-def get_tabsagen(von, bis):
-    absagen_liste = []
-    return absagen_liste
+    return mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar, mitarbeiter_absagen, mitarbeiter_stunden
 
 
 def mitarbeiter_anzahl():
