@@ -165,25 +165,26 @@
 
         window.onload = function() {
             // Überprüfen, ob Nachrichten vorhanden sind
-            {% if get_flashed_messages() %}
-                let modal = document.getElementById("flashModal");
-                let span = document.getElementsByClassName("close")[0];
+            {%if get_flashed_messages() %}
+            let modal = document.getElementById("flashModal");
+            let span = document.getElementsByClassName("close")[0];
 
-                // Modal anzeigen
-                modal.style.display = "block";
+            // Modal anzeigen
+            modal.style.display = "block";
 
-                // Schließen, wenn das "X" geklickt wird
-                span.onclick = function() {
+            // Schließen, wenn das "X" geklickt wird
+            span.onclick = function () {
+                modal.style.display = "none";
+            };
+
+            // Schließen, wenn außerhalb des Modals geklickt wird
+            window.onclick = function (event) {
+                if (event.target == modal) {
                     modal.style.display = "none";
-                };
-
-                // Schließen, wenn außerhalb des Modals geklickt wird
-                window.onclick = function(event) {
-                    if (event.target == modal) {
-                        modal.style.display = "none";
-                    }
-                };
-            {% endif %}
+                }
+            };
+            {%endif %}
+        }
     </script>
 </body>
 </html>
