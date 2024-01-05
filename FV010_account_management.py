@@ -6,6 +6,9 @@ account_management_blueprint = Blueprint("account_management", __name__)
 
 @account_management_blueprint.route('/account_management', methods=['GET', 'POST'])
 def account_management():
+    # session speichern für rückleitung
+    session['url'] = url_for('account_management.account_management')
+
     # accounts = get_all_accounts()
     steuerbueros = get_steuerbuero_table()
     sachbearbeiter = get_sachbearbeiter_table()
