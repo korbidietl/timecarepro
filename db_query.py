@@ -957,8 +957,6 @@ def get_report_mitarbeiter(date_from, date_to, client_id=None, mitarbeiter_id=No
         query += " AND zeiteintrag.klient_id = %s"
         params.append(mitarbeiter_id)
 
-
-
     cursor.execute(query, tuple(params))
     return cursor.fetchall()
 
@@ -1104,6 +1102,14 @@ def monatliche_gesamtstunden(start_date, end_date, mitarbeiter_id=None, klient_i
         monat, stunden = row
         monatliche_stunden[monat - 1] = stunden  # Monate sind 1-basiert, Listen sind 0-basiert
 
+    # Werte außerhalb übergebenen Zeitraum 0.0
+    start_monat = start_date.month
+    end_monat = end_date.month
+    for i in range(0, start_monat - 1):
+        monatliche_stunden[i] = 0.0
+    for i in range(end_monat, 12):
+        monatliche_stunden[i] = 0.0
+
     return monatliche_stunden
 
 
@@ -1171,6 +1177,14 @@ def sum_absagen_monatlich(start_date, end_date, mitarbeiter_id=None, klient_id=N
     for row in cursor:
         monat_index = row[0] - 1  # Der Monatindex (Januar=0, Februar=1, ...)
         absagen_pro_monat[monat_index] = row[1]
+
+    # Werte außerhalb übergebenen Zeitraum 0.0
+    start_monat = start_date.month
+    end_monat = end_date.month
+    for i in range(0, start_monat - 1):
+        absagen_pro_monat[i] = 0
+    for i in range(end_monat, 12):
+        absagen_pro_monat[i] = 0
 
     return absagen_pro_monat
 
@@ -1247,6 +1261,14 @@ def sum_km_monatlich(start_date, end_date, mitarbeiter_id=None, klient_id=None):
     for row in cursor:
         monat_index = row[0] - 1
         km_pro_monat[monat_index] = row[1] if row[1] else 0
+
+    # Werte außerhalb übergebenen Zeitraum 0.0
+    start_monat = start_date.month
+    end_monat = end_date.month
+    for i in range(0, start_monat - 1):
+        km_pro_monat[i] = 0
+    for i in range(end_monat, 12):
+        km_pro_monat[i] = 0
 
     return km_pro_monat
 

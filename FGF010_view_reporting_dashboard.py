@@ -25,14 +25,15 @@ def reporting_dashboard():
     erster_dieses_monats = datetime(heute.year, heute.month, 1)
     von = erster_dieses_monats.strftime(date_format)
     bis = heute.strftime(date_format)
-    von_formatiert, bis_formatiert = eingabe_formatieren(von, bis)
+
 
     # Default Werte Jahr
     jahr = datetime.now().year
-    start_datum = datetime(jahr, 1, 1)
-    end_datum = datetime(jahr, 12, 31)
-    start_datum_formatiert, end_datum_formatiert = eingabe_formatieren(start_datum.strftime(date_format),
-                                                                       end_datum.strftime(date_format))
+    start = datetime(jahr, 1, 1)
+    end = datetime(jahr, 12, 31)
+    start_datum = start.strftime(date_format)
+    end_datum = end.strftime(date_format)
+
     if request.method == 'POST':
         # Filter auslesen
         von_ = request.form.get('von')
@@ -40,7 +41,7 @@ def reporting_dashboard():
         mitarbeiter = request.form.get('mitarbeiter')
         klient = request.form.get('klient')
 
-        print (klient)
+        print(klient)
         print(mitarbeiter)
         print(von_)
 
@@ -75,17 +76,20 @@ def reporting_dashboard():
 
         # Auswerten des Datums zur weiterverwendung
         if von_:
-            von_date = datetime.strptime(von_, "%Y-%m-%d")
+            von_date = von_
+            start_datum = von_date
         else:
             von_date = von
 
         if bis_:
-            bis_date = datetime.strptime(bis_, "%Y-%m-%d")
+            bis_date = bis_
+            end_datum = bis_date
         else:
             bis_date = bis
 
-        # Abruf mit Filter Werten
+        # Umwandlung Filter Werte
         von_formatiert, bis_formatiert = eingabe_formatieren(von_date, bis_date)
+        start_datum_formatiert, end_datum_formatiert = eingabe_formatieren(start_datum, end_datum)
 
         # Ausgabe Tabellen
         kl_tabelle_gesamt = klienten_tabelle(von_formatiert, bis_formatiert, klient)
@@ -96,30 +100,39 @@ def reporting_dashboard():
 
         # Ausgabe Diagramme
         maanzahl = mitarbeiter_anzahl()
-        #stunden_diagramm = monatliche_gesamtstunden(von_formatiert, bis_formatiert, mitarbeiter, klient)
-        #absagen_diagramm = sum_absagen_monatlich(von_formatiert, bis_formatiert, mitarbeiter, klient)
-        #km_diagramm = sum_km_monatlich(von_formatiert, bis_formatiert, mitarbeiter, klient)
+        stunden_diagramm = monatliche_gesamtstunden(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
+        absagen_diagramm = sum_absagen_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
+        km_diagramm = sum_km_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
 
         return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, klienten_daten=klienten_liste,
-                           mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste, klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt, stundendaten=stunden_diagramm,
-                           tabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
+                               mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste,
+                               klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt,
+                               stundendaten=stunden_diagramm,
+                               terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
 
+    # Umwandlung Default Werte
+    von_formatiert, bis_formatiert = eingabe_formatieren(von, bis)
+    start_datum_formatiert, end_datum_formatiert = eingabe_formatieren(start_datum, end_datum
+                                                                       )
+    # Ausgaben Tabellen
     kl_tabelle_gesamt = klienten_tabelle(von_formatiert, bis_formatiert, None)
     klienten_liste = get_report_klient(von_formatiert, bis_formatiert)
     ma_tabelle_gesamt = mitarbeiter_tabelle(von_formatiert, bis_formatiert, None)
     mitarbeiter_liste = get_report_mitarbeiter(von_formatiert, bis_formatiert)
     zeiteintraege_liste = get_report_zeiteintrag(von_formatiert, bis_formatiert)
+
+    # Ausgabe Diagramme
     maanzahl = mitarbeiter_anzahl()
     stunden_diagramm = monatliche_gesamtstunden(start_datum_formatiert, end_datum_formatiert)
     stundendaten = [float(d) if isinstance(d, Decimal) else d for d in stunden_diagramm]
     absagen_diagramm = sum_absagen_monatlich(start_datum_formatiert, end_datum_formatiert)
     km_diagramm = sum_km_monatlich(start_datum_formatiert, end_datum_formatiert)
 
-    print(stunden_diagramm)
-    print(stundendaten)
 
     return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, klienten_daten=klienten_liste,
-                           mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste, klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt, stundendaten=stundendaten,
+                           mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste,
+                           klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt,
+                           stundendaten=stundendaten,
                            terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
 
 
@@ -223,7 +236,6 @@ def mitarbeiter_tabelle(von, bis, user_id):
             filtered_data_k)
     else:
         mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar = km_addieren(makm)
-
 
     return mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar, mitarbeiter_absagen, mitarbeiter_stunden
 
