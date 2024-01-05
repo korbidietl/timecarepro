@@ -66,24 +66,27 @@
                                     </form>
                                 </td>
                             {% endif %}
-                            <td>
-                                <form action="{{url_for('view_time_entries.view_time_entries', person_id = mitarbeiter[0])}}" method="post">
-                                    <button type="submit">Zeiteintrag ansehen</button>
-                                </form>
-                            </td>
+                                <td>
+                                    <form action="{{url_for('view_time_entries.view_time_entries', person_id = mitarbeiter[0])}}" method="post">
+                                        <button type="submit">Zeiteintrag ansehen</button>
+                                    </form>
+                                </td>
                             {% if user_role == 'Verwaltung' %}
                                 <td>
-                                    <form action="{{url_for('edit_account.edit_account', person_id=mitarbeiter[0])}}" method="post">
+                                    <form action="{{ url_for('edit_account.edit_account', person_id=mitarbeiter[0]) }}" method="post">
                                         <button type="submit">Bearbeiten</button>
                                     </form>
                                 </td>
                                 <td>
+                                {% if mitarbeiter[5] == 0 %}
                                     <form action="{{ url_for('account_lock.account_lock', person_id=mitarbeiter[0]) }}" method="post">
-                                        <button id="lock_mitarbeiter">{{ 'Sperren' if mitarbeiter[5] == 0 else 'Entsperren' }}</button>
+                                        <button id="lock_mitarbeiter">Sperren</button>
                                     </form>
-                                </td>
-                                <td>
-
+                                {% else %}
+                                    <form action="{{ url_for('account_unlock.account_unlock', person_id=mitarbeiter[0]) }}" method="post">
+                                        <button id="unlock_mitarbeiter">Entsperren</button>
+                                    </form>
+                                {% endif %}
                                 </td>
                             {% endif %}
                         </tr>
