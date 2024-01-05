@@ -9,19 +9,23 @@
     {% include 'FAN020_navbar.html' %}
 
     <div class="table-form">
+
         <h2>Zeiteinträge deiner Klienten</h2>
 
-        <form action="/access_hours_km_clients" method="post">
-            <div class="form-group-table">
-                <label for="month">Monat:</label>
-                <select id="month" name="month">
-                    <!-- Optionen für Monate -->
-                </select>
+        <div class="form-row" style="justify-content: start;">
+            <h2 style="margin: 0; font-size: 1.5em; line-height: 1.2em;">Klient: {{client_name[0]}} {{client_name[1]}}</h2>
+        </div>
 
-                <label for="year">Jahr:</label>
-                <select id="year" name="year">
-                    <!-- Optionen für Jahre -->
-                </select>
+        <form action="{{ url_for('access_hours_km_clients.view_time_entries', client_id=client_id) }}" method="post">
+            <div class="form-group-table">
+                <label for="monat_jahr"></label>
+                        <select name="monat_jahr" id="monat_jahr">
+                            {% for kombination in kombinationen %}
+                            <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
+                                {{ kombination }}
+                            </option>
+                            {% endfor %}
+                        </select>
 
                 <button type="submit">Anzeigen</button>
                 <button onclick="exportTableToCSV()">
@@ -33,10 +37,8 @@
             </div>
         </form>
 
-        {% if error %}
-            <p>{{ error }}</p>
-        {% else %}
-            <table>
+        {% if kombinierte_liste %}
+            <table id="client_hours">
                 <thead>
                     <tr>
                         <th>Datum</th>
@@ -51,17 +53,29 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for entry in zeiteintrag %}
+                    {% for zeiteintrag, ueberschneidungs_status, booked_status, unterschrift in kombinierte_liste %}
                         <tr>
-                            <td>{{ entry.Datum }}</td>
-                            <td>{{ entry.Beschreibung }}</td>
-                            <td>{{ entry.Kilometer }}</td>
-                            <td>{{ entry.Anfang }}</td>
-                            <td>{{ entry.Ende }}</td>
-                            <td>{{ entry.Mitarbeiter }}</td>
-                            <td>{{ entry.Fachkraft_Hilfskraft }}</td>
-                            <td>{{ entry.Unterschrift_Klient }}</td>
-                            <td>{{ entry.Unterschrift_Mitarbeiter }}</td>
+                            <td>{{ zeiteintrag[1] }}</td>
+                            <td>{{ zeiteintrag[2] }}</td>
+                            <td>{{ zeiteintrag[3] }}</td>
+                            <td>{{ zeiteintrag[4] }}</td>
+                            <td>{{ zeiteintrag[5] }}</td>
+                            <td>{{ zeiteintrag[6] }}</td>
+                            <td>{{ zeiteintrag[7] }}</td>
+                            <td>
+                                {% if unterschrift[0] %}
+                                    <img src="data:image/png;base64,{{ unterschrift[0] }}" alt="Unterschrift Klient" width="150"/>
+                                {% else %}
+                                    Keine Unterschrift vorhanden
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if unterschrift[1] %}
+                                    <img src="data:image/png;base64,{{ unterschrift[1] }}" alt="Unterschrift Mitarbeiter" width="150"/>
+                                {% else %}
+                                    Keine Unterschrift vorhanden
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>

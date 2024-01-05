@@ -1190,23 +1190,23 @@ def delete_buchung(buchung_id):
 
 
 # /FSK010/
-def get_client_table_client_sb(person_id, month, year, client_id):
+def get_client_table_client_sb(client_id, person_id, month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
         SELECT 
             z.ID as id, 
-            DATE(z.end_zeit) as Datum, 
+            DATE_FORMAT(z.end_zeit, '%d.%m.%Y') as Datum, 
             z.beschreibung as Beschreibung, 
             SUM(f.kilometer) as Kilometer, 
-            TIME(z.start_zeit) as Anfang, 
-            TIME(z.end_zeit) as Ende, 
+            DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
+            DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende,
             CONCAT(p.vorname, ' ', p.nachname) as Mitarbeiter, 
             CASE WHEN z.fachkraft = 1 THEN 'Fachkraft' ELSE 'Hilfskraft' END as Fachkraft_Hilfskraft, 
-            IFNULL(CONVERT(IFNULL(CONVERT(z.unterschrift_klient USING utf8mb4), '') USING latin1), '') 
-            as Unterschrift_Klient, 
-            IFNULL(CONVERT(IFNULL(CONVERT(z.unterschrift_mitarbeiter USING utf8mb4), '') USING latin1), '') 
-            as Unterschrift_Mitarbeiter 
+            # IFNULL(CONVERT(IFNULL(CONVERT(z.unterschrift_klient USING utf8mb4), '') USING latin1), '') 
+            z.unterschrift_Klient as Unterschrift_Klient, 
+            # IFNULL(CONVERT(IFNULL(CONVERT(z.unterschrift_mitarbeiter USING utf8mb4), '') USING latin1), '') 
+            z.unterschrift_Mitarbeiter as Unterschrift_Mitarbeiter 
         FROM 
             klient k 
             LEFT JOIN zeiteintrag z ON k.ID = z.klient_id 
@@ -1214,16 +1214,17 @@ def get_client_table_client_sb(person_id, month, year, client_id):
             LEFT JOIN person p ON z.mitarbeiter_id = p.ID 
         WHERE 
             k.ID = %s AND 
-            k.fallverantwortung_ID = %s AND 
+            k.sachbearbeiter_ID = %s AND 
             MONTH(z.start_zeit) = %s AND 
             YEAR(z.start_zeit) = %s
         GROUP BY 
             z.ID, 
             p.ID
     """, (client_id, person_id, month, year))
-    client_table_data = cursor.fetchall()
+    result = cursor.fetchall()
     cursor.close()
-    return client_table_data
+    connection.close()
+    return result
 
 
 # Folgende Methoden sind nicht Teil des Pflichtenhefts, sind aber evtl. nützlich!
