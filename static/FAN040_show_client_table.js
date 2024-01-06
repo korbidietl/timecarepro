@@ -61,7 +61,11 @@
         function updateTable_k(data) {
             const userRole = document.getElementById('userRole').getAttribute('data-role');
             const tableContainer = document.getElementById("clients_table_container");
+            const noDataMessage = document.getElementById('no-clients-message');
             if (data.length > 0) {
+                if (noDataMessage) {
+                    noDataMessage.style.display = 'none';
+                }
                 let tableHTML = `<table>
                                     <thead>
                                         <tr>
@@ -110,6 +114,9 @@
                 tableHTML += `</tbody></table>`;
                 tableContainer.innerHTML = tableHTML;
             } else {
-                document.getElementById('no-clients-message').style.display = 'block';
+                tableContainer.innerHTML = '';
+                if (noDataMessage) {
+                    noDataMessage.style.display = 'block';
+                }
             }
         }
