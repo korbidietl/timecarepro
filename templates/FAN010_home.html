@@ -28,27 +28,42 @@
         <div id="userRole" data-role="{{ role }}"></div>
         <div class="form-row">
             <div class="mein-eindeutiges-formular">
-                <label for="monat_jahr_dropdown"></label>
-                <select id="monat_jahr_dropdown">
+                <label for="monat_jahr_dropdown_k"></label>
+                <select id="monat_jahr_dropdown_k">
                     {% for kombination in kombinationen %}
                     <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
                         {{ kombination }}
                     </option>
                     {% endfor %}
                 </select>
-                <button type="button" id="anzeigenButton">Anzeigen</button>
+                <button type="button" id="anzeigenButton_k">Anzeigen</button>
             </div>
         </div>
         <div id="clients_table_container"></div>
         <p id="no-clients-message" style="display: none;">Keine Klienten gefunden.</p>
 
-        {% if role != 'Sachbearbeiter/Kostenträger' %}
-        <iframe id="mitarbeiterIframe" src={{url_for('show_employee_table.mitarbeiter')}} style="width:100%;border:none;"></iframe>
-        {% endif %}
+        <h3>Mitarbeitertabelle</h3>
+        <div class="form-row">
+            <div class="mein-eindeutiges-formular">
+                <label for="monat_jahr_dropdown_m"></label>
+                <select id="monat_jahr_dropdown_m">
+                    {% for kombination in kombinationen %}
+                    <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
+                        {{ kombination }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="button" id="anzeigenButton_m">Anzeigen</button>
+            </div>
+        </div>
+        <div id="employee_table_container"></div>
+        <p id="no-employee-message" style="display: none;">Keine Mitarbeiter gefunden.</p>
+
     </div>
 
-    </b><br/>
-    <script src="../static/FAN040_show_client_table.js"></script>
+
+    <script src="{{ url_for('static', filename='FAN040_show_client_table.js') }}"></script>
+    <script src="{{ url_for('static', filename='FAN030_show_employee_table.js') }}"></script>
 
     <script>
         window.addEventListener('message', function(e) {

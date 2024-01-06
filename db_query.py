@@ -219,22 +219,38 @@ def account_table(monat, year):
         "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
         "GROUP BY person.ID", (monat, year,))
     distance_table = cursor.fetchall()
+
     # Zusammenfügen der Tabellen
     report_table = []
-    for time_spalte, distance_spalte in zip(time_table, distance_table):
-        geleistete_stunden = int(time_spalte[3])
+    # Erstellen Sie eine Liste der eindeutigen IDs aus beiden Tabellen
+    unique_ids = set(row[0] for row in time_table) | set(row[0] for row in distance_table)
+
+    # Schleife über die eindeutigen IDs
+    for id in unique_ids:
+        matching_time_spalte = next((row for row in time_table if row[0] == id), None)
+        matching_distance_spalte = next((row for row in distance_table if row[0] == id), None)
+
+        geleistete_stunden = 0
+        gefahrene_kilometer = None
+
+        if matching_time_spalte:
+            geleistete_stunden = int(matching_time_spalte[3])
+        if matching_distance_spalte:
+            gefahrene_kilometer = matching_distance_spalte[3]
+
         stunden = geleistete_stunden // 60  # Ganzzahlige Division für Stunden
         minuten = geleistete_stunden % 60  # Rest für Minuten
-        if time_spalte[0] == distance_spalte[0]:  # IDs müssen übereinstimmen
-            report_table.append(
-                (
-                    time_spalte[0],  # ID
-                    time_spalte[1],  # vorname
-                    time_spalte[2],  # nachname
-                    f"{stunden}:{minuten}",  # geleistete_stunden
-                    distance_spalte[3],  # gefahrene_kilometer
-                )
+
+        report_table.append(
+            (
+                id,  # ID
+                matching_time_spalte[1] if matching_time_spalte else matching_distance_spalte[1],  # vorname
+                matching_time_spalte[2] if matching_time_spalte else matching_distance_spalte[2],  # nachname
+                f"{stunden}:{minuten}",  # geleistete_stunden
+                gefahrene_kilometer,  # gefahrene_kilometer
             )
+        )
+
     return report_table
 
 

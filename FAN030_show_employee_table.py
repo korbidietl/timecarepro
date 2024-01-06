@@ -1,10 +1,42 @@
 from datetime import datetime
 
-from flask import render_template, request, session, Blueprint, flash
+from flask import render_template, request, session, Blueprint, flash, jsonify
+
+from FAN040_show_client_table import generate_month_year_combinations
 from db_query import account_table, account_table_mitarbeiter, get_role_by_id
-from FMOF010_show_supervisionhours_client import generate_month_year_combinations, extrahiere_jahr_und_monat
+from FMOF010_show_supervisionhours_client import extrahiere_jahr_und_monat
 
 show_employee_table_blueprint = Blueprint('show_employee_table', __name__)
+
+
+@show_employee_table_blueprint.route('/get_employee_data', methods=['GET'])
+def get_employee_data():
+    person = session.get('user_id')
+    role = session.get('user_role')
+
+    month = request.args.get('monat')
+    year = request.args.get('jahr')
+    print('Hallo')
+    print(role)
+
+    if role in ["Steuerbüro", "Verwaltung", "Geschäftsführung"]:
+        mitarbeiter = account_table(month, year)
+        print('after:' )
+        print(mitarbeiter)
+    elif role == "Mitarbeiter":
+        mitarbeiter = account_table_mitarbeiter(month, year, person)
+        print(mitarbeiter)
+    else:
+       return
+
+    return jsonify(mitarbeiter)
+
+
+@show_employee_table_blueprint.route('/get_employee_dropdown_data', methods=['GET'])
+def get_dropdown_data():
+    kombinationen = generate_month_year_combinations()
+
+    return jsonify(kombinationen)
 
 
 @show_employee_table_blueprint.route('/show_employee_table', methods=['GET', 'POST'])

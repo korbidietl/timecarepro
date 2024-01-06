@@ -60,7 +60,7 @@ def get_clients_data():
     return jsonify(clients)
 
 
-@show_clients_blueprint.route('/get_dropdown_data', methods=['GET'])
+@show_clients_blueprint.route('/get_client_dropdown_data', methods=['GET'])
 def get_dropdown_data():
     kombinationen = generate_month_year_combinations()
 
