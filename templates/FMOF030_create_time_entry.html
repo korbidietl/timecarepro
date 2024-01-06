@@ -27,7 +27,7 @@
 
     <div class="registration-form">
         <h2>Zeiteintrag hinzufügen</h2>
-        <form action="/create_time_entry" method="post">
+        <form action="{{url_for('client_hours_blueprint.client_supervision_hours)}}" onsubmit="validateSignatures(), validateFahrten()" method="post">
             <div class="form-row">
                 <div class="form-group">
                     <label for="datum">Datum:</label>

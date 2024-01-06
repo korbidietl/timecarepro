@@ -1,5 +1,7 @@
 import hashlib
 import json
+from datetime import datetime, date
+
 from flask import session
 from database_connection import get_database_connection
 from passlib.hash import sha1_crypt
@@ -920,8 +922,14 @@ def check_and_return_signatures(client_id, month, year):
     missing_signatures = []
 
     for result in results:
-        if not result[1] or not result[2]:  # Überprüfen, ob eine der Signaturen fehlt
-            missing_signatures.append(result[0])  # Fügen Sie die ID zum missing_signatures hinzu
+        missing = []
+        if not result[1]:  # Überprüfen, ob die Unterschrift des Klienten fehlt
+            missing.append('Klient')
+        if not result[2]:  # Überprüfen, ob die Unterschrift des Mitarbeiters fehlt
+            missing.append('Mitarbeiter')
+
+        if missing:
+            missing_signatures.append({'id': result[0], 'missing': missing})
 
     if missing_signatures:
         return missing_signatures  # Rückgabe der Liste der IDs, bei denen Signaturen fehlen
@@ -956,17 +964,28 @@ def check_signatures(client_id, month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
-       SELECT * FROM zeiteintrag 
+       SELECT zeiteintrag.ID, unterschrift_Klient, unterschrift_Mitarbeiter 
+       FROM zeiteintrag 
        WHERE Klient_ID = %s AND MONTH(end_zeit) = %s AND YEAR(end_zeit) = %s
    """, (client_id, month, year))
     results = cursor.fetchall()
-    if not results:
-        return False
-    for result in results:
-        if result["unterschrift_Klient"].is_null() or result["unterschrift_Mitarbeiter"].is_null():
-            return False
-    return True
+    missing_signatures = []
 
+    if not results:
+        return False, missing_signatures
+
+    all_signed = True
+    for result in results:
+        if result['unterschrift_Klient'] is None or result['unterschrift_Mitarbeiter'] is None:
+            all_signed = False
+            missing = []
+            if result['unterschrift_Klient'] is None:
+                missing.append('Klient')
+            if result['unterschrift_Mitarbeiter'] is None:
+                missing.append('Mitarbeiter')
+            missing_signatures.append({'zeiteintrag_id': result['ID'], 'missing': missing})
+
+    return all_signed, missing_signatures
 
 # /FV120/
 def book_zeiteintrag(client_id):
@@ -978,15 +997,17 @@ def book_zeiteintrag(client_id):
     """, (client_id,))
     last_entry = cursor.fetchone()
     if not last_entry:
-        return False
-    start_month = last_entry["end_zeit"].month
-    start_year = last_entry["end_zeit"].year
-    end_month = start_month + 1
-    if end_month == 13:
-        end_month = 1
-        end_year = start_year + 1
+        next_month_to_book = get_first_te(client_id)
+        end_year, end_month = map(int, next_month_to_book.split('-'))
     else:
-        end_year = start_year
+        start_month = last_entry[2].month
+        start_year = last_entry[2].year
+        end_month = start_month + 1
+        if end_month == 13:
+            end_month = 1
+            end_year = start_year + 1
+        else:
+            end_year = start_year
     cursor.execute("""
         SELECT * FROM zeiteintrag 
         WHERE Klient_ID = %s AND MONTH(end_zeit) = %s AND YEAR(end_zeit) = %s
@@ -1004,16 +1025,17 @@ def book_zeiteintrag(client_id):
     fk_hours = 0
     hk_hours = 0
     for result in results:
-        if result["fachkraft"]:
-            fk_hours += result["end_zeit"].hour - result["start_zeit"].hour
+        if result[7] == 1:
+            fk_hours += result[4].hour - result[3].hour
         else:
-            hk_hours += result["end_zeit"].hour - result["start_zeit"].hour
-    saldo_fk = client["kontingent_fk"] - fk_hours
-    saldo_hk = client["kontingent_hk"] - hk_hours
+            hk_hours += result[4].hour - result[3].hour
+    saldo_fk = client[7] - fk_hours
+    saldo_hk = client[8] - hk_hours
+    monat = date(end_year, end_month, 1)
     cursor.execute("""
         INSERT INTO buchung (Klient_ID, monat, saldo_FK, saldo_HK)
         VALUES (%s, %s, %s, %s)
-    """, (client_id, last_entry["end_zeit"], saldo_fk, saldo_hk))
+    """, (client_id, monat, saldo_fk, saldo_hk))
     connection.commit()
     return True
 

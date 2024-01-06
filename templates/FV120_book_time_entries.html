@@ -7,11 +7,17 @@
 </head>
 <body>
     <div class="popup-content-small">
-        <h3>Es konnten keine Zeiteinträge für <span id="selectedMonth">Monat</span> gefunden werden. Wollen Sie trotzdem buchen?</h3>
+        <h3>Es konnten keine Zeiteinträge für {{month_str}} gefunden werden. Wollen Sie trotzdem buchen?</h3>
         <div class="form-actions">
             <button id="buchen">Buchen</button>
-            <button id="abbrechen" onclick="window.location='/FMOF010_show_supervisionhours_client.html';">Abbrechen</button>
+            <button id="abbrechen" onclick="close_popup()">Abbrechen</button>
         </div>
     </div>
+    <script>
+        function close_popup() {
+            var return_url = "{{ return_url }}";
+            window.location.href = return_url;
+        }
+    </script>
 </body>
 </html>
