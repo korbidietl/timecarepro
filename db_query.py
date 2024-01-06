@@ -683,7 +683,7 @@ def delete_zeiteintrag(zeiteintrag_id):
 def get_steuerbuero_table():
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT ID, nachname, vorname, email FROM person WHERE rolle = 'Steuerbüro'")
+    cursor.execute("SELECT ID, nachname, vorname, email, sperre FROM person WHERE rolle = 'Steuerbüro'")
     result = cursor.fetchall()
     return result
 
@@ -692,7 +692,7 @@ def get_steuerbuero_table():
 def get_sachbearbeiter_table():
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT ID, nachname, vorname, email FROM person WHERE rolle = 'Sachbearbeiter/Kostenträger'")
+    cursor.execute("SELECT ID, nachname, vorname, email, sperre FROM person WHERE rolle = 'Sachbearbeiter/Kostenträger'")
     result = cursor.fetchall()
     return result
 
