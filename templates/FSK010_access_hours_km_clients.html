@@ -11,15 +11,20 @@
     <div class="table-form">
 
         <h2>Zeiteinträge deiner Klienten</h2>
+        <br>
+        <br>
 
         <div class="form-row" style="justify-content: start;">
             <h2 style="margin: 0; font-size: 1.5em; line-height: 1.2em;">Klient: {{client_name[0]}} {{client_name[1]}}</h2>
+            <div style="margin-left: 40px; font-weight: normal; font-size: 1.5em; line-height: 1.2em;">Sachbearbeiter: {{sb_name[0]}} {{sb_name[1]}}</div>
         </div>
+
+        <div class="leerzeile"></div>
 
         <form action="{{ url_for('access_hours_km_clients.view_time_entries', client_id=client_id) }}" method="post">
             <div class="form-group-table">
                 <label for="monat_jahr"></label>
-                        <select name="monat_jahr" id="monat_jahr">
+                        <select name="monat_jahr" id="monat_jahr" style="padding: 8px; border: 1px solid #ccc;border-radius: 4px; margin-right: 20px">
                             {% for kombination in kombinationen %}
                             <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
                                 {{ kombination }}
@@ -36,6 +41,7 @@
                 </button>
             </div>
         </form>
+        <br>
 
         {% if kombinierte_liste %}
             <table id="client_hours">
@@ -80,13 +86,11 @@
                     {% endfor %}
                 </tbody>
             </table>
+        {% else %}
+            <p>Noch keine Einträge vorhanden.</p>
         {% endif %}
     </div>
-    <div class="messages">
-    {% for message in messages %}
-        <p>{{ message }}</p>
-    {% endfor %}
-</div>
+
     <script>
 function exportTableToCSV() {
     var csv = [];

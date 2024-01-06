@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, url_for, session
 from db_query import get_zeiteintrag_for_person, get_zeiteintrag_with_fahrten_by_id, check_booked, get_name_by_id, \
     get_role_by_id
 from FMOF010_show_supervisionhours_client import generate_month_year_combinations, extrahiere_jahr_und_monat, \
-    convert_blob_to_base64
+    convert_blob_to_base64, check_booked_liste
 from datetime import datetime
 
 view_time_entries_blueprint = Blueprint("view_time_entries", __name__)
@@ -25,7 +25,6 @@ def unterschriften_liste(zeiteintrag):
 @view_time_entries_blueprint.route('/view_time_entries/<int:person_id>', methods=['GET', 'POST'])
 def view_time_entries(person_id):
     # session daten speichern
-    person = session.get('user_id')
     session['url'] = url_for('view_time_entries.view_time_entries', person_id=person_id)
 
     # Name und Role für Überschrift
@@ -52,7 +51,13 @@ def view_time_entries(person_id):
     # Abfragen der Zeiteinträge
     zeiteintrag = get_zeiteintrag_for_person(person_id, month, year)
     u_liste = unterschriften_liste(zeiteintrag)
+    booked_liste = check_booked_liste(zeiteintrag)
+
+    if zeiteintrag and u_liste and booked_liste:
+        kombinierte_liste = zip(zeiteintrag, u_liste, booked_liste)
+    else:
+        kombinierte_liste = []
 
     return render_template('FMOF020_view_time_entries.html', person_id=person_id, name=name, role=role,
                            kombinationen=kombinationen, gewaehlte_kombination=gewaehlte_kombination,
-                           zeiteintraege=zeiteintrag, unterschriften=u_liste)
+                           kombinierte_liste=kombinierte_liste)

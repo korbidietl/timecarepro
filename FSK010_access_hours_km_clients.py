@@ -43,6 +43,7 @@ def view_time_entries(client_id):
     month, year = extrahiere_jahr_und_monat(gewaehlte_kombination)
 
     client_name = get_client_name(client_id)
+    sb_name = get_sachbearbeiter_name(client_id)
     zeiteintrag_ids = get_client_table_client_sb(client_id, user_id, month, year)
     u_liste = unterschriften_liste(zeiteintrag_ids)
     ueberschneidung_liste = check_ueberschneidung_liste(zeiteintrag_ids, client_id)
@@ -50,5 +51,5 @@ def view_time_entries(client_id):
     kombinierte_liste = list(zip(zeiteintrag_ids, ueberschneidung_liste, booked_liste, u_liste))
 
     return render_template('FSK010_access_hours_km_clients.html',
-                           client_id=client_id, kombinierte_liste=kombinierte_liste, client_name=client_name,
+                           client_id=client_id, kombinierte_liste=kombinierte_liste, client_name=client_name, sb_name=sb_name,
                            gewaehlte_kombination=gewaehlte_kombination, kombinationen=kombinationen)

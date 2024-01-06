@@ -105,8 +105,8 @@
                             </td>
 
                             <!-- Buttons Bearbeiten und Löschen in jeder Zeile -->
-                            {% if not booked_status %}
-                                {% if user_role == 'Mitarbeiter' and zeiteintrag[8] == session['user_id'] %}
+                            {% if booked_status == False %}
+                                {% if user_role == 'Mitarbeiter' and zeiteintrag[8] == user_id or user_role in ['Verwaltung','Geschäftsführung']%}
                                     <td>
                                         <form action="{{url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag[0])}}" method="get">
                                             <button type="submit">Bearbeiten</button>
