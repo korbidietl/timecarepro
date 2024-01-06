@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from db_query import (book_zeiteintrag, get_last_buchung, get_zeiteintrag_by_id, get_name_by_id,
                       get_zeiteintrag_for_client, get_first_te, check_and_return_signatures)
 from datetime import datetime
@@ -10,7 +10,7 @@ def get_next_month_to_book(last_buchung_date):
 
     if last_buchung_date:
         # Konvertieren des Datumsstrings in ein datetime-Objekt
-        last_date_obj = datetime.strptime(last_buchung_date, '%Y-%m')
+        last_date_obj = datetime.strptime(last_buchung_date[0], '%Y-%m')
 
         # Berechnung des nächsten Monats
         year, month = last_date_obj.year, last_date_obj.month
@@ -40,6 +40,7 @@ def month_number_to_name(month_number):
 
 @book_time_entry_blueprint.route('/book_time_entries/<int:client_id>', methods=['POST'])
 def book_client_time_entry(client_id):
+    return_url = session.get('url')
     # Letzte Buchung abrufen
     last_month_booked = get_last_buchung(client_id)
     if last_month_booked is None:
@@ -58,7 +59,7 @@ def book_client_time_entry(client_id):
 
     # Überprüfen, ob Zeiteinträge für den nächsten Monat existieren
     if not get_zeiteintrag_for_client(client_id, next_month, next_year):
-        return render_template("FV120_book_time_entries.html", month_str=month_str)
+        return render_template("FV120_book_time_entries.html", month_str=month_str, return_url=return_url)
 
     # Überprüfen, ob alle Unterschriften vorhanden sind
     unvollständige_te = check_and_return_signatures(client_id, next_month, next_year)

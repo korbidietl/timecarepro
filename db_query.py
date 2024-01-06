@@ -1002,8 +1002,8 @@ def book_zeiteintrag(client_id):
         next_month_to_book = get_first_te(client_id)
         end_year, end_month = map(int, next_month_to_book.split('-'))
     else:
-        start_month = last_entry["end_zeit"].month
-        start_year = last_entry["end_zeit"].year
+        start_month = last_entry[2].month
+        start_year = last_entry[2].year
         end_month = start_month + 1
         if end_month == 13:
             end_month = 1
