@@ -35,16 +35,6 @@ def edit_account(person_id):
         address = request.form.get('address')
         phone = request.form.get('phone')
         qualification = request.form.get('qualification')
-        # rolle und email sind nicht bearbeitbar
-
-        # Überprüfen, ob alle erforderlichen Felder ausgefüllt wurden
-        required_fields = ['lastname', 'firstname', 'birthday', 'address', 'phone']
-        for field in required_fields:
-            if not request.form.get(field):
-                flash('Es müssen alle Felder ausgefüllt werden.')
-                return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
-                               lastname=lastname, birthday=birthday, qualification=qualification, address=address,
-                               email=email, phone=phone, locked=locked, role=role)
 
         # Überprüfen des Datentyps für Geburtstag und Telefonnummer
         if not is_valid_date(birthday):
@@ -60,7 +50,7 @@ def edit_account(person_id):
                                email=email, phone=phone, locked=locked, role=role)
 
         # Account-Daten aktualisieren
-        edit_account(person_id, firstname, lastname, birthday, qualification, address, phone)
+        edit_account(firstname, lastname, birthday, qualification, address, phone, person_id)
 
         # änderungen in protokoll speichern
         new_person = get_new_person(person_id)
@@ -68,13 +58,6 @@ def edit_account(person_id):
 
         # Rückleitung zur vorherigen Seite
         return redirect(session.pop('url', None))
-
-        # rückleitung: weiß noch nicht wie das implementiert werden soll
-        # if request.method == 'GET':
-            # return_url = request.args.get('return_url', '/default_return_page')
-            # return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
-                               # lastname=lastname, birthday=birthday, qualification=qualification, address=address,
-                               # email=email, phone=phone, locked=locked, role=role, return_url=return_url)
 
     return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
                                lastname=lastname, birthday=birthday, qualification=qualification, address=address,

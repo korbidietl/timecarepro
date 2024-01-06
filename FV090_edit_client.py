@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template, session
+from flask import Blueprint, request, jsonify, render_template, session, flash
 from db_query import edit_klient, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data, get_current_client, get_new_client, save_change_log
 
 edit_client_blueprint = Blueprint('edit_client', __name__)
@@ -15,15 +15,15 @@ def edit_client(client_id):
 
     if client_data_list and request.method == 'POST':
         client_data = client_data_list[0]
-        vorname = request.form['vorname']
-        nachname = request.form['nachname']
-        geburtsdatum = request.form['geburtsdatum']
-        telefonnummer = request.form['telefonnummer']
-        sachbearbeiter_id = request.form['ktDropdown']
-        adresse = request.form['adresse']
-        kontingent_hk = request.form['kontingent_hk']
-        kontingent_fk = request.form['kontingent_fk']
-        fallverantwortung_id = request.form['fvDropdown']
+        vorname = request.form.get('vorname')
+        nachname = request.form.get('nachname')
+        geburtsdatum = request.form.get('geburtsdatum')
+        telefonnummer = request.form.get('telefonnummer')
+        sachbearbeiter_id = request.form.get('ktDropdown')
+        adresse = request.form.get('adresse')
+        kontingent_hk = request.form.get('kontingent_hk')
+        kontingent_fk = request.form.get('kontingent_fk')
+        fallverantwortung_id = request.form.get('ktDropdown')
 
         print(fallverantwortung_id)
 
@@ -33,7 +33,8 @@ def edit_client(client_id):
 
             new_client = get_new_client(client_id)
             save_change_log(person, "Klient", current_client, new_client)
-            return jsonify({'message': 'Client successfully updated'}), 200
+            flash(f'Klient {vorname} {nachname} wurde erfolgreich bearbeitet.')
+            # return jsonify({'message': 'Client successfully updated'}), 200
         except Exception as e:
             return jsonify({'message': 'Error updating client: ' + str(e)}), 500
 

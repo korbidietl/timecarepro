@@ -789,15 +789,14 @@ def get_person_data(account_id):
 
 
 # /FV040/
-def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
-                 telefonnummer, passwort, sperre, passwort_erzwingen, account_id):
+def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse,
+                 telefonnummer, account_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("UPDATE person SET vorname = %s, nachname = %s, geburtsdatum = %s, qualifikation = %s, "
-                   "adresse = %s, rolle = %s, email = %s, telefonnummer = %s, passwort = %s, sperre = %s, "
-                   "passwort_erzwingen = %s WHERE ID = %s",
-                   (vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
-                    telefonnummer, passwort, sperre, passwort_erzwingen, account_id))
+                   "adresse = %s, telefonnummer = %s WHERE ID = %s",
+                   (vorname, nachname, geburtsdatum, qualifikation, adresse,
+                    telefonnummer, account_id))
     connection.commit()
     cursor.close()
 

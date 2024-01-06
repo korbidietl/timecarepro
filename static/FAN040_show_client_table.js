@@ -84,8 +84,8 @@
                 data.forEach(client => {
                     tableHTML += `<tr>
                                     <td>${client[0]}</td>
-                                    <td>${client[1]}</td>
                                     <td>${client[2]}</td>
+                                    <td>${client[1]}</td>
                                     <td>${client[3]}</td>
                                     <td>${client[4]}</td>
                                     <td>${client[5]}</td>
