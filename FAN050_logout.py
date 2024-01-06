@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session
+from flask import Blueprint, session, redirect, url_for
 from FNAN010_login import logged_in_users
 
 logout_blueprint = Blueprint("logout", __name__)
@@ -21,8 +21,8 @@ def logout():
         session.pop('last_activity', None)
         session.pop('url', None)
 
-        return render_template('FNAN010_login.html')
+        return redirect(url_for('login.login'))
 
     else:
         # Benutzer ist nicht eingeloggt
-        return render_template('FNAN010_login.html')
+        return redirect(url_for('login.login'))
