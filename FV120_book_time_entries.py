@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from db_query import (book_zeiteintrag, check_signatures, get_last_buchung,
                       get_zeiteintrag_for_client, get_first_te)
 from datetime import datetime
-from FMOF010_show_supervisionhours_client import extrahiere_jahr_und_monat
 
 book_time_entry_blueprint = Blueprint('book_time_entry', __name__)
 
