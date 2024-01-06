@@ -79,7 +79,8 @@
 
                 data.forEach(arbeiter => {
                     let km = (arbeiter[4] !== null && arbeiter[4] !== undefined) ? arbeiter[4] : 0.0;
-                    let km_formatiert = km.toFixed(1)
+                    let km_formatiert = km.toFixed(1);
+                    let sperre = arbeiter[5];
 
 
                     console.log(arbeiter)
@@ -88,7 +89,10 @@
                                     <td>${arbeiter[1]}</td>
                                     <td>${arbeiter[2]}</td>
                                     <td>${arbeiter[3]}</td>
-                                    <td>${km_formatiert}</td>`;
+                                    <td>${km_formatiert}</td>
+                                    <td>
+                                        <input type="hidden" name="sperre" value="${sperre}">
+                                    </td>`;
 
                     if (userRole === 'Verwaltung') {
                         tableHTML += `<td>

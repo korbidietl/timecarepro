@@ -202,7 +202,8 @@ def account_table(monat, year):
     cursor = connection.cursor()
     cursor.execute(
         "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
+        "SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden,"
+        "person.sperre "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
         "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
         "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
@@ -211,7 +212,8 @@ def account_table(monat, year):
 
     cursor.execute(
         "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(fahrt.kilometer) AS gefahrene_kilometer "
+        "SUM(fahrt.kilometer) AS gefahrene_kilometer, "
+        "person.sperre " 
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
         "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
         "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
@@ -231,11 +233,14 @@ def account_table(monat, year):
 
         geleistete_stunden = 0
         gefahrene_kilometer = None
+        sperre = None
 
         if matching_time_spalte:
             geleistete_stunden = int(matching_time_spalte[3])
+            sperre = matching_time_spalte[4]
         if matching_distance_spalte:
             gefahrene_kilometer = matching_distance_spalte[3]
+            sperre = matching_distance_spalte[4]
 
         stunden = geleistete_stunden // 60  # Ganzzahlige Division für Stunden
         minuten = geleistete_stunden % 60  # Rest für Minuten
@@ -246,7 +251,8 @@ def account_table(monat, year):
                 matching_time_spalte[1] if matching_time_spalte else matching_distance_spalte[1],  # vorname
                 matching_time_spalte[2] if matching_time_spalte else matching_distance_spalte[2],  # nachname
                 f"{stunden}:{minuten}",  # geleistete_stunden
-                gefahrene_kilometer,  # gefahrene_kilometer
+                gefahrene_kilometer, # gefahrene_kilometer
+                sperre, # Hinzugefügt
             )
         )
 
