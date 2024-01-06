@@ -56,7 +56,7 @@
 
                     <div class="form-group2">
                         <label for="ktDropdown">Kostenträger:</label>
-                        <select class="form-control" id="ktDropdown" name="ktDropdown" required>
+                        <select class="form-control" id="ktDropdown" name="ktDropdown">
                             <!-- Optionen werden durch Python generiert -->
                             <option value="" selected disabled>Bitte auswählen</option>
                             {% for kt in kostentraeger %}
@@ -68,17 +68,17 @@
                 <div class="form-row">
                     <div class="form-group2">
                         <label for="fk">Fachkraftkontingent:</label>
-                        <input type="number" id="fk" name="fkontingent" required>
+                        <input type="number" id="fk" name="fkontingent">
                     </div>
 
                     <div class="form-group2">
                         <label for="hk">Hilfskraftkontingent:</label>
-                        <input type="number" id="hk" name="hkontingent"required>
+                        <input type="number" id="hk" name="hkontingent">
                     </div>
 
                     <div class="form-group2">
                         <label for="fvDropdown">Fallverantwortung:</label>
-                        <select class="form-control" id="fvDropdown" name="fvDropdown" required>
+                        <select class="form-control" id="fvDropdown" name="fvDropdown">
                             <option value="" selected disabled>Bitte auswählen</option>
                             <!-- Optionen werden durch Python generiert -->
                             {% for fv in fallverantwortung %}
