@@ -122,7 +122,7 @@ def client_supervision_hours(client_id):
     client_name = get_client_name(client_id)
     client_sachbearbeiter_name = get_sachbearbeiter_name(client_id)
     fallverantwortung_id = get_fallverantwortung_id(client_id)
-    fallverantwortung = client_id == fallverantwortung_id
+    fallverantwortung = user_id == fallverantwortung_id
 
     # Gesamt Stunden auslesen
     sum_hours_list = sum_hours_klient(month, year)
@@ -137,7 +137,7 @@ def client_supervision_hours(client_id):
         sum_km = sum_km_list[0]
 
     # Überprüfen ob Fallverantwortung hat
-    if fallverantwortung:
+    if fallverantwortung or user_role in ['Verwaltung', 'Geschäftsführung']:
         # Listen erstellen
         zeiteintraege_liste = get_zeiteintrag_for_client(client_id, month, year)
         u_liste = unterschriften_liste(zeiteintraege_liste)
@@ -165,6 +165,7 @@ def client_supervision_hours(client_id):
 
         # Listen kombinieren
         kombinierte_liste = list(zip(zeiteintraege_liste, ueberschneidung_liste, booked_liste, u_liste))
+        print(kombinierte_liste)
 
         return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id,
                                client_id=client_id,
