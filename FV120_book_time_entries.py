@@ -8,19 +8,25 @@ book_time_entry_blueprint = Blueprint('book_time_entry', __name__)
 
 
 def get_next_month_to_book(last_buchung_date):
-    # Konvertieren des Datumsstrings in ein datetime-Objekt
-    last_date_obj = datetime.strptime(last_buchung_date, '%Y-%m')
 
-    # Berechnung des nächsten Monats
-    year, month = last_date_obj.year, last_date_obj.month
-    if month == 12:
-        next_month_date_obj = datetime(year + 1, 1, 1)
+    if last_buchung_date:
+        # Konvertieren des Datumsstrings in ein datetime-Objekt
+        last_date_obj = datetime.strptime(last_buchung_date, '%Y-%m')
+
+        # Berechnung des nächsten Monats
+        year, month = last_date_obj.year, last_date_obj.month
+        if month == 12:
+            next_month_date_obj = datetime(year + 1, 1, 1)
+        else:
+            next_month_date_obj = datetime(year, month + 1, 1)
+
+        # Rückumwandlung in einen String
+        next_month_str = next_month_date_obj.strftime('%Y-%m')
+        return next_month_str
+
     else:
-        next_month_date_obj = datetime(year, month + 1, 1)
-
-    # Rückumwandlung in einen String
-    next_month_str = next_month_date_obj.strftime('%Y-%m')
-    return next_month_str
+        # 1 Monat für das Eintrag existiert wenn schon vergangen
+        return
 
 
 @book_time_entry_blueprint.route('/book_time_entries/<int:client_id>', methods=['POST'])
@@ -43,6 +49,7 @@ def book_client_time_entry(client_id):
     # selected_datum = datetime(year, month, 1).strftime('%Y-%m')
 
     last_month_booked = get_last_buchung(client_id)
+    print(last_month_booked)
     next_month_to_book = get_next_month_to_book(last_month_booked)
 
     # überprüfe ob zeiteinträge für monat gefunden werden
