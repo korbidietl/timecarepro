@@ -29,9 +29,9 @@ def sha1_hash_password(password):
     return sha1_hash
 
 
-def send_email_create_account(email, lastname, new_password):
+def send_email_create_account(email, firstname, lastname, new_password):
     subject = "Ihr neuer Account"
-    body = (f"Sehr geehrte/r Frau/Mann {lastname}, \n\n"
+    body = (f"Sehr geehrte/r {firstname} {lastname}, \n\n"
             f"Ihr automatisch generierte Passwort ist: {new_password} \n"
             f"Um Ihren Account nutzen zu können, loggen Sie sich bitte mit diesem Passwort auf der Webseite ein und "
             f"ändern diese unmittelbar..\n\n"
@@ -93,12 +93,11 @@ def create_account():
             return render_template('FV020_create_account.html')
 
         else:
-
             password = generate_random_password(10)
             hashed_password = sha1_hash_password(password)
             change_password = 1
             create_account_db(firstname, lastname, birthday, qualification, address, selected_role, email, phone, hashed_password, 0, change_password)
-            send_email_create_account(email, lastname, password)
+            send_email_create_account(email,firstname, lastname, password)
             flash("Account wurde erfolgreich angelegt", "success")
             return redirect(url_for('account_management.account_management'))
 

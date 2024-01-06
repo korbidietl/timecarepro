@@ -6,10 +6,10 @@ account_details_blueprint = Blueprint('account_details', __name__)
 
 @account_details_blueprint.route('/account_details/<int:person_id>', methods=['POST', 'GET'])
 def account_details(person_id):
-
+    return_url = session.get('url')
     # session speichern für rückleitung
     session['url'] = url_for('view_time_entries.view_time_entries', person_id=person_id)
-    return_url = url_for('account_management.account_management')
+
 
     # Datenbankaufruf über person_id
     person_data_list = get_person_data(person_id)
