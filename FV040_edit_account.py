@@ -42,7 +42,7 @@ def edit_account(person_id):
                                lastname=lastname, birthday=birthday, qualification=qualification, address=address,
                                email=email, phone=phone, locked=locked, role=role)
 
-        if not phone is "":
+        if phone != "":
             if not is_valid_phone(phone):
                 flash('Die Telefonnummer ist ungültig.')
                 return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
