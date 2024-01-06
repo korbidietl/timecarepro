@@ -90,7 +90,7 @@ def submit_arbeitsstunden():
                 # Überprüfen ob alle erforderlichen Felder vorhanden sind
                 if not (kilometer and start_adresse and end_adresse):
                     flash("Wenn eine Fahrt angelegt wird müssen alle Felder ausgefüllt sein")
-                add_fahrt(zeiteintrag_id, abrechenbarkeit, start_adresse, end_adresse, kilometer)
+                add_fahrt(kilometer, start_adresse, end_adresse, abrechenbarkeit, zeiteintrag_id)
                 fahrt_index += 1
 
             # prüft auf überschneidung einer bestehenden eintragung in der datenbank
