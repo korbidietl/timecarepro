@@ -213,7 +213,7 @@ def account_table(monat, year):
     cursor.execute(
         "SELECT person.ID, person.nachname, person.vorname, "
         "SUM(fahrt.kilometer) AS gefahrene_kilometer, "
-        "person.sperre " 
+        "person.sperre "
         "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
         "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
         "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
@@ -251,8 +251,8 @@ def account_table(monat, year):
                 matching_time_spalte[1] if matching_time_spalte else matching_distance_spalte[1],  # vorname
                 matching_time_spalte[2] if matching_time_spalte else matching_distance_spalte[2],  # nachname
                 f"{stunden}:{minuten}",  # geleistete_stunden
-                gefahrene_kilometer, # gefahrene_kilometer
-                sperre, # Hinzugefügt
+                gefahrene_kilometer,  # gefahrene_kilometer
+                sperre,  # Hinzugefügt
             )
         )
 
@@ -443,6 +443,59 @@ def get_zeiteintrag_for_client(client_id, month, year):
     cursor.close()
     connection.close()
     return result
+
+
+# /FMOF010/
+def sum_hours_klient(klient_id, month, year, mitarbeiter_id=None):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    query = """
+        SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, 
+        TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i') AS anzahl_Stunden 
+        FROM klient k 
+        JOIN zeiteintrag z ON k.ID = z.Klient_ID 
+        WHERE k.ID = %s AND MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s
+    """
+
+    params = [klient_id, month, year]
+
+    # Optional: Filtern nach Mitarbeiter-ID, wenn eine solche übergeben wird
+    if mitarbeiter_id:
+        query += " AND z.mitarbeiter_id = %s"
+        params.append(mitarbeiter_id)
+
+    query += " GROUP BY k.ID ORDER BY k.ID"
+
+    cursor.execute(query, params)
+    return cursor.fetchall()
+
+
+# /FMOF010/
+def sum_km_klient_ges(klient_id, month, year, mitarbeiter_id=None):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    query = """
+        SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, 
+        SUM(f.kilometer) AS gesamt_km
+        FROM klient k 
+        JOIN zeiteintrag z ON k.ID = z.Klient_ID 
+        JOIN fahrt f ON z.ID = f.Zeiteintrag_ID 
+        WHERE k.ID = %s AND MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s
+    """
+
+    params = [klient_id, month, year]
+
+    # Optional: Filtern nach Mitarbeiter-ID, wenn eine solche übergeben wird
+    if mitarbeiter_id:
+        query += " AND z.mitarbeiter_id = %s"
+        params.append(mitarbeiter_id)
+
+    query += " GROUP BY k.ID ORDER BY k.ID"
+
+    cursor.execute(query, params)
+    return cursor.fetchall()
 
 
 # /FMOF010/
@@ -692,7 +745,8 @@ def get_steuerbuero_table():
 def get_sachbearbeiter_table():
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT ID, nachname, vorname, email, sperre FROM person WHERE rolle = 'Sachbearbeiter/Kostenträger'")
+    cursor.execute(
+        "SELECT ID, nachname, vorname, email, sperre FROM person WHERE rolle = 'Sachbearbeiter/Kostenträger'")
     result = cursor.fetchall()
     return result
 
@@ -1042,22 +1096,6 @@ def sum_mitarbeiter(month, year):
     """, (month, year))
     mitarbeiter_ids = cursor.fetchall()
     return len(mitarbeiter_ids)
-
-
-# /FMOF010/
-def sum_hours_klient(month, year):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("""
-        SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, 
-        TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i') AS anzahl_Stunden 
-        FROM klient k 
-        JOIN zeiteintrag z ON k.ID = z.Klient_ID 
-        WHERE MONTH(z.end_zeit) = %s AND YEAR(z.end_zeit) = %s 
-        GROUP BY k.ID 
-        ORDER BY k.ID
-    """, (month, year))
-    return cursor.fetchall()
 
 
 # /FGF010/

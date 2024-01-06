@@ -1,11 +1,11 @@
 import base64
 import datetime
 
-from flask import Blueprint, render_template, request, session, Response, flash, redirect, url_for
+from flask import Blueprint, render_template, request, session, url_for
 from datetime import datetime
 from db_query import get_client_name, get_sachbearbeiter_name, get_fallverantwortung_id, \
     get_zeiteintrag_for_client_and_person, check_for_overlapping_zeiteintrag, check_booked, get_zeiteintrag_for_client, \
-    sum_hours_klient, sum_km_klient
+    sum_hours_klient, sum_km_klient_ges
 
 client_hours_blueprint = Blueprint('client_hours_blueprint', __name__, template_folder='templates')
 
@@ -124,20 +124,20 @@ def client_supervision_hours(client_id):
     fallverantwortung_id = get_fallverantwortung_id(client_id)
     fallverantwortung = user_id == fallverantwortung_id
 
-    # Gesamt Stunden auslesen
-    sum_hours_list = sum_hours_klient(month, year)
-    sum_hours = []
-    if sum_hours_list:
-        sum_hours = sum_hours_list[0]
-
-    # Gesamt Kilometer auslesen
-    sum_km_list = sum_km_klient(month, year)
-    sum_km = []
-    if sum_km_list:
-        sum_km = sum_km_list[0]
-
     # Überprüfen ob Fallverantwortung hat
     if fallverantwortung or user_role in ['Verwaltung', 'Geschäftsführung']:
+        # Gesamt Stunden auslesen
+        sum_hours_list = sum_hours_klient(client_id, month, year)
+        sum_hours = []
+        if sum_hours_list:
+            sum_hours = sum_hours_list[0]
+
+        # Gesamt Kilometer auslesen
+        sum_km_list = sum_km_klient_ges(client_id, month, year)
+        sum_km = []
+        if sum_km_list:
+            sum_km = sum_km_list[0]
+
         # Listen erstellen
         zeiteintraege_liste = get_zeiteintrag_for_client(client_id, month, year)
         u_liste = unterschriften_liste(zeiteintraege_liste)
@@ -157,6 +157,17 @@ def client_supervision_hours(client_id):
                                fallverantwortung=fallverantwortung)
 
     else:
+        # Gesamt Stunden auslesen
+        sum_hours_list = sum_hours_klient(client_id, month, year, user_id)
+        sum_hours = []
+        if sum_hours_list:
+            sum_hours = sum_hours_list[0]
+
+        # Gesamt Kilometer auslesen
+        sum_km_list = sum_km_klient_ges(client_id,month, year, user_id)
+        sum_km = []
+        if sum_km_list:
+            sum_km = sum_km_list[0]
         # Listen erstellen
         zeiteintraege_liste = get_zeiteintrag_for_client_and_person(client_id, user_id, month, year)
         u_liste = unterschriften_liste(zeiteintraege_liste)
