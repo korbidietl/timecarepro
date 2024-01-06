@@ -44,7 +44,7 @@ def edit_time_entry(zeiteintrag_id):
         interne_notiz = request.form.get('interneNotiz')
         neue_unterschrift_klient = request.form.get('signatureDataKlient')
         neue_unterschrift_mitarbeiter = request.form.get('signatureDataMitarbeiter')
-        absage = request.form.get('absage')
+        absage = "1" if request.form.get('absage') is not None else "0"
 
         # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
         datum_datetime = datetime.strptime(f"{datum}", '%Y-%m-%d')
