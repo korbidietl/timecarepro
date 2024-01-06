@@ -14,7 +14,6 @@ def edit_account(person_id):
 
     person_data_list = get_person_data(person_id)
     person_data = person_data_list[0]
-    print(person_data)
 
     if person_data:
         firstname = person_data[1]
@@ -35,6 +34,13 @@ def edit_account(person_id):
         address = request.form.get('address')
         phone = request.form.get('phone')
         qualification = request.form.get('qualification')
+        print(lastname)
+        print(firstname)
+        print(birthday)
+        print(address)
+        print(phone)
+        print(qualification)
+
 
         # Überprüfen des Datentyps für Geburtstag und Telefonnummer
         if not is_valid_date(birthday):
@@ -43,15 +49,16 @@ def edit_account(person_id):
                                lastname=lastname, birthday=birthday, qualification=qualification, address=address,
                                email=email, phone=phone, locked=locked, role=role)
 
-        if not is_valid_phone(phone):
-            flash('Die Telefonnummer ist ungültig.')
-            return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
+        if not phone is "":
+            if not is_valid_phone(phone):
+                flash('Die Telefonnummer ist ungültig.')
+                return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
                                lastname=lastname, birthday=birthday, qualification=qualification, address=address,
                                email=email, phone=phone, locked=locked, role=role)
-
+        print(23)
         # Account-Daten aktualisieren
         edit_account(firstname, lastname, birthday, qualification, address, phone, person_id)
-
+        print(24)
         # änderungen in protokoll speichern
         new_person = get_new_person(person_id)
         save_change_log(person, "Account", current_person, new_person)

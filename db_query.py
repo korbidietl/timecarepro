@@ -787,8 +787,7 @@ def get_person_data(account_id):
 
 
 # /FV040/
-def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse,
-                 telefonnummer, account_id):
+def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse, telefonnummer, account_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("UPDATE person SET vorname = %s, nachname = %s, geburtsdatum = %s, qualifikation = %s, "
