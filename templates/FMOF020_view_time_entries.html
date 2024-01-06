@@ -73,20 +73,25 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <form action="/work_hours_details/<int:zeiteintrag_id>/<int:person_id>" method="post">
+                                    <!-- hidden element zum zugriff für die buttons-->
+                                    <input type="hidden" name="zeiteintrag_id" value="{{ entry[0] }}">
+                                    <input type="hidden" name="person_id" value="{{ person_id }}">
+                                </td>
+                                <td>
+                                    <form action="/work_hours_details/{{ entry[0] }}/{{ person_id }}" method="post">
                                         <button type="submit">Details</button>
                                     </form>
                                 </td>
                                 <td>
                                     {% if not entry.buchung_vorhanden %}
-                                    <form action="/edit_time_entry/<int:zeiteintrag_id>" method="post">
+                                    <form action="/edit_time_entry/{{ entry[0] }}" method="post">
                                         <button type="submit">Bearbeiten</button>
                                     </form>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if not entry.buchung_vorhanden %}
-                                    <form action="/delete_te/<int:zeiteintrags_id>/<origin>">
+                                    <form action="/delete_te/{{ entry[0] }}">
                                         <button type="submit">Löschen</button>
                                     </form>
                                     {% endif %}
@@ -95,6 +100,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            </b><br/>
             <form action="/create_time_entry" method="get">
                 <button type="submit">Zeiteintrag hinzufügen</button>
             </form>
