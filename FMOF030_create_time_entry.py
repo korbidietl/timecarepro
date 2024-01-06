@@ -83,8 +83,9 @@ def submit_arbeitsstunden():
                 start_adresse = request.form.get(f'start_adresse{fahrt_index}')
                 end_adresse = request.form.get(f'end_adresse{fahrt_index}')
                 kilometer = request.form.get(f'kilometer{fahrt_index}')
-                if kilometer is None:
-                    break  # Keine weiteren Fahrten im Formular
+                if not (kilometer is None and start_adresse is None and end_adresse is None):
+                    if kilometer is None or start_adresse is None or end_adresse is None:
+                        flash("Wenn eine Fahrt angelegt wird müssen alle Felder ausgefüllt sein")
                 add_fahrt(zeiteintrag_id, abrechenbarkeit, start_adresse, end_adresse, kilometer)
                 fahrt_index += 1
 

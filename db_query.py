@@ -910,6 +910,27 @@ def get_email_by_zeiteintrag(zeiteintrag_id):
     else:
         return None
 
+# /FV120/
+def get_first_te(client_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT DATE_FORMAT(start_zeit, '%Y-%m') AS StartMonat
+        FROM zeiteintrag 
+        WHERE klient_ID = %s 
+        ORDER BY start_zeit ASC 
+        LIMIT 1
+    """, (client_id,))
+    result = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    if result:
+        # Das Ergebnis ist ein Tuple, das den Monat und das Jahr im Format 'YYYY-MM' enthält
+        return result[0]  # Rückgabe des ersten Elements im Tuple
+    else:
+        return None  # Keine Zeiteinträge gefunden
+
 
 # /FV120/
 def check_signatures(client_id, month, year):
