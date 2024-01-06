@@ -911,6 +911,27 @@ def get_email_by_zeiteintrag(zeiteintrag_id):
         return None
 
 # /FV120/
+def check_and_return_signatures(client_id, month, year):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+       SELECT id, unterschrift_Klient, unterschrift_Mitarbeiter FROM zeiteintrag 
+       WHERE klient_ID = %s AND MONTH(end_zeit) = %s AND YEAR(end_zeit) = %s
+    """, (client_id, month, year))
+    results = cursor.fetchall()
+    missing_signatures = []
+
+    for result in results:
+        if not result[1] or not result[2]:  # Überprüfen, ob eine der Signaturen fehlt
+            missing_signatures.append(result[0])  # Fügen Sie die ID zum missing_signatures hinzu
+
+    if missing_signatures:
+        return missing_signatures  # Rückgabe der Liste der IDs, bei denen Signaturen fehlen
+
+    return True  # Alle Signaturen sind vorhanden
+
+
+# /FV120/
 def get_first_te(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()

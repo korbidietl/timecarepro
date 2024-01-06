@@ -36,26 +36,32 @@ def book_client_time_entry(client_id):
         last_month_booked = get_first_te(client_id)
     next_month_to_book = get_next_month_to_book(last_month_booked)
 
-    # überprüfe ob zeiteinträge für monat gefunden werden
-    if not get_zeiteintrag_for_client(client_id, next_month_to_book):
-        flash(f"Für den gebuchten Monat {next_month_to_book} existieren keine Zeiteinträge!")
-        book_zeiteintrag(client_id)
-        last_month_booked = get_last_buchung(client_id)
-        flash(f"Stundennachweise für {last_month_booked} erfolgreich gebucht.")
-        return render_template("FMOF010_show_supervisionhours_client.html")
+    # Aufteilen von next_month_to_book in Jahr und Monat
+    next_year, next_month = next_month_to_book.split('-')
+    next_month = int(next_month)
+    next_year = int(next_year)
 
-    # überprüfen ob alle unterschriften vorhanden sind
-    if not check_signatures(client_id, next_month_to_book):
-        missing_signatures = check_signatures(client_id, next_month_to_book)
-        flash(f"Unterschrift von Klient / Mitarbeiter < Klient / Mitarbeiter > in Eintrag {missing_signatures} fehlt."
-              f"Buchung konnte nicht durchgeführt werden.")
-        return render_template("FMOF010_show_supervisionhours_client.html")
+    # Überprüfen, ob Zeiteinträge für den nächsten Monat existieren
+    if not get_zeiteintrag_for_client(client_id, next_month, next_year):
+        flash(f"Für den Monat {next_month_to_book} existieren keine Zeiteinträge!")
 
-    # Berechne Salden und führe Buchung durch
+    # Überprüfen, ob alle Unterschriften vorhanden sind
+    unvollständige_te = check_and_return_signatures(client_id, next_month, next_year)
+    if not unvollständige_te is None:
+        for entries in unvollständige_te:
+            zeiteintrag = get_zeiteintrag_by_id(entries)
+            if zeiteintrag[1] is None:
+                flash(f"Unterschrift von Mitarbeiter Nr. {zeiteintrag[5]} in Eintrag {zeiteintrag} fehlt.")
+            elif zeiteintrag[2] is None:
+                flash(f"Unterschrift von Klient Nr. {zeiteintrag[6]} in Eintrag {zeiteintrag} fehlt.")
+        return render_template("FMOF010_show_supervisionhours_client.html", client_id=client_id)
+
+
+    # Berechnen von Salden und Durchführen der Buchung
     if book_zeiteintrag(client_id):
-        last_month_booked = get_last_buchung(client_id)
-        flash(f"Stundennachweise für {last_month_booked} erfolgreich gebucht.")
-        return render_template("FMOF010_show_supervisionhours_client.html")
+        flash(f"Stundennachweise für {next_month_to_book} erfolgreich gebucht.")
+    else:
+        flash("Fehler bei der Buchung.")
 
-    # Leite den Nutzer zurück zur Übersicht
-    return redirect(url_for('FMOF010_show_supervisionhours_client', client_id=client_id))
+    return redirect(url_for('FMOF010_show_supervisionhours_client.show_supervisionhours_client', client_id=client_id))
+
