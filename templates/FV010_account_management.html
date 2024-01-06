@@ -8,6 +8,8 @@
 <body>
      <!-- Menüleiste einbinden -->
     {% include 'FAN020_navbar.html' %}
+
+     <!-- Flash Nachrichten anzeigen -->
      <div id="flashModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -23,17 +25,21 @@
 
     <div class="table-form">
         <h2>Accountverwaltung</h2>
+
+        <br> <br>
+        <!-- Buttons Account/Klient anlegen -->
         <button onclick="window.location.href='/create_account';">Account anlegen</button>
         <button onclick="window.location.href='/create_client';">Klient anlegen</button>
+        <br> <br> <br>
 
-        </b><br/>
 
+        <!-- Kliententabelle -->
         <h3>Kliententabelle</h3>
         <div id="userRole" data-role="{{ role }}"></div>
         <div class="form-row">
             <div class="mein-eindeutiges-formular">
-                <label for="monat_jahr_dropdown"></label>
-                <select id="monat_jahr_dropdown">
+                <label for="monat_jahr_dropdown_k"></label>
+                <select id="monat_jahr_dropdown_k">
                     {% for kombination in kombinationen %}
                     <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
                         {{ kombination }}
@@ -43,55 +49,82 @@
                 <button type="button" id="anzeigenButton">Anzeigen</button>
             </div>
         </div>
-        <div id="clients_table_container"></div>
+        <div class="scrollable-container">
+            <div id="clients_table_container"></div>
+        </div>
         <p id="no-clients-message" style="display: none;">Keine Klienten gefunden.</p>
 
+        <br> <br> <br>
 
-        <iframe id="mitarbeiterIframe" src={{url_for('show_employee_table.mitarbeiter')}} style="width:100%;border:none;"></iframe>
+        <!--Mitarbeitertabelle -->
+        {% if role != 'Sachbearbeiter/Kostenträger'%}
+            <h3>Mitarbeitertabelle</h3>
+            <div class="form-row">
+                <div class="mein-eindeutiges-formular">
+                    <label for="monat_jahr_dropdown_m"></label>
+                    <select id="monat_jahr_dropdown_m">
+                        {% for kombination in kombinationen %}
+                        <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
+                            {{ kombination }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" id="anzeigenButton_m">Anzeigen</button>
+                </div>
+            </div>
+            <div class="scrollable-container">
+                <div id="employee_table_container"></div>
+            </div>
+            <p id="no-employee-message" style="display: none;">Keine Mitarbeiter gefunden.</p>
+        {% endif %}
+
+        <br> <br> <br>
 
         <!-- Steuerbüro Tabelle -->
-        {% if session['user_role'] == 'Steuerbuero' %}
-        <h3>Steuerbüro</h3>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Vorname</th>
-                <th>Nachname</th>
-                <th>E-Mail</th>
-            </tr>
-            {% for steuerbuero in steuerbueros %}
-            <tr>
-                <td>{{ steuerbuero[0] }}</td> <!-- id -->
-                <td>{{ steuerbuero[1] }}</td> <!-- vorname -->
-                <td>{{ steuerbuero[2] }}</td> <!-- nachname -->
-                <td>{{ steuerbuero[7] }}</td> <!-- email -->
-                <td>
-                    <input type="hidden" name="lock_account" value="{{ steuerbuero[10] }}" /> <!-- hidden attribut lock -->
-                </td>
-                <td>
-                    <form action="/account_details/{{ steuerbuero[0] }}" method="post">
-                        <button type="submit">Details</button>
-                    </form>
-                </td>
-                <td>
-                    <form action="/account_edit/{{ steuerbuero[0] }}" method="post">
-                        <button type="submit">Bearbeiten</button>
-                    </form>
-                </td>
-                <td>
-                    <form action="/account_lock/{{ steuerbuero[0] }}" method="post">
-                        <button id="lock_steuer">{{ 'Sperren' if steuerbuero[10] == 0 else 'Entsperren' }}</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
+        {% if steuerbueros %}
+            <h3>Steuerbüro</h3>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Vorname</th>
+                    <th>Nachname</th>
+                    <th>E-Mail</th>
+                </tr>
+                {% for steuerbuero in steuerbueros %}
+                <tr>
+                    <td>{{ steuerbuero[0] }}</td> <!-- id -->
+                    <td>{{ steuerbuero[1] }}</td> <!-- vorname -->
+                    <td>{{ steuerbuero[2] }}</td> <!-- nachname -->
+                    <td>{{ steuerbuero[7] }}</td> <!-- email -->
+                    <td>
+                        <input type="hidden" name="lock_account" value="{{ steuerbuero[10] }}" /> <!-- hidden attribut lock -->
+                    </td>
+                    <td>
+                        <form action="/account_details/{{ steuerbuero[0] }}" method="post">
+                            <button type="submit">Details</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="/account_edit/{{ steuerbuero[0] }}" method="post">
+                            <button type="submit">Bearbeiten</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="/account_lock/{{ steuerbuero[0] }}" method="post">
+                            <button id="lock_steuer">{{ 'Sperren' if steuerbuero[10] == 0 else 'Entsperren' }}</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
         {% else %}
             <p>Keine Steuerbüros gefunden.</p>
         {% endif %}
 
+        <br> <br> <br>
+
         <!-- Sachbearbeiter/Kostenträger Tabelle -->
-        {% if session['user_role'] == 'Sachbearbeiter' %}
+        {% if sachbearbeiter %}
         <h3>Sachbearbeiter/Kostenträger</h3>
         <table>
             <tr>
@@ -127,9 +160,13 @@
                 </tr>
             {% endfor %}
         </table>
+        {% else %}
+            <p>Keine Sachbearbeiter/Kostenträger gefunden.</p>
         {% endif %}
     </div>
-     <script src="../static/FAN040_show_client_table.js"></script>
+
+    <script src="{{ url_for('static', filename='FAN040_show_client_table.js') }}"></script>
+    <script src="{{ url_for('static', filename='FAN030_show_employee_table.js') }}"></script>
 
     <script>
         window.addEventListener('message', function(e) {

@@ -9,6 +9,7 @@
      <!-- Menüleiste einbinden -->
     {% include 'FAN020_navbar.html' %}
 
+     <!-- Flash Nachrichten anzeigen -->
      <div id="flashModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -23,8 +24,7 @@
     </div>
 
     <div class="table-form">
-
-
+        <!-- Kliententabelle -->
         <h3>Kliententabelle</h3>
         <div id="userRole" data-role="{{ role }}"></div>
         <div class="form-row">
@@ -45,6 +45,9 @@
         </div>
         <p id="no-clients-message" style="display: none;">Keine Klienten gefunden.</p>
 
+        <br> <br> <br>
+
+        <!--Mitarbeitertabelle -->
         {% if role != 'Sachbearbeiter/Kostenträger'%}
             <h3>Mitarbeitertabelle</h3>
             <div class="form-row">
@@ -60,7 +63,9 @@
                     <button type="button" id="anzeigenButton_m">Anzeigen</button>
                 </div>
             </div>
-            <div id="employee_table_container"></div>
+            <div class="scrollable-container">
+                <div id="employee_table_container"></div>
+            </div>
             <p id="no-employee-message" style="display: none;">Keine Mitarbeiter gefunden.</p>
         {% endif %}
 

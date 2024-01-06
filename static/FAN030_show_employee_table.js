@@ -58,7 +58,7 @@
         // Tabellen mitarbeiter
         function updateTable_m(data) {
             const userRole = document.getElementById('userRole').getAttribute('data-role');
-            const tableContainer = document.getElementById("mitarbeiter_table_container");
+            const tableContainer = document.getElementById("employee_table_container");
 
             if (data.length > 0) {
                 let tableHTML = `<table>
@@ -74,6 +74,9 @@
                                     <tbody>`;
 
                 data.forEach(arbeiter => {
+                    let km = (arbeiter[4] !== null && arbeiter[4] !== undefined) ? arbeiter[4] : 0.0;
+                    let km_formatiert = km.toFixed(1)
+
 
                     console.log(arbeiter)
                     tableHTML += `<tr>
@@ -81,7 +84,7 @@
                                     <td>${arbeiter[1]}</td>
                                     <td>${arbeiter[2]}</td>
                                     <td>${arbeiter[3]}</td>
-                                    <td>${arbeiter[4]}</td>`;
+                                    <td>${km_formatiert}</td>`;
 
                     if (userRole === 'Verwaltung') {
                         tableHTML += `<td>
