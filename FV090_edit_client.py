@@ -15,15 +15,15 @@ def edit_client(client_id):
 
     if client_data_list and request.method == 'POST':
         client_data = client_data_list[0]
-        vorname = request.form['vorname']
-        nachname = request.form['nachname']
-        geburtsdatum = request.form['geburtsdatum']
-        telefonnummer = request.form['telefonnummer']
-        sachbearbeiter_id = request.form['ktDropdown']
-        adresse = request.form['adresse']
-        kontingent_hk = request.form['kontingent_hk']
-        kontingent_fk = request.form['kontingent_fk']
-        fallverantwortung_id = request.form['fvDropdown']
+        vorname = request.form.get('vorname')
+        nachname = request.form.get('nachname')
+        geburtsdatum = request.form.get('geburtsdatum')
+        telefonnummer = request.form.get('telefonnummer')
+        sachbearbeiter_id = request.form.get('ktDropdown')
+        adresse = request.form.get('adresse')
+        kontingent_hk = request.form.get('kontingent_hk')
+        kontingent_fk = request.form.get('kontingent_fk')
+        fallverantwortung_id = request.form.get('ktDropdown')
 
         print(fallverantwortung_id)
 
