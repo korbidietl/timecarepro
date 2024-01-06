@@ -1,6 +1,6 @@
 import hashlib
 import json
-from datetime import datetime, date
+import datetime
 
 from flask import session
 from database_connection import get_database_connection
@@ -12,11 +12,23 @@ def get_current_person(person_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM person WHERE ID = %s", (person_id,))
-    old_state = cursor.fetchone()
+    result = cursor.fetchone()
     cursor.close()
     connection.close()
-    if old_state is None:
+    # Überprüfen, ob ein Ergebnis vorliegt
+    if result is None:
         return None
+
+    # Wandeln Sie das Ergebnis in ein Dictionary um
+    old_state = {}
+    for column_description, value in zip(cursor.description, result):
+        key = column_description[0]  # Der Name der Spalte
+        if isinstance(value, datetime.date):
+            # Datumswerte konvertieren
+            old_state[key] = value.isoformat()
+        else:
+            old_state[key] = value
+
     return old_state
 
 
@@ -38,11 +50,22 @@ def get_new_person(person_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM person WHERE ID = %s", (person_id,))
-    new_state = cursor.fetchone()
+    result = cursor.fetchone()
     cursor.close()
     connection.close()
-    if new_state is None:
+    if result is None:
         return None
+
+    # Wandeln Sie das Ergebnis in ein Dictionary um
+    new_state = {}
+    for column_description, value in zip(cursor.description, result):
+        key = column_description[0]  # Der Name der Spalte
+        if isinstance(value, datetime.date):
+            # Datumswerte konvertieren
+            new_state[key] = value.isoformat()
+        else:
+            new_state[key] = value
+
     return new_state
 
 
@@ -789,7 +812,7 @@ def get_person_data(account_id):
 
 
 # /FV040/
-def edit_account(vorname, nachname, geburtsdatum, qualifikation, adresse, telefonnummer, account_id):
+def edit_account_fct(vorname, nachname, geburtsdatum, qualifikation, adresse, telefonnummer, account_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("UPDATE person SET vorname = %s, nachname = %s, geburtsdatum = %s, qualifikation = %s, "

@@ -49,9 +49,9 @@
                     <label for="klientDropdown">Klient:</label>
                     <select class="form-control" id="klientDropdown" name="klientDropdown">
                         <!-- Optionen werden durch Python generiert -->
-                        <option value="{{klient}}" disabled selected>Bitte wählen</option>
+                        <option value=""  selected>Bitte wählen</option>
                         {% for klient in klienten %}
-                        <option value="{{klient.id}}">{{klient[0]}}</option>
+                        <option value="{{klient.id}}">{{klient.nachname}} </option>
                         {% endfor %}
                     </select>
                 </div>

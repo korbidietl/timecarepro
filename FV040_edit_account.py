@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session
-from db_query import edit_account, get_person_data, get_current_person, get_new_person, save_change_log
+from db_query import edit_account_fct, get_person_data, get_current_person, get_new_person, save_change_log
 from FV020_create_account import is_valid_phone, is_valid_date
 
 edit_account_blueprint = Blueprint('edit_account', __name__)
@@ -10,6 +10,7 @@ def edit_account(person_id):
 
     # account zustand vor änderung speichern
     current_person = get_current_person(person_id)
+    print(current_person)
     person = session.get('user_id')
 
     person_data_list = get_person_data(person_id)
@@ -50,13 +51,14 @@ def edit_account(person_id):
                                email=email, phone=phone, locked=locked, role=role)
 
         # Account-Daten aktualisieren
-        edit_account(firstname, lastname, birthday, qualification, address, phone, person_id)
+        edit_account_fct(firstname, lastname, birthday, qualification, address, phone, person_id)
 
         # änderungen in protokoll speichern
         new_person = get_new_person(person_id)
         save_change_log(person, "Account", current_person, new_person)
 
         # Rückleitung zur vorherigen Seite
+        flash('Account wurde erfolgreich bearbeitet')
         return redirect(session.pop('url', None))
 
     return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
