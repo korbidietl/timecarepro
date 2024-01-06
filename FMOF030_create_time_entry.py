@@ -37,6 +37,8 @@ def base64_to_blob(base64_string):
 
 @create_time_entry_blueprint.route('/create_time_entry', methods=['POST', 'GET'])
 def submit_arbeitsstunden():
+    # return url zur rückleitung
+    return_url = session.get('url')
     # session speichern für rückleitung
     session['url'] = url_for('/create_time_entry.submit_arbeitsstunden')
 
@@ -93,7 +95,4 @@ def submit_arbeitsstunden():
         # Weiterleitung zurück zur Übersicht der abgelegten Stunden
         return redirect(session.pop('url', None))
 
-    # return url zur rückleitung
-    return_url = session.get('url')
-
-    return render_template('FMOF030_create_time_entry.html', klienten = klienten, return_url = return_url)
+    return render_template('FMOF030_create_time_entry.html', klienten=klienten, return_url=return_url)

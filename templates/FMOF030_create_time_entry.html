@@ -55,6 +55,7 @@
                     </select>
                 </div>
             </div>
+
             <div class="form-row">
                 <div class="form-group">
                     <label for="beschreibung">Beschreibung:</label>
@@ -93,6 +94,8 @@
                     <button type="button" onclick="removeFahrt(this)">-</button>
                 </div>
             </div>
+
+
 
             <!-- hidden return url -->
             <input type="hidden" name="returnurl" value="{{ return_url }}">
@@ -136,7 +139,7 @@
 
             <div class="form-actions">
                 <button type="submit">Eintrag hinzufügen</button>
-                <button type="button" onclick="close_window">Abbrechen</button>
+                <button type="button" onclick="close_window()">Abbrechen</button>
             </div>
         </form>
     </div>
