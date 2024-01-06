@@ -13,7 +13,7 @@
 
     <div class="registration-form">
         <h2>Zeiteintrag bearbeiten</h2>
-        <form action="/submit_time_entry" method="post">
+        <form action="/submit_time_entry" onsubmit="return validateFahrten(), validateSignatures()" method="post">
             <div class="form-row">
                 <div class="form-group">
                     <label for="datum">Datum:</label>
@@ -80,16 +80,16 @@
                             <input type="hidden" id="fahrt_id0" name="fahrt_id0">
                         </div>
                         <div class="form-group">
-                            <input type="checkbox" id="abrechenbarkeit{{ index }}" name="abrechenbarkeit{{ index }}" {% if fahrt[4] %} checked {% endif %}required>
+                            <input type="checkbox" id="abrechenbarkeit{{ index }}" name="abrechenbarkeit{{ index }}" {% if fahrt[4] %} checked {% endif %}>
                         </div>
                         <div class="form-group">
-                            <input type="text" id="start_adresse{{ index }}" name="start_adresse{{ index }}" value="{{ fahrt[2] }}" required>
+                            <input type="text" id="start_adresse{{ index }}" name="start_adresse{{ index }}" value="{{ fahrt[2] }}">
                         </div>
                         <div class="form-group">
-                            <input type="text" id="end_adresse{{ index }}" name="end_adresse{{ index }}" value="{{ fahrt[3] }}" required>
+                            <input type="text" id="end_adresse{{ index }}" name="end_adresse{{ index }}" value="{{ fahrt[3] }}">
                         </div>
                         <div class="form-group">
-                            <input type="text" id="kilometer{{ index }}" name="kilometer{{ index }}" value="{{ fahrt[1] }}" required>
+                            <input type="text" id="kilometer{{ index }}" name="kilometer{{ index }}" value="{{ fahrt[1] }}">
                         </div>
                         <button type="button" onclick="addFahrt()">+</button>
                         <button type="button" onclick="removeFahrt(this)">-</button>
@@ -248,6 +248,35 @@
             document.getElementById(`signatureImage${type}`).src = signatureData;
             document.getElementById(`signatureImage${type}`).style.display = "block";
             closePopup(type);
+        }
+
+        function validateFahrten() {
+            let fahrtRows = document.querySelectorAll('.fahrt-row');
+            for (let row of fahrtRows) {
+                let startAdresse = row.querySelector('[name^="start_adresse"]').value.trim();
+                let endAdresse = row.querySelector('[name^="end_adresse"]').value.trim();
+                let kilometer = row.querySelector('[name^="kilometer"]').value.trim();
+
+                let allFilled = startAdresse && endAdresse && kilometer;
+                let allEmpty = !startAdresse && !endAdresse && !kilometer;
+
+                if (!(allFilled || allEmpty)) {
+                    alert('Wenn sie einen Fahrteintrag anlegen, müssen alle Felder ausgefüllt sein.');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function validateSignatures() {
+            let signatureDataKlient = document.getElementById('signatureDataKlient').value;
+            let signatureDataMitarbeiter = document.getElementById('signatureDataMitarbeiter').value;
+
+            if (!signatureDataKlient || !signatureDataMitarbeiter) {
+                alert('Bitte alle erforderlichen Unterschriften leisten.');
+                return false;
+            }
+            return true;
         }
 
     </script>
