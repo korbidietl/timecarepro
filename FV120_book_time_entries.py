@@ -46,17 +46,17 @@ def book_client_time_entry(client_id):
         flash(f"Für den Monat {next_month_to_book} existieren keine Zeiteinträge!")
         return render_template("FV120_book_time_entries.html")
 
-    # Überprüfen, ob alle Unterschriften vorhanden sind
+    # Überprüfen, ob alle Unterschriften vorhanden sind und Fehlermeldung ausgeben
     unvollständige_te = check_and_return_signatures(client_id, next_month, next_year)
     if not unvollständige_te is None:
         for entries in unvollständige_te:
             zeiteintrag = get_zeiteintrag_by_id(entries)
             if zeiteintrag[1] is None:
                 mit_name = get_name_by_id(zeiteintrag[5])
-                flash(f"Unterschrift von Mitarbeiter Nr. {mit_name} in Eintrag {zeiteintrag} fehlt.")
+                flash(f"Unterschrift von Mitarbeiter {mit_name} in Eintrag {zeiteintrag} fehlt.")
             elif zeiteintrag[2] is None:
                 kli_name = get_name_by_id(zeiteintrag[6])
-                flash(f"Unterschrift von Klient Nr. {kli_name} in Eintrag {zeiteintrag} fehlt.")
+                flash(f"Unterschrift von Klient {kli_name} in Eintrag {zeiteintrag} fehlt.")
         return render_template("FMOF010_show_supervisionhours_client.html", client_id=client_id)
 
 
