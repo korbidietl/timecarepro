@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from db_query import (book_zeiteintrag, check_signatures, get_last_buchung,
-                      get_zeiteintrag_for_client, get_first_te)
+from db_query import (book_zeiteintrag, get_last_buchung, get_zeiteintrag_by_id, get_name_by_id,
+                      get_zeiteintrag_for_client, get_first_te, check_and_return_signatures)
 from datetime import datetime
 
 book_time_entry_blueprint = Blueprint('book_time_entry', __name__)
@@ -44,6 +44,7 @@ def book_client_time_entry(client_id):
     # Überprüfen, ob Zeiteinträge für den nächsten Monat existieren
     if not get_zeiteintrag_for_client(client_id, next_month, next_year):
         flash(f"Für den Monat {next_month_to_book} existieren keine Zeiteinträge!")
+        return render_template("FV120_book_time_entries.html")
 
     # Überprüfen, ob alle Unterschriften vorhanden sind
     unvollständige_te = check_and_return_signatures(client_id, next_month, next_year)
@@ -51,9 +52,11 @@ def book_client_time_entry(client_id):
         for entries in unvollständige_te:
             zeiteintrag = get_zeiteintrag_by_id(entries)
             if zeiteintrag[1] is None:
-                flash(f"Unterschrift von Mitarbeiter Nr. {zeiteintrag[5]} in Eintrag {zeiteintrag} fehlt.")
+                mit_name = get_name_by_id(zeiteintrag[5])
+                flash(f"Unterschrift von Mitarbeiter Nr. {mit_name} in Eintrag {zeiteintrag} fehlt.")
             elif zeiteintrag[2] is None:
-                flash(f"Unterschrift von Klient Nr. {zeiteintrag[6]} in Eintrag {zeiteintrag} fehlt.")
+                kli_name = get_name_by_id(zeiteintrag[6])
+                flash(f"Unterschrift von Klient Nr. {kli_name} in Eintrag {zeiteintrag} fehlt.")
         return render_template("FMOF010_show_supervisionhours_client.html", client_id=client_id)
 
 
