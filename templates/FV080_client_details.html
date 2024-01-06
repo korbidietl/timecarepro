@@ -15,21 +15,21 @@
     {% include 'FAN020_navbar.html' %}
 
     <div class="registration-form_2">
-        <h2>Klient {{firstname[0]}} {{lastname[0]}}</h2>
+        <h2>Klient: {{firstname}} {{lastname}}</h2>
 
             <div class="form-row">
                 <div class="form-group2">
                     <label for="lastname">Nachname:</label>
-                    <input type="text" id="lastname" name="lastname" value={{lastname[0]}} readonly>
+                    <input type="text" id="lastname" name="lastname" value={{lastname}} readonly>
                 </div>
                 <div class="form-group2">
                     <label for="firstname">Vorname:</label>
-                    <input type="text" id="firstname" name="firstname" value="{{firstname[0]}}" readonly>
+                    <input type="text" id="firstname" name="firstname" value="{{firstname}}" readonly>
                 </div>
 
                 <div class="form-group2">
                     <label for="address">Adresse:</label>
-                    <input type="text" id="address" name="address" value="{{address[0]}}" readonly>
+                    <input type="text" id="address" name="address" value="{{address}}" readonly>
                 </div>
 
             </div>
@@ -37,11 +37,11 @@
             <div class="form-row">
                 <div class="form-group2">
                     <label for="birthday">Geburtstag:</label>
-                    <input type="text" id="birthday" name="birthday" value="{{birthday[0]}}" readonly>
+                    <input type="date" id="birthday" name="birthday" value="{{birthday}}" readonly>
                 </div>
                 <div class="form-group2">
                     <label for="phone">Telefonnummer:</label>
-                    <input type="text" id="phone" name="phone" value="{{phone[0]}}" readonly>
+                    <input type="text" id="phone" name="phone" value="{{phone}}" readonly>
                 </div>
                 <div class="form-group2">
                     <label for="sb">Sachbearbeiter:</label>
@@ -51,11 +51,11 @@
             <div class="form-row">
                 <div class="form-group2">
                     <label for="fk">Fachkraftkontingent:</label>
-                    <input type="text" id="fk" name="fk" value="{{fk[0]}}" readonly>
+                    <input type="text" id="fk" name="fk" value="{{fk}}" readonly>
                 </div>
                 <div class="form-group2">
                     <label for="hk">Hilfskraftkontingent:</label>
-                    <input type="text" id="hk" name="fk" value="{{hk[0]}}" readonly>
+                    <input type="text" id="hk" name="fk" value="{{hk}}" readonly>
                 </div>
                 <div class="form-group2">
                     <label for="fv">Fallverantwortung:</label>

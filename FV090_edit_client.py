@@ -19,11 +19,13 @@ def edit_client(client_id):
         nachname = request.form['nachname']
         geburtsdatum = request.form['geburtsdatum']
         telefonnummer = request.form['telefonnummer']
-        sachbearbeiter_id = request.form['sbDropdown']
+        sachbearbeiter_id = request.form['ktDropdown']
         adresse = request.form['adresse']
         kontingent_hk = request.form['kontingent_hk']
         kontingent_fk = request.form['kontingent_fk']
         fallverantwortung_id = request.form['fvDropdown']
+
+        print(fallverantwortung_id)
 
         try:
             edit_klient(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,

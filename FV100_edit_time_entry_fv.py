@@ -6,7 +6,7 @@ from email.mime.text import MIMEText
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session
 from db_query import get_zeiteintrag_with_fahrten_by_id, edit_zeiteintrag, get_email_by_zeiteintrag, \
     get_lastname_by_email, check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id, get_fahrt_by_zeiteintrag, \
-    get_klient_data
+    get_klient_data, get_firstname_by_email
 
 edit_time_entry_fv_blueprint = Blueprint('edit_time_entry_fv', __name__)
 
@@ -24,12 +24,12 @@ def send_email(email, subject, body):
     smtp.sendmail('edittimeentry@timecarepro.de', [email], msg.as_string())
 
 
-def send_email_edit_time_entry(email, lastname, id):
+def send_email_edit_time_entry(email, firstname, lastname, z_id):
     subject = "Bearbeiteter Zeiteintrag"
-    body = (f"Sehr geehrte/r Frau/Mann {lastname}, \n\n"
-            f"Ihr Zeiteintrag {id} wurde von der Verwaltung bearbeitet."
+    body = (f"Sehr geehrte/r {firstname} {lastname}, \n\n"
+            f"Ihr Zeiteintrag {z_id} wurde von der Verwaltung bearbeitet."
             f"Bitte prüfen und unterschreiben Sie den geänderten Eintrag.\n\n"
-            f"Mit freundlichen Grüßen\n"
+            f"Freundliche Grüße\n"
             f"Ihr TimeCare Pro-Team")
     send_email(email, subject, body)
 
@@ -38,6 +38,7 @@ def send_email_edit_time_entry(email, lastname, id):
 def edit_time_entry(zeiteintrag_id):
     session['url'] = url_for('edit_time_entry_fv.edit_time_entry', zeiteintrag_id=zeiteintrag_id)
     email = get_email_by_zeiteintrag(zeiteintrag_id)
+    firstname = get_firstname_by_email(email)
     lastname = get_lastname_by_email(email)
 
     zeiteintrag_liste = get_zeiteintrag_by_id(zeiteintrag_id)
@@ -86,7 +87,7 @@ def edit_time_entry(zeiteintrag_id):
                          beschreibung, interne_notiz, absage)
         if check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_datetime, end_datetime):
             return redirect(url_for('/check_overlapping_time', zeiteintrag_id=zeiteintrag_id))
-        send_email_edit_time_entry(email, lastname, zeiteintrag_id)
+        send_email_edit_time_entry(email, firstname, lastname, zeiteintrag_id)
         # Erfolgsmeldung
         success_message = "Eintrag erfolgreich bearbeitet."
         flash(success_message, 'success')
