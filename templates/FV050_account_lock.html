@@ -27,8 +27,9 @@
     </div>
     <script>
     function close_popup() {
-                window.history.back();
-            }
+        var return_url = "{{ return_url }}";
+        window.location.href = return_url;
+    }
     </script>
 </body>
 </html>

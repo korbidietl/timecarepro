@@ -14,6 +14,7 @@ def edit_account(person_id):
 
     person_data_list = get_person_data(person_id)
     person_data = person_data_list[0]
+    print(person_data)
 
     if person_data:
         firstname = person_data[1]
