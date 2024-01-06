@@ -93,4 +93,7 @@ def submit_arbeitsstunden():
         # Weiterleitung zurück zur Übersicht der abgelegten Stunden
         return redirect(session.pop('url', None))
 
-    return render_template('FMOF030_create_time_entry.html', klienten = klienten)
+    # return url zur rückleitung
+    return_url = session.get('url')
+
+    return render_template('FMOF030_create_time_entry.html', klienten = klienten, return_url = return_url)

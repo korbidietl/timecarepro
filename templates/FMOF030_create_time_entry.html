@@ -27,7 +27,7 @@
 
     <div class="registration-form">
         <h2>Zeiteintrag hinzufügen</h2>
-        <form action="/client_hours_blueprint.client_supervision_hours" method="post">
+        <form action="/client_hours_blueprint.client_supervision_hours" onsubmit="validateSignatures(), validateFahrten()" method="post">
             <div class="form-row">
                 <div class="form-group">
                     <label for="datum">Datum:</label>
@@ -94,50 +94,49 @@
                 </div>
             </div>
 
-            <form onsubmit="return validateSignatures()">
-                <!--Unterschriften Felder -->
-                <div class="form-row">
-                    <div class="signature-container" type="button" onclick="openSignaturePopup('Klient')">
-                        <img id="signatureImageKlient" src="{{ signature_data_klient }}" alt="Unterschrift Klient" style="{% if signature_data_klient %}display: block;{% else %}display: none;{% endif %}">
-                        <p>Unterschrift Klient</p>
-                    </div>
+            <!-- hidden return url -->
+            <input type="hidden" name="returnurl" value="{{ return_url }}">
 
-                    <div class="signature-container" type="button" onclick="openSignaturePopup('Mitarbeiter')">
-                        <img id="signatureImageMitarbeiter" src="{{ signature_data_mitarbeiter }}" alt="Unterschrift Mitarbeiter" style="{% if signature_data_mitarbeiter %}display: block;{% else %}display: none;{% endif %}">
-                        <p>Unterschrift Mitarbeiter</p>
-                    </div>
+            <!--Unterschriften Felder -->
+            <div class="form-row">
+                <div class="signature-container" type="button" onclick="openSignaturePopup('Klient')">
+                    <img id="signatureImageKlient" src="{{ signature_data_klient }}" alt="Unterschrift Klient" style="{% if signature_data_klient %}display: block;{% else %}display: none;{% endif %}">
+                    <p>Unterschrift Klient</p>
                 </div>
 
-                <!-- Pop-up für Unterschrift Klient -->
-                <div id="signaturePopupKlient" class="signature-popup" style="display:none;">
-                    <canvas id="signatureCanvasKlient" width="400" height="200" style="border:1px solid #000;"></canvas>
-                    <div class="signature-actions">
-                        <button type="button" onclick="saveSignature('Klient')">Speichern</button>
-                        <button type="button" onclick="clearSignature('Klient')">Leeren</button>
-                        <button type="button" onclick="closePopup('Klient')">Schließen</button>
-                    </div>
+                <div class="signature-container" type="button" onclick="openSignaturePopup('Mitarbeiter')">
+                    <img id="signatureImageMitarbeiter" src="{{ signature_data_mitarbeiter }}" alt="Unterschrift Mitarbeiter" style="{% if signature_data_mitarbeiter %}display: block;{% else %}display: none;{% endif %}">
+                    <p>Unterschrift Mitarbeiter</p>
                 </div>
+            </div>
 
-
-                <!-- Pop-up für Unterschrift Mitarbeiter -->
-                <div id="signaturePopupMitarbeiter" class="signature-popup" style="display:none;">
-                    <canvas id="signatureCanvasMitarbeiter" width="400" height="200" style="border:1px solid #000;"></canvas>
-                    <div class="signature-actions">
-                        <button type="button" onclick="saveSignature('Mitarbeiter')">Speichern</button>
-                        <button type="button" onclick="clearSignature('Mitarbeiter')">Leeren</button>
-                        <button type="button" onclick="closePopup('Mitarbeiter')">Schließen</button>
-                    </div>
+            <!-- Pop-up für Unterschrift Klient -->
+            <div id="signaturePopupKlient" class="signature-popup" style="display:none;">
+                <canvas id="signatureCanvasKlient" width="400" height="200" style="border:1px solid #000;"></canvas>
+                <div class="signature-actions">
+                    <button type="button" onclick="saveSignature('Klient')">Speichern</button>
+                    <button type="button" onclick="clearSignature('Klient')">Leeren</button>
+                    <button type="button" onclick="closePopup('Klient')">Schließen</button>
                 </div>
+            </div>
 
-                <!-- Versteckte Formularfelder für Unterschriftsdaten -->
-                <input type="hidden" id="signatureDataKlient" name="signatureDataKlient">
-                <input type="hidden" id="signatureDataMitarbeiter" name="signatureDataMitarbeiter">
-            </form>
+            <!-- Pop-up für Unterschrift Mitarbeiter -->
+            <div id="signaturePopupMitarbeiter" class="signature-popup" style="display:none;">
+                <canvas id="signatureCanvasMitarbeiter" width="400" height="200" style="border:1px solid #000;"></canvas>
+                <div class="signature-actions">
+                    <button type="button" onclick="saveSignature('Mitarbeiter')">Speichern</button>
+                    <button type="button" onclick="clearSignature('Mitarbeiter')">Leeren</button>
+                    <button type="button" onclick="closePopup('Mitarbeiter')">Schließen</button>
+                </div>
+            </div>
 
+            <!-- Versteckte Formularfelder für Unterschriftsdaten -->
+            <input type="hidden" id="signatureDataKlient" name="signatureDataKlient">
+            <input type="hidden" id="signatureDataMitarbeiter" name="signatureDataMitarbeiter">
 
             <div class="form-actions">
                 <button type="submit">Eintrag hinzufügen</button>
-                <button type="button" onclick="window.location='/client_supervision_hours/{{ client }}';">Abbrechen</button>
+                <button type="button" onclick="close_window">Abbrechen</button>
             </div>
         </form>
     </div>
@@ -274,6 +273,29 @@
                 return false;
             }
             return true;
+        }
+
+        function validateFahrten() {
+            let fahrtRows = document.querySelectorAll('.fahrt-row');
+            for (let row of fahrtRows) {
+                let startAdresse = row.querySelector('[name^="start_adresse"]').value.trim();
+                let endAdresse = row.querySelector('[name^="end_adresse"]').value.trim();
+                let kilometer = row.querySelector('[name^="kilometer"]').value.trim();
+
+                let allFilled = startAdresse && endAdresse && kilometer;
+                let allEmpty = !startAdresse && !endAdresse && !kilometer;
+
+                if (!(allFilled || allEmpty)) {
+                    alert('Wenn sie einen Fahrteintrag anlegen, müssen alle Felder ausgefüllt sein.');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function close_window() {
+            var return_url = "{{ return_url }}";
+            window.location.href = return_url;
         }
 
     </script>
