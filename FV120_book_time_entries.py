@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from db_query import (book_zeiteintrag, check_signatures, get_last_buchung,
-                      get_zeiteintrag_for_client)
+                      get_zeiteintrag_for_client, get_first_te)
 from datetime import datetime
 from FMOF010_show_supervisionhours_client import extrahiere_jahr_und_monat
 
@@ -31,25 +31,10 @@ def get_next_month_to_book(last_buchung_date):
 
 @book_time_entry_blueprint.route('/book_time_entries/<int:client_id>', methods=['POST'])
 def book_client_time_entry(client_id):
-    # kombination jahr_monat
-    # aktuelles_jahr = datetime.now().year
-    # aktueller_monat = datetime.now().month
-
-    # auswahl des angezeigten Zeitraums
-    # if request.method == 'POST':
-    # gewaehlte_kombination = request.form.get('monat_jahr')
-    # else:
-    # Standardmäßig aktuelles Monat und Jahr
-    # monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-    # 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
-
-    # gewaehlte_kombination = f"{monate[aktueller_monat - 1]} {aktuelles_jahr}"
-
-    # month, year = extrahiere_jahr_und_monat(gewaehlte_kombination)
-    # selected_datum = datetime(year, month, 1).strftime('%Y-%m')
-
+    # Letzte Buchung abrufen
     last_month_booked = get_last_buchung(client_id)
-    print(last_month_booked)
+    if last_month_booked is None:
+        last_month_booked = get_first_te(client_id)
     next_month_to_book = get_next_month_to_book(last_month_booked)
 
     # überprüfe ob zeiteinträge für monat gefunden werden
