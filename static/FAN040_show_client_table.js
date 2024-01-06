@@ -84,9 +84,9 @@
                                     <td>${client[2]}</td>
                                     <td>${client[3]}</td>
                                     <td>${client[4]}</td>
-                                    <td>${client.saldo_fk}</td>
-                                    <td>${client.saldo_hk}</td>
-                                    <td>${client.fallverantwortung}</td>`;
+                                    <td>${client[5]}</td>
+                                    <td>${client[6]}</td>
+                                    <td>${client[7]}</td>`;
 
                     if (userRole === 'Verwaltung') {
                         tableHTML += `<td>

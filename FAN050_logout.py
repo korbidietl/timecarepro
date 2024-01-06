@@ -19,6 +19,7 @@ def logout():
         session.pop('user_role', None)
         session.pop('user_email', None)
         session.pop('last_activity', None)
+        session.pop('url', None)
 
         return render_template('FNAN010_login.html')
 

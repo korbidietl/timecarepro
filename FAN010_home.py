@@ -9,4 +9,5 @@ def home():
 
     role = session.get('user_role')
 
+
     return render_template('FAN010_home.html', user_id=user_id, role=role)

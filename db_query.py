@@ -143,7 +143,6 @@ def validate_email(email):
     return False
 
 
-
 # /FAN030/
 # /FMOF020/
 def get_role_by_id(person_id):
@@ -351,11 +350,21 @@ def set_password_id(person_id, new_passwort):
     connection.close()
 
 
-# /FAN060/
+# /FNAN020/
 def set_password_required_true(email):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("UPDATE person SET passwort_erzwingen = 1 WHERE email = %s", (email,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
+# /FAN060/
+def set_password_required_false(email):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE person SET passwort_erzwingen = 0 WHERE email = %s", (email,))
     connection.commit()
     cursor.close()
     connection.close()
@@ -782,6 +791,7 @@ def get_klient_data(client_id):
     cursor.execute("SELECT * FROM klient WHERE ID = %s", (client_id,))
     result = cursor.fetchall()
     return result
+
 
 # /FMOF020
 # /FV080
@@ -1426,6 +1436,7 @@ def get_role_by_email(email):
     result = cursor.fetchone()  # erstes Ergebnis wird aufgerufen
     cursor.close()
     return result[0] if result else None
+
 
 # FNAN020
 # Methode gibt Vornamen zurück, wenn er in der Datenbank gefunden wird. Andernfalls gibt sie None zurück.

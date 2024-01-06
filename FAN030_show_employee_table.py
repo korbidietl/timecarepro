@@ -19,6 +19,7 @@ def get_employee_data():
     print('Hallo')
     print(role)
 
+
     if role in ["Steuerbüro", "Verwaltung", "Geschäftsführung"]:
         mitarbeiter = account_table(month, year)
         print('after:' )
@@ -27,7 +28,8 @@ def get_employee_data():
         mitarbeiter = account_table_mitarbeiter(month, year, person)
         print(mitarbeiter)
     else:
-       return
+        flash("Sie sind nicht erlaubt diese Tabelle zu sehen")
+        return render_template('FAN010_home.html')
 
     return jsonify(mitarbeiter)
 
