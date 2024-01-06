@@ -565,8 +565,8 @@ def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, e
     cursor.execute("INSERT INTO zeiteintrag (unterschrift_Mitarbeiter, unterschrift_Klient, start_zeit, end_zeit, "
                    "mitarbeiter_ID, klient_ID, fachkraft, beschreibung, interne_notiz, absage) "
                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                   unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time, session['user_id'],
-                   klient_id, fachkraft, beschreibung, interne_notiz, absage)
+                   (unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time, session['user_id'],
+                    klient_id, fachkraft, beschreibung, interne_notiz, absage))
     zeiteintrag_id = cursor.lastrowid
     connection.commit()
     cursor.close()
@@ -910,6 +910,7 @@ def get_email_by_zeiteintrag(zeiteintrag_id):
     else:
         return None
 
+
 # /FV120/
 def check_and_return_signatures(client_id, month, year):
     connection = get_database_connection()
@@ -986,6 +987,7 @@ def check_signatures(client_id, month, year):
             missing_signatures.append({'zeiteintrag_id': result['ID'], 'missing': missing})
 
     return all_signed, missing_signatures
+
 
 # /FV120/
 def book_zeiteintrag(client_id):

@@ -10,19 +10,20 @@ create_time_entry_blueprint = Blueprint('/create_time_entry', __name__)
 
 def check_time_entry_constraints(datum, startZeit, endZeit, klientID):
     # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
+    jetzt = datetime.now()
     if startZeit >= endZeit:
         flash("Endzeitpunkt muss nach Startzeitpunkt sein.")
         return render_template("FMOF030_create_time_entry.html")
 
     # prüft ob startzeitpunkt in der zukunft liegt
-    if startZeit > time.strftime("%H:%M") or datum > time.strftime("%d.%m.%Y"):
-        flash("Der Startzeitpunkt darf nicht in der Zukunft liegen!")
+    if startZeit.time() > jetzt.time() or datum.date() > jetzt.date():
+        flash("Strtzeitpunkt muss in der Vergangenheit liegen")
         return render_template("FMOF030_create_time_entry.html")
 
     # prüft ob dieser monat schon gebucht wurde
     datum.strftime("%m.%Y")
     if check_month_booked(datum, klientID):
-        flash("Dieser Monat wurde von den ausgewählten Klienten bereits gebucht!")
+        flash("Die Stundennachweise für diesen Monat wurden bereits gebucht, es kann kein Eintrag mehr hinzugefügt werden")
         return render_template("FMOF030_create_time_entry.html")
 
 
@@ -83,9 +84,12 @@ def submit_arbeitsstunden():
                 start_adresse = request.form.get(f'start_adresse{fahrt_index}')
                 end_adresse = request.form.get(f'end_adresse{fahrt_index}')
                 kilometer = request.form.get(f'kilometer{fahrt_index}')
-                if not (kilometer is None and start_adresse is None and end_adresse is None):
-                    if kilometer is None or start_adresse is None or end_adresse is None:
-                        flash("Wenn eine Fahrt angelegt wird müssen alle Felder ausgefüllt sein")
+                # Abbruchbedingung: Alle Felder sind None
+                if abrechenbarkeit is None and start_adresse is None and end_adresse is None:
+                    break
+                # Überprüfen ob alle erforderlichen Felder vorhanden sind
+                if not (kilometer and start_adresse and end_adresse):
+                    flash("Wenn eine Fahrt angelegt wird müssen alle Felder ausgefüllt sein")
                 add_fahrt(zeiteintrag_id, abrechenbarkeit, start_adresse, end_adresse, kilometer)
                 fahrt_index += 1
 

@@ -27,7 +27,7 @@
 
     <div class="registration-form">
         <h2>Zeiteintrag hinzufügen</h2>
-        <form action="{{url_for('client_hours_blueprint.client_supervision_hours)}}" onsubmit="validateSignatures(), validateFahrten()" method="post">
+        <form action="{{url_for('/create_time_entry.submit_arbeitsstunden')}}" onsubmit="validateSignatures(), validateFahrten()" method="post">
             <div class="form-row">
                 <div class="form-group">
                     <label for="datum">Datum:</label>
@@ -49,8 +49,9 @@
                     <label for="klientDropdown">Klient:</label>
                     <select class="form-control" id="klientDropdown" name="klientDropdown">
                         <!-- Optionen werden durch Python generiert -->
+                        <option value="{{klient}}" disabled selected>Bitte wählen</option>
                         {% for klient in klienten %}
-                        <option value="{{klient.id}}">{{klient.nachname}}</option>
+                        <option value="{{klient.id}}">{{klient[0]}}</option>
                         {% endfor %}
                     </select>
                 </div>
