@@ -6,6 +6,7 @@ delete_time_entry_blueprint = Blueprint("delete_te", __name__)
 
 @delete_time_entry_blueprint.route('/delete_te/<int:zeiteintrags_id>', methods=['POST', 'GET'])
 def delete_te(zeiteintrags_id):
+    return_url = session.get('url')
     if request.method == 'POST':
         # übergebene ID und vermerk von welcher Funktion hierher geleitet
         booked = check_booked(zeiteintrags_id)
@@ -26,5 +27,5 @@ def delete_te(zeiteintrags_id):
 
             # Rückleitungen zur Herkunftsfunktion und löschen aus der Session
             return redirect(session.pop('url', None))
-    return render_template('FMOF060_delete_time_entry.html', zeiteintrags_id=zeiteintrags_id)
+    return render_template('FMOF060_delete_time_entry.html', zeiteintrags_id=zeiteintrags_id, return_url=return_url)
 
