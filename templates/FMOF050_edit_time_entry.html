@@ -101,13 +101,11 @@
             <!--Unterschriften Felder -->
             <div class="form-row">
                 <div class="signature-container" onclick="openSignaturePopup('Klient')">
-                    <img id="signatureImageKlient" src="data:image/png;base64,{{ signature_data_klient }}" alt="Unterschrift Klient" style="{% if signature_data_klient %}display: block;{% endif %}">
                     <p>Unterschrift Klient</p>
 
                 </div>
 
                 <div class="signature-container" onclick="openSignaturePopup('Mitarbeiter')">
-                    <img id="signatureImageMitarbeiter" src="data:image/png;base64,{{ signature_data_mitarbeiter }}" alt="Unterschrift Mitarbeiter" style="{% if signature_data_mitarbeiter %}display: block;{% endif %}">
                     <p>Unterschrift Mitarbeiter</p>
                 </div>
             </div>

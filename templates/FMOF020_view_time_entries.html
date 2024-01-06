@@ -78,7 +78,7 @@
                 </td>
                 <td>
                     {% if booked == False %}
-                    <form action="{{url_for('edit_time_entry.edit_time_entry', zeiteintrag_id = entry[0])}}" method="post">
+                    <form action="{{url_for('edit_time_entry.edit_time_entry', zeiteintrag_id = entry[0])}}" method="get">
                         <button type="submit">Bearbeiten</button>
                     </form>
                     {% endif %}

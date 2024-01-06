@@ -32,16 +32,7 @@ def edit_time_entry(zeiteintrag_id):
     klient_data = get_klient_data(klient_id)
     klient_name = klient_data[0][1] + ' ' + klient_data[0][2]
 
-    # Umwandlung Unterschriften
-    if zeiteintrag[1]:
-        unterschrift_mitarbeiter = base64.b64encode(zeiteintrag[1]).decode('utf-8')
-    else:
-        unterschrift_mitarbeiter = ""
 
-    if zeiteintrag[2]:
-        unterschrift_klient = base64.b64encode(zeiteintrag[2]).decode('utf-8')
-    else:
-        unterschrift_klient = ""
 
     if request.method == 'POST':
         # Eingabedaten aus dem Formular holen
@@ -108,5 +99,4 @@ def edit_time_entry(zeiteintrag_id):
 
     return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
                            klient_name=klient_name, datum=datum, von=von, bis=bis,
-                           unterschrift_klient=unterschrift_klient,
-                           unterschrift_mitarbeiter=unterschrift_mitarbeiter, zeiteintrag_id=zeiteintrag_id, klienten=klienten)
+                            zeiteintrag_id=zeiteintrag_id, klienten=klienten)
