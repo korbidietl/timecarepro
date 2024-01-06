@@ -57,7 +57,7 @@ def submit_arbeitsstunden():
         interne_notiz = request.form.get('interneNotiz')
         unterschrift_klient = request.form.get('signatureDataKlient')
         unterschrift_mitarbeiter = request.form.get('signatureDataKlient')
-        absage = request.form.get('absage')
+        absage = "1" if request.form.get('absage') is not None else "0"
 
         # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
         datum_datetime = datetime.strptime(f"{datum}", '%Y-%m-%d')
