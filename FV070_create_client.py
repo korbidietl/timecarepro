@@ -4,7 +4,7 @@ from db_query import mitarbeiter_dropdown, create_klient, validate_client, koste
 
 create_client_blueprint = Blueprint("create_client", __name__)
 
-
+test
 @create_client_blueprint.route('/create_client', methods=['POST', 'GET'])
 def register_client():
     if request.method == 'POST':
