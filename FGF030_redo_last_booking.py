@@ -15,10 +15,8 @@ def revidieren_buchung(client_id):
             last_buchung_month = last_buchung[0]
             delete_buchung(last_buchung_id)
             flash(f"Buchung für Monat {last_buchung_month} wurde erfolgreich revidiert.", 'success')
-            return redirect(session.pop('url', None))
         else:
             flash("Keine Buchung gefunden, die revidiert werden könnte.", 'error')
-            return redirect(session.pop('url', None))
 
     return render_template('FGF030_redo_last_booking.html', last_buchung=last_buchung, client_id=client_id,
                            return_url=return_url)
