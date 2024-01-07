@@ -41,15 +41,15 @@
                     <label for="endZeit">Endzeitpunkt:</label>
                     <input type="time" id="endZeit" name="endZeit" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group for-non-zero-klient">
                     <label for="fachkraft">Fachkraft:</label>
                     <input type="checkbox" id="fachkraft" name="fachkraft">
                 </div>
                 <div class="form-group">
                     <label for="klientDropdown">Klient:</label>
-                    <select class="form-control" id="klientDropdown" name="klientDropdown">
+                    <select class="form-control" id="klientDropdown" name="klientDropdown" required onchange="toggleFieldsBasedOnKlientId()">
                         <!-- Optionen werden durch Python generiert -->
-                        <option value="" disabled selected>Bitte wählen</option>
+                        <option value="" disabled {{ 'selected' if not klient_id else '' }}>Bitte wählen</option>
                         {% for klient in klienten %}
                         <option value="{{ klient.id }}">{{ klient.id }} - {{ klient.nachname }}, {{ klient.vorname }}</option>
                         {% endfor %}
@@ -75,7 +75,7 @@
             <div id="fahrtenContainer">
                 <!-- Ursprüngliche Fahrt-Eingabezeile -->
                 <div class="form-row fahrt-row">
-                    <div class="form-group">
+                    <div class="form-group for-non-zero-klient">
                         <label for="abrechenbarkeit0">Abrechenbarkeit:</label>
                         <input type="checkbox" id="abrechenbarkeit0" name="abrechenbarkeit0">
                     </div>
@@ -103,7 +103,7 @@
 
             <!--Unterschriften Felder -->
             <div class="form-row">
-                <div class="signature-container" type="button" onclick="openSignaturePopup('Klient')">
+                <div class="signature-container for-non-zero-klient" type="button" onclick="openSignaturePopup('Klient')">
                     <img id="signatureImageKlient" src="{{ signature_data_klient }}" alt="Unterschrift Klient" style="{% if signature_data_klient %}display: block;{% else %}display: none;{% endif %}">
                     <p>Unterschrift Klient</p>
                 </div>
@@ -138,12 +138,23 @@
             <input type="hidden" id="signatureDataKlient" name="signatureDataKlient">
             <input type="hidden" id="signatureDataMitarbeiter" name="signatureDataMitarbeiter">
 
-            <div class="form-actions">
+            <div class="form-actions" style="margin-left: 20px;">
                 <button type="submit">Eintrag hinzufügen</button>
                 <button type="button" onclick="close_window()">Abbrechen</button>
             </div>
         </form>
     </div>
+    <script>
+        function toggleFieldsBasedOnKlientId() {
+            let klientId = document.getElementById('klientDropdown').value;
+            console.log(klientId)
+            let elements = document.getElementsByClassName('for-non-zero-klient');
+
+             for (let i = 0; i < elements.length; i++) {
+                elements[i].style.display = klientId !== '1' ? 'block' : 'none';
+            }
+         }
+    </script>
 
     <script>
         let fahrtCounter = 1;

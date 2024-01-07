@@ -536,10 +536,18 @@ body {
 .form-group input[type="time"],
 .form-group input[type="date"],
 .form-group input[type="number"],
-.form-group select {
+.form-group input{
+
     width: 80%;
     height: 20px;
     padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-group select {
+    width: 90%;
+    height: 40px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
