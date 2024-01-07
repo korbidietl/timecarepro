@@ -14,7 +14,7 @@ edit_time_entry_blueprint = Blueprint('edit_time_entry', __name__)
 def edit_time_entry(zeiteintrag_id):
 
     # session speichern für rückleitung
-    session['url'] = url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag_id)
+    session['url_overlapping'] = url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag_id)
 
     # klienten für client_dropdown
     klienten = client_dropdown()

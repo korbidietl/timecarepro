@@ -36,7 +36,7 @@ def send_email_edit_time_entry(email, firstname, lastname, z_id):
 
 @edit_time_entry_fv_blueprint.route('/edit_time_entry_fv/<int:zeiteintrag_id>', methods=['GET', 'POST'])
 def edit_time_entry(zeiteintrag_id):
-    session['url'] = url_for('edit_time_entry_fv.edit_time_entry', zeiteintrag_id=zeiteintrag_id)
+    session['url_overlapping'] = url_for('edit_time_entry_fv.edit_time_entry', zeiteintrag_id=zeiteintrag_id)
     email = get_email_by_zeiteintrag(zeiteintrag_id)
     firstname = get_firstname_by_email(email)
     lastname = get_lastname_by_email(email)

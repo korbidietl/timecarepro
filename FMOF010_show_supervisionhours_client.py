@@ -97,6 +97,7 @@ def unterschriften_liste(zeiteintraege_liste):
 def client_supervision_hours(client_id):
     # Für Rückleitung
     session['url'] = url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id)
+    session['client_id'] = client_id
 
     # Rolle und ID aus der Session
     user_id = session.get('user_id')
