@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, session, flash, redirect, url_for
-from db_query import edit_klient, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data, get_current_client, get_new_client, save_change_log
+from db_query import edit_klient_fct, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data, get_current_client, get_new_client, save_change_log
 
 edit_client_blueprint = Blueprint('edit_client', __name__)
 
@@ -10,13 +10,11 @@ def edit_client(client_id):
     person = session.get('user_id')
 
     client_data_list = get_klient_data(client_id)
-    print(client_data_list)
 
     kostentraeger = kostentraeger_dropdown()
     fallverantwortung = mitarbeiter_dropdown()
 
-    if client_data_list and request.method == 'POST':
-        client_data = client_data_list[0]
+    if request.method == 'POST':
         vorname = request.form.get('vorname')
         nachname = request.form.get('nachname')
         geburtsdatum = request.form.get('geburtsdatum')
@@ -28,20 +26,20 @@ def edit_client(client_id):
         fallverantwortung_id = request.form.get('fvDropdown')
 
         try:
-            edit_klient(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
+            edit_klient_fct(person, client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                         kontingent_hk, kontingent_fk, fallverantwortung_id)
             print(21)
             new_client = get_new_client(client_id)
             save_change_log(person, "Klient", current_client, new_client)
             flash('Client successfully updated')
             print("vor success")
-            return redirect(url_for('edit_client.edit_client', client_id=client_id))
+            return redirect(session.pop('url', None))
             print("nach success")
         except Exception as e:
             flash('Error updating client: ' + str(e))
             return redirect(url_for('edit_client.edit_client', client_id=client_id))
 
-    elif client_data_list:
+    else:
         client_data = client_data_list[0]
         firstname = client_data[1]
         lastname = client_data[2]
