@@ -1,10 +1,11 @@
-import base64
-
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
 from db_query import (edit_zeiteintrag, delete_fahrt, add_fahrt, edit_fahrt,
                       fahrt_id_existing, check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id,
-                      get_fahrt_by_zeiteintrag, get_klient_data, client_dropdown)
+                      get_fahrt_by_zeiteintrag, get_klient_data, client_dropdown, get_email_by_zeiteintrag,
+                      get_firstname_by_email, get_lastname_by_email)
 from datetime import datetime
+from email.mime.text import MIMEText
+import smtplib
 from FMOF030_create_time_entry import check_time_entry_constraints, base64_to_blob
 
 edit_time_entry_blueprint = Blueprint('edit_time_entry', __name__)
@@ -12,9 +13,9 @@ edit_time_entry_blueprint = Blueprint('edit_time_entry', __name__)
 
 @edit_time_entry_blueprint.route('/edit_time_entry/<int:zeiteintrag_id>', methods=['GET', 'POST'])
 def edit_time_entry(zeiteintrag_id):
-
     # session speichern für rückleitung
     session['url'] = url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag_id)
+    session_role = session.get('user_role')
 
     # klienten für client_dropdown
     klienten = client_dropdown()
@@ -31,8 +32,6 @@ def edit_time_entry(zeiteintrag_id):
     klient_id = zeiteintrag[6]
     klient_data = get_klient_data(klient_id)
     klient_name = klient_data[0][1] + ' ' + klient_data[0][2]
-
-
 
     if request.method == 'POST':
         # Eingabedaten aus dem Formular holen
@@ -51,7 +50,6 @@ def edit_time_entry(zeiteintrag_id):
         start_datetime = datetime.strptime(f"{start_zeit}", '%H:%M')
         end_datetime = datetime.strptime(f"{end_zeit}", '%H:%M')
 
-
         if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id):
             # Umwandlung der Unterschriften
             if neue_unterschrift_klient:
@@ -62,51 +60,85 @@ def edit_time_entry(zeiteintrag_id):
             # Änderungen am Zeiteintrag speichern
             edit_zeiteintrag(zeiteintrag_id, datum_datetime, start_datetime, end_datetime, neue_unterschrift_klient,
                              neue_unterschrift_mitarbeiter, klient_id, beschreibung, interne_notiz, absage)
+
             if check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_datetime, end_datetime):
                 return redirect(url_for('/check_overlapping_time', zeiteintrag_id=zeiteintrag_id))
+
+            # wenn verwaltung ändert, muss E-Mail an mitarbeiter gesendet werden
+            if session_role == "Verwaltung":
+                email = get_email_by_zeiteintrag(zeiteintrag_id)
+                firstname = get_firstname_by_email(email)
+                lastname = get_lastname_by_email(email)
+                send_email_edit_time_entry(email, firstname, lastname, zeiteintrag_id)
+
         else:
             check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id)
 
-        # importiere fahrtCounter von html hidden input in python
-        fahrtCounter = int(request.form.get('fahrtCounterInput', 1))
+        # verwaltung kann nur tabelle zeiteintrag ändern nicht aber fahrten (laut pflichtenheft!!)
+        if not session_role == "Verwaltung":
+            # importiere fahrtCounter von html hidden input in python
+            fahrtCounter = int(request.form.get('fahrtCounterInput', 1))
 
-        # Bearbeite Fahrt-Einträge
-        existing_fahrten_ids = request.form.getlist('existing_fahrten_ids')
+            # Bearbeite Fahrt-Einträge
+            existing_fahrten_ids = request.form.getlist('existing_fahrten_ids')
 
-        for fahrt_id in existing_fahrten_ids:
-            kilometer = request.form[f'kilometer{fahrt_id}']
-            start_adresse = request.form[f'start_adresse{fahrt_id}']
-            end_adresse = request.form[f'end_adresse{fahrt_id}']
-            if not (kilometer is None and start_adresse is None and end_adresse is None):
-                if kilometer is None or start_adresse is None or end_adresse is None:
-                    flash("Wenn eine Fahrt angelegt wird müssen alle Felder ausgefüllt sein")
-                    break
+            for fahrt_id in existing_fahrten_ids:
+                kilometer = request.form[f'kilometer{fahrt_id}']
+                start_adresse = request.form[f'start_adresse{fahrt_id}']
+                end_adresse = request.form[f'end_adresse{fahrt_id}']
+                if not (kilometer is None and start_adresse is None and end_adresse is None):
+                    if kilometer is None or start_adresse is None or end_adresse is None:
+                        flash("Wenn eine Fahrt angelegt wird müssen alle Felder ausgefüllt sein")
+                        break
 
-            # aktualisiere die Fahrt
-            edit_fahrt(fahrt_id=request.form[f'fahrt_id{fahrt_id}'], kilometer=request.form[f'kilometer{fahrt_id}'],
-                       abrechenbar=request.form.get(f'abrechenbarkeit{fahrt_id}', False),
-                       start_adresse=request.form[f'start_adresse{fahrt_id}'],
-                       end_adresse=request.form[f'end_adresse{fahrt_id}'],
-                       zeiteintrag_id=zeiteintrag_id)
+                # aktualisiere die Fahrt
+                edit_fahrt(fahrt_id=request.form[f'fahrt_id{fahrt_id}'], kilometer=request.form[f'kilometer{fahrt_id}'],
+                           abrechenbar=request.form.get(f'abrechenbarkeit{fahrt_id}', False),
+                           start_adresse=request.form[f'start_adresse{fahrt_id}'],
+                           end_adresse=request.form[f'end_adresse{fahrt_id}'],
+                           zeiteintrag_id=zeiteintrag_id)
 
-        # Füge neue Fahrten hinzu
-        for i in range(fahrtCounter):  # fahrtCounter sollte vom Frontend übergeben werden
-            if not f'fahrt_id{i}':
-                add_fahrt(kilometer=request.form[f'kilometer_new{i}'],
-                          start_adresse=request.form[f'start_adresse_new{i}'],
-                          end_adresse=request.form[f'end_adresse_new{i}'],
-                          abrechenbar=request.form.get(f'abrechenbarkeit_new{i}', False),
-                          zeiteintrag_id=zeiteintrag_id)
+            # Füge neue Fahrten hinzu
+            for i in range(fahrtCounter):  # fahrtCounter sollte vom Frontend übergeben werden
+                if not f'fahrt_id{i}':
+                    add_fahrt(kilometer=request.form[f'kilometer_new{i}'],
+                              start_adresse=request.form[f'start_adresse_new{i}'],
+                              end_adresse=request.form[f'end_adresse_new{i}'],
+                              abrechenbar=request.form.get(f'abrechenbarkeit_new{i}', False),
+                              zeiteintrag_id=zeiteintrag_id)
 
-        # fahrt entfernen
-        # wenn fahrt id nicht mehr in bestehenden fahrten ist, dann löschen
-        for i in range(fahrtCounter):
-            if not fahrt_id_existing(f'fahrt_id{i}'):
-                delete_fahrt(f'fahrt_id{i}')
+            # fahrt entfernen
+            # wenn fahrt id nicht mehr in bestehenden fahrten ist, dann löschen
+            for i in range(fahrtCounter):
+                if not fahrt_id_existing(f'fahrt_id{i}'):
+                    delete_fahrt(f'fahrt_id{i}')
 
-        # Weiterleitung zurück zur Übersicht der abgelegten Stunden
-        return redirect(url_for('show_supervisionhours_client.show_supervisionhours_client'))
+            # Weiterleitung zurück zur Übersicht der abgelegten Stunden
+            return redirect(url_for('show_supervisionhours_client.show_supervisionhours_client'))
 
     return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
                            klient_name=klient_name, datum=datum, von=von, bis=bis,
-                            zeiteintrag_id=zeiteintrag_id, klienten=klienten)
+                           zeiteintrag_id=zeiteintrag_id, klienten=klienten)
+
+
+def send_email(email, subject, body):
+    msg = MIMEText(body)
+
+    msg['Subject'] = subject
+    msg['From'] = 'deletetimeentry@timecarepro.de'
+    msg['To'] = email
+
+    with smtplib.SMTP('132.231.36.210', 1103) as smtp:
+        smtp.starttls()
+    smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
+    smtp.sendmail('edittimeentry@timecarepro.de', [email], msg.as_string())
+
+
+def send_email_edit_time_entry(email, firstname, lastname, z_id):
+    subject = "Bearbeiteter Zeiteintrag"
+    body = (f"Sehr geehrte/r {firstname} {lastname}, \n\n"
+            f"Ihr Zeiteintrag {z_id} wurde von der Verwaltung bearbeitet."
+            f"Bitte prüfen und unterschreiben Sie den geänderten Eintrag.\n\n"
+            f"Freundliche Grüße\n"
+            f"Ihr TimeCare Pro-Team")
+    send_email(email, subject, body)
