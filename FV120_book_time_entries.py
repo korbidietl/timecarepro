@@ -62,7 +62,7 @@ def book_client_time_entry(client_id):
     if unvollständige_te is True:
         # Überprüfen, ob Zeiteinträge für den nächsten Monat existieren
         if not get_zeiteintrag_for_client(client_id, next_month, next_year):
-            return render_template("FV120_book_time_entries.html", month_str=month_str, return_url=return_url)
+            return render_template("FV120_book_time_entries.html", month_str=month_str, return_url=return_url, client_id=client_id)
         # Berechnen von Salden und Durchführen der Buchung
         if book_zeiteintrag(client_id):
             print("gebucht")
