@@ -12,10 +12,12 @@ def edit_client(client_id):
 
     client_data_list = get_klient_data(client_id)
 
+    # Auswahl für Dropdown
     kostentraeger = kostentraeger_dropdown()
     fallverantwortung = mitarbeiter_dropdown()
 
     if request.method == 'POST':
+        #Auslesen Daten aus Forumluar
         vorname = request.form.get('vorname')
         nachname = request.form.get('nachname')
         geburtsdatum = request.form.get('geburtsdatum')
@@ -27,18 +29,18 @@ def edit_client(client_id):
         fallverantwortung_id = request.form.get('fvDropdown')
 
         try:
-            print(20)
-            print(vorname)
-            print(get_klient_data(client_id))
-            edit_klient_fct(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
-                            adresse, kontingent_hk, kontingent_fk, fallverantwortung_id)
-            print(get_klient_data(client_id))
-            print(21)
+            # Klientdateils überschreiben
+            edit_klient_fct(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
+                            kontingent_hk, kontingent_fk, fallverantwortung_id)
+
+            # Änderungsprotokoll
             new_client = get_new_client(client_id)
             save_change_log(person, "Klient", current_client, new_client)
-            flash('Client successfully updated')
-            print("vor success")
+
+            # Rückleitung
+            flash('Klient wurde erfolgreich bearbeitet')
             return redirect(session.pop('url', None))
+
         except Exception as e:
             flash('Error updating client: ' + str(e))
             return redirect(url_for('edit_client.edit_client', client_id=client_id))
@@ -54,16 +56,22 @@ def edit_client(client_id):
         fk = client_data[7]
         hk = client_data[8]
         fv_id = client_data[9]
-        print(22)
-        sachbearbeiter_data = get_name_by_id(sb_id)
-        sachbearbeiter = sachbearbeiter_data[0] if sachbearbeiter_data else '-'
-        fallverantwortung_data = get_name_by_id(fv_id)
-        fallverantwortung_name = fallverantwortung_data[0] if fallverantwortung_data else '-'
-        print(23)
-        return render_template('FV090_edit_client.html', kostentraeger=kostentraeger,
-                               fallverantwortung=fallverantwortung,
-                               client_id=client_id, firstname=firstname, lastname=lastname, birthday=birthday,
-                               phone=phone, sb=sachbearbeiter, address=address, fk=fk, hk=hk, fv=fallverantwortung_name)
 
-    return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, fallverantwortung=fallverantwortung,
-                           client_id=client_id)
+        sachbearbeiter_data = get_name_by_id(sb_id)
+        if sachbearbeiter_data:
+            sb = sachbearbeiter_data[0]
+            sachbearbeiter = f"{sb[0]}, {sb[1]}"
+        else:
+            sachbearbeiter = '-'
+
+        fallverantwortung_data = get_name_by_id(fv_id)
+        if fallverantwortung_data:
+            fv = fallverantwortung_data[0]
+            fallverantwortung_name = f"{fv[0]}, {fv[1]}"
+        else:
+            fallverantwortung_name = '-'
+
+        return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, sb_id=sb_id,
+                               fallverantwortung=fallverantwortung, fv_id=fv_id, client_id=client_id, firstname=firstname,
+                               lastname=lastname, birthday=birthday,
+                               phone=phone, sb=sachbearbeiter, address=address, fk=fk, hk=hk, fv=fallverantwortung_name)

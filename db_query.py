@@ -920,8 +920,8 @@ def get_name_by_id(person_id):
 
 
 # /FV090/
-def edit_klient_fct(klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
-                    kontingent_hk, kontingent_fk, fallverantwortung_id):
+def edit_klient_fct(klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_ID, adresse,
+                    kontingent_hk, kontingent_fk, fallverantwortung_ID):
     connection = get_database_connection()
     cursor = connection.cursor()
 
@@ -929,8 +929,8 @@ def edit_klient_fct(klient_id, vorname, nachname, geburtsdatum, telefonnummer, s
     cursor.execute("UPDATE klient SET vorname = %s, nachname = %s, geburtsdatum = %s, telefonnummer = %s, "
                    "sachbearbeiter_ID = %s, adresse = %s, kontingent_HK = %s, kontingent_FK = %s, "
                    "fallverantwortung_ID = %s WHERE ID = %s",
-                   (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
-                    kontingent_hk, kontingent_fk, fallverantwortung_id, klient_id))
+                   (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_ID, adresse,
+                    kontingent_hk, kontingent_fk, fallverantwortung_ID, klient_id))
     connection.commit()
 
 
@@ -1461,10 +1461,10 @@ def mitarbeiter_dropdown():
 def kostentraeger_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT id, nachname FROM person WHERE rolle LIKE '%%Kostenträger%%'")
+    cursor.execute("SELECT id, vorname, nachname FROM person WHERE rolle LIKE '%%Kostenträger%%'")
     items = []
-    for (ID, nachname) in cursor.fetchall():
-        items.append({'id': ID, 'nachname': nachname})
+    for (ID, vorname, nachname) in cursor.fetchall():
+        items.append({'id': ID, 'vorname': vorname, 'nachname': nachname})
     connection.close()
     return items
 

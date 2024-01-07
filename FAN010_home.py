@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, url_for
 
 home_blueprint = Blueprint('home', __name__)
 
@@ -7,5 +7,6 @@ home_blueprint = Blueprint('home', __name__)
 def home():
     user_id = session.get('user_id')
     role = session.get('user_role')
+    session['url'] = url_for('home.home')
 
     return render_template('FAN010_home.html', user_id=user_id, role=role)

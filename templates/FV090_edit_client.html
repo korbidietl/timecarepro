@@ -45,7 +45,7 @@
                         <label for="ktDropdown">Kostenträger:</label>
                         <select class="form-control" id="ktDropdown" name="ktDropdown">
                             <!-- Optionen werden durch Python generiert -->
-                            <option value="" selected disabled>Bitte auswählen</option>
+                            <option value="{{sb_id}}" selected >{{sb_id}} - {{sb}}</option>
                             {% for kt in kostentraeger %}
                             <option value="{{ kt.id }}">{{ kt.id }} - {{ kt.vorname }} {{ kt.nachname }}</option>
                             {% endfor %}
@@ -67,9 +67,9 @@
                         <label for="fvDropdown">Fallverantwortung:</label>
                         <select class="form-control" id="fvDropdown" name="fvDropdown">
                             <!-- Optionen werden durch Python generiert -->
-                            <option value="" selected disabled>Bitte auswählen</option>
+                            <option value="{{fv_id}}" selected >{{fv_id}} - {{fv}}</option>
                             {% for fv in fallverantwortung %}
-                            <option value="{{ fv.id }}">{{ fv.id }} - {{ fv.vorname }} {{ fv.nachname }}</option>
+                            <option value="{{ fv.id }}"> {{fv.id}} - {{ fv.vorname }}, {{ fv.nachname }}</option>
                             {% endfor %}
                         </select>
                     </div>
