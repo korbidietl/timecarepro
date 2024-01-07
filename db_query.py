@@ -710,12 +710,19 @@ def edit_zeiteintrag(zeiteintrag_id, start_time=None, end_time=None, unterschrif
                      beschreibung=None, interne_notiz=None, absage=None):
     connection = get_database_connection()
     cursor = connection.cursor()
-    if unterschrift_mitarbeiter is not None and unterschrift_klient is not None:
+    if unterschrift_mitarbeiter not in [None, ""] and unterschrift_klient not in [None, ""]:
         cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = %s, "
                        "unterschrift_Klient = %s, klient_ID = %s, fachkraft = %s, "
                        "beschreibung = %s, interne_notiz = %s, absage = %s "
                        "WHERE ID = %s",
                        (start_time, end_time, unterschrift_mitarbeiter, unterschrift_klient, klient_id, fachkraft,
+                        beschreibung, interne_notiz, absage, zeiteintrag_id))
+    elif unterschrift_mitarbeiter not in [None, ""] and unterschrift_klient in [None, ""]:
+        cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = %s, "
+                       "unterschrift_Klient = NULL, klient_ID = %s, fachkraft = %s, "
+                       "beschreibung = %s, interne_notiz = %s, absage = %s "
+                       "WHERE ID = %s",
+                       (start_time, end_time, unterschrift_mitarbeiter,klient_id, fachkraft,
                         beschreibung, interne_notiz, absage, zeiteintrag_id))
     else:
         cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = NULL, "

@@ -202,31 +202,9 @@
                 }
         }
 
-        window.onload = function() {
-            // Überprüfen, ob Nachrichten vorhanden sind
-            {% if get_flashed_messages() %}
-                let modal = document.getElementById("flashModal");
-                let span = document.getElementsByClassName("close")[0];
-
-                // Modal anzeigen
-                modal.style.display = "block";
-
-                // Schließen, wenn das "X" geklickt wird
-                span.onclick = function() {
-                    modal.style.display = "none";
-                };
-
-                // Schließen, wenn außerhalb des Modals geklickt wird
-                window.onclick = function(event) {
-                    if (event.target == modal) {
-                        modal.style.display = "none";
-                    }
-                };
-            {% endif %}
-            }
 
     </script>
-        <script>
+    <script>
 
         window.onload = function() {
             // Überprüfen, ob Nachrichten vorhanden sind
@@ -312,34 +290,6 @@
             closePopup(type);
         }
 
-        function validateSignatures() {
-            let signatureDataKlient = document.getElementById('signatureDataKlient').value;
-            let signatureDataMitarbeiter = document.getElementById('signatureDataMitarbeiter').value;
-
-            if (!signatureDataKlient || !signatureDataMitarbeiter) {
-                alert('Bitte alle erforderlichen Unterschriften leisten.');
-                return false;
-            }
-            return true;
-        }
-
-        function validateFahrten() {
-            let fahrtRows = document.querySelectorAll('.fahrt-row');
-            for (let row of fahrtRows) {
-                let startAdresse = row.querySelector('[name^="start_adresse"]').value.trim();
-                let endAdresse = row.querySelector('[name^="end_adresse"]').value.trim();
-                let kilometer = row.querySelector('[name^="kilometer"]').value.trim();
-
-                let allFilled = startAdresse && endAdresse && kilometer;
-                let allEmpty = !startAdresse && !endAdresse && !kilometer;
-
-                if (!(allFilled || allEmpty)) {
-                    alert('Wenn sie einen Fahrteintrag anlegen, müssen alle Felder ausgefüllt sein.');
-                    return false;
-                }
-            }
-            return true;
-        }
 
         function close_window() {
             var return_url = "{{ return_url }}";

@@ -30,15 +30,16 @@ def edit_time_entry(zeiteintrag_id):
 
     # Name Klient
     klient_id = zeiteintrag[6]
-    klient_data = get_klient_data(klient_id)
-    klient_name = klient_data[0][1] + ' ' + klient_data[0][2]
 
+    print(klient_id)
+    print(session_role)
     if request.method == 'POST':
         # Eingabedaten aus dem Formular holen
         datum = request.form.get('datum')
         start_zeit = request.form.get('startZeit')
         end_zeit = request.form.get('endZeit')
-        klient_id = request.form.get('klient')
+        fachkraft = request.form.get('fachkraft')
+        klient_id = request.form.get('klientDropdown')
         beschreibung = request.form.get('beschreibung')
         interne_notiz = request.form.get('interneNotiz')
         neue_unterschrift_klient = request.form.get('signatureDataKlient')
@@ -46,9 +47,12 @@ def edit_time_entry(zeiteintrag_id):
         absage = "1" if request.form.get('absage') is not None else "0"
 
         # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
-        datum_datetime = datetime.strptime(f"{datum}", '%Y-%m-%d')
-        start_datetime = datetime.strptime(f"{start_zeit}", '%H:%M')
-        end_datetime = datetime.strptime(f"{end_zeit}", '%H:%M')
+        datum_datetime = datetime.strptime(datum, '%Y-%m-%d')
+        start_zeit_datetime = datetime.strptime(start_zeit, '%H:%M').time()
+        end_zeit_datetime = datetime.strptime(end_zeit, '%H:%M').time()
+
+        start_datetime = datetime.combine(datum_datetime, start_zeit_datetime)
+        end_datetime = datetime.combine(datum_datetime, end_zeit_datetime)
 
         if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id):
             # Umwandlung der Unterschriften
@@ -58,8 +62,8 @@ def edit_time_entry(zeiteintrag_id):
                 neue_unterschrift_mitarbeiter = base64_to_blob(neue_unterschrift_mitarbeiter)
 
             # Änderungen am Zeiteintrag speichern
-            edit_zeiteintrag(zeiteintrag_id, datum_datetime, start_datetime, end_datetime, neue_unterschrift_klient,
-                             neue_unterschrift_mitarbeiter, klient_id, beschreibung, interne_notiz, absage)
+            edit_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime,neue_unterschrift_mitarbeiter, neue_unterschrift_klient,
+                              klient_id, fachkraft, beschreibung, interne_notiz, absage)
 
             if check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_datetime, end_datetime):
                 return redirect(url_for('/check_overlapping_time', zeiteintrag_id=zeiteintrag_id))
@@ -70,6 +74,9 @@ def edit_time_entry(zeiteintrag_id):
                 firstname = get_firstname_by_email(email)
                 lastname = get_lastname_by_email(email)
                 send_email_edit_time_entry(email, firstname, lastname, zeiteintrag_id)
+
+                flash('Eintrag erfolgreich bearbeitet')
+                return redirect(session.pop('url', None))
 
         else:
             check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id)
@@ -114,11 +121,12 @@ def edit_time_entry(zeiteintrag_id):
                     delete_fahrt(f'fahrt_id{i}')
 
             # Weiterleitung zurück zur Übersicht der abgelegten Stunden
-            return redirect(url_for('show_supervisionhours_client.show_supervisionhours_client'))
+            flash('Eintrag erfolgreich bearbeitet')
+            return redirect(session.pop('url', None))
 
     return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
-                           klient_name=klient_name, datum=datum, von=von, bis=bis,
-                           zeiteintrag_id=zeiteintrag_id, klienten=klienten)
+                           klient_id=klient_id, datum=datum, von=von, bis=bis,
+                           zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role)
 
 
 def send_email(email, subject, body):

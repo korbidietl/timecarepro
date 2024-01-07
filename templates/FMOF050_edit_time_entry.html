@@ -13,7 +13,7 @@
 
     <div class="registration-form">
         <h2>Zeiteintrag bearbeiten</h2>
-        <form action="/edit_time_entry" method="post">
+        <form action="{{url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag_id)}}" method="post">
             <div class="form-row">
                 <div class="form-group">
                     <label for="datum">Datum:</label>
@@ -27,19 +27,23 @@
                     <label for="endZeit">Endzeitpunkt:</label>
                     <input type="time" id="endZeit" name="endZeit" value="{{bis}}" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group for-non-zero-klient">
                     <label for="fachkraft">Fachkraft:</label>
                     <input type="checkbox" id="fachkraft" name="fachkraft" {% if zeiteintrag[7] %} checked {% endif %} >
                 </div>
                 <div class="form-group">
                     <label for="klientDropdown">Klient:</label>
-                    <select class="form-control" id="klientDropdown" name="klientDropdown">
-                        <option value="" selected disabled>Bitte auswählen</option>
+                    <select class="form-control" id="klientDropdown" name="klientDropdown" required onchange="toggleFieldsBasedOnKlientId()">
+                        <!-- Optionen werden durch Python generiert -->
+                        <option value="" disabled {{ 'selected' if not klient_id else '' }}>Bitte wählen</option>
                         {% for klient in klienten %}
-                            <option value="{{ klient.id }}">{{ klient.id }} - {{ klient.nachname }}, {{ klient.vorname }}</option>
+                        <option value="{{ klient.id }}" {{ 'selected' if klient.id == klient_id else '' }}>{{ klient.id }} - {{ klient.nachname }}, {{ klient.vorname }}</option>
                         {% endfor %}
                     </select>
                 </div>
+                 <script>
+                    toggleFieldsBasedOnKlientId();  // Aufruf der Funktion direkt nach dem Dropdown-Menü
+                </script>
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -57,60 +61,76 @@
             </div>
             {% if session['user_role'] != 'Verwaltung' %}
                 <h3>Fahrten:</h3>
-                    <div id="fahrtenContainer">
-                        <div class="form-row fahrt-row">
-                            <div class="form-group">
-                                <label for="abrechenbarkeit{{ index }}">Anrechenbarkeit:</label>
+                <div id="fahrtenContainer">
+
+                        {% set index = 0 %}
+                        {% if fahrten %}
+                            {% for fahrt in fahrten %}
+                                <!-- Ursprüngliche Fahrt-Eingabezeile -->
+                                <div class="form-row fahrt-row">
+                                    <div class="form-hidden">
+                                        <input type="hidden" id="fahrt_id0" name="fahrt_id0">
+                                    </div>
+                                    <div class="form-group for-non-zero-klient">
+                                        <label for="abrechenbarkeit{{ index }}">Anrechenbarkeit:</label>
+                                        <input type="checkbox" id="abrechenbarkeit{{ index }}" name="abrechenbarkeit{{ index }}" {% if fahrt[4] %} checked {% endif %}>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="start_adresse{{ index }}">Start Adresse:</label>
+                                        <input type="text" id="start_adresse{{ index }}" name="start_adresse{{ index }}" value="{{ fahrt[2] }}">
+                                    </div>
+                                    <div class="form-group">
+                                         <label for="end_adresse{{ index }}">End Adresse:</label>
+                                        <input type="text" id="end_adresse{{ index }}" name="end_adresse{{ index }}" value="{{ fahrt[3] }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="kilometer{{ index }}">Kilometer:</label>
+                                        <input type="text" id="kilometer{{ index }}" name="kilometer{{ index }}" value="{{ fahrt[1] }}">
+                                    </div>
+                                    <button type="button" onclick="addFahrt()">+</button>
+                                    <button type="button" onclick="removeFahrt(this)">-</button>
+                                </div>
+                            {% set index = index + 1 %}
+                            {% endfor %}
+                        {% else %}
+                            <!-- Leere Felder für eine neue Fahrt -->
+                            <div class="form-row fahrt-row">
+                                <div class="form-hidden">
+                                    <input type="hidden" id="fahrt_id0" name="fahrt_id0">
+                                </div>
+                                <div class="form-group for-non-zero-klient">
+                                    <label for="abrechenbarkeit{{ index }}">Anrechenbarkeit:</label>
+                                    <input type="checkbox" id="abrechenbarkeit0" name="abrechenbarkeit0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="start_adresse{{ index }}">Start Adresse:</label>
+                                    <input type="text" id="start_adresse0" name="start_adresse0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="end_adresse{{ index }}">End Adresse:</label>
+                                    <input type="text" id="end_adresse0" name="end_adresse0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="kilometer{{ index }}">Kilometer:</label>
+                                    <input type="text" id="kilometer0" name="kilometer0">
+                                </div>
+                                <button type="button" onclick="addFahrt()">+</button>
+                                <button type="button" onclick="removeFahrt(this)">-</button>
                             </div>
-                            <div class="form-group">
-                                <label for="start_adresse{{ index }}">Start Adresse:</label>
-                            </div>
-                            <div class="form-group">
-                                <label for="end_adresse{{ index }}">End Adresse:</label>
-                            </div>
-                            <div class="form-group">
-                                <label for="kilometer{{ index }}">Kilometer:</label>
-                            </div>
-                            <div class="form-group">
-                                <input type="hidden" id="fahrtCounterInput" name="fahrtCounterInput">
-                            </div>
-                        </div>
-                    {% set index = 0 %}
-                    {% for fahrt in fahrten %}
-                        <!-- Ursprüngliche Fahrt-Eingabezeile -->
-                        <div class="form-row fahrt-row">
-                            <div class="form-hidden">
-                                <input type="hidden" id="fahrt_id0" name="fahrt_id0">
-                            </div>
-                            <div class="form-group">
-                                <input type="checkbox" id="abrechenbarkeit{{ index }}" name="abrechenbarkeit{{ index }}" {% if fahrt[4] %} checked {% endif %}>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" id="start_adresse{{ index }}" name="start_adresse{{ index }}" value="{{ fahrt[2] }}">
-                            </div>
-                            <div class="form-group">
-                                <input type="text" id="end_adresse{{ index }}" name="end_adresse{{ index }}" value="{{ fahrt[3] }}">
-                            </div>
-                            <div class="form-group">
-                                <input type="text" id="kilometer{{ index }}" name="kilometer{{ index }}" value="{{ fahrt[1] }}">
-                            </div>
-                            <button type="button" onclick="addFahrt()">+</button>
-                            <button type="button" onclick="removeFahrt(this)">-</button>
-                        </div>
-                    {% set index = index + 1 %}
-                    {% endfor %}
+                        {% endif %}
                     </div>
             {% endif %}
 
             <!--Unterschriften Felder -->
-            <div class="form-row">
-                <div class="signature-container" onclick="openSignaturePopup('Klient')">
+            <div class="form-row ">
+                <div class="signature-container for-non-zero-klient" onclick="openSignaturePopup('Klient')">
+                    <img id="signatureImageKlient" src="{{ signature_data_klient }}" alt="Unterschrift Klient" style="{% if signature_data_klient %}display: block;{% else %}display: none;{% endif %}">
                     <p>Unterschrift Klient</p>
-
                 </div>
 
                 <div class="signature-container" onclick="openSignaturePopup('Mitarbeiter')">
-                    <p>Unterschrift Mitarbeiter</p>
+                     <img id="signatureImageMitarbeiter" src="{{ signature_data_mitarbeiter }}" alt="Unterschrift Mitarbeiter" style="{% if signature_data_mitarbeiter %}display: block;{% else %}display: none;{% endif %}">
+                     <p>Unterschrift Mitarbeiter</p>
                 </div>
             </div>
 
@@ -140,12 +160,27 @@
             <input type="hidden" id="signatureDataMitarbeiter" name="signatureDataMitarbeiter">
 
 
-            <div class="form-actions">
+            <div class="form-actions" style="margin-left: 20px;">
                 <button type="submit">Bestätigen</button>
                 <button type="button" onclick="window.location='/FMOF010';">Abbrechen</button>
             </div>
         </form>
     </div>
+    <script>
+        function toggleFieldsBasedOnKlientId() {
+            let klientId = document.getElementById('klientDropdown').value;
+            let elements = document.getElementsByClassName('for-non-zero-klient');
+
+             for (let i = 0; i < elements.length; i++) {
+                elements[i].style.display = klientId !== '1' ? 'block' : 'none';
+            }
+         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleFieldsBasedOnKlientId();
+        });
+    </script>
 
     <script>
         let fahrtCounter = 1;
@@ -254,34 +289,6 @@
             closePopup(type);
         }
 
-        function validateFahrten() {
-            let fahrtRows = document.querySelectorAll('.fahrt-row');
-            for (let row of fahrtRows) {
-                let startAdresse = row.querySelector('[name^="start_adresse"]').value.trim();
-                let endAdresse = row.querySelector('[name^="end_adresse"]').value.trim();
-                let kilometer = row.querySelector('[name^="kilometer"]').value.trim();
-
-                let allFilled = startAdresse && endAdresse && kilometer;
-                let allEmpty = !startAdresse && !endAdresse && !kilometer;
-
-                if (!(allFilled || allEmpty)) {
-                    alert('Wenn sie einen Fahrteintrag anlegen, müssen alle Felder ausgefüllt sein.');
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        function validateSignatures() {
-            let signatureDataKlient = document.getElementById('signatureDataKlient').value;
-            let signatureDataMitarbeiter = document.getElementById('signatureDataMitarbeiter').value;
-
-            if (!signatureDataKlient || !signatureDataMitarbeiter) {
-                alert('Bitte alle erforderlichen Unterschriften leisten.');
-                return false;
-            }
-            return true;
-        }
 
     </script>
 </body>

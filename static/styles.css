@@ -192,7 +192,8 @@ a{
     padding: 10px;
     margin-top:10px;
 }
-.signature-container {
+.signature-container,
+.signature-container.for-non-zero-klient{
     display: flex;
     justify-content: center;
     align-items: center;
