@@ -83,8 +83,8 @@ def edit_time_entry(zeiteintrag_id):
 
         # verwaltung kann nur tabelle zeiteintrag ändern nicht aber fahrten (laut pflichtenheft!!)
         if not session_role == "Verwaltung":
-            # importiere fahrtCounter von html hidden input in python
-            fahrtCounter = int(request.form.get('fahrtCounterInput', 1))
+            # importiere fahrt_counter von html hidden input in python
+            fahrt_counter = int(request.form.get('fahrtCounterInput', 1))
 
             # Bearbeite Fahrt-Einträge
             existing_fahrten_ids = request.form.getlist('existing_fahrten_ids')
@@ -106,7 +106,7 @@ def edit_time_entry(zeiteintrag_id):
                            zeiteintrag_id=zeiteintrag_id)
 
             # Füge neue Fahrten hinzu
-            for i in range(fahrtCounter):  # fahrtCounter sollte vom Frontend übergeben werden
+            for i in range(fahrt_counter):  # fahrt_counter sollte vom Frontend übergeben werden
                 if not f'fahrt_id{i}':
                     add_fahrt(kilometer=request.form[f'kilometer_new{i}'],
                               start_adresse=request.form[f'start_adresse_new{i}'],
@@ -116,7 +116,7 @@ def edit_time_entry(zeiteintrag_id):
 
             # fahrt entfernen
             # wenn fahrt id nicht mehr in bestehenden fahrten ist, dann löschen
-            for i in range(fahrtCounter):
+            for i in range(fahrt_counter):
                 if not fahrt_id_existing(f'fahrt_id{i}'):
                     delete_fahrt(f'fahrt_id{i}')
 
