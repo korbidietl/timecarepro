@@ -605,7 +605,7 @@ def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("INSERT INTO fahrt (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_ID) "
-                   "VALUES (%s, %s, %s, %s, %s)", kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id)
+                   "VALUES (%s, %s, %s, %s, %s)", (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id))
     connection.commit()
     cursor.close()
     connection.close()
@@ -890,28 +890,11 @@ def get_name_by_id(person_id):
 
 
 # /FV090/
-def edit_klient(person_id, klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
+def edit_klient_fct(person_id, klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                 kontingent_hk, kontingent_fk, fallverantwortung_id):
     connection = get_database_connection()
     cursor = connection.cursor()
 
-    # Überprüfen, ob die Person berechtigt ist, den Klienten zu bearbeiten
-    cursor.execute("""
-        SELECT 1
-        FROM klient k join person p on p.ID = k.fallverantwortung_ID
-        WHERE p.ID = %s AND k.fallverantwortung_ID = %s
-    """, (person_id, fallverantwortung_id))
-    is_fallverantwortung = bool(cursor.fetchone())
-
-    cursor.execute("""
-        SELECT 1
-        FROM klient k join person p on k.sachbearbeiter_ID = p.ID
-        WHERE k.sachbearbeiter_ID = %s AND p.ID = %s
-    """, (sachbearbeiter_id, person_id))
-    is_sachbearbeiter = bool(cursor.fetchone())
-
-    if not is_fallverantwortung and not is_sachbearbeiter:
-        raise Exception("Person hat keine Berechtigung, den Klienten zu bearbeiten")
 
     # Klienten bearbeiten
     cursor.execute("UPDATE klient SET vorname = %s, nachname = %s, geburtsdatum = %s, telefonnummer = %s, "
