@@ -1,4 +1,4 @@
-from flask import flash, redirect, url_for, Blueprint
+from flask import flash, redirect, url_for, Blueprint, session
 from db_query import get_last_buchung, delete_buchung
 
 
@@ -9,8 +9,11 @@ redo_booking_blueprint = Blueprint('redo_booking_blueprint', __name__, template_
 def revidieren_buchung(client_id):
     last_buchung = get_last_buchung(client_id)
     if last_buchung:
-        delete_buchung(last_buchung['id'])
+        last_buchung_id = int(last_buchung['id'])
+        print(last_buchung_id)
+        delete_buchung(last_buchung_id)
         flash(f"Buchung für {last_buchung} wurde erfolgreich revidiert.", 'success')
     else:
         flash("Keine Buchung gefunden, die revidiert werden könnte.", 'error')
-    return redirect(url_for('your_redirect_page'))
+    return redirect(session.pop('url', None))
+
