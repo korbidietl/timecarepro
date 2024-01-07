@@ -57,6 +57,7 @@ def edit_client(client_id):
         hk = client_data[8]
         fv_id = client_data[9]
 
+        kostentraeger = [kt for kt in kostentraeger if kt['id'] != sb_id]
         sachbearbeiter_data = get_name_by_id(sb_id)
         if sachbearbeiter_data:
             sb = sachbearbeiter_data[0]
@@ -64,6 +65,7 @@ def edit_client(client_id):
         else:
             sachbearbeiter = '-'
 
+        fallverantwortung = [fv for fv in fallverantwortung if fv['id'] != fv_id]
         fallverantwortung_data = get_name_by_id(fv_id)
         if fallverantwortung_data:
             fv = fallverantwortung_data[0]
