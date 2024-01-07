@@ -79,8 +79,14 @@
                         <button type="submit">Sperren</button>
                     </form>
                 {% endif %}
-                <button type="button" onclick="window.location.href='{{ return_url }}'">Schließen</button>
+                <button type="button" onclick="close_popup()">Schließen</button>
             </div>
     </div>
+    <script>
+    function close_popup() {
+        var return_url = "{{ return_url }}";
+        window.location.href = return_url;
+    }
+    </script>
 </body>
 </html>
