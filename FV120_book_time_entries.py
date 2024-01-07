@@ -77,7 +77,7 @@ def book_client_time_entry(client_id):
         messages = []
         for entry in unvollständige_te:
             entry_id = entry['id']
-            missing = ', '.join(entry['missing'])  # Konvertiert die Liste in einen String
+            missing = ' und '.join(entry['missing'])  # Konvertiert die Liste in einen String
             message = f"Unterschrift von {missing} in Eintrag {entry_id} fehlt. Buchung konnte nicht durchgeführt werden."
             messages.append(message)
 
