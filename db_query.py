@@ -37,11 +37,23 @@ def get_current_client(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM klient WHERE ID = %s", (client_id,))
-    old_state = cursor.fetchone()
+    result = cursor.fetchone()
     cursor.close()
     connection.close()
-    if old_state is None:
+    # Überprüfen, ob ein Ergebnis vorliegt
+    if result is None:
         return None
+
+    # Wandeln Sie das Ergebnis in ein Dictionary um
+    old_state = {}
+    for column_description, value in zip(cursor.description, result):
+        key = column_description[0]  # Der Name der Spalte
+        if isinstance(value, datetime.date):
+            # Datumswerte konvertieren
+            old_state[key] = value.isoformat()
+        else:
+            old_state[key] = value
+
     return old_state
 
 
