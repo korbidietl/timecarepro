@@ -25,7 +25,7 @@ def edit_account(person_id):
         role = person_data[6]
         email = person_data[7]
         phone = person_data[8]
-        locked = person_data[9]
+        locked = person_data[10]
 
     if request.method == 'POST':
         # Daten aus dem Formular
@@ -55,7 +55,7 @@ def edit_account(person_id):
 
         # änderungen in protokoll speichern
         new_person = get_new_person(person_id)
-        save_change_log(person, "Account", current_person, new_person)
+        save_change_log(person, "Account", current_person, new_person, person_data[0])
 
         # Rückleitung zur vorherigen Seite
         flash('Account wurde erfolgreich bearbeitet')

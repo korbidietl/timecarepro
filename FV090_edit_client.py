@@ -12,6 +12,17 @@ def edit_client(client_id):
 
     client_data_list = get_klient_data(client_id)
 
+    client_data = client_data_list[0]
+    firstname = client_data[1]
+    lastname = client_data[2]
+    birthday = client_data[3]
+    phone = client_data[4]
+    sb_id = client_data[5]
+    address = client_data[6]
+    fk = client_data[7]
+    hk = client_data[8]
+    fv_id = client_data[9]
+
     # Auswahl für Dropdown
     kostentraeger = kostentraeger_dropdown()
     fallverantwortung = mitarbeiter_dropdown()
@@ -35,7 +46,7 @@ def edit_client(client_id):
 
             # Änderungsprotokoll
             new_client = get_new_client(client_id)
-            save_change_log(person, "Klient", current_client, new_client)
+            save_change_log(person, "Klient", current_client, new_client, client_data[0])
 
             # Rückleitung
             flash('Klient wurde erfolgreich bearbeitet')
@@ -46,16 +57,6 @@ def edit_client(client_id):
             return redirect(url_for('edit_client.edit_client', client_id=client_id))
 
     else:
-        client_data = client_data_list[0]
-        firstname = client_data[1]
-        lastname = client_data[2]
-        birthday = client_data[3]
-        phone = client_data[4]
-        sb_id = client_data[5]
-        address = client_data[6]
-        fk = client_data[7]
-        hk = client_data[8]
-        fv_id = client_data[9]
 
         kostentraeger = [kt for kt in kostentraeger if kt['id'] != sb_id]
         sachbearbeiter_data = get_name_by_id(sb_id)

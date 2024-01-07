@@ -82,7 +82,7 @@ def create_account():
                     flash(f'Eingabe in Feld {field} ungültig. Bitte geben Sie eine gültige Telefonnummer ein.')
                     return render_template('FV020_create_account.html')
         else:
-            jahr = 1990
+            jahr = 1900
             monat = 1
             tag = 1
             birthday = datetime(jahr, monat, tag)

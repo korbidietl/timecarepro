@@ -11,21 +11,22 @@
 
     <div class="registration-form">
         <div class="table-container">
-            <h3>Protokoll</h3>
+            <h3>Änderungsprotokoll</h3>
             <form action="/show_protocol" method="post">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="von">Von:</label>
-                        <input type="datetime-local" id="von" name="von">
+                        <input type="date" id="von" name="von" value="{{von}}">
                     </div>
                     <div class="form-group">
                         <label for="bis">Bis:</label>
-                        <input type="datetime-local" id="bis" name="bis">
+                        <input type="date" id="bis" name="bis" value="{{bis}}">
                     </div>
                     <div class="form-group">
                         <label for="nutzer">Ändernder Nutzer:</label>
                         <select class="form-control" id="nutzer" name="nutzer">
                             <!-- Optionen werden durch Python generiert -->
+                            <option value="" disabled selected>Bitte wählen</option>
                             {% for nutzer in nutzers %}
                             <option value="{{nutzer.id}}">{{nutzer.nachname}}</option>
                             {% endfor %}
@@ -33,12 +34,15 @@
                     </div>
                     <div class="form-group">
                         <label for="eintrags_id">Eintrags ID:</label>
-                        <input type="number" id="eintrags_id" name="eintrags_id">
+                        <input type="number" id="eintrags_id" name="eintrags_id" value="{{eintrags_id}}">
                     </div>
-                    <button type="submit">Anzeigen</button>
+                    <button type="submit">Filtern</button>
                 </div>
             </form>
-            <br><b/>
+        </div>
+        <div class="scrollable-container">
+            <br>
+            {% if kombinierte_liste %}
             <table>
                 <thead>
                     <tr>
@@ -52,21 +56,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for protocol in protocols %}
+                    {% for protocol, entry in kombinierte_liste %}
                         <tr>
-                            <td>{{ protocol.id }}</td>
-                            <td>{{ protocol.zeit }}</td>
-                            <td>{{ protocol.person_ID }}</td>
-                            <td>{{ protocol.eintragungsart }}</td>
-                            <td>{{ protocol.eintrag_ID }}</td>
-                            <td>{{ protocol.eintrag_vorher }}</td>
-                            <td>{{ protocol.eintrag_nachher }}</td>
+                            <td>{{ protocol[0] }}</td>
+                            <td>{{ protocol[1] }}</td>
+                            <td>{{ protocol[2] }}</td>
+                            <td>{{ protocol[3] }}</td>
+                            <td>{{ protocol[4] }}</td>
+                            <td>
+                                {% for key, value in entry[0].items() %}
+                                    <strong>{{ key }}:</strong> {{ value }}<br>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for key, value in entry[1].items() %}
+                                    <strong>{{ key }}:</strong> {{ value }}<br>
+                                {% endfor %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+                <p>Keine Daten gefunden</p>
+            {% endif %}
 
-            <p id="no-clients-message" style="display: none;">Keine Protokolle gefunden.</p>
         </div>
     </div>
 </body>

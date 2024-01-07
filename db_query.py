@@ -114,7 +114,7 @@ def get_new_client(client_id):
 
 
 # /FS010/
-def save_change_log(person_id, table_type, old_state, new_state):
+def save_change_log(person_id, table_type, old_state, new_state, entry_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     # Den alten Zustand als JSON-String speichern
@@ -123,8 +123,8 @@ def save_change_log(person_id, table_type, old_state, new_state):
     new_state_json = json.dumps(new_state)
     # Die Änderungsprotokolle in der Datenbank speichern
     cursor.execute(
-        "INSERT INTO protokoll (person_id, eintragungsart, eintrag_vorher, eintrag_nachher) VALUES (%s, %s, %s, %s)",
-        (person_id, table_type, old_state_json, new_state_json))
+        "INSERT INTO protokoll (person_id, eintragungsart, eintrag_vorher, eintrag_nachher, eintrag_ID) VALUES (%s, %s, %s, %s, %s)",
+        (person_id, table_type, old_state_json, new_state_json, entry_id))
 
     connection.commit()
     cursor.close()
@@ -1534,7 +1534,7 @@ def get_protokoll(von=None, bis=None, aendernder_nutzer=None, eintrags_id=None):
 def person_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT id, nachname FROM person")
+    cursor.execute("SELECT id, nachname FROM person WHERE rolle = 'Verwaltung' OR rolle = 'Geschäftsführung'")
     items = []
     for (ID, nachname) in cursor.fetchall():
         items.append({'id': ID, 'nachname': nachname})
