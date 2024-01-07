@@ -27,15 +27,18 @@ def edit_client(client_id):
         fallverantwortung_id = request.form.get('fvDropdown')
 
         try:
-            edit_klient_fct(person, client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
+            print(20)
+            print(vorname)
+            print(get_klient_data(client_id))
+            edit_klient_fct(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
                             adresse, kontingent_hk, kontingent_fk, fallverantwortung_id)
+            print(get_klient_data(client_id))
             print(21)
             new_client = get_new_client(client_id)
             save_change_log(person, "Klient", current_client, new_client)
             flash('Client successfully updated')
             print("vor success")
             return redirect(session.pop('url', None))
-            print("nach success")
         except Exception as e:
             flash('Error updating client: ' + str(e))
             return redirect(url_for('edit_client.edit_client', client_id=client_id))

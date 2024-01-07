@@ -920,7 +920,7 @@ def get_name_by_id(person_id):
 
 
 # /FV090/
-def edit_klient_fct(person_id, klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
+def edit_klient_fct(klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                     kontingent_hk, kontingent_fk, fallverantwortung_id):
     connection = get_database_connection()
     cursor = connection.cursor()
