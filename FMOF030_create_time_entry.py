@@ -66,11 +66,18 @@ def submit_arbeitsstunden():
         absage = "1" if request.form.get('absage') is not None else "0"
 
         # Überprüfung ob alle notwendigen Felder ausgefüllt wurden
-        required_fields = ['datum', 'startZeit', 'endZeit', 'klientDropdown', 'signatureDataMitarbeiter']
+        field_names = {
+            'datum': "Das Datum",
+            'startZeit': "Die Startzeit",
+            'endZeit': "Die Endzeit",
+            'klientDropdown': "Der Klient",
+            'signatureDataMitarbeiter': "Die Mitarbeiterunterschrift"
+        }
 
-        for field in required_fields:
+        # Überprüfung, ob alle notwendigen Felder ausgefüllt wurden
+        for field in field_names:
             if not request.form.get(field):
-                flash('Es müssen alle Felder ausgefüllt werden.')
+                flash(f'Es müssen alle Felder ausgefüllt werden. {field_names[field]} ist noch nicht ausgefüllt.')
                 return render_template('FMOF030_create_time_entry.html', klienten=klienten)
 
         # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
