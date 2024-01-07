@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, session, flash, redirect, url_for
-from db_query import (edit_klient_fct, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data,
-                      get_current_client, get_new_client, save_change_log)
+from db_query import edit_klient_fct, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data, \
+    get_current_client, get_new_client, save_change_log
 
 edit_client_blueprint = Blueprint('edit_client', __name__)
 
@@ -15,7 +15,6 @@ def edit_client(client_id):
     # Auswahl für Dropdown
     kostentraeger = kostentraeger_dropdown()
     fallverantwortung = mitarbeiter_dropdown()
-
 
     if request.method == 'POST':
         #Auslesen Daten aus Forumluar
