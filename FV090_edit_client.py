@@ -1,5 +1,6 @@
 from flask import Blueprint, request, render_template, session, flash, redirect, url_for
-from db_query import edit_klient_fct, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data, get_current_client, get_new_client, save_change_log
+from db_query import edit_klient_fct, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data, \
+    get_current_client, get_new_client, save_change_log
 
 edit_client_blueprint = Blueprint('edit_client', __name__)
 
@@ -26,8 +27,8 @@ def edit_client(client_id):
         fallverantwortung_id = request.form.get('fvDropdown')
 
         try:
-            edit_klient_fct(person, client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
-                        kontingent_hk, kontingent_fk, fallverantwortung_id)
+            edit_klient_fct(person, client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
+                            adresse, kontingent_hk, kontingent_fk, fallverantwortung_id)
             print(21)
             new_client = get_new_client(client_id)
             save_change_log(person, "Klient", current_client, new_client)
@@ -56,11 +57,10 @@ def edit_client(client_id):
         fallverantwortung_data = get_name_by_id(fv_id)
         fallverantwortung_name = fallverantwortung_data[0] if fallverantwortung_data else '-'
         print(23)
-        return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, fallverantwortung=fallverantwortung,
+        return render_template('FV090_edit_client.html', kostentraeger=kostentraeger,
+                               fallverantwortung=fallverantwortung,
                                client_id=client_id, firstname=firstname, lastname=lastname, birthday=birthday,
                                phone=phone, sb=sachbearbeiter, address=address, fk=fk, hk=hk, fv=fallverantwortung_name)
 
-    return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, fallverantwortung=fallverantwortung, client_id=client_id)
-
-
-
+    return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, fallverantwortung=fallverantwortung,
+                           client_id=client_id)

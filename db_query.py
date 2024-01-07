@@ -13,11 +13,11 @@ def get_current_person(person_id):
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM person WHERE ID = %s", (person_id,))
     result = cursor.fetchone()
-    cursor.close()
-    connection.close()
     # Überprüfen, ob ein Ergebnis vorliegt
     if result is None:
         return None
+        cursor.close()
+        connection.close()
 
     # Wandeln Sie das Ergebnis in ein Dictionary um
     old_state = {}
@@ -29,6 +29,8 @@ def get_current_person(person_id):
         else:
             old_state[key] = value
 
+    cursor.close()
+    connection.close()
     return old_state
 
 
@@ -38,11 +40,11 @@ def get_current_client(client_id):
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM klient WHERE ID = %s", (client_id,))
     result = cursor.fetchone()
-    cursor.close()
-    connection.close()
     # Überprüfen, ob ein Ergebnis vorliegt
     if result is None:
         return None
+        cursor.close()
+        connection.close()
 
     # Wandeln Sie das Ergebnis in ein Dictionary um
     old_state = {}
@@ -54,6 +56,8 @@ def get_current_client(client_id):
         else:
             old_state[key] = value
 
+    cursor.close()
+    connection.close()
     return old_state
 
 
@@ -63,10 +67,10 @@ def get_new_person(person_id):
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM person WHERE ID = %s", (person_id,))
     result = cursor.fetchone()
-    cursor.close()
-    connection.close()
     if result is None:
         return None
+        cursor.close()
+        connection.close()
 
     # Wandeln Sie das Ergebnis in ein Dictionary um
     new_state = {}
@@ -78,6 +82,8 @@ def get_new_person(person_id):
         else:
             new_state[key] = value
 
+    cursor.close()
+    connection.close()
     return new_state
 
 
@@ -87,10 +93,10 @@ def get_new_client(client_id):
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM klient WHERE ID = %s", (client_id,))
     result = cursor.fetchone()
-    cursor.close()
-    connection.close()
     if result is None:
         return None
+        cursor.close()
+        connection.close()
 
     # Wandeln Sie das Ergebnis in ein Dictionary um
     new_state = {}
@@ -102,6 +108,8 @@ def get_new_client(client_id):
         else:
             new_state[key] = value
 
+    cursor.close()
+    connection.close()
     return new_state
 
 
