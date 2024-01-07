@@ -26,7 +26,7 @@ def edit_client(client_id):
         fallverantwortung_id = request.form.get('fvDropdown')
 
         try:
-            edit_klient(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
+            edit_klient(person, client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
                         kontingent_hk, kontingent_fk, fallverantwortung_id)
             print(21)
             new_client = get_new_client(client_id)
