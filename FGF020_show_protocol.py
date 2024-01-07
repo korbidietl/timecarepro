@@ -8,6 +8,9 @@ show_protocol_blueprint = Blueprint("show_protocol", __name__)
 def show_protocol():
 
     if request.method == 'POST':
+
+        nutzers = person_dropdown()
+
         von = request.form.get('von')
         bis = request.form.get('bis')
         aendernder_nutzer = request.form.get('nutzer')
@@ -15,18 +18,15 @@ def show_protocol():
 
         protocols = get_protokoll(von, bis, aendernder_nutzer, eintrags_id)
 
-        nutzers = person_dropdown()
-        nutzer = {'nutzers': nutzers}
 
         if not protocols:
             return render_template('FGF020_show_protocol.html',
                                    protocols=[], no_clients_message="Keine Protokolle vorhanden.")
 
-        return render_template('FGF020_show_protocol.html', protocols=protocols, **nutzer)
+        return render_template('FGF020_show_protocol.html', protocols=protocols, nutzers=nutzers)
 
     else:
         nutzers = person_dropdown()
-        nutzer = {'nutzers': nutzers}
-        return render_template('FGF020_show_protocol.html', protocols=[], **nutzer)
+        return render_template('FGF020_show_protocol.html', protocols=[], nutzers=nutzers)
 
 

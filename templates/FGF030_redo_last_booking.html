@@ -7,11 +7,19 @@
 </head>
 <body>
     <div class="popup-content-small">
-        <h3>Soll die Buchung von Monat <span id="selectedMonth">Monat</span> wirklich revidiert werden?</h3>
-        <div class="form-actions">
-            <button id="buchen">Revidieren</button>
-            <button id="abbrechen" onclick="window.location='/FMOF010_show_supervisionhours_client.html';">Abbrechen</button>
-        </div>
+        <form action="{{url_for('redo_booking_blueprint.revidieren_buchung', client_id=client_id)}}" method="post">
+            <p>Soll die Buchung von Monat {{ last_buchung }} wirklich revidiert werden?</p>
+            <div class="form-actions">
+                <button type="sumbit" id="buchen">Revidieren</button>
+                <button type="button" onclick="close_popup()">Abbrechen</button>
+            </div>
+        </form>
     </div>
+    <script>
+        function close_popup() {
+            var return_url = "{{ return_url }}";
+            window.location.href = return_url;
+        }
+    </script>
 </body>
 </html>
