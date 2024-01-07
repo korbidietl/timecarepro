@@ -74,11 +74,22 @@ def get_new_client(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM klient WHERE ID = %s", (client_id,))
-    new_state = cursor.fetchone()
+    result = cursor.fetchone()
     cursor.close()
     connection.close()
-    if new_state is None:
+    if result is None:
         return None
+
+    # Wandeln Sie das Ergebnis in ein Dictionary um
+    new_state = {}
+    for column_description, value in zip(cursor.description, result):
+        key = column_description[0]  # Der Name der Spalte
+        if isinstance(value, datetime.date):
+            # Datumswerte konvertieren
+            new_state[key] = value.isoformat()
+        else:
+            new_state[key] = value
+
     return new_state
 
 
@@ -598,7 +609,6 @@ def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, e
     return zeiteintrag_id
 
 
-
 # /FMOF030/
 # /FMOF050/
 def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id):
@@ -891,10 +901,9 @@ def get_name_by_id(person_id):
 
 # /FV090/
 def edit_klient_fct(person_id, klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
-                kontingent_hk, kontingent_fk, fallverantwortung_id):
+                    kontingent_hk, kontingent_fk, fallverantwortung_id):
     connection = get_database_connection()
     cursor = connection.cursor()
-
 
     # Klienten bearbeiten
     cursor.execute("UPDATE klient SET vorname = %s, nachname = %s, geburtsdatum = %s, telefonnummer = %s, "
