@@ -13,7 +13,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Zeiteintrag_ID</th>
+                        <th>Zeiteintrag ID</th>
                         <th>Datum</th>
                         <th>Start</th>
                         <th>Ende</th>
@@ -23,15 +23,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for entry in time_entries %}
+                {% for entry in overlapping_entries %}
                     <tr>
-                        <td>{{ overlapping_entries[0] }}</td>
-                        <td>{{ overlapping_entries[1] }}</td>
-                        <td>{{ overlapping_entries[2] }}</td>
-                        <td>{{ overlapping_entries[3] }}</td>
-                        <td>{{ overlapping_entries[4] }}</td>
-                        <td>{{ overlapping_entries[5] }}</td>
-                        <td>{{ overlapping_entries[6] }}</td>
+                        <td>{{ entry[0] }}</td>
+                        <td>{{ entry[1] }}</td>
+                        <td>{{ entry[2] }}</td>
+                        <td>{{ entry[3] }}</td>
+                        <td>{{ entry[4] }}</td>
+                        <td>{{ entry[5] }}</td>
+                        <td>{{ entry[6] }}</td>
                     </tr>
                 {% endfor %}}
                 </tbody>
@@ -40,7 +40,7 @@
                 <button type="button" onclick="window.location='/FMOF010_show_supervisionhours_client.html';">Speichern</button>
                 <button type="button" onclick="window.location='/FMOF050_edit_time_entry/<int:zeiteintrag_id>';">Abbrechen</button>
             </div>
-        </form>
+        </div>
     </div>
 </body>
 </html>
