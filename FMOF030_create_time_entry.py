@@ -40,7 +40,11 @@ def base64_to_blob(base64_string):
 def submit_arbeitsstunden():
     # return url zur rückleitung
     if session['client_id']:
-       klient_id = session.get('client_id')
+        klient_id = session.get('client_id')
+    else:
+        klient_id = ""
+
+    print(klient_id)
     return_url = session.get('url')
     # session speichern für rückleitung
     session['url_overlapping'] = url_for('/create_time_entry.submit_arbeitsstunden')
