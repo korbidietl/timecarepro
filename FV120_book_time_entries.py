@@ -50,8 +50,6 @@ def book_client_time_entry(client_id):
     else:
         next_month_to_book = get_next_month_to_book(last_month_booked)
 
-    print(next_month_to_book)
-
     # Aufteilen von next_month_to_book in Jahr und Monat
     next_year, next_month = next_month_to_book.split('-')
     next_month = int(next_month)
@@ -61,13 +59,13 @@ def book_client_time_entry(client_id):
 
     # Überprüfen, ob alle Unterschriften vorhanden sind
     unvollständige_te = check_and_return_signatures(client_id, next_month, next_year)
-    print(unvollständige_te)
     if unvollständige_te is True:
         # Überprüfen, ob Zeiteinträge für den nächsten Monat existieren
         if not get_zeiteintrag_for_client(client_id, next_month, next_year):
             return render_template("FV120_book_time_entries.html", month_str=month_str, return_url=return_url)
         # Berechnen von Salden und Durchführen der Buchung
         if book_zeiteintrag(client_id):
+            print("gebucht")
             flash(f"Stundennachweise für {month_str} erfolgreich gebucht.")
         else:
             flash("Fehler bei der Buchung.")

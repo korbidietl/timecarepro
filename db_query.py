@@ -1055,26 +1055,51 @@ def book_zeiteintrag(client_id):
     if not results:
         return False
     cursor.execute("""
-        SELECT * FROM klient 
-        WHERE ID = %s
-    """, (client_id,))
+            SELECT * FROM klient 
+            WHERE ID = %s
+        """, (client_id,))
     client = cursor.fetchone()
     if not client:
         return False
+
     fk_hours = 0
     hk_hours = 0
-    for result in results:
-        if result[7] == 1:
-            fk_hours += result[4].hour - result[3].hour
-        else:
-            hk_hours += result[4].hour - result[3].hour
-    saldo_fk = client[7] - fk_hours
-    saldo_hk = client[8] - hk_hours
-    monat = date(end_year, end_month, 1)
+    saldo_fk = 0
+    saldo_hk = 0
+
+    if client[7] is not None:  # Wenn FK-Kontingent vorhanden ist
+        saldo_fk = client[7]  # Startwert ist das FK-Kontingent
+
+    if client[8] is not None:  # Wenn HK-Kontingent vorhanden ist
+        saldo_hk = client[8]  # Startwert ist das HK-Kontingent
+
     cursor.execute("""
-        INSERT INTO buchung (Klient_ID, monat, saldo_FK, saldo_HK)
-        VALUES (%s, %s, %s, %s)
-    """, (client_id, monat, saldo_fk, saldo_hk))
+            SELECT * FROM zeiteintrag 
+            WHERE Klient_ID = %s AND MONTH(end_zeit) = %s AND YEAR(end_zeit) = %s
+        """, (client_id, end_month, end_year))
+    results = cursor.fetchall()
+
+    if not results:
+        return False
+
+    for result in results:
+        if result[7] == 1 and saldo_fk is not None:  # Nur FK-Stunden von FK-Kontingent abziehen
+            fk_hours += result[4].hour - result[3].hour
+
+        if result[7] == 0 and saldo_hk is not None:  # Nur HK-Stunden von HK-Kontingent abziehen
+            hk_hours += result[4].hour - result[3].hour
+
+    if saldo_fk is not None:
+        saldo_fk -= fk_hours
+
+    if saldo_hk is not None:
+        saldo_hk -= hk_hours
+
+    monat = datetime.date(end_year, end_month, 1)
+    cursor.execute("""
+            INSERT INTO buchung (Klient_ID, monat, saldo_FK, saldo_HK)
+            VALUES (%s, %s, %s, %s)
+        """, (client_id, monat, saldo_fk, saldo_hk))
     connection.commit()
     return True
 
