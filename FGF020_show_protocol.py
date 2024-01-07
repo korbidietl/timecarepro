@@ -13,10 +13,11 @@ def show_protocol():
         aendernder_nutzer = request.form.get('nutzer')
         eintrags_id = request.form.get('eintrags_id')
 
-        protocols = get_protokoll(von, bis, aendernder_nutzer, eintrags_id)
-
         nutzers = person_dropdown()
         nutzer = {'nutzers': nutzers}
+
+        protocols = get_protokoll(von, bis, aendernder_nutzer, eintrags_id)
+
 
         if not protocols:
             return render_template('FGF020_show_protocol.html',
