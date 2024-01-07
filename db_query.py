@@ -925,7 +925,6 @@ def get_name_by_id(person_id):
     result = cursor.fetchall()
     return result
 
-
 # /FV090/
 def edit_klient_fct(klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_ID, adresse,
                     kontingent_hk, kontingent_fk, fallverantwortung_ID):

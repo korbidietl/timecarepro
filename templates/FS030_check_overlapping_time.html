@@ -30,18 +30,27 @@
                         <td>{{ entry[2] }}</td>
                         <td>{{ entry[3] }}</td>
                         <td>{{ entry[4] }}</td>
-                        <td>{{ entry[5] }}</td>
-                        <td>{{ entry[6] }}</td>
+                        <td>{{ entry[5] }} {{ entry[6] }}</td>
+                        <td>{{ entry[7] }} {{ entry[7] }}</td>
                     </tr>
-                {% endfor %}}
+                {% endfor %}
                 </tbody>
             </table>
-            <div class="form-actions">
-                <button type="button" onclick="window.location='/FMOF010_show_supervisionhours_client.html';">Speichern</button>
-                <button type="button" onclick="window.location='/FMOF050_edit_time_entry/<int:zeiteintrag_id>';">Abbrechen</button>
+            <div class="form-actions" style="margin-top: 20px">
+                <form action="{{url_for('check_overlapping_time.check_overlapping_time', zeiteintrag_id=original_zeiteintrag_id}}" method="post">
+                    <button type="button" onclick="close_popup()">Speichern</button>
+                    <button type="submit" >Abbrechen</button>
+                </form>
             </div>
         </div>
     </div>
+    <script>
+        function close_popup() {
+            var return_url = "{{ return_url }}";
+            window.location.href = return_url;
+        }
+    </script>
+</body>
 </body>
 </html>
 
