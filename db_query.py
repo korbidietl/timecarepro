@@ -722,7 +722,7 @@ def edit_zeiteintrag(zeiteintrag_id, start_time=None, end_time=None, unterschrif
                        "unterschrift_Klient = NULL, klient_ID = %s, fachkraft = %s, "
                        "beschreibung = %s, interne_notiz = %s, absage = %s "
                        "WHERE ID = %s",
-                       (start_time, end_time, unterschrift_mitarbeiter,klient_id, fachkraft,
+                       (start_time, end_time, unterschrift_mitarbeiter, klient_id, fachkraft,
                         beschreibung, interne_notiz, absage, zeiteintrag_id))
     else:
         cursor.execute("UPDATE zeiteintrag SET start_zeit = %s, end_zeit = %s, unterschrift_Mitarbeiter = NULL, "
@@ -925,6 +925,7 @@ def get_name_by_id(person_id):
     result = cursor.fetchall()
     return result
 
+
 # /FV090/
 def edit_klient_fct(klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_ID, adresse,
                     kontingent_hk, kontingent_fk, fallverantwortung_ID):
@@ -1111,10 +1112,11 @@ def book_zeiteintrag(client_id):
 
 
 # /FGF010/
-def get_report_zeiteintrag(date_from, date_to):
+def get_report_zeiteintrag(date_from, date_to, client_id=None, mitarbeiter_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("""
+
+    query = """
         SELECT
             CONCAT(Mitarbeiter.vorname, ' ', Mitarbeiter.nachname) AS Mitarbeiter,
             CONCAT(Sachbearbeiter.vorname, ' ', Sachbearbeiter.nachname) AS Sachbearbeiter, 
@@ -1123,7 +1125,7 @@ def get_report_zeiteintrag(date_from, date_to):
             SUM(fahrt.kilometer) AS gefahrene_kilometer,
             SUM(CASE WHEN fahrt.abrechenbar THEN fahrt.kilometer ELSE 0 END) AS abrechenbare_km,
             SUM(CASE WHEN fahrt.abrechenbar THEN 0 ELSE fahrt.kilometer END) AS nicht_abrechenbare_km,
-            SUM(CASE WHEN zeiteintrag.Absage THEN 1 ELSE 0 END) AS Absage           
+            SUM(CASE WHEN zeiteintrag.Absage THEN 1 ELSE 0 END) AS Absage
         FROM
             zeiteintrag
         INNER JOIN person AS Mitarbeiter ON zeiteintrag.mitarbeiter_id = Mitarbeiter.id
@@ -1133,11 +1135,23 @@ def get_report_zeiteintrag(date_from, date_to):
         WHERE
             zeiteintrag.start_zeit >= %s AND
             zeiteintrag.start_zeit < %s
-        GROUP BY
-            Mitarbeiter.id,
-            Sachbearbeiter.id,
-            klient.id
-    """, (date_from, date_to))
+    """
+    params = [date_from, date_to]
+
+    if client_id is not None and mitarbeiter_id is not None:
+        query += " AND klient.id = %s AND Mitarbeiter.id = %s"
+        params += [client_id, mitarbeiter_id]
+    elif client_id is not None:
+        query += " AND klient.id = %s"
+        params.append(client_id)
+    elif mitarbeiter_id is not None:
+        query += " AND Mitarbeiter.id = %s"
+        params.append(mitarbeiter_id)
+
+    # Fügen Sie diese Zeile außerhalb der if-elif-Blöcke hinzu
+    query += " GROUP BY Mitarbeiter.id, Sachbearbeiter.id, klient.id"
+
+    cursor.execute(query, tuple(params))
     return cursor.fetchall()
 
 
@@ -1162,19 +1176,19 @@ def get_report_mitarbeiter(date_from, date_to, client_id=None, mitarbeiter_id=No
         WHERE
             zeiteintrag.start_zeit >= %s AND
             zeiteintrag.start_zeit < %s
-        GROUP BY Mitarbeiter.ID 
-        ORDER BY Mitarbeiter.ID ASC
+    
     """
     params = [date_from, date_to]
 
-    if mitarbeiter_id:
+    if mitarbeiter_id is not None:
         query += " AND Mitarbeiter.id = %s"
-        params.append(client_id)
-
-    if client_id:
-        query += " AND zeiteintrag.klient_id = %s"
         params.append(mitarbeiter_id)
 
+    elif client_id is not None:
+        query += " AND zeiteintrag.klient_id = %s"
+        params.append(client_id)
+
+    query += " GROUP BY Mitarbeiter.ID  ORDER BY Mitarbeiter.ID  ASC"
     cursor.execute(query, tuple(params))
     return cursor.fetchall()
 
@@ -1183,6 +1197,7 @@ def get_report_mitarbeiter(date_from, date_to, client_id=None, mitarbeiter_id=No
 def get_report_klient(date_from, date_to, client_id=None, mitarbeiter_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
+
     query = """
         SELECT
             klient.id, 
@@ -1192,7 +1207,7 @@ def get_report_klient(date_from, date_to, client_id=None, mitarbeiter_id=None):
             SUM(fahrt.kilometer) AS gefahrene_kilometer,
             SUM(CASE WHEN fahrt.abrechenbar THEN fahrt.kilometer ELSE 0 END) AS abrechenbare_km,
             SUM(CASE WHEN fahrt.abrechenbar THEN 0 ELSE fahrt.kilometer END) AS nicht_abrechenbare_km,
-            SUM(CASE WHEN zeiteintrag.Absage THEN 1 ELSE 0 END) AS Absage
+            SUM(CASE WHEN zeiteintrag.absage THEN 1 ELSE 0 END) AS Absage
         FROM
             zeiteintrag
         INNER JOIN klient ON zeiteintrag.klient_ID = klient.id
@@ -1200,19 +1215,18 @@ def get_report_klient(date_from, date_to, client_id=None, mitarbeiter_id=None):
         WHERE
             zeiteintrag.start_zeit >= %s AND
             zeiteintrag.start_zeit < %s
-        GROUP BY klient.id
-        ORDER BY klient.id ASC 
     """
     params = [date_from, date_to]
 
-    if client_id:
-        query += " AND klient.id = %s"
+    if client_id is not None:
+        query += " AND klient.ID = %s"
         params.append(client_id)
 
-    if mitarbeiter_id:
-        query += " AND zeiteintrag.mitarbeiter_id = %s"
+    elif mitarbeiter_id is not None:
+        query += " AND zeiteintrag.mitarbeiter_ID = %s"
         params.append(mitarbeiter_id)
 
+    query += " GROUP BY klient.id ORDER BY klient.id ASC"
     cursor.execute(query, tuple(params))
     return cursor.fetchall()
 
@@ -1235,12 +1249,12 @@ def sum_hours_klient_zeitspanne(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, 
+        SELECT k.ID AS Klient_ID, z.mitarbeiter_ID AS Mitarbeiter_ID, k.Vorname, k.Nachname, 
         TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i') AS anzahl_Stunden 
         FROM klient k 
         JOIN zeiteintrag z ON k.ID = z.Klient_ID 
         WHERE z.end_zeit BETWEEN %s AND %s 
-        GROUP BY k.ID 
+        GROUP BY k.ID , z.mitarbeiter_ID
         ORDER BY k.ID
     """, (start_date, end_date))
 
@@ -1252,15 +1266,43 @@ def sum_hours_mitarbeiter_zeitspanne(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT p.ID AS Mitarbeiter_ID, p.Vorname, p.Nachname, 
+        SELECT p.ID AS Mitarbeiter_ID, z.klient_ID AS Klient_ID, p.Vorname, p.Nachname, 
         TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i') AS anzahl_Stunden 
         FROM person p 
         JOIN zeiteintrag z ON p.ID = z.Mitarbeiter_ID 
         WHERE z.end_zeit BETWEEN %s AND %s 
-        GROUP BY p.ID 
+        GROUP BY p.ID ,z.klient_ID
         ORDER BY p.ID
     """, (start_date, end_date))
     return cursor.fetchall()
+
+
+def sum_hours_tabelle(start_date, end_date, client_id, user_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    query = """
+     SELECT 
+         TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i') AS anzahl_Stunden
+     FROM zeiteintrag z
+     WHERE z.end_zeit BETWEEN %s AND %s
+     """
+    params = [start_date, end_date]
+
+    if user_id and client_id:
+        query += " AND z.mitarbeiter_ID = %s AND z.Klient_ID = %s"
+        params.extend([user_id, client_id])
+    elif user_id:
+        query += " AND z.mitarbeiter_ID = %s"
+        params.append(user_id)
+    elif client_id:
+        query += " AND z.Klient_ID = %s"
+        params.append(client_id)
+
+    cursor.execute(query, params)
+
+    result = cursor.fetchone()
+    return result[0] if result else "00:00"
 
 
 # /FGF010/
@@ -1320,11 +1362,11 @@ def sum_absage_klient(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, COUNT(z.ID) AS anzahl_Absagen 
+        SELECT k.ID AS Klient_ID, z.mitarbeiter_ID AS Mitarbeiter_ID, k.Vorname, k.Nachname, COUNT(z.ID) AS anzahl_Absagen 
         FROM klient k 
         JOIN zeiteintrag z ON k.ID = z.Klient_ID 
         WHERE z.end_zeit BETWEEN %s AND %s AND z.absage = 1 
-        GROUP BY k.ID 
+        GROUP BY k.ID , z.mitarbeiter_ID
         ORDER BY k.ID
     """, (start_date, end_date))
     return cursor.fetchall()
@@ -1335,14 +1377,41 @@ def sum_absage_mitarbeiter(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT p.ID AS Mitarbeiter_ID, p.Vorname, p.Nachname, COUNT(z.ID) AS anzahl_Absagen 
+        SELECT p.ID AS Mitarbeiter_ID, z.klient_ID AS Klient_ID, p.Vorname, p.Nachname, COUNT(z.ID) AS anzahl_Absagen 
         FROM person p 
         JOIN zeiteintrag z ON p.ID = z.Mitarbeiter_ID 
         WHERE z.end_zeit BETWEEN %s AND %s AND z.absage = 1
-        GROUP BY p.ID 
+        GROUP BY p.ID , z.klient_ID
         ORDER BY p.ID
     """, (start_date, end_date))
     return cursor.fetchall()
+
+
+def sum_absage_tabelle(start_date, end_date, client_id, user_id=None):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    query = """
+        SELECT COUNT(z.ID) AS anzahl_Absagen
+        FROM zeiteintrag z
+        WHERE z.end_zeit BETWEEN %s AND %s AND z.absage = 1
+        """
+    params = [start_date, end_date]
+
+    if user_id and client_id:
+        query += " AND z.mitarbeiter_ID = %s AND z.Klient_ID = %s"
+        params.extend([user_id, client_id])
+    elif user_id:
+        query += " AND z.mitarbeiter_ID = %s"
+        params.append(user_id)
+    elif client_id:
+        query += " AND z.Klient_ID = %s"
+        params.append(client_id)
+
+    cursor.execute(query, params)
+
+    result = cursor.fetchone()
+    return result[0] if result else 0
 
 
 # /FGF010/
@@ -1396,14 +1465,14 @@ def sum_km_klient(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT k.ID AS Klient_ID, k.Vorname, k.Nachname, 
+        SELECT k.ID AS Klient_ID, z.mitarbeiter_ID AS Mitarbeiter_ID, k.Vorname, k.Nachname, 
         SUM(f.kilometer) AS gesamt_km, SUM(IF(f.abrechenbar = 1, f.kilometer, 0)) 
         AS abrechenbare_km, SUM(IF(f.abrechenbar = 0, f.kilometer, 0)) AS nichtabrechenbare_km 
         FROM klient k 
         JOIN zeiteintrag z ON k.ID = z.Klient_ID 
         JOIN fahrt f ON z.ID = f.Zeiteintrag_ID 
         WHERE z.end_zeit BETWEEN %s AND %s
-        GROUP BY k.ID 
+        GROUP BY k.ID , z.mitarbeiter_ID
         ORDER BY k.ID
     """, (start_date, end_date))
     return cursor.fetchall()
@@ -1414,17 +1483,55 @@ def sum_km_mitarbeiter(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT p.ID AS Mitarbeiter_ID, p.Vorname, p.Nachname, 
+        SELECT p.ID AS Mitarbeiter_ID, z.klient_ID AS Klient_ID, p.Vorname, p.Nachname, 
         SUM(f.kilometer) AS gesamt_km, SUM(IF(f.abrechenbar = 1, f.kilometer, 0)) 
         AS abrechenbare_km, SUM(IF(f.abrechenbar = 0, f.kilometer, 0)) AS nichtabrechenbare_km 
         FROM person p 
         JOIN zeiteintrag z ON p.ID = z.Mitarbeiter_ID 
         JOIN fahrt f ON z.ID = f.Zeiteintrag_ID 
         WHERE z.end_zeit BETWEEN %s AND %s
-        GROUP BY p.ID 
+        GROUP BY p.ID , z.klient_ID
         ORDER BY p.ID
     """, (start_date, end_date))
     return cursor.fetchall()
+
+
+def sum_km_monatlich_tabelle(start_date, end_date,  klient_id=None, mitarbeiter_id=None):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    query = """
+        SELECT 
+            SUM(f.kilometer) AS gesamt_km,
+            SUM(IF(f.abrechenbar = 1, f.kilometer, 0)) AS abrechenbare_km,
+            SUM(IF(f.abrechenbar = 0, f.kilometer, 0)) AS nicht_abrechenbare_km
+        FROM zeiteintrag z
+        JOIN fahrt f ON z.ID = f.zeiteintrag_ID
+        WHERE z.start_zeit BETWEEN %s AND %s
+        """
+    params = [start_date, end_date]
+
+    if mitarbeiter_id and klient_id:
+        query += " AND z.mitarbeiter_ID = %s AND z.Klient_ID = %s"
+        params.extend([mitarbeiter_id, klient_id])
+    elif mitarbeiter_id:
+        query += " AND z.mitarbeiter_ID = %s"
+        params.append(mitarbeiter_id)
+    elif klient_id:
+        query += " AND z.Klient_ID = %s"
+        params.append(klient_id)
+
+    cursor.execute(query, params)
+
+    result = cursor.fetchone()
+    if result:
+        return {
+            'gesamt_km': result[0] if result[0] else 0,
+            'abrechenbare_km': result[1] if result[1] else 0,
+            'nicht_abrechenbare_km': result[2] if result[2] else 0
+        }
+    else:
+        return {'gesamt_km': 0, 'abrechenbare_km': 0, 'nicht_abrechenbare_km': 0}
 
 
 # /FGF010/

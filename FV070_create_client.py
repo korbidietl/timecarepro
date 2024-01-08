@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify, Blueprint, flash, redirect, url_for
 from db_query import mitarbeiter_dropdown, create_klient, validate_client, kostentraeger_dropdown
 
-
 create_client_blueprint = Blueprint("create_client", __name__)
 
 
@@ -14,17 +13,26 @@ def register_client():
         telefonnummer = request.form.get('number')
         sachbearbeiter_id = request.form.get('ktDropdown')
         adresse = request.form.get('address')
-        kontingent_fk = request.form.get('fkontingent')
-        kontingent_hk = request.form.get('hkontingent')
+        kontingent_fk_ = request.form.get('fkontingent')
+        kontingent_hk_ = request.form.get('hkontingent')
         fallverantwortung_id = request.form.get('fvDropdown')
 
-        required_fields = ['lastname', 'firstname', 'birthday', 'address',
-                           'fkontingent', 'hkontingent']
+        required_fields = ['lastname', 'firstname', 'birthday', 'address']
 
         for field in required_fields:
             if not request.form.get(field):
                 flash('Es müssen alle Felder ausgefüllt werden.')
                 return render_template('FV070_create_client.html')
+
+        if kontingent_fk_:
+            kontingent_fk = kontingent_fk_
+        else:
+            kontingent_fk = 0
+
+        if kontingent_hk_:
+            kontingent_hk = kontingent_hk_
+        else:
+            kontingent_hk = 0
 
         # überprüfung ob Klient existiert
         if validate_client(vorname, nachname, geburtsdatum):
@@ -42,4 +50,3 @@ def register_client():
     fallverantwortung = mitarbeiter_dropdown()
     fv = {'fallverantwortung': fallverantwortung}
     return render_template('FV070_create_client.html', **kt, **fv)
-

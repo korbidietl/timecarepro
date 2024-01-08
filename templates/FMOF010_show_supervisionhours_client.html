@@ -61,7 +61,7 @@
             </div>
             <div class="accordion-button">
                 {% if user_role == 'Geschäftsführung' %}
-                <form action="{{url_for('redo_booking_blueprint.revidieren_buchung', client_id=client_id)}}" method="post">
+                <form action="{{url_for('redo_booking_blueprint.revidieren_buchung', client_id=client_id)}}" method="get">
                     <button type="buchung_revidieren">Buchung revidieren</button>
                 </form>
                 {% endif %}

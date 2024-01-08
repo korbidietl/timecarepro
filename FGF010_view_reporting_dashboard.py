@@ -1,11 +1,11 @@
 from datetime import datetime
 from decimal import Decimal
-
-from flask import Blueprint, render_template, url_for, request, flash, redirect
+from flask import Blueprint, render_template, request, flash
 from db_query import mitarbeiter_dropdown, client_dropdown, sum_mitarbeiter, sum_hours_mitarbeiter_zeitspanne, \
     sum_hours_klient_zeitspanne, \
     sum_absage_mitarbeiter, sum_absage_klient, sum_km_mitarbeiter, sum_km_klient, get_report_zeiteintrag, \
-    get_report_mitarbeiter, get_report_klient, monatliche_gesamtstunden, sum_absagen_monatlich, sum_km_monatlich
+    get_report_mitarbeiter, get_report_klient, monatliche_gesamtstunden, sum_absagen_monatlich, sum_km_monatlich, \
+    sum_km_monatlich_tabelle, sum_absage_tabelle, sum_hours_tabelle
 
 reporting_dachboard_blueprint = Blueprint('view_reporting_dashboard', __name__)
 
@@ -19,13 +19,16 @@ def reporting_dashboard():
     client = client_dropdown()
     cl = {'klient': client}
 
+    stundendaten = []
+    km_diagramm = []
+    absagen_diagramm = []
+
     # Default Werten aktuelles Monat
     date_format = "%Y-%m-%d"
     heute = datetime.now()
     erster_dieses_monats = datetime(heute.year, heute.month, 1)
     von = erster_dieses_monats.strftime(date_format)
     bis = heute.strftime(date_format)
-
 
     # Default Werte Jahr
     jahr = datetime.now().year
@@ -40,10 +43,6 @@ def reporting_dashboard():
         bis_ = request.form.get('bis')
         mitarbeiter = request.form.get('mitarbeiter')
         klient = request.form.get('klient')
-
-        print(klient)
-        print(mitarbeiter)
-        print(von_)
 
         # Überprüfung Eingaben
         valid = True
@@ -62,17 +61,34 @@ def reporting_dashboard():
             flash(f"Eingabe in Feld 'bis' ungültig.", "error")
             valid = False
 
-        if mitarbeiter and mitarbeiter not in ma:
-            flash(f"Eingabe in Feld 'Mitarbeiter' ungültig.", "error")
-            valid = False
+        ma_ids = [mitarbeiter_dict['id'] for mitarbeiter_dict in ma['mitarbeiter']]
+        if mitarbeiter:
+            try:
+                mitarbeiter_id = int(mitarbeiter)  # Versucht, 'mitarbeiter' in eine Zahl umzuwandeln
+            except ValueError:
+                flash(f"Eingabe in Feld 'Mitarbeiter' ungültig.", "error")
+                valid = False
+            else:
+                if mitarbeiter_id not in ma_ids:
+                    flash(f"Eingabe in Feld 'Mitarbeiter' ungültig.", "error")
+                    valid = False
 
-        if klient and klient not in cl:
-            flash(f"Eingabe in Feld 'Klient' ungültig.", "error")
-            valid = False
+        cl_ids = [client_dict['id'] for client_dict in cl['klient']]
+        if klient:
+            try:
+                klient_id = int(klient)  # Versucht, 'mitarbeiter' in eine Zahl umzuwandeln
+            except ValueError:
+                flash(f"Eingabe in Feld 'Klient' ungültig.", "error")
+                valid = False
+            else:
+                if klient_id not in cl_ids:
+                    flash(f"Eingabe in Feld 'Klient' ungültig.", "error")
+                    valid = False
 
         # Wenn ein Feld ungültig ist erneutes Laden der Seite mit Flash nachricht
         if not valid:
-            return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl)
+            return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, stundendaten=stundendaten,
+                                   terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm)
 
         # Auswerten des Datums zur weiterverwendung
         if von_:
@@ -91,23 +107,31 @@ def reporting_dashboard():
         von_formatiert, bis_formatiert = eingabe_formatieren(von_date, bis_date)
         start_datum_formatiert, end_datum_formatiert = eingabe_formatieren(start_datum, end_datum)
 
+        # Überprüfung innerhalb eines Jahres
+        if von_formatiert.year != bis_formatiert.year:
+            flash("Die Datumsangaben müssen innerhalb des gleichen Jahres liegen.", "error")
+            valid = False
+
         # Ausgabe Tabellen
-        kl_tabelle_gesamt = klienten_tabelle(von_formatiert, bis_formatiert, klient)
+        kl_tabelle_gesamt = klienten_tabelle(von_formatiert, bis_formatiert, klient, mitarbeiter)
         klienten_liste = get_report_klient(von_formatiert, bis_formatiert, klient, mitarbeiter)
-        ma_tabelle_gesamt = mitarbeiter_tabelle(von_formatiert, bis_formatiert, mitarbeiter)
+        ma_tabelle_gesamt = mitarbeiter_tabelle(von_formatiert, bis_formatiert, klient, mitarbeiter)
         mitarbeiter_liste = get_report_mitarbeiter(von_formatiert, bis_formatiert, klient, mitarbeiter)
-        zeiteintraege_liste = get_report_zeiteintrag(von_formatiert, bis_formatiert)
+        zeiteintraege_liste = get_report_zeiteintrag(von_formatiert, bis_formatiert, klient, mitarbeiter)
+        ze_tabelle_gesamt = zeiteintraege_tabelle(von_formatiert, bis_formatiert, klient, mitarbeiter)
+        print(ze_tabelle_gesamt)
 
         # Ausgabe Diagramme
         maanzahl = mitarbeiter_anzahl()
         stunden_diagramm = monatliche_gesamtstunden(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
+        stundendaten = [float(d) if isinstance(d, Decimal) else d for d in stunden_diagramm]
         absagen_diagramm = sum_absagen_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
         km_diagramm = sum_km_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
 
         return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, klienten_daten=klienten_liste,
                                mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste,
                                klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt,
-                               stundendaten=stunden_diagramm,
+                               stundendaten=stundendaten, ze_gesamt=ze_tabelle_gesamt,
                                terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
 
     # Umwandlung Default Werte
@@ -115,11 +139,12 @@ def reporting_dashboard():
     start_datum_formatiert, end_datum_formatiert = eingabe_formatieren(start_datum, end_datum
                                                                        )
     # Ausgaben Tabellen
-    kl_tabelle_gesamt = klienten_tabelle(von_formatiert, bis_formatiert, None)
+    kl_tabelle_gesamt = klienten_tabelle(von_formatiert, bis_formatiert, None, None)
     klienten_liste = get_report_klient(von_formatiert, bis_formatiert)
-    ma_tabelle_gesamt = mitarbeiter_tabelle(von_formatiert, bis_formatiert, None)
+    ma_tabelle_gesamt = mitarbeiter_tabelle(von_formatiert, bis_formatiert, None, None)
     mitarbeiter_liste = get_report_mitarbeiter(von_formatiert, bis_formatiert)
     zeiteintraege_liste = get_report_zeiteintrag(von_formatiert, bis_formatiert)
+    ze_tabelle = zeiteintraege_tabelle(von_formatiert, bis_formatiert, None, None)
 
     # Ausgabe Diagramme
     maanzahl = mitarbeiter_anzahl()
@@ -128,11 +153,10 @@ def reporting_dashboard():
     absagen_diagramm = sum_absagen_monatlich(start_datum_formatiert, end_datum_formatiert)
     km_diagramm = sum_km_monatlich(start_datum_formatiert, end_datum_formatiert)
 
-
     return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, klienten_daten=klienten_liste,
                            mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste,
                            klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt,
-                           stundendaten=stundendaten,
+                           stundendaten=stundendaten, ze_gesamt=ze_tabelle,
                            terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
 
 
@@ -148,7 +172,7 @@ def stunden_addieren(data):
     total_hours = 0
     total_minutes = 0
 
-    for _, _, _, duration in data:
+    for _, _, _, _, duration in data:
         hours, minutes = duration.split(':')
 
         total_hours += int(hours)
@@ -164,7 +188,7 @@ def stunden_addieren(data):
 def absagen_addieren(data):
     total_absagen = 0
 
-    for _, _, _, absagen in data:
+    for _, _, _, _, absagen in data:
         total_absagen += absagen
 
     return total_absagen
@@ -175,7 +199,7 @@ def km_addieren(data):
     abrechenbare_kilometer = 0
     nicht_abrechenbare_kilometer = 0
 
-    for _, _, _, gesamt_km, abrechenbar_km, nicht_abrechenbar_km in data:
+    for _, _, _, _, gesamt_km, abrechenbar_km, nicht_abrechenbar_km in data:
         total_kilometer += gesamt_km
         abrechenbare_kilometer += abrechenbar_km
         nicht_abrechenbare_kilometer += nicht_abrechenbar_km
@@ -183,11 +207,19 @@ def km_addieren(data):
     return total_kilometer, abrechenbare_kilometer, nicht_abrechenbare_kilometer
 
 
-def klienten_tabelle(von, bis, client_id):
+def klienten_tabelle(von, bis, client_id, user_id):
+    if client_id:
+        client_id_int = int(client_id)
+    elif user_id:
+        user_id_int = int(user_id)
     # Gesamt Stunden
+
     klstunden = sum_hours_klient_zeitspanne(von, bis)
     if client_id:
-        filtered_data_s = [record for record in klstunden if record[0] == client_id]
+        filtered_data_s = [record for record in klstunden if record[0] == client_id_int]
+        klient_stunden = stunden_addieren(filtered_data_s)
+    elif user_id:
+        filtered_data_s = [record for record in klstunden if record[1] == user_id_int]
         klient_stunden = stunden_addieren(filtered_data_s)
     else:
         klient_stunden = stunden_addieren(klstunden)
@@ -195,7 +227,10 @@ def klienten_tabelle(von, bis, client_id):
     # Gesamt Absagen
     klabsage = sum_absage_klient(von, bis)
     if client_id:
-        filtered_data_a = [record for record in klabsage if record[0] == client_id]
+        filtered_data_a = [record for record in klabsage if record[0] == client_id_int]
+        klient_absagen = absagen_addieren(filtered_data_a)
+    elif user_id:
+        filtered_data_a = [record for record in klabsage if record[1] == user_id_int]
         klient_absagen = absagen_addieren(filtered_data_a)
     else:
         klient_absagen = absagen_addieren(klabsage)
@@ -203,7 +238,10 @@ def klienten_tabelle(von, bis, client_id):
     # Gesamt KM
     klkm = sum_km_klient(von, bis)
     if client_id:
-        filtered_data_k = [record for record in klkm if record[0] == client_id]
+        filtered_data_k = [record for record in klkm if record[0] == client_id_int]
+        klient_km_total, klient_km_abrechenbar, klient_km_nicht_abrechenbar = km_addieren(filtered_data_k)
+    elif user_id:
+        filtered_data_k = [record for record in klkm if record[1] == user_id_int]
         klient_km_total, klient_km_abrechenbar, klient_km_nicht_abrechenbar = km_addieren(filtered_data_k)
     else:
         klient_km_total, klient_km_abrechenbar, klient_km_nicht_abrechenbar = km_addieren(klkm)
@@ -211,11 +249,18 @@ def klienten_tabelle(von, bis, client_id):
     return klient_km_total, klient_km_abrechenbar, klient_km_nicht_abrechenbar, klient_absagen, klient_stunden
 
 
-def mitarbeiter_tabelle(von, bis, user_id):
+def mitarbeiter_tabelle(von, bis, client_id, user_id):
+    if user_id:
+        user_id_int = int(user_id)
+    elif client_id:
+        client_id_int = int(client_id)
     # Gesamt Stunden
     mastunden = sum_hours_mitarbeiter_zeitspanne(von, bis)
     if user_id:
-        filtered_data_s = [record for record in mastunden if record[0] == user_id]
+        filtered_data_s = [record for record in mastunden if record[0] == user_id_int]
+        mitarbeiter_stunden = stunden_addieren(filtered_data_s)
+    elif client_id:
+        filtered_data_s = [record for record in mastunden if record[1] == client_id_int]
         mitarbeiter_stunden = stunden_addieren(filtered_data_s)
     else:
         mitarbeiter_stunden = stunden_addieren(mastunden)
@@ -223,7 +268,10 @@ def mitarbeiter_tabelle(von, bis, user_id):
     # Gesamt Absagen
     maabsage = sum_absage_mitarbeiter(von, bis)
     if user_id:
-        filtered_data_a = [record for record in maabsage if record[0] == user_id]
+        filtered_data_a = [record for record in maabsage if record[0] == user_id_int]
+        mitarbeiter_absagen = absagen_addieren(filtered_data_a)
+    elif client_id:
+        filtered_data_a = [record for record in maabsage if record[1] == client_id_int]
         mitarbeiter_absagen = absagen_addieren(filtered_data_a)
     else:
         mitarbeiter_absagen = absagen_addieren(maabsage)
@@ -231,13 +279,29 @@ def mitarbeiter_tabelle(von, bis, user_id):
     # Gesamt KM
     makm = sum_km_mitarbeiter(von, bis)
     if user_id:
-        filtered_data_k = [record for record in makm if record[0] == user_id]
+        filtered_data_k = [record for record in makm if record[0] == user_id_int]
+        mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar = km_addieren(
+            filtered_data_k)
+    elif client_id:
+        filtered_data_k = [record for record in makm if record[1] == client_id_int]
         mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar = km_addieren(
             filtered_data_k)
     else:
         mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar = km_addieren(makm)
 
-    return mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar, mitarbeiter_absagen, mitarbeiter_stunden
+    return (mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar, mitarbeiter_absagen,
+            mitarbeiter_stunden)
+
+
+def zeiteintraege_tabelle(von, bis, client_id, user_id):
+    stunden = sum_hours_tabelle(von, bis, client_id, user_id)
+    absagen = sum_absage_tabelle(von, bis, client_id, user_id)
+    km = sum_km_monatlich_tabelle(von, bis, client_id, user_id)
+    print(km)
+    km_ges = km['gesamt_km']
+    km_abr = km['abrechenbare_km']
+    km_n_abr = km['nicht_abrechenbare_km']
+    return stunden, absagen, km_ges, km_abr, km_n_abr
 
 
 def mitarbeiter_anzahl():
