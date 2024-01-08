@@ -214,105 +214,70 @@ def get_role_by_id(person_id):
 def account_table_mitarbeiter(monat, year, person_id):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute(
-        "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(TIMESTAMPDIFF(MINUTE , zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden "
-        "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
-        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
-        "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
-        "AND person.ID = %s GROUP BY person.ID ", (monat, year, person_id))
-    time_table_mitarbeiter = cursor.fetchall()
 
-    cursor.execute(
-        "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(fahrt.kilometer) AS gefahrene_kilometer "
-        "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
-        "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
-        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
-        "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
-        "AND person.ID = %s GROUP BY person.ID", (monat, year, person_id))
-    distance_table_mitarbeiter = cursor.fetchall()
-    # Zusammenfügen der Tabellen
+    # Mitarbeiter auswählen und geleistete Stunden und Kilometer hinzufügen, falls vorhanden
+    cursor.execute("""
+        SELECT
+            p.ID, 
+            p.nachname, 
+            p.vorname,
+            COALESCE(SUM(TIMESTAMPDIFF(MINUTE , z.start_zeit, z.end_zeit)), 0) AS geleistete_minuten,
+            COALESCE(SUM(f.kilometer), 0) AS gefahrene_kilometer
+        FROM person p
+        LEFT JOIN zeiteintrag z ON p.ID = z.mitarbeiter_ID AND EXTRACT(MONTH FROM z.end_zeit) = %s AND EXTRACT(YEAR FROM z.end_zeit) = %s
+        LEFT JOIN fahrt f ON z.ID = f.zeiteintrag_ID
+        WHERE p.ID = %s
+        GROUP BY p.ID
+    """, (monat, year, person_id))
+
     report_table = []
-    for time_spalte, distance_spalte in zip(time_table_mitarbeiter, distance_table_mitarbeiter):
-        geleistete_stunden = int(time_spalte[3])
-        stunden = geleistete_stunden // 60  # Ganzzahlige Division für Stunden
-        minuten = geleistete_stunden % 60  # Rest für Minuten
-        if time_spalte[0] == distance_spalte[0]:  # IDs müssen übereinstimmen
+    for row in cursor:
+        geleistete_minuten = row[3]
+        stunden = geleistete_minuten // 60  # Ganzzahlige Division für Stunden
+        minuten = geleistete_minuten % 60  # Rest für Minuten
 
-            report_table.append(
-                (
-                    time_spalte[0],  # ID
-                    time_spalte[1],  # vorname
-                    time_spalte[2],  # nachname
-                    f"{stunden}h {minuten}min",  # geleistete_stunden
-                    distance_spalte[3],  # gefahrene_kilometer
-                )
+        report_table.append(
+            (
+                row[0],  # ID
+                row[1],  # Nachname
+                row[2],  # Vorname
+                f"{stunden}h {minuten}min",  # Geleistete Stunden
+                row[4],  # Gefahrene Kilometer
             )
+        )
+
+    cursor.close()
     return report_table
+
 
 
 # /FAN030/
 def account_table(monat, year):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute(
-        "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit)) AS geleistete_stunden,"
-        "person.sperre "
-        "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
-        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
-        "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
-        "GROUP BY person.ID", (monat, year,))
-    time_table = cursor.fetchall()
 
-    cursor.execute(
-        "SELECT person.ID, person.nachname, person.vorname, "
-        "SUM(fahrt.kilometer) AS gefahrene_kilometer, "
-        "person.sperre "
-        "FROM person JOIN zeiteintrag ON person.ID = zeiteintrag.mitarbeiter_ID "
-        "JOIN fahrt ON zeiteintrag.ID = fahrt.zeiteintrag_ID "
-        "WHERE EXTRACT(MONTH FROM zeiteintrag.end_zeit) = %s "
-        "AND EXTRACT(YEAR FROM zeiteintrag.end_zeit) = %s "
-        "GROUP BY person.ID", (monat, year,))
-    distance_table = cursor.fetchall()
+    cursor.execute("""
+        SELECT 
+            k.ID, 
+            k.nachname, 
+            k.vorname,
+            COALESCE(TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i'), '00:00') AS geleistete_stunden,
+            COALESCE(SUM(f.kilometer), 0) AS gefahrene_kilometer
+        FROM 
+            klient k
+        LEFT JOIN 
+            zeiteintrag z ON k.ID = z.klient_id AND EXTRACT(MONTH FROM z.end_zeit) = %s AND EXTRACT(YEAR FROM z.end_zeit) = %s
+        LEFT JOIN 
+            fahrt f ON z.ID = f.zeiteintrag_id
+        GROUP BY 
+            k.ID
+        ORDER BY 
+            k.ID
+    """, (monat, year))
 
-    # Zusammenfügen der Tabellen
-    report_table = []
-    # Erstellen Sie eine Liste der eindeutigen IDs aus beiden Tabellen
-    unique_ids = set(row[0] for row in time_table) | set(row[0] for row in distance_table)
-
-    # Schleife über die eindeutigen IDs
-    for id in unique_ids:
-        matching_time_spalte = next((row for row in time_table if row[0] == id), None)
-        matching_distance_spalte = next((row for row in distance_table if row[0] == id), None)
-
-        geleistete_stunden = 0
-        gefahrene_kilometer = None
-        sperre = None
-
-        if matching_time_spalte:
-            geleistete_stunden = int(matching_time_spalte[3])
-            sperre = matching_time_spalte[4]
-        if matching_distance_spalte:
-            gefahrene_kilometer = matching_distance_spalte[3]
-            sperre = matching_distance_spalte[4]
-
-        stunden = geleistete_stunden // 60  # Ganzzahlige Division für Stunden
-        minuten = geleistete_stunden % 60  # Rest für Minuten
-
-        report_table.append(
-            (
-                id,  # ID
-                matching_time_spalte[1] if matching_time_spalte else matching_distance_spalte[1],  # vorname
-                matching_time_spalte[2] if matching_time_spalte else matching_distance_spalte[2],  # nachname
-                f"{stunden}:{minuten}",  # geleistete_stunden
-                gefahrene_kilometer,  # gefahrene_kilometer
-                sperre,  # Hinzugefügt
-            )
-        )
-
-    return report_table
+    klienten_table = cursor.fetchall()
+    cursor.close()
+    return klienten_table
 
 
 # /FAN030/
@@ -346,20 +311,27 @@ def get_client_table_sb(person_id, month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT k.ID, k.nachname, k.vorname,
-            k.kontingent_FK, k.kontingent_HK,
-            k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)
-            ELSE 0 END) as fachkraftsaldo,
-            k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)
-            ELSE 0 END) as hilfskraftsaldo,
-            CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
-        FROM klient k
-        LEFT JOIN zeiteintrag z ON k.ID = z.klient_id
-        LEFT JOIN person p ON k.fallverantwortung_ID = p.ID
-        WHERE k.fallverantwortung_ID = %s AND MONTH(z.start_zeit) = %s AND YEAR(z.start_zeit) = %s
-        GROUP BY k.ID, p.nachname, p.vorname
-    """, (person_id, month, year))
-    client_info = cursor.fetchone()
+            SELECT 
+                k.ID, 
+                k.nachname, 
+                k.vorname,
+                k.kontingent_FK, 
+                k.kontingent_HK,
+                COALESCE(k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) as fachkraftsaldo,
+                COALESCE(k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) as hilfskraftsaldo,
+                CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
+            FROM 
+                klient k
+            LEFT JOIN 
+                zeiteintrag z ON k.ID = z.klient_id AND MONTH(z.start_zeit) = %s AND YEAR(z.start_zeit) = %s
+            LEFT JOIN 
+                person p ON k.fallverantwortung_ID = p.ID
+            WHERE 
+                k.fallverantwortung_ID = %s
+            GROUP BY 
+                k.ID, p.nachname, p.vorname
+        """, (month, year, person_id))
+    client_info = cursor.fetchall()
     cursor.close()
     return client_info
 
@@ -369,19 +341,24 @@ def get_client_table(month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT k.ID, k.nachname, k.vorname,
-            k.kontingent_FK, k.kontingent_HK,
-            k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)
-            ELSE 0 END) as fachkraftsaldo,
-            k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit)
-            ELSE 0 END) as hilfskraftsaldo,
-            CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
-        FROM klient k
-        LEFT JOIN zeiteintrag z ON k.ID = z.klient_id
-        LEFT JOIN person p ON k.fallverantwortung_ID = p.ID
-        WHERE MONTH(z.start_zeit) = %s AND YEAR(z.start_zeit) = %s
-        GROUP BY k.ID, p.nachname, p.vorname
-    """, (month, year))
+           SELECT 
+               k.ID, 
+               k.nachname, 
+               k.vorname,
+               k.kontingent_FK, 
+               k.kontingent_HK,
+               COALESCE(k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) as fachkraftsaldo,
+               COALESCE(k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) as hilfskraftsaldo,
+               CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
+           FROM 
+               klient k
+           LEFT JOIN 
+               zeiteintrag z ON k.ID = z.klient_id AND MONTH(z.start_zeit) = %s AND YEAR(z.start_zeit) = %s
+           LEFT JOIN 
+               person p ON k.fallverantwortung_ID = p.ID
+           GROUP BY 
+               k.ID, p.nachname, p.vorname
+       """, (month, year))
     client_info = cursor.fetchall()
     cursor.close()
     return client_info
