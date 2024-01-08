@@ -6,7 +6,7 @@ from datetime import datetime
 
 create_time_entry_blueprint = Blueprint('/create_time_entry', __name__)
 
-# test
+
 def check_time_entry_constraints(datum, start_zeit, end_zeit, klient_id):
     # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
     jetzt = datetime.now()
