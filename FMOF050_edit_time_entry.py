@@ -31,14 +31,12 @@ def edit_time_entry(zeiteintrag_id):
     # Name Klient
     klient_id = zeiteintrag[6]
 
-    print(klient_id)
-    print(session_role)
     if request.method == 'POST':
         # Eingabedaten aus dem Formular holen
         datum = request.form.get('datum')
         start_zeit = request.form.get('startZeit')
         end_zeit = request.form.get('endZeit')
-        fachkraft = request.form.get('fachkraft')
+        fachkraft = "1" if request.form.get('fachkraft') is not None else "0"
         klient_id = request.form.get('klientDropdown')
         beschreibung = request.form.get('beschreibung')
         interne_notiz = request.form.get('interneNotiz')
@@ -60,13 +58,15 @@ def edit_time_entry(zeiteintrag_id):
                 neue_unterschrift_klient = base64_to_blob(neue_unterschrift_klient)
             if neue_unterschrift_mitarbeiter:
                 neue_unterschrift_mitarbeiter = base64_to_blob(neue_unterschrift_mitarbeiter)
-
+            print("eintrag")
             # Änderungen am Zeiteintrag speichern
-            edit_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime,neue_unterschrift_mitarbeiter, neue_unterschrift_klient,
-                              klient_id, fachkraft, beschreibung, interne_notiz, absage)
+            edit_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime,neue_unterschrift_mitarbeiter,
+                             neue_unterschrift_klient, klient_id, fachkraft, beschreibung, interne_notiz, absage)
+            print("eintrag")
 
             if check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_datetime, end_datetime):
-                return redirect(url_for('/check_overlapping_time', zeiteintrag_id=zeiteintrag_id))
+                return redirect(
+                    url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id))
 
             # wenn verwaltung ändert, muss E-Mail an mitarbeiter gesendet werden
             if session_role == "Verwaltung":
@@ -83,6 +83,7 @@ def edit_time_entry(zeiteintrag_id):
 
         # verwaltung kann nur tabelle zeiteintrag ändern nicht aber fahrten (laut pflichtenheft!!)
         if not session_role == "Verwaltung":
+            print(" fahrt ")
             # importiere fahrt_counter von html hidden input in python
             fahrt_counter = int(request.form.get('fahrtCounterInput', 1))
 
@@ -116,13 +117,15 @@ def edit_time_entry(zeiteintrag_id):
 
             # fahrt entfernen
             # wenn fahrt id nicht mehr in bestehenden fahrten ist, dann löschen
-            for i in range(fahrt_counter):
-                if not fahrt_id_existing(f'fahrt_id{i}'):
-                    delete_fahrt(f'fahrt_id{i}')
+            print("fahrt löschen")
+            for fahrt_id in existing_fahrten_ids:
+                if not fahrt_id_existing(fahrt_id):
+                    delete_fahrt(fahrt_id)
+                    print("fahrt löschen")
 
             # Weiterleitung zurück zur Übersicht der abgelegten Stunden
-            flash('Eintrag erfolgreich bearbeitet')
-            return redirect(session.pop('url', None))
+            return redirect(url_for('check_overlapping_time_blueprint.overlapping_time', zeiteintrag_id=zeiteintrag_id))
+
 
     return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
                            klient_id=klient_id, datum=datum, von=von, bis=bis,

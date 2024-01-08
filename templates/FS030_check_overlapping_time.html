@@ -9,7 +9,7 @@
     <!-- Pop-up Modal -->
     <div class="table-form">
         <div class="modal-content">
-            <h2>Achtung - Terminüberschneidung</h2>
+            <h3>Achtung - Terminüberschneidung</h3>
             <table>
                 <thead>
                     <tr>
@@ -30,16 +30,18 @@
                         <td>{{ entry[2] }}</td>
                         <td>{{ entry[3] }}</td>
                         <td>{{ entry[4] }}</td>
-                        <td>{{ entry[5] }} {{ entry[6] }}</td>
-                        <td>{{ entry[7] }} {{ entry[7] }}</td>
+                        <td>{{ entry[6] }}, {{ entry[5] }}</td>
+                        <td>{{ entry[8] }}, {{ entry[7] }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
             <div class="form-actions" style="margin-top: 20px">
-                <form action="{{url_for('check_overlapping_time.check_overlapping_time', zeiteintrag_id=original_zeiteintrag_id}}" method="post">
-                    <button type="button" onclick="close_popup()">Speichern</button>
-                    <button type="submit" >Abbrechen</button>
+                <form action="{{ url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=original_zeiteintrag_id) }}" method="post">
+                    <div class="form-row">
+                        <button type="button" onclick="close_popup()">Speichern</button>
+                        <button type="submit" >Abbrechen</button>
+                    </div>
                 </form>
             </div>
         </div>
