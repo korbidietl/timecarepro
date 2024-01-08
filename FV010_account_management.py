@@ -9,9 +9,9 @@ def account_management():
     # session speichern für rückleitung
     session['url'] = url_for('account_management.account_management')
     user_id = session.get('user_id')
-    role = session.get('role')
+    role = session.get('user_role')
 
-    # accounts = get_all_accounts()
+    # abruf zusätzlicher Tabellen
     steuerbueros = get_steuerbuero_table()
     sachbearbeiter = get_sachbearbeiter_table()
 
