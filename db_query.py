@@ -760,6 +760,17 @@ def delete_fahrt(fahrt_id):
     cursor.close()
     connection.close()
 
+# /FMOF050
+def get_highest_fahrt_id():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT MAX(ID) FROM fahrt")
+    highest_id = cursor.fetchone()[0]
+    cursor.close()
+    connection.close()
+    return highest_id
+
+
 
 # /FMOF060/
 # /FV110/
