@@ -1,6 +1,6 @@
 from flask import Flask
 from datetime import timedelta
-from session_check import check_session_timeout
+from session_check import check_session_timeout, check_user_status
 
 
 def create_app():
@@ -10,6 +10,7 @@ def create_app():
     # für die Inaktivitätsbedingung
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
     app.before_request(check_session_timeout)
+    app.before_request(check_user_status)
 
     # Systemweite Anforderungen
 
@@ -105,7 +106,6 @@ def create_app():
     from FGF030_redo_last_booking import redo_booking_blueprint
     app.register_blueprint(redo_booking_blueprint)
 
-
     # Kostenträger/Sachbearbeiter
     from FSK010_access_hours_km_clients import access_hours_km_clients_blueprint
     app.register_blueprint(access_hours_km_clients_blueprint)
@@ -114,9 +114,6 @@ def create_app():
 
 
 app = create_app()
-
-for rule in app.url_map.iter_rules():
-    print(rule)
 
 if __name__ == '__main__':
     app.run(debug=True)

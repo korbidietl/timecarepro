@@ -8,6 +8,8 @@ account_management_blueprint = Blueprint("account_management", __name__)
 def account_management():
     # session speichern für rückleitung
     session['url'] = url_for('account_management.account_management')
+    user_id = session.get('user_id')
+    role = session.get('role')
 
     # accounts = get_all_accounts()
     steuerbueros = get_steuerbuero_table()
@@ -27,4 +29,4 @@ def account_management():
 
     return render_template('FV010_account_management.html',
                            steuerbueros=steuerbueros,
-                           sachbearbeiter=sachbearbeiter)
+                           sachbearbeiter=sachbearbeiter, user_id=user_id, role=role)

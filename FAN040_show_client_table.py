@@ -15,7 +15,6 @@ def get_clients_data():
 
     if role == "Sachbearbeiter/Kostenträger":
         clients = get_client_table_sb(person, month, year)
-        print(clients)
     else:
         clients = get_client_table(month, year)
 

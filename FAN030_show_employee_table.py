@@ -13,16 +13,11 @@ def get_employee_data():
 
     month = request.args.get('monat')
     year = request.args.get('jahr')
-    print(month)
-    print(year)
 
     if role == "Mitarbeiter":
         mitarbeiter_liste = account_table_mitarbeiter(month, year, person)
-        print(mitarbeiter_liste)
     else:
         mitarbeiter_liste = account_table(month, year)
-        print('after:')
-        print(mitarbeiter_liste)
 
     return jsonify(mitarbeiter_liste)
 

@@ -62,6 +62,12 @@
             </div>
             <p id="no-employee-message" style="display: none;">Keine Mitarbeiter gefunden.</p>
         {% endif %}
+        {% if role == 'Steuerbüro'%}
+            <div class="accordion-button">
+                <button onclick="exportTable()">Exportieren</button>
+                <button type="button" onclick="window.print();">Drucken</button>
+            </div>
+        {% endif %}
 
         <br> <br> <br>
 
@@ -103,6 +109,54 @@
         }
 
     </script>
+    <script>
+        function exportTable() {
+            // Hier sammeln Sie die Daten Ihrer Tabelle
+            let tableData = sammleTabellenDaten();
+
+            // Daten an den Server senden
+            fetch('/export-table', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ data: tableData })
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                // Erstellen eines Links zum Herunterladen
+                let url = window.URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = 'Mitarbeitertabelle.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            });
+        }
+        function sammleTabellenDaten() {
+            let tabelle = document.getElementById('employeeTable');
+            if (!tabelle) {
+                console.error('Tabelle nicht gefunden');
+                return [];
+            }
+            let zeilen = tabelle.getElementsByTagName('tr');
+            let daten = [];
+
+            for (let i = 0; i < zeilen.length; i++) {
+                let zellen = zeilen[i].getElementsByTagName('td');
+                let zeilenDaten = [];
+                for (let j = 0; j < zellen.length; j++) {
+                    zeilenDaten.push(zellen[j].innerText);
+                }
+                if (zeilenDaten.length > 0) {
+                    daten.push(zeilenDaten);
+                }
+            }
+            return daten;
+        }
+    </script>
+
 </body>
 </html>
 

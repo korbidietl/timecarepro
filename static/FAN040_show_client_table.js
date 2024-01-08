@@ -92,7 +92,7 @@
                                     <td>${client[6]}</td>
                                     <td>${client[7]}</td>`;
 
-                    if (userRole === 'Verwaltung') {
+                    if (userRole === 'Verwaltung' || userRole === 'Geschäftsführung') {
                         tableHTML += `<td>
                                         <button onclick="window.location.href='/client_details/${client[0]}'">Details</button>
                                       </td>`;
@@ -102,7 +102,7 @@
                                     <button onclick="window.location.href='/client_supervision_hours/${client[0]}'">Zeiteintrag ansehen</button>
                                   </td>`;
 
-                    if (userRole === 'Verwaltung') {
+                    if (userRole === 'Verwaltung' || userRole === 'Geschäftsführung') {
                         tableHTML += `<td>
                                         <button onclick="window.location.href='/edit_client/${client[0]}'">Bearbeiten</button>
                                       </td>`;

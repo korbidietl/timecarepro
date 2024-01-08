@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, url_for
+from flask import Blueprint, render_template, url_for, session
 from db_query import get_klient_data, get_name_by_id
 
 client_details_blueprint = Blueprint('client_details', __name__)
@@ -6,7 +6,7 @@ client_details_blueprint = Blueprint('client_details', __name__)
 
 @client_details_blueprint.route('/client_details/<int:client_id>', methods=['POST', 'GET'])
 def client_details(client_id):
-    return_url = url_for('account_management.account_management')
+    return_url = session.get('url')
     client_data_list = get_klient_data(client_id)
 
     # Überprüfen Sie, ob client_data_list Daten enthält

@@ -1,4 +1,7 @@
-from flask import Blueprint, render_template, session, url_for
+import csv
+import io
+
+from flask import Blueprint, render_template, session, url_for, request, Response
 
 home_blueprint = Blueprint('home', __name__)
 
@@ -10,3 +13,13 @@ def home():
     session['url'] = url_for('home.home')
 
     return render_template('FAN010_home.html', user_id=user_id, role=role)
+
+
+@home_blueprint.route('/export-table', methods=['POST'])
+def export_table():
+    data = request.json['data']
+    si = io.StringIO()
+    cw = csv.writer(si)
+    cw.writerows(data)
+    output = si.getvalue()
+    return Response(output, mimetype='text/csv', headers={'Content-disposition': 'attachment; filename=exportierte_tabelle.csv'})

@@ -9,6 +9,7 @@ edit_client_blueprint = Blueprint('edit_client', __name__)
 def edit_client(client_id):
     current_client = get_current_client(client_id)
     person = session.get('user_id')
+    return_url = session.get('url')
 
     client_data_list = get_klient_data(client_id)
 
@@ -77,4 +78,4 @@ def edit_client(client_id):
         return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, sb_id=sb_id,
                                fallverantwortung=fallverantwortung, fv_id=fv_id, client_id=client_id, firstname=firstname,
                                lastname=lastname, birthday=birthday,
-                               phone=phone, sb=sachbearbeiter, address=address, fk=fk, hk=hk, fv=fallverantwortung_name)
+                               phone=phone, sb=sachbearbeiter, address=address, fk=fk, hk=hk, fv=fallverantwortung_name, return_url=return_url)

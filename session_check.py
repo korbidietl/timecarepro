@@ -1,5 +1,6 @@
 from flask import session, redirect, url_for, flash
 from datetime import datetime, timedelta
+from db_query import check_account_locked
 
 
 def make_session_not_permanent():
@@ -21,3 +22,12 @@ def check_session_timeout():
             return redirect(url_for('login.login'))
 
     session['last_activity'] = now.strftime('%Y-%m-%d %H:%M:%S')
+
+
+def check_user_status():
+    user_id = session.get('user_id')
+    locked = check_account_locked(user_id)
+    if 'user_id' in session and locked:
+        # Benutzer ist gesperrt, also Session löschen und umleiten
+        session.clear()
+        return redirect(url_for('login.login', message='Ihr Konto wurde gesperrt.'))

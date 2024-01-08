@@ -65,7 +65,7 @@
                 if (noDataMessage) {
                     noDataMessage.style.display = 'none';
                 }
-                let tableHTML = `<table>
+                let tableHTML = `<table id="employeeTable">
                                     <thead>
                                         <tr>
                                             <th>Personalnr.</th>
@@ -94,7 +94,7 @@
                                         <input type="hidden" name="sperre" value="${sperre}">
                                     </td>`;
 
-                    if (userRole === 'Verwaltung') {
+                    if (userRole === 'Verwaltung' || userRole === 'Geschäftsführung') {
                         tableHTML += `<td>
                                         <button onclick="window.location.href='/account_details/${arbeiter[0]}'">Details</button>
                                       </td>`;
@@ -104,7 +104,7 @@
                                     <button onclick="window.location.href='/view_time_entries/${arbeiter[0]}'">Zeiteintrag ansehen</button>
                                   </td>`;
 
-                    if (userRole === 'Verwaltung') {
+                    if (userRole === 'Verwaltung' || userRole === 'Geschäftsführung') {
                         tableHTML += `<td>
                                         <button onclick="window.location.href='/edit_account/${arbeiter[0]}'">Bearbeiten</button>
                                       </td>`;

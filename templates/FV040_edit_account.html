@@ -38,34 +38,40 @@
                     <label for="firstname">Vorname:</label>
                     <input type="text" id="firstname" name="firstname" value="{{firstname}}" required>
                 </div>
-                <div class="form-group2 for-mitarbeiter">
+                {% if role == 'Mitarbeiter' %}
+                <div class="form-group2">
                     <label for="address">Adresse:</label>
                     <input type="text" id="address" name="address" value="{{address}}">
                 </div>
+                {% endif %}
             </div>
             <div class="form-row">
                 <div class="form-group2">
                     <label for="role">Rolle:</label>
                     <input type="text" id="role" name="role" value="{{role}}" disabled>
                 </div>
-                <div class="form-group2 for-mitarbeiter">
+                {% if role == 'Mitarbeiter' %}
+                <div class="form-group2">
                     <label for="qualification">Qualifikation:</label>
                     <input type="text" id="qualification" name="qualification" value="{{qualification}}">
                 </div>
-                <div class="form-group2 for-mitarbeiter">
+                <div class="form-group2">
                     <label for="phone">Telefonnummer:</label>
                     <input type="tel" id="phone" name="phone" value="{{phone}}" pattern="[0-9]{10}">
                 </div>
+                {% endif %}
             </div>
             <div class="form-row">
                 <div class="form-group2">
                     <label for="email">E-Mail:</label>
                     <input type="email" id="email" name="email" value="{{email}}" disabled>
                 </div>
-                <div class="form-group2 for-mitarbeiter">
+                {% if role == 'Mitarbeiter' %}
+                <div class="form-group2">
                     <label for="birthday">Geburtstag:</label>
                     <input type="date" id="birthday" name="birthday" value="{{birthday}}">
                 </div>
+                {% endif %}
             </div>
             <div class="form-row">
                 <button type="submit">Speichern</button>

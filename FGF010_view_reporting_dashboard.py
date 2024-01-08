@@ -119,7 +119,6 @@ def reporting_dashboard():
         mitarbeiter_liste = get_report_mitarbeiter(von_formatiert, bis_formatiert, klient, mitarbeiter)
         zeiteintraege_liste = get_report_zeiteintrag(von_formatiert, bis_formatiert, klient, mitarbeiter)
         ze_tabelle_gesamt = zeiteintraege_tabelle(von_formatiert, bis_formatiert, klient, mitarbeiter)
-        print(ze_tabelle_gesamt)
 
         # Ausgabe Diagramme
         maanzahl = mitarbeiter_anzahl()
@@ -297,7 +296,6 @@ def zeiteintraege_tabelle(von, bis, client_id, user_id):
     stunden = sum_hours_tabelle(von, bis, client_id, user_id)
     absagen = sum_absage_tabelle(von, bis, client_id, user_id)
     km = sum_km_monatlich_tabelle(von, bis, client_id, user_id)
-    print(km)
     km_ges = km['gesamt_km']
     km_abr = km['abrechenbare_km']
     km_n_abr = km['nicht_abrechenbare_km']
