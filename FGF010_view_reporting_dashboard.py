@@ -289,7 +289,8 @@ def mitarbeiter_tabelle(von, bis, client_id, user_id):
     else:
         mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar = km_addieren(makm)
 
-    return mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar, mitarbeiter_absagen, mitarbeiter_stunden
+    return (mitarbeiter_km_total, mitarbeiter_km_abrechenbar, mitarbeiter_km_nicht_abrechenbar, mitarbeiter_absagen,
+            mitarbeiter_stunden)
 
 
 def zeiteintraege_tabelle(von, bis, client_id, user_id):
