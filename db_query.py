@@ -778,7 +778,7 @@ def edit_fahrt(fahrt_id, kilometer, abrechenbar, zeiteintrag_id, start_adresse=N
 def delete_fahrt(fahrt_id):
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("DELETE FROM fahrt WHERE id = %s", fahrt_id)
+    cursor.execute("DELETE FROM fahrt WHERE id = %s", (fahrt_id,))
     connection.commit()
     cursor.close()
     connection.close()

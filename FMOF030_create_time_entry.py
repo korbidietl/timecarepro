@@ -15,7 +15,7 @@ def check_time_entry_constraints(datum, start_zeit, end_zeit, klient_id):
         return render_template("FMOF030_create_time_entry.html")
 
     # prüft ob startzeitpunkt in der zukunft liegt
-    if start_zeit.time() > jetzt.time() or datum.date() > jetzt.date():
+    if (start_zeit.time() > jetzt.time() and datum.date() > jetzt.date()) or datum.date() > jetzt.date():
         flash("Startzeitpunkt muss in der Vergangenheit liegen")
         return render_template("FMOF030_create_time_entry.html")
 
