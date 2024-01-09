@@ -42,8 +42,9 @@
             </div>
         </form>
         <br>
-
-        {% if kombinierte_liste %}
+        {% if booked == False %}
+            <p> Einträge für {{month}} nicht gebucht</p>
+        {% elif kombinierte_liste %}
             <table id="client_hours">
                 <thead>
                     <tr>
@@ -59,7 +60,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for zeiteintrag, ueberschneidungs_status, booked_status, unterschrift in kombinierte_liste %}
+                    {% for zeiteintrag, ueberschneidungs_status, unterschrift in kombinierte_liste %}
                         <tr>
                             <td>{{ zeiteintrag[1] }}</td>
                             <td>{{ zeiteintrag[2] }}</td>
@@ -86,6 +87,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+
         {% else %}
             <p>Noch keine Einträge vorhanden.</p>
         {% endif %}

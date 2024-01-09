@@ -30,6 +30,9 @@ def view_time_entries(client_id):
     aktuelles_jahr = datetime.now().year
     aktueller_monat = datetime.now().month
 
+    # Default Wert für booke
+    booked = True
+
     # Auswahl des angezeigten Zeitraums
     if request.method == 'POST':
         gewaehlte_kombination = request.form.get('monat_jahr')
@@ -48,8 +51,16 @@ def view_time_entries(client_id):
     u_liste = unterschriften_liste(zeiteintrag_ids)
     ueberschneidung_liste = check_ueberschneidung_liste(zeiteintrag_ids, client_id)
     booked_liste = check_booked_liste(zeiteintrag_ids)
-    kombinierte_liste = list(zip(zeiteintrag_ids, ueberschneidung_liste, booked_liste, u_liste))
+    for entry in booked_liste:
+        if entry is True:
+            booked = True
+            break
+        else:
+            booked = False
+
+    kombinierte_liste = list(zip(zeiteintrag_ids, ueberschneidung_liste, u_liste))
 
     return render_template('FSK010_access_hours_km_clients.html',
-                           client_id=client_id, kombinierte_liste=kombinierte_liste, client_name=client_name, sb_name=sb_name,
-                           gewaehlte_kombination=gewaehlte_kombination, kombinationen=kombinationen)
+                           client_id=client_id, kombinierte_liste=kombinierte_liste, client_name=client_name,
+                           sb_name=sb_name,
+                           gewaehlte_kombination=gewaehlte_kombination, kombinationen=kombinationen, booked=booked, month= gewaehlte_kombination)

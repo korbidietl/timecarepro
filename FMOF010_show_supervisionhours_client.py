@@ -61,7 +61,7 @@ def check_ueberschneidung_liste(zeiteintraege_liste, client_id):
         von_datum = datetime.combine(datum, von)
         bis_datum = datetime.combine(datum, bis)
 
-        ueberschneidung = check_for_overlapping_zeiteintrag(z_id, von_datum, bis_datum, client_id)
+        ueberschneidung = check_for_overlapping_zeiteintrag(z_id, von_datum, bis_datum)
         # Überprüfen, ob die Liste leer ist
         if ueberschneidung:
             ueberschneidungs_status = "Ja"
