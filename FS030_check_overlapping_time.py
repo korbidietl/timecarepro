@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Blueprint, request, render_template, session
 
 from FMOF050_edit_time_entry import save_after_overlapping
@@ -9,49 +11,52 @@ check_overlapping_time_blueprint = Blueprint('check_overlapping_time', __name__)
 @check_overlapping_time_blueprint.route('/check_overlapping_time/<int:zeiteintrag_id>', methods=['GET', 'POST'])
 def overlapping_time(zeiteintrag_id):
     return_url = session.get('url_overlapping')
-    overlapping_entries = []
-    print("überschneidung angekommen")
-    zeiteintrag_data = get_zeiteintrag_by_id(zeiteintrag_id)
+    zeiteintrag_data = session.get('overlapping_ze')
+    fahrten_data_list = session.get('overlapping_fahrten')
 
+    # auf Button speichern geklickt
     if request.method == 'POST':
-        print(1)
-        zeiteintrag_data = request.form.get('zeiteintrag_data')
-        fahrt_data_list = request.form.get('fahrt_data_list')
-        print(2)
-        save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list)
-        print(3)
+        save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrten_data_list)
+
+    # Standartverhalten beim Aufruf der Funktion
     else:
         if zeiteintrag_data:
-            print(4)
             # Extrahieren der benötigten Daten aus dem ersten Ergebnis
-            einzelner_zeiteintrag = zeiteintrag_data[0]
-            klient_id = einzelner_zeiteintrag[6]
-            startzeit = einzelner_zeiteintrag[3]
-            endzeit = einzelner_zeiteintrag[4]
+            start_zeit_datetime = zeiteintrag_data['start_datetime']
+            end_zeit_datetime = zeiteintrag_data['end_datetime']
+            klient_id = zeiteintrag_data['klient_id']
+            mitarbeiter_id = zeiteintrag_data['mitarbeiter_id']
 
-            overlapping_ids = check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, startzeit, endzeit)
-            overlapping_ids.append(zeiteintrag_id)
+            overlapping_ids = check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_zeit_datetime,
+                                                                end_zeit_datetime)
+            matching_entries = []
+            for entry_id in overlapping_ids:
+                entry_data_list = get_zeiteintrag_by_id(entry_id)
+                if entry_data_list:
+                    entry_data = entry_data_list[0]
 
-            for ids in overlapping_ids:
-                entry_data_list = get_zeiteintrag_by_id(ids)
-                entry_data = entry_data_list[0]
-                if entry_data:
-                    z_id = entry_data[0]
-                    startzeit_obj = entry_data[3]
-                    endzeit_obj = entry_data[4]
+                    if mitarbeiter_id == entry_data[5] or klient_id == entry_data[6]:
+                        matching_entries.append(entry_data[0])
+
+            overlapping_entries = []
+            for entry in overlapping_entries:
+                if entry:
+                    z_id = entry[0]
+                    startzeit_obj = entry[3]
+                    endzeit_obj = entry[4]
 
                     # Extrahieren der Uhrzeit als String
                     startzeit = startzeit_obj.strftime('%H:%M')
                     endzeit = endzeit_obj.strftime('%H:%M')
                     datum = startzeit_obj.strftime('%Y-%m-%d')
 
-                    beschreibung = entry_data[8]
-                    mitarbeiter_id = entry_data[5]
+                    beschreibung = entry[8]
+                    mitarbeiter_id = entry[5]
                     mitarbeiter_list = get_name_by_id(mitarbeiter_id)
                     mitarbeiter = mitarbeiter_list[0]
                     m_vorname = mitarbeiter[0]
                     m_nachname = mitarbeiter[1]
-                    client_id = entry_data[6]
+                    client_id = entry[6]
                     client = get_client_name(client_id)
                     c_vorname = client[0]
                     c_nachname = client[1]
@@ -60,4 +65,4 @@ def overlapping_time(zeiteintrag_id):
                         (z_id, datum, startzeit, endzeit, beschreibung, m_vorname, m_nachname, c_vorname, c_nachname))
 
                     return render_template('FS030_check_overlapping_time.html', overlapping_entries=overlapping_entries,
-                               original_zeiteintrag_id=zeiteintrag_id, return_url=return_url)
+                                           original_zeiteintrag_id=zeiteintrag_id, return_url=return_url)

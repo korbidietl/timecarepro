@@ -135,15 +135,15 @@ def save_change_log(person_id, table_type, old_state, new_state, entry_id):
 # /FMOF010/
 # /FMOF030/
 # /FSK010/
-def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end_time):
+def check_for_overlapping_zeiteintrag(zeiteintrag_id, start_time, end_time):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT id FROM zeiteintrag WHERE id != %s AND klient_id = %s "
+        "SELECT id FROM zeiteintrag WHERE id != %s "
         "AND ((start_zeit >= %s AND start_zeit < %s) "
         "OR (end_zeit > %s AND end_zeit <= %s) "
         "OR (start_zeit <= %s AND end_zeit >= %s))",
-        (zeiteintrag_id, klient_id, start_time, end_time, start_time, end_time, start_time, end_time))
+        (zeiteintrag_id, start_time, end_time, start_time, end_time, start_time, end_time))
     ids = [id[0] for id in cursor.fetchall()]
     cursor.close()
     connection.close()
@@ -634,12 +634,11 @@ def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, e
                     klient_id, fachkraft, beschreibung, interne_notiz, absage):
     connection = get_database_connection()
     cursor = connection.cursor()
-    ueberschneidung = 0  # Standardwert für Überschneidung festlegen
     cursor.execute("INSERT INTO zeiteintrag (unterschrift_Mitarbeiter, unterschrift_Klient, start_zeit, end_zeit, "
-                   "mitarbeiter_ID, klient_ID, fachkraft, beschreibung, interne_notiz, absage, überschneidung) "
-                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                   "mitarbeiter_ID, klient_ID, fachkraft, beschreibung, interne_notiz, absage) "
+                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                    (unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time, session['user_id'],
-                    klient_id, fachkraft, beschreibung, interne_notiz, absage, ueberschneidung))
+                    klient_id, fachkraft, beschreibung, interne_notiz, absage))
     zeiteintrag_id = cursor.lastrowid
     connection.commit()
     cursor.close()
