@@ -162,7 +162,7 @@
                 <!-- Button Zeiteintrag hinzufügen -->
                 </div>
                 {% if user_role not in ['Verwaltung', 'Steuerbüro', 'Sachbearbeiter/Kostenträger'] %}
-                    <form action="{{ url_for('/create_time_entry.submit_arbeitsstunden') }}" method="get">
+                    <form action="{{ url_for('/create_time_entry.submit_arbeitsstunden', person_id=user_id) }}" method="get">
                         <button type="submit">Zeiteintrag hinzufügen</button>
                     </form>
                 {% endif %}

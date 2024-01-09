@@ -36,18 +36,16 @@ def base64_to_blob(base64_string):
     return base64.b64decode(base64_string)
 
 
-@create_time_entry_blueprint.route('/create_time_entry', methods=['POST', 'GET'])
-def submit_arbeitsstunden():
+@create_time_entry_blueprint.route('/create_time_entry/<int:person_id>', methods=['POST', 'GET'])
+def submit_arbeitsstunden(person_id):
     # return url zur rückleitung
-    if session['client_id']:
-        klient_id = session.get('client_id')
-    else:
-        klient_id = ""
+    klient_id = session.get('client_id', None)
+
 
     print(klient_id)
     return_url = session.get('url')
     # session speichern für rückleitung
-    session['url_overlapping'] = url_for('/create_time_entry.submit_arbeitsstunden')
+    session['url_overlapping'] = url_for('/create_time_entry.submit_arbeitsstunden' , person_id=person_id)
 
     # klienten für client_dropdown
     klienten = client_dropdown()
@@ -141,4 +139,4 @@ def submit_arbeitsstunden():
         flash('Eintrag erfolgreich angelegt')
         return redirect(return_url)
 
-    return render_template('FMOF030_create_time_entry.html', klient_id=klient_id, klienten=klienten, return_url=return_url)
+    return render_template('FMOF030_create_time_entry.html', klient_id=klient_id, klienten=klienten, return_url=return_url, person_id=person_id)

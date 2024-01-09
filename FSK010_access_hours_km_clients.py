@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, session
-from db_query import get_client_table_client_sb, check_for_overlapping_zeiteintrag, check_booked, get_client_name, \
-    get_sachbearbeiter_name
+from db_query import get_client_table_client_sb, get_client_name, get_sachbearbeiter_name
 from FMOF010_show_supervisionhours_client import generate_month_year_combinations, extrahiere_jahr_und_monat, \
     convert_blob_to_base64, check_ueberschneidung_liste, check_booked_liste
 from datetime import datetime
@@ -30,7 +29,7 @@ def view_time_entries(client_id):
     aktuelles_jahr = datetime.now().year
     aktueller_monat = datetime.now().month
 
-    # Default Wert für booke
+    # Default Wert für booked
     booked = True
 
     # Auswahl des angezeigten Zeitraums
@@ -63,4 +62,5 @@ def view_time_entries(client_id):
     return render_template('FSK010_access_hours_km_clients.html',
                            client_id=client_id, kombinierte_liste=kombinierte_liste, client_name=client_name,
                            sb_name=sb_name,
-                           gewaehlte_kombination=gewaehlte_kombination, kombinationen=kombinationen, booked=booked, month= gewaehlte_kombination)
+                           gewaehlte_kombination=gewaehlte_kombination, kombinationen=kombinationen, booked=booked,
+                           month=gewaehlte_kombination)
