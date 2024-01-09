@@ -98,9 +98,16 @@
                                       </td>`;
                     }
 
-                    tableHTML += `<td>
-                                    <button onclick="window.location.href='/client_supervision_hours/${client[0]}'">Zeiteintrag ansehen</button>
-                                  </td>`;
+                    if (userRole === 'Sachbearbeiter/Kostenträger'){
+                        tableHTML += `<td>
+                                        <button onclick="window.location.href='/access_hours_km_clients/${client[0]}'">Zeiteintrag ansehen</button>
+                                      </td>`;
+                    }
+                    else {
+                        tableHTML += `<td>
+                                        <button onclick="window.location.href='/client_supervision_hours/${client[0]}'">Zeiteintrag ansehen</button>
+                                      </td>`;
+                    }
 
                     if (userRole === 'Verwaltung' || userRole === 'Geschäftsführung') {
                         tableHTML += `<td>
