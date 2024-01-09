@@ -82,68 +82,77 @@
             const noDataMessage = document.getElementById('no-employee-message');
 
             if (data.length > 0) {
-                if (noDataMessage) {
-                    noDataMessage.style.display = 'none';
-                }
-                let tableHTML = `<table id="employeeTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Personalnr.</th>
-                                            <th>Nachname</th>
-                                            <th>Vorname</th>
-                                            <th>geleistete Stunden</th>
-                                            <th>gefahrene Kilometer</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>`;
-
-                data.forEach(arbeiter => {
-                    let km = (arbeiter[4] !== null && arbeiter[4] !== undefined) ? arbeiter[4] : 0.0;
-                    let km_formatiert = km.toFixed(1);
-                    let sperre = arbeiter[5];
-
-
-                    console.log(arbeiter)
-                    tableHTML += `<tr>
-                                    <td>${arbeiter[0]}</td>
-                                    <td>${arbeiter[1]}</td>
-                                    <td>${arbeiter[2]}</td>
-                                    <td>${arbeiter[3]}</td>
-                                    <td>${km_formatiert}</td>
-                                    <td>
-                                        <input type="hidden" name="sperre" value="${sperre}">
-                                    </td>`;
-
-                    if (userRole === 'Verwaltung' || userRole === 'Geschäftsführung') {
-                        tableHTML += `<td>
-                                        <button onclick="window.location.href='/account_details/${arbeiter[0]}'">Details</button>
-                                      </td>`;
+                // Check if the data is for unbooked clients
+                if (data[0] && data[0].klient_id) {
+                    let messageHTML = 'Fehlende Buchungen:<br>';
+                    data.forEach(client => {
+                        messageHTML += `Einträge für ${monthName} ${year} und ${client.vorname} ${client.nachname} noch nicht gebucht.<br>`;
+                    });
+                    tableContainer.innerHTML = messageHTML;
+                } else {
+                    if (noDataMessage) {
+                        noDataMessage.style.display = 'none';
                     }
+                    let tableHTML = `<table id="employeeTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Personalnr.</th>
+                                                <th>Nachname</th>
+                                                <th>Vorname</th>
+                                                <th>geleistete Stunden</th>
+                                                <th>gefahrene Kilometer</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>`;
 
-                    tableHTML += `<td>
-                                    <button onclick="window.location.href='/view_time_entries/${arbeiter[0]}'">Zeiteintrag ansehen</button>
-                                  </td>`;
+                    data.forEach(arbeiter => {
+                        let km = (arbeiter[4] !== null && arbeiter[4] !== undefined) ? arbeiter[4] : 0.0;
+                        let km_formatiert = km.toFixed(1);
+                        let sperre = arbeiter[5];
 
-                    if (userRole === 'Verwaltung' || userRole === 'Geschäftsführung') {
-                        tableHTML += `<td>
-                                        <button onclick="window.location.href='/edit_account/${arbeiter[0]}'">Bearbeiten</button>
-                                      </td>`;
-                        if (arbeiter[5]=== 0) {
+
+                        console.log(arbeiter)
+                        tableHTML += `<tr>
+                                        <td>${arbeiter[0]}</td>
+                                        <td>${arbeiter[1]}</td>
+                                        <td>${arbeiter[2]}</td>
+                                        <td>${arbeiter[3]}</td>
+                                        <td>${km_formatiert}</td>
+                                        <td>
+                                            <input type="hidden" name="sperre" value="${sperre}">
+                                        </td>`;
+
+                        if (userRole === 'Verwaltung' || userRole === 'Geschäftsführung') {
                             tableHTML += `<td>
-                                            <button onclick="window.location.href='/account_lock/${arbeiter[0]}'">Sperren</button>
-                                         </td>`;
-                        } else {
-                            tableHTML += `<td>
-                                            <button onclick="window.location.href='/account_unlock/${arbeiter[0]}'">Entsperren</button>
-                                         </td>`;
+                                            <button onclick="window.location.href='/account_details/${arbeiter[0]}'">Details</button>
+                                          </td>`;
                         }
-                    }
 
-                    tableHTML += `</tr>`;
-                });
+                        tableHTML += `<td>
+                                        <button onclick="window.location.href='/view_time_entries/${arbeiter[0]}'">Zeiteintrag ansehen</button>
+                                      </td>`;
 
-                tableHTML += `</tbody></table>`;
-                tableContainer.innerHTML = tableHTML;
+                        if (userRole === 'Verwaltung' || userRole === 'Geschäftsführung') {
+                            tableHTML += `<td>
+                                            <button onclick="window.location.href='/edit_account/${arbeiter[0]}'">Bearbeiten</button>
+                                          </td>`;
+                            if (arbeiter[5] === 0) {
+                                tableHTML += `<td>
+                                                <button onclick="window.location.href='/account_lock/${arbeiter[0]}'">Sperren</button>
+                                             </td>`;
+                            } else {
+                                tableHTML += `<td>
+                                                <button onclick="window.location.href='/account_unlock/${arbeiter[0]}'">Entsperren</button>
+                                             </td>`;
+                            }
+                        }
+
+                        tableHTML += `</tr>`;
+                    });
+
+                    tableHTML += `</tbody></table>`;
+                    tableContainer.innerHTML = tableHTML;
+                }
             } else {
                 tableContainer.innerHTML = '';
                if (noDataMessage) {
