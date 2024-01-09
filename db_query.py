@@ -228,6 +228,7 @@ def account_table_mitarbeiter(monat, year, person_id):
         LEFT JOIN fahrt f ON z.ID = f.zeiteintrag_ID
         WHERE p.ID = %s
         GROUP BY p.ID
+        ORDER BY p.ID ASC
     """, (monat, year, person_id))
 
     report_table = []
