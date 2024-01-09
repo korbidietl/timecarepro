@@ -18,7 +18,6 @@ def edit_time_entry(zeiteintrag_id):
     session['url_overlapping'] = url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag_id)
     return_url = session.get('url')
 
-
     # klienten für client_dropdown
     klienten = client_dropdown()
 
@@ -115,12 +114,20 @@ def edit_time_entry(zeiteintrag_id):
         if session_role != "Verwaltung":
             print("fahrt einlesen")
             fahrt_data_list = []
-            existing_fahrten_ids = request.form.getlist('fahrt_id')
+            # existing_fahrten_ids = request.form.getlist('fahrt_id')
+            form_data = request.form
+            existing_fahrten_ids = get_fahrt_ids_from_form(form_data)
             print(existing_fahrten_ids)
 
             for fahrt_id in existing_fahrten_ids:
-                kilometer = request.form[f'kilometer{fahrt_id}']
-                start_adresse = request.form[f'start_adresse{fahrt_id}']
+                int_fahrtid = int(fahrt_id)
+                newFahrtID = int_fahrtid + highest_fahrt_id
+                print("fahrt id:", fahrt_id)
+                print("fahrt id:", int_fahrtid)
+                print("highest fahrt:", highest_fahrt_id)
+                print("new fahrt:", newFahrtID)
+                kilometer = request.form[f'kilometer{newFahrtID}']
+                start_adresse = request.form[f'start_adresse{newFahrtID}']
                 end_adresse = request.form[f'end_adresse{fahrt_id}']
                 if kilometer is None or start_adresse is None or end_adresse is None:
                     flash("Wenn eine Fahrt angelegt wird, müssen alle Felder ausgefüllt sein")
@@ -138,7 +145,7 @@ def edit_time_entry(zeiteintrag_id):
 
         print(6)
         print(check_for_overlapping_zeiteintrag(zeiteintrag_id, zeiteintrag_data['datum'],
-                                             zeiteintrag_data['start_datetime'], zeiteintrag_data['end_datetime']))
+                                                zeiteintrag_data['start_datetime'], zeiteintrag_data['end_datetime']))
 
         if check_for_overlapping_zeiteintrag(zeiteintrag_id, zeiteintrag_data['datum'],
                                              zeiteintrag_data['start_datetime'], zeiteintrag_data['end_datetime']):
@@ -187,7 +194,7 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list):
                 print(fahrt_data['fahrt_id'])
                 # Aktualisiere die bestehende Fahrt
                 edit_fahrt(fahrt_data['fahrt_id'], fahrt_data['kilometer'], fahrt_data['abrechenbar'],
-                           fahrt_data['zeiteintrag_id'], fahrt_data['start_adresse'], fahrt_data['end_adresse'],)
+                           fahrt_data['zeiteintrag_id'], fahrt_data['start_adresse'], fahrt_data['end_adresse'], )
             else:
                 # Füge neue Fahrt hinzu
                 add_fahrt(fahrt_data['kilometer'], fahrt_data['start_adresse'], fahrt_data['end_adresse'],
@@ -223,3 +230,12 @@ def send_email_edit_time_entry(email, firstname, lastname, z_id):
             f"Freundliche Grüße\n"
             f"Ihr TimeCare Pro-Team")
     send_email(email, subject, body)
+
+
+def get_fahrt_ids_from_form(form_data):
+    fahrt_ids = []
+    for key in form_data.keys():
+        if key.startswith('fahrt_id'):
+            # Fügt die Werte der Formularelemente hinzu, die mit 'fahrt_id' beginnen
+            fahrt_ids.append(form_data[key])
+    return fahrt_ids
