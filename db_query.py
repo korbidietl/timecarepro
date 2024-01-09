@@ -330,7 +330,7 @@ def get_client_table_sb(person_id, month, year):
             LEFT JOIN 
                 person p ON k.fallverantwortung_ID = p.ID
             WHERE 
-                k.fallverantwortung_ID = %s
+                k.sachbearbeiter_ID = %s
             GROUP BY 
                 k.ID, p.nachname, p.vorname
             ORDER BY k.ID ASC

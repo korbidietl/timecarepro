@@ -72,7 +72,12 @@
 
         // Tabellen mitarbeiter
         function updateTable_m(data) {
-            const userRole = document.getElementById('userRole').getAttribute('data-role');
+            const userRole = document.getElementById('userRole_m').getAttribute('data-role');
+            if (!userRole) {
+                console.error('Element mit ID "userRole" nicht gefunden');
+                return;
+            }
+
             const tableContainer = document.getElementById("employee_table_container");
             const noDataMessage = document.getElementById('no-employee-message');
 
