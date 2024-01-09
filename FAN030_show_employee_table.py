@@ -14,8 +14,12 @@ def get_employee_data():
     month = request.args.get('monat')
     year = request.args.get('jahr')
 
+
+
     if role == "Mitarbeiter":
         mitarbeiter_liste = account_table_mitarbeiter(month, year, person)
+
+
     else:
         mitarbeiter_liste = account_table(month, year)
 

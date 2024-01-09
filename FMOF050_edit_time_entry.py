@@ -85,6 +85,8 @@ def edit_time_entry(zeiteintrag_id):
             zeiteintrag_data['neue_unterschrift_mitarbeiter'] = base64_to_blob(
                 zeiteintrag_data['neue_unterschrift_mitarbeiter'])
 
+        zeiteintrag_data['mitarbeiter_id'] = zeiteintrag[5]
+
         # Überprüfen Sie, ob die Zeitbeschränkungen erfüllt sind
         if check_time_entry_constraints(datum_datetime, zeiteintrag_data['start_datetime'],
                                         zeiteintrag_data['end_datetime'], zeiteintrag_data['klient_id']):
@@ -140,10 +142,11 @@ def edit_time_entry(zeiteintrag_id):
 
         if check_for_overlapping_zeiteintrag(zeiteintrag_id, zeiteintrag_data['datum'],
                                              zeiteintrag_data['start_datetime'], zeiteintrag_data['end_datetime']):
+            session['overlapping_ze'] = zeiteintrag_data
+            session['overlapping_fahrten'] = fahrt_data_list
             print("überschneidung")
             return redirect(
-                url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id,
-                        zeiteintrag_data=zeiteintrag_data, fahrt_data_list=fahrt_data_list))
+                url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id))
 
         # wenn kein overlapping dann trotzdem datenbank ausführen
         else:

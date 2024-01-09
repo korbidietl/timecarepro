@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Pop-up Beispiel</title>
+    <title>Terminüberschreibung</title>
     <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
@@ -43,8 +43,8 @@
             <div class="form-actions" style="margin-top: 20px">
                 <form action="{{ url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=original_zeiteintrag_id) }}" method="post">
                     <div class="form-row">
-                        <button type="button" onclick="close_popup()">Speichern</button>
-                        <button type="submit" >Abbrechen</button>
+                        <button type="submit" >Speichern</button>
+                        <button type="button" onclick="close_popup()">Abbrechen</button>
                     </div>
                 </form>
             </div>

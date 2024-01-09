@@ -139,7 +139,7 @@ def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT id FROM zeiteintrag WHERE id != %s AND klient_id = %s "
+        "SELECT id FROM zeiteintrag WHERE id != %s "
         "AND ((start_zeit >= %s AND start_zeit < %s) "
         "OR (end_zeit > %s AND end_zeit <= %s) "
         "OR (start_zeit <= %s AND end_zeit >= %s))",
