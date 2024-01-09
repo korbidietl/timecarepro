@@ -88,10 +88,10 @@
                                             <th>ID</th>
                                             <th>Nachname</th>
                                             <th>Vorname</th>
-                                            <th>Fachkraftkontingent</th>
-                                            <th>Hilfskraftkontingent</th>
-                                            <th>Fachkraftsaldo</th>
-                                            <th>Hilfskraftsaldo</th>
+                                            <th>FK-Kontingent</th>
+                                            <th>HK-Kontingent</th>
+                                            <th>FK-Saldo</th>
+                                            <th>HK-Saldo</th>
                                             <th>Fallverantwortung</th>
                                         </tr>
                                     </thead>
