@@ -251,9 +251,12 @@ def account_table_mitarbeiter(monat, year, person_id):
     return report_table
 
 
-
 # /FAN030/
 def account_table(monat, year):
+    missing_bookings = get_unbooked_clients_for_month(monat, year)
+    if missing_bookings:
+        # Return a specific value indicating that there are missing bookings
+        return None
     connection = get_database_connection()
     cursor = connection.cursor()
 
@@ -279,6 +282,37 @@ def account_table(monat, year):
     klienten_table = cursor.fetchall()
     cursor.close()
     return klienten_table
+
+
+# /FAN030/
+def get_unbooked_clients_for_month(monat, year):
+    # Connect to the database
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    # Retrieve all time entries for the specified month and year, along with client details
+    cursor.execute("SELECT z.start_zeit, z.klient_ID, k.vorname, k.nachname "
+                   "FROM zeiteintrag z "
+                   "JOIN klient k ON z.klient_ID = k.ID "
+                   "WHERE EXTRACT(MONTH FROM z.start_zeit) = %s AND EXTRACT(YEAR FROM z.start_zeit) = %s",
+                   (monat, year,))
+
+    # Dictionary to track the booking status of each client
+    unbooked_clients = {}
+
+    # Iterate over each time entry
+    for start_zeit, klient_id, vorname, nachname in cursor.fetchall():
+        # Check if the client is already booked for the month
+        if not check_month_booked(start_zeit, klient_id):
+            # If not, add them to the unbooked clients list
+            if klient_id not in unbooked_clients:
+                unbooked_clients[klient_id] = {'vorname': vorname, 'nachname': nachname}
+
+    # Convert the dictionary to a list of tuples (klient_id, vorname, nachname)
+    unbooked_clients_list = [(klient_id, client['vorname'], client['nachname']) for klient_id, client in
+                             unbooked_clients.items()]
+
+    return unbooked_clients_list
 
 
 # /FAN030/
