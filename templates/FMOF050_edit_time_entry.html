@@ -59,32 +59,43 @@
                     <input type="checkbox" id="absage" name="absage"{% if zeiteintrag[11] %} checked {% endif %}>
                 </div>
             </div>
+            <input type="hidden" name="highestFahrtId" value="{{ highest_fahrt_id }}">
             {% if session['user_role'] != 'Verwaltung' %}
                 <h3>Fahrten:</h3>
                 <div id="fahrtenContainer">
 
                         {% set index = 0 %}
                         {% if fahrten %}
+                            <div class="form-row fahrt-row">
+                                <div class="form-group">
+                                    <label for="abrechenbarkeit{{ index }}">Anrechenbarkeit:</label>
+                                </div>
+                                <div class="form-group">
+                                    <label for="start_adresse{{ index }}">Start Adresse:</label>
+                                </div>
+                                <div class="form-group">
+                                    <label for="end_adresse{{ index }}">End Adresse:</label>
+                                </div>
+                                <div class="form-group">
+                                    <label for="kilometer{{ index }}">Kilometer:</label>
+                                </div>
+                            </div>
                             {% for fahrt in fahrten %}
                                 <!-- Ursprüngliche Fahrt-Eingabezeile -->
                                 <div class="form-row fahrt-row">
                                     <div class="form-hidden">
-                                        <input type="hidden" id="fahrt_id{{ index }}" name="fahrt_id{{ index }}">
+                                        <input type="hidden" id="fahrt_id" name="fahrt_id{{ index }}" value="{{ fahrt[0] }}">
                                     </div>
                                     <div class="form-group for-non-zero-klient">
-                                        <label for="abrechenbarkeit{{ index }}">Anrechenbarkeit:</label>
                                         <input type="checkbox" id="abrechenbarkeit{{ index }}" name="abrechenbarkeit{{ index }}" {% if fahrt[4] %} checked {% endif %}>
                                     </div>
                                     <div class="form-group">
-                                        <label for="start_adresse{{ index }}">Start Adresse:</label>
                                         <input type="text" id="start_adresse{{ index }}" name="start_adresse{{ index }}" value="{{ fahrt[2] }}">
                                     </div>
                                     <div class="form-group">
-                                         <label for="end_adresse{{ index }}">End Adresse:</label>
                                         <input type="text" id="end_adresse{{ index }}" name="end_adresse{{ index }}" value="{{ fahrt[3] }}">
                                     </div>
                                     <div class="form-group">
-                                        <label for="kilometer{{ index }}">Kilometer:</label>
                                         <input type="text" id="kilometer{{ index }}" name="kilometer{{ index }}" value="{{ fahrt[1] }}">
                                     </div>
                                     <button type="button" onclick="addFahrt()">+</button>
@@ -96,7 +107,7 @@
                             <!-- Leere Felder für eine neue Fahrt -->
                             <div class="form-row fahrt-row">
                                 <div class="form-hidden">
-                                    <input type="hidden" id="fahrt_id0" name="fahrt_id0">
+                                    <input type="hidden" id="fahrt_id0" name="fahrt_id0" value="0">
                                 </div>
                                 <div class="form-group for-non-zero-klient">
                                     <label for="abrechenbarkeit{{ index }}">Anrechenbarkeit:</label>
@@ -162,7 +173,7 @@
 
             <div class="form-actions" style="margin-left: 20px;">
                 <button type="submit">Bestätigen</button>
-                <button type="button" onclick="window.location='/FMOF010';">Abbrechen</button>
+                <button type="button" onclick="close_window()">Abbrechen</button>
             </div>
         </form>
     </div>
@@ -188,23 +199,28 @@
 
         function addFahrt() {
             const fahrtContainer = document.getElementById('fahrtenContainer');
+            const highest_fahrt_id = document.getElementById('highestFahrtId'); // Wert von highest_fahrt_id auslesen
+
             const newFahrtRow = document.createElement('div');
             newFahrtRow.classList.add('form-row', 'fahrt-row');
+
+            const newFahrtId = `${fahrtCounter + highest_fahrt_id}`;
+
             newFahrtRow.innerHTML = `
                         <div class="form-hidden">
-                           <input type="hidden" id="fahrt_id${fahrtCounter}" name="fahrt_id${fahrtCounter}">
+                           <input type="hidden" name="fahrt_id" value="${newFahrtId}">
                         </div>
                         <div class="form-group">
-                           <input type="checkbox" id="abrechenbarkeit${fahrtCounter}" name="abrechenbarkeit${fahrtCounter}" required>
+                           <input type="checkbox" id="abrechenbarkeit${newFahrtId}" name="abrechenbarkeit${newFahrtId}">
                         </div>
                         <div class="form-group">
-                            <input type="text" id="start_adresse${fahrtCounter}" name="start_adresse${fahrtCounter}" required>
+                            <input type="text" id="start_adresse${newFahrtId}" name="start_adresse${newFahrtId}">
                         </div>
                         <div class="form-group">
-                            <input type="text" id="end_adresse${fahrtCounter}" name="end_adresse${fahrtCounter}" required>
+                            <input type="text" id="end_adresse${newFahrtId}" name="end_adresse${newFahrtId}">
                         </div>
                         <div class="form-group">
-                            <input type="number" id="kilometer${fahrtCounter}" name="kilometer${fahrtCounter}" required>
+                            <input type="number" id="kilometer${newFahrtId}" name="kilometer${newFahrtId}" required>
                         </div>
                         <button type="button" onclick="addFahrt()">+</button>
                         <button type="button" onclick="removeFahrt(this)">-</button>
@@ -289,6 +305,10 @@
             closePopup(type);
         }
 
+        function close_window() {
+            var return_url = "{{ return_url }}";
+            window.location.href = return_url;
+        }
 
     </script>
 </body>

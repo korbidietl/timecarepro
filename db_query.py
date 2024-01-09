@@ -258,21 +258,21 @@ def account_table(monat, year):
 
     cursor.execute("""
         SELECT 
-            k.ID, 
-            k.nachname, 
-            k.vorname,
+            p.ID, 
+            p.nachname, 
+            p.vorname,
             COALESCE(TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i'), '00:00') AS geleistete_stunden,
             COALESCE(SUM(f.kilometer), 0) AS gefahrene_kilometer
         FROM 
-            klient k
+            person p
         LEFT JOIN 
-            zeiteintrag z ON k.ID = z.klient_id AND EXTRACT(MONTH FROM z.end_zeit) = %s AND EXTRACT(YEAR FROM z.end_zeit) = %s
+            zeiteintrag z ON p.ID = z.mitarbeiter_ID AND EXTRACT(MONTH FROM z.end_zeit) = %s AND EXTRACT(YEAR FROM z.end_zeit) = %s
         LEFT JOIN 
             fahrt f ON z.ID = f.zeiteintrag_id
         GROUP BY 
-            k.ID
+            p.ID
         ORDER BY 
-            k.ID
+            p.ID
     """, (monat, year))
 
     klienten_table = cursor.fetchall()
@@ -317,8 +317,10 @@ def get_client_table_sb(person_id, month, year):
                 k.vorname,
                 k.kontingent_FK, 
                 k.kontingent_HK,
-                COALESCE(k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) as fachkraftsaldo,
-                COALESCE(k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) as hilfskraftsaldo,
+                COALESCE(k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN 
+                TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) as fachkraftsaldo,
+                COALESCE(k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN 
+                TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) as hilfskraftsaldo,
                 CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
             FROM 
                 klient k
@@ -347,8 +349,10 @@ def get_client_table(month, year):
                k.vorname,
                k.kontingent_FK, 
                k.kontingent_HK,
-               COALESCE(k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) as fachkraftsaldo,
-               COALESCE(k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) as hilfskraftsaldo,
+               COALESCE(k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN 
+               TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) as fachkraftsaldo,
+               COALESCE(k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN 
+               TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) as hilfskraftsaldo,
                CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
            FROM 
                klient k
@@ -759,6 +763,17 @@ def delete_fahrt(fahrt_id):
     connection.commit()
     cursor.close()
     connection.close()
+
+# /FMOF050
+def get_highest_fahrt_id():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT MAX(ID) FROM fahrt")
+    highest_id = cursor.fetchone()[0]
+    cursor.close()
+    connection.close()
+    return highest_id
+
 
 
 # /FMOF060/
