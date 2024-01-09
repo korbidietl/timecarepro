@@ -25,6 +25,7 @@
 
     <div class="table-form">
         <!-- Kliententabelle -->
+        {% if role != 'Steuerbüro'%}
         <h3>Kliententabelle</h3>
         <div id="userRole" data-role="{{ role }}"></div>
         <label for="monat_jahr_dropdown_k"></label>
@@ -43,6 +44,7 @@
         <p id="no-clients-message" style="display: none;">Keine Klienten gefunden.</p>
 
         <br> <br> <br>
+        {% endif %}
 
         <!--Mitarbeitertabelle -->
         {% if role != 'Sachbearbeiter/Kostenträger'%}
@@ -111,7 +113,12 @@
     </script>
     <script>
         function exportTable() {
-            // Hier sammeln Sie die Daten Ihrer Tabelle
+            // Prüfen, ob die Tabelle existiert
+            let tabelle = document.getElementById('employeeTable');
+            if (!tabelle) {
+                console.error('Tabelle nicht gefunden');
+                return;
+            }
             let tableData = sammleTabellenDaten();
 
             // Daten an den Server senden

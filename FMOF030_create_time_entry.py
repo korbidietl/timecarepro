@@ -40,12 +40,10 @@ def base64_to_blob(base64_string):
 def submit_arbeitsstunden(person_id):
     # return url zur rückleitung
     klient_id = session.get('client_id', None)
-
-
-    print(klient_id)
     return_url = session.get('url')
+
     # session speichern für rückleitung
-    session['url_overlapping'] = url_for('/create_time_entry.submit_arbeitsstunden' , person_id=person_id)
+    session['url_overlapping'] = url_for('/create_time_entry.submit_arbeitsstunden', person_id=person_id)
 
     # klienten für client_dropdown
     klienten = client_dropdown()
@@ -96,7 +94,6 @@ def submit_arbeitsstunden(person_id):
             if unterschrift_mitarbeiter:
                 unterschrift_mitarbeiter = base64_to_blob(unterschrift_mitarbeiter)
 
-
             # Füge neuen Zeiteintrag hinzu und erhalte die ID
             zeiteintrag_id = add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_datetime,
                                              end_datetime, klient_id, fachkraft, beschreibung, interne_notiz,
@@ -132,11 +129,12 @@ def submit_arbeitsstunden(person_id):
                 fahrt_index += 1
 
             # prüft auf überschneidung einer bestehenden eintragung in der datenbank
-            if check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_datetime, end_datetime):
+            if check_for_overlapping_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime):
                 return redirect(url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id))
         session.pop('client_id')
         # Weiterleitung zurück zur Herkunftsfunktion
         flash('Eintrag erfolgreich angelegt')
         return redirect(return_url)
 
-    return render_template('FMOF030_create_time_entry.html', klient_id=klient_id, klienten=klienten, return_url=return_url, person_id=person_id)
+    return render_template('FMOF030_create_time_entry.html', klient_id=klient_id, klienten=klienten,
+                           return_url=return_url, person_id=person_id)

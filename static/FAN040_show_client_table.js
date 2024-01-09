@@ -1,19 +1,29 @@
+        // Überprüfen, ob das Element vorhanden ist
+        function elementExists(id) {
+            return document.getElementById(id) !== null;
+        }
+
         // Aufruf mit Default Werten
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Hallo')
-            ladeDropdownDaten_k('monat_jahr_dropdown_k','client_table_container');
-            console.log('Hi')
+
+            if(elementExists('monat_jahr_dropdown_k')) {
+                ladeDropdownDaten_k('monat_jahr_dropdown_k', 'client_table_container');
+            }
         });
 
         // Aufruf mit übergebenen Werten
-        document.getElementById('anzeigenButton_k').addEventListener('click', function() {
-            const gewaehlteKombination = document.getElementById('monat_jahr_dropdown_k').value;
-            ladeKlientenDaten_k(gewaehlteKombination);
-        });
+         if(elementExists('monat_jahr_dropdown_k')) {
+             document.getElementById('anzeigenButton_k').addEventListener('click', function () {
+                 const gewaehlteKombination = document.getElementById('monat_jahr_dropdown_k').value;
+                 ladeKlientenDaten_k(gewaehlteKombination);
+             });
+         }
 
         // Drop-Down laden
         function ladeDropdownDaten_k() {
-            console.log('Im here')
+            if (!elementExists('client_table_container')) {
+                return;
+            }
             fetch('/get_client_dropdown_data')
                 .then(response => response.json())
                 .then(kombinationen => {
@@ -33,6 +43,9 @@
 
         //Tabellen laden
         function ladeKlientenDaten_k(kombination) {
+             if (!elementExists('client_table_container')) {
+                return;
+             }
             const [monatName, jahr] = kombination.split(" ");
             const monatNummer = monatNameZuNummer_k(monatName);
 

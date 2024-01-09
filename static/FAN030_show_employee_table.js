@@ -1,17 +1,29 @@
+        // Überprüfen, ob das Element vorhanden ist
+        function elementExists(id) {
+            return document.getElementById(id) !== null;
+        }
+
         // Aufruf mit Default Werten
         document.addEventListener('DOMContentLoaded', function() {
-            ladeDropdownDaten_m('monat_jahr_dropdown_m','employee_table_container');
+            if (elementExists('monat_jahr_dropdown_m')) {
+                ladeDropdownDaten_m('monat_jahr_dropdown_m', 'employee_table_container');
+            }
         });
 
         // Aufruf mit übergebenen Werten
-        document.getElementById('anzeigenButton_m').addEventListener('click', function() {
-            const gewaehlteKombination = document.getElementById('monat_jahr_dropdown_m').value;
-            ladeMitarbeiterDaten_m(gewaehlteKombination);
-        });
+        if (elementExists('anzeigenButton_m')) {
+            document.getElementById('anzeigenButton_m').addEventListener('click', function() {
+                const gewaehlteKombination = document.getElementById('monat_jahr_dropdown_m').value;
+                ladeMitarbeiterDaten_m(gewaehlteKombination);
+            });
+        }
 
 
         // Drop-Down laden
         function ladeDropdownDaten_m() {
+            if (!elementExists('employee_table_container')) {
+                return;
+            }
             fetch('/get_employee_dropdown_data')
                 .then(response => response.json())
                 .then(kombinationen => {
@@ -31,6 +43,9 @@
 
         // Tabelle Mitarbeiter laden
         function ladeMitarbeiterDaten_m(kombination) {
+             if (!elementExists('employee_table_container')) {
+                return;
+            }
             const [monatName, jahr] = kombination.split(" ");
             const monatNummer = monatNameZuNummer_m(monatName);
 
