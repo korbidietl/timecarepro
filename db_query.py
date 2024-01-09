@@ -139,7 +139,7 @@ def check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_time, end
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT id FROM zeiteintrag WHERE id != %s AND klient_id = %s "
+        "SELECT id FROM zeiteintrag WHERE id != %s "
         "AND ((start_zeit >= %s AND start_zeit < %s) "
         "OR (end_zeit > %s AND end_zeit <= %s) "
         "OR (start_zeit <= %s AND end_zeit >= %s))",
@@ -228,6 +228,7 @@ def account_table_mitarbeiter(monat, year, person_id):
         LEFT JOIN fahrt f ON z.ID = f.zeiteintrag_ID
         WHERE p.ID = %s
         GROUP BY p.ID
+        ORDER BY p.ID ASC
     """, (monat, year, person_id))
 
     report_table = []
@@ -272,7 +273,7 @@ def account_table(monat, year):
         GROUP BY 
             p.ID
         ORDER BY 
-            p.ID
+            p.ID ASC
     """, (monat, year))
 
     klienten_table = cursor.fetchall()
@@ -332,6 +333,7 @@ def get_client_table_sb(person_id, month, year):
                 k.fallverantwortung_ID = %s
             GROUP BY 
                 k.ID, p.nachname, p.vorname
+            ORDER BY k.ID ASC
         """, (month, year, person_id))
     client_info = cursor.fetchall()
     cursor.close()
@@ -362,6 +364,7 @@ def get_client_table(month, year):
                person p ON k.fallverantwortung_ID = p.ID
            GROUP BY 
                k.ID, p.nachname, p.vorname
+            ORDER BY k.ID ASC
        """, (month, year))
     client_info = cursor.fetchall()
     cursor.close()
