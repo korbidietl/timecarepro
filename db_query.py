@@ -600,12 +600,11 @@ def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, e
                     klient_id, fachkraft, beschreibung, interne_notiz, absage):
     connection = get_database_connection()
     cursor = connection.cursor()
-    ueberschneidung = 0  # Standardwert für Überschneidung festlegen
     cursor.execute("INSERT INTO zeiteintrag (unterschrift_Mitarbeiter, unterschrift_Klient, start_zeit, end_zeit, "
-                   "mitarbeiter_ID, klient_ID, fachkraft, beschreibung, interne_notiz, absage, überschneidung) "
-                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                   "mitarbeiter_ID, klient_ID, fachkraft, beschreibung, interne_notiz, absage) "
+                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                    (unterschrift_mitarbeiter, unterschrift_klient, start_time, end_time, session['user_id'],
-                    klient_id, fachkraft, beschreibung, interne_notiz, absage, ueberschneidung))
+                    klient_id, fachkraft, beschreibung, interne_notiz, absage))
     zeiteintrag_id = cursor.lastrowid
     connection.commit()
     cursor.close()
