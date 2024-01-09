@@ -273,7 +273,7 @@ def account_table(monat, year):
         GROUP BY 
             p.ID
         ORDER BY 
-            p.ID
+            p.ID ASC
     """, (monat, year))
 
     klienten_table = cursor.fetchall()
@@ -333,6 +333,7 @@ def get_client_table_sb(person_id, month, year):
                 k.fallverantwortung_ID = %s
             GROUP BY 
                 k.ID, p.nachname, p.vorname
+            ORDER BY k.ID ASC
         """, (month, year, person_id))
     client_info = cursor.fetchall()
     cursor.close()
@@ -363,6 +364,7 @@ def get_client_table(month, year):
                person p ON k.fallverantwortung_ID = p.ID
            GROUP BY 
                k.ID, p.nachname, p.vorname
+            ORDER BY k.ID ASC
        """, (month, year))
     client_info = cursor.fetchall()
     cursor.close()
