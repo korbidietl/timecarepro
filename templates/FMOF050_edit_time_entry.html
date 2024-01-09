@@ -84,7 +84,7 @@
                                 <!-- Ursprüngliche Fahrt-Eingabezeile -->
                                 <div class="form-row fahrt-row">
                                     <div class="form-hidden">
-                                        <input type="hidden" id="fahrt_id" name="fahrt_id{{ index }}" value="{{ fahrt[0] }}">
+                                        <input type="number" id="fahrt_id" name="fahrt_id{{ index }}" value="{{ fahrt[0] }}">
                                     </div>
                                     <div class="form-group for-non-zero-klient">
                                         <input type="checkbox" id="abrechenbarkeit{{ index }}" name="abrechenbarkeit{{ index }}" {% if fahrt[4] %} checked {% endif %}>
@@ -107,7 +107,7 @@
                             <!-- Leere Felder für eine neue Fahrt -->
                             <div class="form-row fahrt-row">
                                 <div class="form-hidden">
-                                    <input type="hidden" id="fahrt_id0" name="fahrt_id0" value="0">
+                                    <input type="number" id="fahrt_id0" name="fahrt_id0" value="0">
                                 </div>
                                 <div class="form-group for-non-zero-klient">
                                     <label for="abrechenbarkeit{{ index }}">Anrechenbarkeit:</label>
@@ -175,6 +175,56 @@
                 <button type="submit">Bestätigen</button>
                 <button type="button" onclick="close_window()">Abbrechen</button>
             </div>
+            <script>
+                let fahrtCounter = 1;
+                document.getElementById('fahrtCounterInput').value = fahrtCounter;
+
+                function addFahrt() {
+                    const fahrtContainer = document.getElementById('fahrtenContainer');
+                    const highest_fahrt_id = document.getElementById('highestFahrtId'); // Wert von highest_fahrt_id auslesen
+
+                    const newFahrtRow = document.createElement('div');
+                    newFahrtRow.classList.add('form-row', 'fahrt-row');
+
+                    const newFahrtId = fahrtCounter + highest_fahrt_id;
+
+                    newFahrtRow.innerHTML = `
+                                <div class="form-hidden">
+                                   <input type="number" name="fahrt_id" value="${newFahrtId}">
+                                </div>
+                                <div class="form-group">
+                                   <input type="checkbox" id="abrechenbarkeit${newFahrtId}" name="abrechenbarkeit${newFahrtId}">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="start_adresse${newFahrtId}" name="start_adresse${newFahrtId}">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="end_adresse${newFahrtId}" name="end_adresse${newFahrtId}">
+                                </div>
+                                <div class="form-group">
+                                    <input type="number" id="kilometer${newFahrtId}" name="kilometer${newFahrtId}" required>
+                                </div>
+                                <button type="button" onclick="addFahrt()">+</button>
+                                <button type="button" onclick="removeFahrt(this)">-</button>
+                                </div>
+                    `;
+                    fahrtContainer.appendChild(newFahrtRow);
+                    fahrtCounter++;
+                    document.getElementById('fahrtCounterInput').value = fahrtCounter;
+                }
+
+                function removeFahrt(buttonElement) {
+                    const fahrtContainer = document.getElementById('fahrtenContainer');
+                    const fahrtRows = fahrtContainer.getElementsByClassName('fahrt-row');
+
+                    if (fahrtRows.length > 1) {
+                        const fahrtRow = buttonElement.closest('.fahrt-row');
+                        fahrtRow.remove();
+                        // fahrtCounter--;// Reduziere den Zähler nur, wenn eine Zeile entfernt wurde
+                        document.getElementById('fahrtCounterInput').value = fahrtCounter;
+                        }
+                }
+            </script>
         </form>
     </div>
     <script>
@@ -193,58 +243,6 @@
         });
     </script>
 
-    <script>
-        let fahrtCounter = 1;
-        document.getElementById('fahrtCounterInput').value = fahrtCounter;
-
-        function addFahrt() {
-            const fahrtContainer = document.getElementById('fahrtenContainer');
-            const highest_fahrt_id = document.getElementById('highestFahrtId'); // Wert von highest_fahrt_id auslesen
-
-            const newFahrtRow = document.createElement('div');
-            newFahrtRow.classList.add('form-row', 'fahrt-row');
-
-            const newFahrtId = `${fahrtCounter + highest_fahrt_id}`;
-
-            newFahrtRow.innerHTML = `
-                        <div class="form-hidden">
-                           <input type="hidden" name="fahrt_id" value="${newFahrtId}">
-                        </div>
-                        <div class="form-group">
-                           <input type="checkbox" id="abrechenbarkeit${newFahrtId}" name="abrechenbarkeit${newFahrtId}">
-                        </div>
-                        <div class="form-group">
-                            <input type="text" id="start_adresse${newFahrtId}" name="start_adresse${newFahrtId}">
-                        </div>
-                        <div class="form-group">
-                            <input type="text" id="end_adresse${newFahrtId}" name="end_adresse${newFahrtId}">
-                        </div>
-                        <div class="form-group">
-                            <input type="number" id="kilometer${newFahrtId}" name="kilometer${newFahrtId}" required>
-                        </div>
-                        <button type="button" onclick="addFahrt()">+</button>
-                        <button type="button" onclick="removeFahrt(this)">-</button>
-                        </div>
-            `;
-            fahrtContainer.appendChild(newFahrtRow);
-            fahrtCounter++;
-            document.getElementById('fahrtCounterInput').value = fahrtCounter;
-        }
-
-        function removeFahrt(buttonElement) {
-            const fahrtContainer = document.getElementById('fahrtenContainer');
-            const fahrtRows = fahrtContainer.getElementsByClassName('fahrt-row');
-
-            if (fahrtRows.length > 1) {
-                const fahrtRow = buttonElement.closest('.fahrt-row');
-                fahrtRow.remove();
-                fahrtCounter--;// Reduziere den Zähler nur, wenn eine Zeile entfernt wurde
-                document.getElementById('fahrtCounterInput').value = fahrtCounter;
-                }
-        }
-
-
-    </script>
     <script>
         //Einrichten des Canvas
         function setupCanvas(canvasId) {
