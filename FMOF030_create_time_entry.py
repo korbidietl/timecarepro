@@ -7,24 +7,24 @@ from datetime import datetime
 create_time_entry_blueprint = Blueprint('/create_time_entry', __name__)
 
 
-def check_time_entry_constraints(datum, start_zeit, end_zeit, klient_id):
+def check_time_entry_constraints(datum, start_zeit, end_zeit, klient_id, person_id):
     # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
     jetzt = datetime.now()
     if start_zeit >= end_zeit:
         flash("Endzeitpunkt muss nach Startzeitpunkt sein.")
-        return render_template("FMOF030_create_time_entry.html")
+        return render_template("FMOF030_create_time_entry.html", person_id=person_id)
 
     # prüft ob startzeitpunkt in der zukunft liegt
     if (start_zeit.time() > jetzt.time() and datum.date() > jetzt.date()) or datum.date() > jetzt.date():
         flash("Startzeitpunkt muss in der Vergangenheit liegen")
-        return render_template("FMOF030_create_time_entry.html")
+        return render_template("FMOF030_create_time_entry.html", person_id=person_id)
 
     # prüft ob dieser monat schon gebucht wurde
     datum.strftime("%m.%Y")
     if check_month_booked(datum, klient_id):
         flash("Die Stundennachweise für diesen Monat wurden bereits gebucht, es kann kein Eintrag mehr hinzugefügt "
               "werden")
-        return render_template("FMOF030_create_time_entry.html")
+        return render_template("FMOF030_create_time_entry.html", person_id=person_id)
 
 
 def base64_to_blob(base64_string):
@@ -85,7 +85,7 @@ def submit_arbeitsstunden(person_id):
         end_datetime = datetime.combine(datum_datetime, end_zeit_datetime)
 
         # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
-        if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id):
+        if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id, person_id):
 
             # Umwandlung der Unterschriften
             if unterschrift_klient:

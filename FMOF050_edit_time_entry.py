@@ -2,13 +2,33 @@ from flask import Blueprint, request, redirect, url_for, render_template, sessio
 from db_query import (edit_zeiteintrag, delete_fahrt, add_fahrt, edit_fahrt,
                       fahrt_id_existing, check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id,
                       get_fahrt_by_zeiteintrag, client_dropdown, get_email_by_zeiteintrag,
-                      get_firstname_by_email, get_lastname_by_email, get_highest_fahrt_id)
+                      get_firstname_by_email, get_lastname_by_email, get_highest_fahrt_id, check_month_booked)
 from datetime import datetime
 from email.mime.text import MIMEText
 import smtplib
-from FMOF030_create_time_entry import check_time_entry_constraints, base64_to_blob
+from FMOF030_create_time_entry import base64_to_blob
 
 edit_time_entry_blueprint = Blueprint('edit_time_entry', __name__)
+
+def check_time_entry_constraints(datum, start_zeit, end_zeit, klient_id):
+    # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
+    jetzt = datetime.now()
+    if start_zeit >= end_zeit:
+        flash("Endzeitpunkt muss nach Startzeitpunkt sein.")
+        return render_template("FMOF050_edit_time_entry.html")
+
+    # prüft ob startzeitpunkt in der zukunft liegt
+    if (start_zeit.time() > jetzt.time() and datum.date() > jetzt.date()) or datum.date() > jetzt.date():
+        flash("Startzeitpunkt muss in der Vergangenheit liegen")
+        return render_template("FMOF050_edit_time_entry.html")
+
+    # prüft ob dieser monat schon gebucht wurde
+    datum.strftime("%m.%Y")
+    if check_month_booked(datum, klient_id):
+        flash("Die Stundennachweise für diesen Monat wurden bereits gebucht, es kann kein Eintrag mehr hinzugefügt "
+              "werden")
+        return render_template("FMOF050_edit_time_entry.html")
+
 
 
 @edit_time_entry_blueprint.route('/edit_time_entry/<int:zeiteintrag_id>', methods=['GET', 'POST'])
