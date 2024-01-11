@@ -10,6 +10,7 @@ from FMOF030_create_time_entry import base64_to_blob
 
 edit_time_entry_blueprint = Blueprint('edit_time_entry', __name__)
 
+
 def check_time_entry_constraints(datum, start_zeit, end_zeit, klient_id):
     # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
     jetzt = datetime.now()
@@ -28,7 +29,6 @@ def check_time_entry_constraints(datum, start_zeit, end_zeit, klient_id):
         flash("Die Stundennachweise für diesen Monat wurden bereits gebucht, es kann kein Eintrag mehr hinzugefügt "
               "werden")
         return render_template("FMOF050_edit_time_entry.html")
-
 
 
 @edit_time_entry_blueprint.route('/edit_time_entry/<int:zeiteintrag_id>', methods=['GET', 'POST'])
@@ -118,7 +118,7 @@ def edit_time_entry(zeiteintrag_id):
         if not session_role == "Verwaltung":
 
             # Bearbeite Fahrt-Einträge
-            existing_fahrten_ids = request.form.getlist('fahrt_id')
+            existing_fahrten_ids = request.form.getlist('fahrt_id[]')
 
             for fahrt_id in existing_fahrten_ids:
                 kilometer = request.form[f'kilometer{fahrt_id}']
@@ -129,26 +129,22 @@ def edit_time_entry(zeiteintrag_id):
                         flash("Wenn eine Fahrt angelegt wird müssen alle Felder ausgefüllt sein")
                         break
 
+            # new_fahrten_ids = request.form.getList('')
+
         fahrt_data_list = []
 
         if session_role != "Verwaltung":
-            print("fahrt einlesen")
             fahrt_data_list = []
             # existing_fahrten_ids = request.form.getlist('fahrt_id')
             form_data = request.form
             existing_fahrten_ids = get_fahrt_ids_from_form(form_data)
-            print(existing_fahrten_ids)
 
             for fahrt_id in existing_fahrten_ids:
                 int_fahrtid = int(fahrt_id)
-                newFahrtID = int_fahrtid + highest_fahrt_id
-                print("fahrt id:", fahrt_id)
-                print("fahrt id:", int_fahrtid)
-                print("highest fahrt:", highest_fahrt_id)
-                print("new fahrt:", newFahrtID)
-                kilometer = request.form[f'kilometer{newFahrtID}']
-                start_adresse = request.form[f'start_adresse{newFahrtID}']
-                end_adresse = request.form[f'end_adresse{fahrt_id}']
+
+                kilometer = request.form[f'kilometer{int_fahrtid}']
+                start_adresse = request.form[f'start_adresse{int_fahrtid}']
+                end_adresse = request.form[f'end_adresse{int_fahrtid}']
                 if kilometer is None or start_adresse is None or end_adresse is None:
                     flash("Wenn eine Fahrt angelegt wird, müssen alle Felder ausgefüllt sein")
                     break
@@ -163,11 +159,7 @@ def edit_time_entry(zeiteintrag_id):
                 }
                 fahrt_data_list.append(fahrt_data)
 
-        print(6)
-        print(check_for_overlapping_zeiteintrag(zeiteintrag_id, zeiteintrag_data['datum'],
-                                                zeiteintrag_data['start_datetime'], zeiteintrag_data['end_datetime']))
-
-        if check_for_overlapping_zeiteintrag(zeiteintrag_id, zeiteintrag_data['datum'],
+        if check_for_overlapping_zeiteintrag(zeiteintrag_id,
                                              zeiteintrag_data['start_datetime'], zeiteintrag_data['end_datetime']):
             session['overlapping_ze'] = zeiteintrag_data
             session['overlapping_fahrten'] = fahrt_data_list
@@ -178,6 +170,7 @@ def edit_time_entry(zeiteintrag_id):
         # wenn kein overlapping dann trotzdem datenbank ausführen
         else:
             save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list)
+            return redirect(url_for('client_hours_blueprint.client_supervision_hours', client_id=klient_id))
 
     return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
                            klient_id=klient_id, datum=datum, von=von, bis=bis,
@@ -222,7 +215,7 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list):
 
             # Lösche entfernte Fahrten
         for fahrt_data in fahrt_data_list:
-            if not fahrt_id_existing(fahrt_data['fahrt_id']):
+            if not fahrt_id_existing(fahrt_data['fahrt_id'], zeiteintrag_id):
                 delete_fahrt(fahrt_data['fahrt_id'])
 
     flash('Eintrag erfolgreich gespeichert')

@@ -72,13 +72,14 @@
                     <input type="checkbox" id="absage" name="absage"{% if zeiteintrag[11] %} checked {% endif %}>
                 </div>
             </div>
-            <input type="hidden" name="highestFahrtId" value="{{ highest_fahrt_id }}">
+            <input type="hidden" name="highestFahrtId" id="highestFahrtId" value="{{ highest_fahrt_id }}">
+            <p>{{ highest_fahrt_id }}</p>
             {% if session['user_role'] != 'Verwaltung' %}
                 <h3>Fahrten:</h3>
                 <div id="fahrtenContainer">
+                    {% if fahrten %}
 
                         {% set index = 0 %}
-                        {% if fahrten %}
                             <div class="form-row fahrt-row">
                                 <div class="form-group">
                                     <label for="abrechenbarkeit{{ index }}">Anrechenbarkeit:</label>
@@ -97,19 +98,19 @@
                                 <!-- Ursprüngliche Fahrt-Eingabezeile -->
                                 <div class="form-row fahrt-row">
                                     <div class="form-hidden">
-                                        <input type="number" id="fahrt_id" name="fahrt_id{{ index }}" value="{{ fahrt[0] }}">
+                                        <input type="number" id="fahrt_id{{  fahrt[0] }}" name="fahrt_id[]" {% if fahrt[0] %} value="{{ fahrt[0] }}" {% else %} value="{{ highest_fahrt_id + 1 }}" {% endif %}">
                                     </div>
                                     <div class="form-group for-non-zero-klient">
-                                        <input type="checkbox" id="abrechenbarkeit{{ index }}" name="abrechenbarkeit{{ index }}" {% if fahrt[4] %} checked {% endif %}>
+                                        <input type="checkbox" id="abrechenbarkeit{{  fahrt[0] }}" name="abrechenbarkeit{{  fahrt[0] }}" {% if fahrt[4] %} checked {% endif %}>
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" id="start_adresse{{ index }}" name="start_adresse{{ index }}" value="{{ fahrt[2] }}">
+                                        <input type="text" id="start_adresse{{  fahrt[0] }}" name="start_adresse{{  fahrt[0] }}" value="{{ fahrt[2] }}">
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" id="end_adresse{{ index }}" name="end_adresse{{ index }}" value="{{ fahrt[3] }}">
+                                        <input type="text" id="end_adresse{{  fahrt[0] }}" name="end_adresse{{  fahrt[0] }}" value="{{ fahrt[3] }}">
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" id="kilometer{{ index }}" name="kilometer{{ index }}" value="{{ fahrt[1] }}">
+                                        <input type="text" id="kilometer{{ fahrt[0] }}" name="kilometer{{ fahrt[0] }}" value="{{ fahrt[1] }}">
                                     </div>
                                     <button type="button" onclick="addFahrt()">+</button>
                                     <button type="button" onclick="removeFahrt(this)">-</button>
@@ -123,20 +124,20 @@
                                     <input type="number" id="fahrt_id0" name="fahrt_id0" value={{ highest_fahrt_id + 1 }}">
                                 </div>
                                 <div class="form-group for-non-zero-klient">
-                                    <label for="abrechenbarkeit{{ index }}">Anrechenbarkeit:</label>
-                                    <input type="checkbox" id="abrechenbarkeit0" name="abrechenbarkeit0">
+                                    <label for="abrechenbarkeit{{index}}">Anrechenbarkeit:</label>
+                                    <input type="checkbox" id="abrechenbarkeit{{index}}" name="abrechenbarkeit0">
                                 </div>
                                 <div class="form-group">
                                     <label for="start_adresse{{ index }}">Start Adresse:</label>
-                                    <input type="text" id="start_adresse0" name="start_adresse0">
+                                    <input type="text" id="start_adresse{{ index }}" name="start_adresse0">
                                 </div>
                                 <div class="form-group">
-                                    <label for="end_adresse{{ index }}">End Adresse:</label>
-                                    <input type="text" id="end_adresse0" name="end_adresse0">
+                                    <label for="end_adresse0{{ index }}">End Adresse:</label>
+                                    <input type="text" id="end_adresse0{{ index }}" name="end_adresse0">
                                 </div>
                                 <div class="form-group">
                                     <label for="kilometer{{ index }}">Kilometer:</label>
-                                    <input type="text" id="kilometer0" name="kilometer0">
+                                    <input type="text" id="kilometer{{ index }}" name="kilometer0">
                                 </div>
                                 <button type="button" onclick="addFahrt()">+</button>
                                 <button type="button" onclick="removeFahrt(this)">-</button>
@@ -192,9 +193,15 @@
                 let fahrtCounter = 1;
                 document.getElementById('fahrtCounterInput').value = fahrtCounter;
 
+
                 function addFahrt() {
                     const fahrtContainer = document.getElementById('fahrtenContainer');
-                    const highest_fahrt_id = document.getElementById('highestFahrtId'); // Wert von highest_fahrt_id auslesen
+                    const highest_fahrt_id_row = document.getElementById('highestFahrtId'); // Wert von highest_fahrt_id auslesen
+                    let highest_fahrt_id = parseInt(highest_fahrt_id_row.value);
+                    console.log(highest_fahrt_id)
+                    highest_fahrt_id++;
+                    console.log(highest_fahrt_id)
+                    const next_fahrt_id = highest_fahrt_id
 
                     const newFahrtRow = document.createElement('div');
                     newFahrtRow.classList.add('form-row', 'fahrt-row');
@@ -206,19 +213,19 @@
 
                     newFahrtRow.innerHTML = `
                                 <div class="form-hidden">
-                                   <input type="number" name="fahrt_id" value="${newFahrtId}">
+                                   <input type="number" name="fahrt_id" value="${next_fahrt_id}">
                                 </div>
                                 <div class="form-group">
-                                   <input type="checkbox" id="abrechenbarkeit${newFahrtId}" name="abrechenbarkeit${newFahrtId}">
+                                   <input type="checkbox" id="abrechenbarkeit${next_fahrt_id}" name="abrechenbarkeit${next_fahrt_id}">
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" id="start_adresse${newFahrtId}" name="start_adresse${newFahrtId}">
+                                    <input type="text" id="start_adresse${next_fahrt_id}" name="start_adresse${next_fahrt_id}">
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" id="end_adresse${newFahrtId}" name="end_adresse${newFahrtId}">
+                                    <input type="text" id="end_adresse${next_fahrt_id}" name="end_adresse${next_fahrt_id}">
                                 </div>
                                 <div class="form-group">
-                                    <input type="number" id="kilometer${newFahrtId}" name="kilometer${newFahrtId}" required>
+                                    <input type="number" id="kilometer${next_fahrt_id}" name="kilometer${next_fahrt_id}" required>
                                 </div>
                                 <button type="button" onclick="addFahrt()">+</button>
                                 <button type="button" onclick="removeFahrt(this)">-</button>
@@ -226,6 +233,7 @@
                     `;
                     fahrtContainer.appendChild(newFahrtRow);
                     fahrtCounter++;
+                    document.getElementById('highestFahrtId').value = highest_fahrt_id;
                     document.getElementById('fahrtCounterInput').value = fahrtCounter;
                 }
 
@@ -238,7 +246,8 @@
                         fahrtRow.remove();
                         // fahrtCounter--;// Reduziere den Zähler nur, wenn eine Zeile entfernt wurde
                         document.getElementById('fahrtCounterInput').value = fahrtCounter;
-                        }
+                    }
+
                 }
             </script>
         </form>

@@ -1869,7 +1869,7 @@ def get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id):
     return list(zeiteintrag_fahrten.values())  # Die Ergebnisse werden dann nach Zeiteintrag-IDs gruppiert.
 
 
-def fahrt_id_existing(fahrt_id):
+def fahrt_id_existing(fahrt_id, zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT id FROM fahrt WHERE id = %s",
