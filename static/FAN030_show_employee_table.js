@@ -86,7 +86,7 @@
                 if (data[0] && data[0].klient_id) {
                     let messageHTML = 'Fehlende Buchungen:<br>';
                     data.forEach(client => {
-                        messageHTML += `Einträge für ${monthName} ${year} und ${client.vorname} ${client.nachname} noch nicht gebucht.<br>`;
+                        messageHTML += `Einträge für ${monthName} ${year} und ${client[1]} ${client[2]} noch nicht gebucht.<br>`;
                     });
                     tableContainer.innerHTML = messageHTML;
                 } else {

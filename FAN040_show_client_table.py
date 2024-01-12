@@ -14,7 +14,9 @@ def get_clients_data():
     year = request.args.get('jahr')
 
     month_int = int(month)
+    print(month_int)
     year_int = int(year)
+    print(year_int)
 
     datum = datetime(year_int, month_int, 1)
 
