@@ -14,20 +14,25 @@ def get_clients_data():
     year = request.args.get('jahr')
 
     month_int = int(month)
-    print(month_int)
     year_int = int(year)
-    print(year_int)
 
     datum = datetime(year_int, month_int, 1)
 
     if role == "Sachbearbeiter/Kostenträger":
         clients = get_client_table_sb(person, month, year)
+        print("clients:", clients)
+        updated_clients = []
         for client in clients:
-            if not check_month_booked(datum, client[0]):
-                client[5] = (f"Noch kein Saldo vorhanden. Buchung zu Klient {client.vorname}, {client.nachname}"
-                             f"muss erst vorgenommen werden.")
-                client[6] = (f"Noch kein Saldo vorhanden. Buchung zu Klient {client.vorname}, {client.nachname}"
-                             f"muss erst vorgenommen werden.")
+            client_list = list(client)  # Konvertiert das Tupel in eine Liste
+            if not check_month_booked(datum, client_list[0]):
+                print("in if statement")
+                message = (f"Noch kein Saldo vorhanden. Buchung zu Klient {client_list[2]}, {client_list[1]} "
+                           f"muss erst vorgenommen werden.")
+                client_list[5] = message
+                client_list[6] = message
+                updated_clients.append(client_list)
+            else:
+                updated_clients.append(client_list)
     else:
         clients = get_client_table(month, year)
 
