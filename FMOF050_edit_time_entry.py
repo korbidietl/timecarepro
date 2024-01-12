@@ -2,7 +2,8 @@ from flask import Blueprint, request, redirect, url_for, render_template, sessio
 from db_query import (edit_zeiteintrag, delete_fahrt, add_fahrt, edit_fahrt,
                       fahrt_id_existing, check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id,
                       get_fahrt_by_zeiteintrag, client_dropdown, get_email_by_zeiteintrag,
-                      get_firstname_by_email, get_lastname_by_email, get_highest_fahrt_id, check_month_booked)
+                      get_firstname_by_email, get_lastname_by_email, get_highest_fahrt_id, check_month_booked,
+                      fahrt_ids_list)
 from datetime import datetime
 from email.mime.text import MIMEText
 import smtplib
@@ -42,7 +43,6 @@ def edit_time_entry(zeiteintrag_id):
     klienten = client_dropdown()
 
     highest_fahrt_id = get_highest_fahrt_id()
-    print("höchste fahrt:", highest_fahrt_id)
 
     zeiteintrag_liste = get_zeiteintrag_by_id(zeiteintrag_id)
     zeiteintrag = zeiteintrag_liste[0]
@@ -140,6 +140,7 @@ def edit_time_entry(zeiteintrag_id):
             existing_fahrten_ids = get_fahrt_ids_from_form(form_data)
 
             for fahrt_id in existing_fahrten_ids:
+                print(fahrt_id)
                 int_fahrtid = int(fahrt_id)
 
                 kilometer = request.form[f'kilometer{int_fahrtid}']
@@ -192,6 +193,7 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list):
     # wenn verwaltung ändert, muss E-Mail an mitarbeiter gesendet werden
     print(session_role)
     print(fahrt_data_list)
+    added_fahrten = []
     if session_role == "Verwaltung":
         print("verwaltung")
         email = get_email_by_zeiteintrag(zeiteintrag_id)
@@ -201,22 +203,31 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list):
 
     else:
         for fahrt_data in fahrt_data_list:
-            print("fahrt")
-            print(fahrt_id_existing(fahrt_data['fahrt_id']))
             if fahrt_id_existing(fahrt_data['fahrt_id']):
                 print(fahrt_data['fahrt_id'])
                 # Aktualisiere die bestehende Fahrt
                 edit_fahrt(fahrt_data['fahrt_id'], fahrt_data['kilometer'], fahrt_data['abrechenbar'],
-                           fahrt_data['zeiteintrag_id'], fahrt_data['start_adresse'], fahrt_data['end_adresse'], )
+                                     fahrt_data['zeiteintrag_id'], fahrt_data['start_adresse'],
+                                     fahrt_data['end_adresse'], )
+                added_fahrten.append(fahrt_data['fahrt_id'])
             else:
                 # Füge neue Fahrt hinzu
-                add_fahrt(fahrt_data['kilometer'], fahrt_data['start_adresse'], fahrt_data['end_adresse'],
-                          fahrt_data['abrechenbar'], fahrt_data['zeiteintrag_id'])
+                fahrten = add_fahrt(fahrt_data['kilometer'], fahrt_data['start_adresse'], fahrt_data['end_adresse'],
+                                    fahrt_data['abrechenbar'], fahrt_data['zeiteintrag_id'])
+                added_fahrten.append(str(fahrten))
 
             # Lösche entfernte Fahrten
-        for fahrt_data in fahrt_data_list:
-            if not fahrt_id_existing(fahrt_data['fahrt_id'], zeiteintrag_id):
-                delete_fahrt(fahrt_data['fahrt_id'])
+        fahrt_ids = fahrt_ids_list(zeiteintrag_id)
+        for fahrt_id in fahrt_ids:
+            found = False
+            for fahrt_data in added_fahrten:
+                fahrt_1 = fahrt_id
+                fahrt_2 = fahrt_data
+                if str(fahrt_id) == fahrt_data:
+                    found = True
+                    break
+            if not found:
+                delete_fahrt(fahrt_id)
 
     flash('Eintrag erfolgreich gespeichert')
     return redirect(url_for('client_hours_blueprint.client_supervision_hours', client_id=klient_id))

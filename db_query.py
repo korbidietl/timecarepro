@@ -654,8 +654,10 @@ def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id
     cursor.execute("INSERT INTO fahrt (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_ID) "
                    "VALUES (%s, %s, %s, %s, %s)", (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id))
     connection.commit()
+    fahrt_id = cursor.lastrowid
     cursor.close()
     connection.close()
+    return fahrt_id
 
 
 # /FMOF030/
@@ -705,6 +707,25 @@ def get_zeiteintrag_by_id(zeiteintrag_id):
     cursor.close()
     connection.close()
     return result
+
+
+def create_placeholder_fahrt():
+    connection = get_database_connection()
+    try:
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO fahrt (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_ID) VALUES (0, '0', '0', 0, 1)")
+        fahrt_id = cursor.lastrowid
+        connection.commit()
+        return fahrt_id
+
+    except Exception as e:
+        print(f"Fehler: {e}")
+        connection.rollback()
+        return None
+
+    finally:
+        cursor.close()
+        connection.close()
 
 
 # /FMOF040
@@ -800,6 +821,7 @@ def delete_fahrt(fahrt_id):
     cursor.close()
     connection.close()
 
+
 # /FMOF050
 def get_highest_fahrt_id():
     connection = get_database_connection()
@@ -809,7 +831,6 @@ def get_highest_fahrt_id():
     cursor.close()
     connection.close()
     return highest_id
-
 
 
 # /FMOF060/
@@ -1524,7 +1545,7 @@ def sum_km_mitarbeiter(start_date, end_date):
     return cursor.fetchall()
 
 
-def sum_km_monatlich_tabelle(start_date, end_date,  klient_id=None, mitarbeiter_id=None):
+def sum_km_monatlich_tabelle(start_date, end_date, klient_id=None, mitarbeiter_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
 
@@ -1869,7 +1890,7 @@ def get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id):
     return list(zeiteintrag_fahrten.values())  # Die Ergebnisse werden dann nach Zeiteintrag-IDs gruppiert.
 
 
-def fahrt_id_existing(fahrt_id, zeiteintrag_id):
+def fahrt_id_existing(fahrt_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT id FROM fahrt WHERE id = %s",
@@ -1878,6 +1899,16 @@ def fahrt_id_existing(fahrt_id, zeiteintrag_id):
     if result:
         return True
     return False
+
+
+def fahrt_ids_list(zeiteintrag_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM fahrt WHERE zeiteintrag_ID = %s", (zeiteintrag_id,))
+    result = [row[0] for row in cursor.fetchall()]  # Extrahiere nur die IDs aus dem Ergebnis
+    cursor.close()
+    connection.close()
+    return result
 
 
 def is_password_required(email):

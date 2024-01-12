@@ -73,7 +73,6 @@
                 </div>
             </div>
             <input type="hidden" name="highestFahrtId" id="highestFahrtId" value="{{ highest_fahrt_id }}">
-            <p>{{ highest_fahrt_id }}</p>
             {% if session['user_role'] != 'Verwaltung' %}
                 <h3>Fahrten:</h3>
                 <div id="fahrtenContainer">
@@ -98,7 +97,7 @@
                                 <!-- Ursprüngliche Fahrt-Eingabezeile -->
                                 <div class="form-row fahrt-row">
                                     <div class="form-hidden">
-                                        <input type="number" id="fahrt_id{{  fahrt[0] }}" name="fahrt_id[]" {% if fahrt[0] %} value="{{ fahrt[0] }}" {% else %} value="{{ highest_fahrt_id + 1 }}" {% endif %}">
+                                        <input type="hidden" id="fahrt_id{{  fahrt[0] }}" name="fahrt_id[]" {% if fahrt[0] %} value="{{ fahrt[0] }}" {% else %} value="{{ highest_fahrt_id + 1 }}" {% endif %}">
                                     </div>
                                     <div class="form-group for-non-zero-klient">
                                         <input type="checkbox" id="abrechenbarkeit{{  fahrt[0] }}" name="abrechenbarkeit{{  fahrt[0] }}" {% if fahrt[4] %} checked {% endif %}>
@@ -121,7 +120,7 @@
                             <!-- Leere Felder für eine neue Fahrt -->
                             <div class="form-row fahrt-row">
                                 <div class="form-hidden">
-                                    <input type="number" id="fahrt_id0" name="fahrt_id0" value={{ highest_fahrt_id + 1 }}">
+                                    <input type="hidden" id="fahrt_id0" name="fahrt_id0" value={{ highest_fahrt_id + 1 }}">
                                 </div>
                                 <div class="form-group for-non-zero-klient">
                                     <label for="abrechenbarkeit{{index}}">Anrechenbarkeit:</label>
@@ -206,14 +205,10 @@
                     const newFahrtRow = document.createElement('div');
                     newFahrtRow.classList.add('form-row', 'fahrt-row');
 
-                    // if (fahrten):
-                        // const newFahrtId = fahrtCounter + highest_fahrt_id;
-                    // else:
-                        // const newFahrtId = fahrtCounter + highest_fahrt_id + 1
 
                     newFahrtRow.innerHTML = `
                                 <div class="form-hidden">
-                                   <input type="number" name="fahrt_id" value="${next_fahrt_id}">
+                                   <input type="hidden" name="fahrt_id" value="${next_fahrt_id}">
                                 </div>
                                 <div class="form-group">
                                    <input type="checkbox" id="abrechenbarkeit${next_fahrt_id}" name="abrechenbarkeit${next_fahrt_id}">
@@ -244,7 +239,7 @@
                     if (fahrtRows.length > 1) {
                         const fahrtRow = buttonElement.closest('.fahrt-row');
                         fahrtRow.remove();
-                        // fahrtCounter--;// Reduziere den Zähler nur, wenn eine Zeile entfernt wurde
+                        fahrtCounter--;
                         document.getElementById('fahrtCounterInput').value = fahrtCounter;
                     }
 
