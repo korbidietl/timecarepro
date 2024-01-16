@@ -33,11 +33,10 @@
         <br> <br> <br>
 
 
-        <!-- Kliententabelle -->
         <h3>Kliententabelle</h3>
-        <div id="userRole" data-role="{{ role }}"></div>
+        <div id="userRole_k" data-role="{{ role }}"></div>
         <label for="monat_jahr_dropdown_k"></label>
-        <select id="monat_jahr_dropdown_k" style="padding: 8px; border: 1px solid #ccc;border-radius: 4px; margin-right: 20px;margin-bottom: 20px">
+        <select id="monat_jahr_dropdown_k" style="padding: 8px; border: 1px solid #ccc;border-radius: 4px; margin-right: 20px; margin-bottom: 20px">
             {% for kombination in kombinationen %}
                 <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
                     {{ kombination }}
@@ -56,6 +55,7 @@
         <!--Mitarbeitertabelle -->
         {% if role != 'Sachbearbeiter/Kostenträger'%}
             <h3>Mitarbeitertabelle</h3>
+            <div id="userRole_m" data-role="{{ role }}"></div>
             <label for="monat_jahr_dropdown_m"></label>
             <select id="monat_jahr_dropdown_m" style="padding: 8px; border: 1px solid #ccc;border-radius: 4px; margin-right: 20px; margin-bottom: 20px">
                 {% for kombination in kombinationen %}
