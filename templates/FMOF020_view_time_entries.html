@@ -28,7 +28,7 @@
                 </form>
             </div>
             {% if session['user_role'] != 'Verwaltung' %}
-                <div class="form-group-table" >
+                <div class="time time-selection-container" >
                     <form action="{{url_for('/create_time_entry.submit_arbeitsstunden', person_id=person_id)}}" method="get" style="display: inline;">
                         <button type="submit">Zeiteintrag hinzufügen</button>
                     </form>
