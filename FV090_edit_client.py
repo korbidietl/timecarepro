@@ -42,7 +42,6 @@ def edit_client(client_id):
         print("Name: ", vorname, nachname)
         print("geb: ", geburtsdatum)
 
-
         print("Name2: ", vorname, nachname)
         # Klientdateils überschreiben
         edit_klient_fct(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
