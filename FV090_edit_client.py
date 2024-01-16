@@ -39,23 +39,23 @@ def edit_client(client_id):
         kontingent_hk = request.form.get('kontingent_hk')
         kontingent_fk = request.form.get('kontingent_fk')
         fallverantwortung_id = request.form.get('fvDropdown')
+        print("Name: ", vorname, nachname)
+        print("geb: ", geburtsdatum)
 
-        try:
-            # Klientdateils überschreiben
-            edit_klient_fct(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
-                            kontingent_hk, kontingent_fk, fallverantwortung_id)
 
-            # Änderungsprotokoll
-            new_client = get_new_client(client_id)
-            save_change_log(person, "Klient", current_client, new_client, client_data[0])
+        print("Name2: ", vorname, nachname)
+        # Klientdateils überschreiben
+        edit_klient_fct(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
+                        kontingent_hk, kontingent_fk, fallverantwortung_id)
+        print(get_klient_data(client_id))
 
-            # Rückleitung
-            flash('Klient wurde erfolgreich bearbeitet')
-            return redirect(session.pop('url', None))
+        # Änderungsprotokoll
+        new_client = get_new_client(client_id)
+        save_change_log(person, "Klient", current_client, new_client, client_data[0])
 
-        except Exception as e:
-            flash('Error updating client: ' + str(e))
-            return redirect(url_for('edit_client.edit_client', client_id=client_id))
+        # Rückleitung
+        flash('Klient wurde erfolgreich bearbeitet')
+        return redirect(session.pop('url', None))
 
     else:
 

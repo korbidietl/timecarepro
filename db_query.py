@@ -262,7 +262,8 @@ def account_table(monat, year):
             p.nachname, 
             p.vorname,
             COALESCE(TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i'), '00:00') AS geleistete_stunden,
-            COALESCE(SUM(f.kilometer), 0) AS gefahrene_kilometer
+            COALESCE(SUM(f.kilometer), 0) AS gefahrene_kilometer,
+            p.sperre
         FROM 
             person p
         LEFT JOIN 
@@ -275,9 +276,9 @@ def account_table(monat, year):
             p.ID ASC
     """, (monat, year))
 
-    klienten_table = cursor.fetchall()
+    mitarbeiter_table = cursor.fetchall()
     cursor.close()
-    return klienten_table
+    return mitarbeiter_table
 
 
 # /FAN030/
@@ -972,17 +973,34 @@ def get_name_by_id(person_id):
 
 
 # /FV090/
-def edit_klient_fct(klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_ID, adresse,
-                    kontingent_hk, kontingent_fk, fallverantwortung_ID):
+def edit_klient_fct(klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
+                    kontingent_hk, kontingent_fk, fallverantwortung_id):
     connection = get_database_connection()
     cursor = connection.cursor()
+
+    if sachbearbeiter_id == "None":
+        print("true")
+        sachbearbeiter_id_value = 'NULL'
+    else:
+        print("false")
+        sachbearbeiter_id_value = sachbearbeiter_id
+
+    if fallverantwortung_id == "None":
+        print("true")
+        fallverantwortung_id_value = 'NULL'
+    else:
+        print("false")
+        fallverantwortung_id_value = fallverantwortung_id
+
+    print(sachbearbeiter_id_value)
+    print(fallverantwortung_id_value)
 
     # Klienten bearbeiten
     cursor.execute("UPDATE klient SET vorname = %s, nachname = %s, geburtsdatum = %s, telefonnummer = %s, "
                    "sachbearbeiter_ID = %s, adresse = %s, kontingent_HK = %s, kontingent_FK = %s, "
                    "fallverantwortung_ID = %s WHERE ID = %s",
-                   (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_ID, adresse,
-                    kontingent_hk, kontingent_fk, fallverantwortung_ID, klient_id))
+                   (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id_value, adresse,
+                    kontingent_hk, kontingent_fk, fallverantwortung_id_value, klient_id))
     connection.commit()
 
 
