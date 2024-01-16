@@ -253,10 +253,6 @@ def account_table_mitarbeiter(monat, year, person_id):
 
 # /FAN030/
 def account_table(monat, year):
-    missing_bookings = get_unbooked_clients_for_month(monat, year)
-    if missing_bookings:
-        # Return a specific value indicating that there are missing bookings
-        return None
     connection = get_database_connection()
     cursor = connection.cursor()
 
