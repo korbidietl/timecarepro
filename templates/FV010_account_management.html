@@ -26,7 +26,6 @@
     <div class="table-form">
         <h2>Accountverwaltung</h2>
 
-        <br> <br>
         <!-- Buttons Account/Klient anlegen -->
         <button onclick="window.location.href='/create_account';">Account anlegen</button>
         <button onclick="window.location.href='/create_client';">Klient anlegen</button>
@@ -91,12 +90,12 @@
                     <td>{{ steuerbuero[2] }}</td> <!-- nachname -->
                     <td>{{ steuerbuero[3] }}</td> <!-- email -->
                     <td>
-                        <form action="/account_details/{{ steuerbuero[0] }}" method="post">
+                        <form action="/account_details/{{ steuerbuero[0] }}" method="get">
                             <button type="submit">Details</button>
                         </form>
                     </td>
                     <td>
-                        <form action="/account_edit/{{ steuerbuero[0] }}" method="post">
+                        <form action="{{url_for('edit_account.edit_account', person_id = steuerbuero[0])}}" method="get">
                             <button type="submit">Bearbeiten</button>
                         </form>
                     </td>
@@ -131,12 +130,12 @@
                     <td>{{ sb[2] }}</td> <!-- nachname -->
                     <td>{{ sb[3] }}</td> <!-- email -->
                     <td>
-                        <form action="/account_details/{{ sb[0] }}" method="post">
+                        <form action="/account_details/{{ sb[0] }}" method="get">
                         <button type="submit">Details</button>
                         </form>
                     </td>
                     <td>
-                        <form action="/account_edit/{{ sb[0] }}" method="post">
+                        <form action="{{url_for('edit_account.edit_account', person_id = sb[0])}}" method="get">
                             <button type="submit">Bearbeiten</button>
                         </form>
                     </td>

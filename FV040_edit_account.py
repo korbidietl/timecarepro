@@ -37,13 +37,16 @@ def edit_account(person_id):
         qualification = request.form.get('qualification')
 
         # Überprüfen des Datentyps für Geburtstag und Telefonnummer
-        if not is_valid_date(birthday):
-            flash('Das Geburtsdatum ist ungültig.')
-            return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
-                                   lastname=lastname, birthday=birthday, qualification=qualification, address=address,
+        print("birthday: ", birthday)
+        if birthday is not None:
+            if not is_valid_date(birthday):
+                print("yallah")
+                flash('Das Geburtsdatum ist ungültig.')
+                return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
+                                       lastname=lastname, birthday=birthday, qualification=qualification, address=address,
                                    email=email, phone=phone, locked=locked, role=role, return_url=return_url)
 
-        if phone != "":
+        if phone is not None:
             if not is_valid_phone(phone):
                 flash('Die Telefonnummer ist ungültig.')
                 return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
