@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, session, flash, redirect
+from flask import Blueprint, request, render_template, session, flash, redirect, url_for
 from db_query import edit_klient_fct, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data, \
     get_current_client, get_new_client, save_change_log
 
@@ -7,6 +7,9 @@ edit_client_blueprint = Blueprint('edit_client', __name__)
 
 @edit_client_blueprint.route('/edit_client/<int:client_id>', methods=['POST', 'GET'])
 def edit_client(client_id):
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('edit_client.edit_client', client_id=client_id)
+
     current_client = get_current_client(client_id)
     person = session.get('user_id')
     return_url = session.get('url')

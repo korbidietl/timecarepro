@@ -21,6 +21,9 @@ def send_email_passwort_change(email, firstname, lastname):
 
 @password_change_blueprint.route('/password_change', methods=['POST', 'GET'])
 def change_password():
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('password_change.change_password')
+
     if request.method == "POST":
 
         current_password = request.form["current_password"]

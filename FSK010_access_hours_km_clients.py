@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session
+from flask import Blueprint, render_template, request, session, url_for
 from db_query import get_client_table_client_sb, get_client_name, get_sachbearbeiter_name
 from FMOF010_show_supervisionhours_client import generate_month_year_combinations, extrahiere_jahr_und_monat, \
     convert_blob_to_base64, check_ueberschneidung_liste, check_booked_liste
@@ -23,6 +23,9 @@ def unterschriften_liste(zeiteintrag_ids):
 
 @access_hours_km_clients_blueprint.route('/access_hours_km_clients/<int:client_id>', methods=['GET', 'POST'])
 def view_time_entries(client_id):
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('access_hours_km_clients.view_time_entries', client_id=client_id)
+
     user_id = session.get('user_id')
 
     kombinationen = generate_month_year_combinations()

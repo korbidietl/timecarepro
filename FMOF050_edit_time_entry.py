@@ -34,6 +34,9 @@ def check_time_entry_constraints(datum, start_zeit, end_zeit, klient_id):
 
 @edit_time_entry_blueprint.route('/edit_time_entry/<int:zeiteintrag_id>', methods=['GET', 'POST'])
 def edit_time_entry(zeiteintrag_id):
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag_id)
+
     # session speichern für rückleitung
     session_role = session.get('user_role')
     session['url_overlapping'] = url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag_id)

@@ -14,6 +14,9 @@ def convert_blob_to_base64(blob):
 
 @work_hours_details_blueprint.route('/work_hours_details/<int:zeiteintrag_id>/<int:person_id>')
 def show_details(zeiteintrag_id, person_id):
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('work_hours_details.show_details', zeiteintrag_id=zeiteintrag_id, person_id=person_id)
+
     session['url'] = url_for('work_hours_details.show_details', zeiteintrag_id=zeiteintrag_id, person_id=person_id)
     # Datenbankaufrufe
     zeiteintrag_liste = get_zeiteintrag_by_id(zeiteintrag_id)

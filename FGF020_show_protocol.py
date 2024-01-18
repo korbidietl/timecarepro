@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from flask import Blueprint, render_template, request, json
+from flask import Blueprint, render_template, request, json, session, url_for
 from db_query import get_protokoll, person_dropdown
 
 show_protocol_blueprint = Blueprint("show_protocol", __name__)
@@ -8,6 +8,9 @@ show_protocol_blueprint = Blueprint("show_protocol", __name__)
 
 @show_protocol_blueprint.route('/show_protocol', methods=['GET', 'POST'])
 def show_protocol():
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('show_protocol.show_protocol')
+
     # Ändernde Nutzer nur aus Verwaltung und Geschäftsführung
     nutzers = person_dropdown()
     if request.method == 'POST':

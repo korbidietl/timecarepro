@@ -1,7 +1,7 @@
 import smtplib
 from email.mime.text import MIMEText
 
-from flask import Blueprint, request, flash, redirect, render_template, session
+from flask import Blueprint, request, flash, redirect, render_template, session, url_for
 from db_query import delete_zeiteintrag, check_booked, get_email_by_zeiteintrag, get_firstname_by_email, \
     get_lastname_by_email
 
@@ -10,6 +10,9 @@ delete_time_entry_blueprint = Blueprint("delete_te", __name__)
 
 @delete_time_entry_blueprint.route('/delete_te/<int:zeiteintrags_id>', methods=['POST', 'GET'])
 def delete_te(zeiteintrags_id):
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('delete_te.delete_te', zeiteintrags_id=zeiteintrags_id)
+
     return_url = session.get('url')
     session_role = session.get('user_role')
     if request.method == 'POST':

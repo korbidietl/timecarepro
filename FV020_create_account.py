@@ -1,7 +1,7 @@
 import hashlib
 
 from FNAN020_password_reset import generate_random_password, send_email
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from db_query import validate_email, create_account_db
 from datetime import datetime
 
@@ -42,6 +42,9 @@ def send_email_create_account(email, firstname, lastname, new_password):
 
 @create_account_blueprint.route('/create_account', methods=['POST', 'GET'])
 def create_account():
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('create_account.create_account')
+
     if request.method == 'POST':
         selected_role = request.form.get('role')
         lastname = request.form.get('lastname')

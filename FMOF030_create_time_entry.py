@@ -39,6 +39,9 @@ def base64_to_blob(base64_string):
 
 @create_time_entry_blueprint.route('/create_time_entry/<int:person_id>', methods=['POST', 'GET'])
 def submit_arbeitsstunden(person_id):
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('/create_time_entry.submit_arbeitsstunden', person_id=person_id)
+
     # return url zur rückleitung
     klient_id = session.get('client_id', None)
     print("klientid: ", klient_id)

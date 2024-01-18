@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, url_for
 from db_query import get_klient_data, get_name_by_id
 
 client_details_blueprint = Blueprint('client_details', __name__)
@@ -6,6 +6,9 @@ client_details_blueprint = Blueprint('client_details', __name__)
 
 @client_details_blueprint.route('/client_details/<int:client_id>', methods=['POST', 'GET'])
 def client_details(client_id):
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('client_details.client_details', client_id=client_id)
+
     return_url = session.get('url')
     client_data_list = get_klient_data(client_id)
 

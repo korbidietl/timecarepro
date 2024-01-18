@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, session, url_for
 from db_query import mitarbeiter_dropdown, client_dropdown, sum_mitarbeiter, sum_hours_mitarbeiter_zeitspanne, \
     sum_hours_klient_zeitspanne, \
     sum_absage_mitarbeiter, sum_absage_klient, sum_km_mitarbeiter, sum_km_klient, get_report_zeiteintrag, \
@@ -12,6 +12,9 @@ reporting_dachboard_blueprint = Blueprint('view_reporting_dashboard', __name__)
 
 @reporting_dachboard_blueprint.route('/reporting_dashboard', methods={'GET', 'POST'})
 def reporting_dashboard():
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('view_reporting_dashboard.reporting_dashboard')
+
     # Dropdown Felder
     mitarbeiter = mitarbeiter_dropdown()
     ma = {'mitarbeiter': mitarbeiter}

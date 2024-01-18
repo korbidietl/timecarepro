@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, session
+from flask import Blueprint, request, render_template, session, url_for
 
 from FMOF050_edit_time_entry import save_after_overlapping
 from db_query import (check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id, get_name_by_id, get_client_name)
@@ -8,6 +8,9 @@ check_overlapping_time_blueprint = Blueprint('check_overlapping_time', __name__)
 
 @check_overlapping_time_blueprint.route('/check_overlapping_time/<int:zeiteintrag_id>', methods=['GET', 'POST'])
 def overlapping_time(zeiteintrag_id):
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id)
+
     return_url = session.get('url_overlapping')
     zeiteintrag_data = session.get('overlapping_ze')
     fahrten_data_list = session.get('overlapping_fahrten')

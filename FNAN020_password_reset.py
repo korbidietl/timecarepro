@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 import random
 import string
 import smtplib
@@ -42,6 +42,9 @@ def send_email_passwort_reset(email, firstname, lastname, new_password):
 
 @password_reset_blueprint.route('/password_reset', methods=['POST', 'GET'])
 def passwordreset():
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('password_reset.passwordreset')
+
     if request.method == "POST":
         email = request.form["email"]
 

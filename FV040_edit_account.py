@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Blueprint, request, render_template, redirect, flash, session
+from flask import Blueprint, request, render_template, redirect, flash, session, url_for
 from db_query import edit_account_fct, get_person_data, get_current_person, get_new_person, save_change_log
 from FV020_create_account import is_valid_phone, is_valid_date
 
@@ -9,6 +9,9 @@ edit_account_blueprint = Blueprint('edit_account', __name__)
 
 @edit_account_blueprint.route('/edit_account/<int:person_id>', methods=['GET', 'POST'])
 def edit_account(person_id):
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('edit_account.edit_account', person_id = person_id)
+
     return_url = session.get('url')
 
     # account zustand vor änderung speichern

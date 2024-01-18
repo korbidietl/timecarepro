@@ -1,4 +1,4 @@
-from flask import render_template, request, Blueprint, flash, redirect, url_for
+from flask import render_template, request, Blueprint, flash, redirect, url_for, session
 from db_query import mitarbeiter_dropdown, create_klient, validate_client, kostentraeger_dropdown
 
 create_client_blueprint = Blueprint("create_client", __name__)
@@ -6,6 +6,9 @@ create_client_blueprint = Blueprint("create_client", __name__)
 
 @create_client_blueprint.route('/create_client', methods=['POST', 'GET'])
 def register_client():
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('create_client.register_client')
+
     if request.method == 'POST':
         nachname = request.form.get('lastname')
         vorname = request.form.get('firstname')

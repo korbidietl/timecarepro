@@ -95,6 +95,9 @@ def unterschriften_liste(zeiteintraege_liste):
 
 @client_hours_blueprint.route('/client_supervision_hours/<int:client_id>', methods=['POST', 'GET'])
 def client_supervision_hours(client_id):
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id)
+
     # Für Rückleitung
     session['url'] = url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id)
     session['client_id'] = client_id

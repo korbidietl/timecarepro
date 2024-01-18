@@ -7,12 +7,13 @@ show_employee_table_blueprint = Blueprint('show_employee_table', __name__)
 
 @show_employee_table_blueprint.route('/get_employee_data', methods=['GET'])
 def get_employee_data():
+    # Auslesen Daten aus Session
     person = session.get('user_id')
     role = session.get('user_role')
 
+    # Auslesen Zeitraum
     month = request.args.get('monat')
     year = request.args.get('jahr')
-    print("datum: ", month, year)
 
     if role == "Mitarbeiter":
         mitarbeiter_liste = account_table_mitarbeiter(month, year, person)
@@ -32,5 +33,4 @@ def get_employee_data():
 @show_employee_table_blueprint.route('/get_employee_dropdown_data', methods=['GET'])
 def get_dropdown_data():
     kombinationen = generate_month_year_combinations()
-
     return jsonify(kombinationen)

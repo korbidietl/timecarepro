@@ -9,6 +9,9 @@ logged_in_users = set()
 
 @login_blueprint.route('/', methods=['GET', 'POST'])
 def login():
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('login.login')
+
     if request.method == 'POST':
         # Auslesen aus Forumlar
         email = request.form['email']

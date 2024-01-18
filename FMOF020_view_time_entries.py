@@ -23,6 +23,9 @@ def unterschriften_liste(zeiteintrag):
 
 @view_time_entries_blueprint.route('/view_time_entries/<int:person_id>', methods=['GET', 'POST'])
 def view_time_entries(person_id):
+    # Rückleitung bei unerlaubter Seite
+    session['secure_url'] = url_for('view_time_entries.view_time_entries', person_id=person_id)
+
     # session daten speichern
     session.pop('client_id', None)
     session['url'] = url_for('view_time_entries.view_time_entries', person_id=person_id)
