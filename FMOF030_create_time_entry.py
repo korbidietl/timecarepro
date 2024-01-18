@@ -1,7 +1,8 @@
 import base64
 
 from flask import Blueprint, request, redirect, url_for, render_template, flash, session
-from db_query import add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag, check_month_booked, client_dropdown
+from db_query import (add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag, check_month_booked, client_dropdown,
+                      get_klient_data)
 from datetime import datetime
 
 create_time_entry_blueprint = Blueprint('/create_time_entry', __name__)
@@ -40,13 +41,21 @@ def base64_to_blob(base64_string):
 def submit_arbeitsstunden(person_id):
     # return url zur rückleitung
     klient_id = session.get('client_id', None)
+    print("klientid: ", klient_id)
     return_url = session.get('url')
 
     # session speichern für rückleitung
     session['url_overlapping'] = url_for('/create_time_entry.submit_arbeitsstunden', person_id=person_id)
 
+    fachkraft = 0
+
     # klienten für client_dropdown
     klienten = client_dropdown()
+    if klient_id is not None:
+        client_data = get_klient_data(klient_id)
+        if client_data[0][9] == person_id:
+            fachkraft = "1"
+    print("fachkraft: ", fachkraft)
 
     if request.method == 'POST':
         # Eingabedaten aus dem Formular holen
@@ -138,4 +147,4 @@ def submit_arbeitsstunden(person_id):
             return redirect(return_url)
 
     return render_template('FMOF030_create_time_entry.html', klient_id=klient_id, klienten=klienten,
-                           return_url=return_url, person_id=person_id)
+                           return_url=return_url, person_id=person_id, fachkraft=fachkraft)
