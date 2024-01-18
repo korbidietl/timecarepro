@@ -24,7 +24,7 @@
         <form action="{{ url_for('access_hours_km_clients.view_time_entries', client_id=client_id) }}" method="post">
             <div class="form-group-table">
                 <label for="monat_jahr"></label>
-                        <select name="monat_jahr" id="monat_jahr" style="padding: 8px; border: 1px solid #ccc;border-radius: 4px; margin-right: 20px">
+                        <select name="monat_jahr" class="gray-background" id="monat_jahr" style="padding: 8px; border: 1px solid #ccc;border-radius: 4px; margin-right: 20px">
                             {% for kombination in kombinationen %}
                             <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
                                 {{ kombination }}

@@ -39,7 +39,7 @@
                 <!-- Drop-Down für Monat auswahl, initial akutelles Monat-->
                 <form action="{{ url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id) }}" method="post" style="display: flex;flex-direction: row; align-items: center; gap: 10px">
                     <label for="monat_jahr"></label>
-                    <select name="monat_jahr" id="monat_jahr">
+                    <select name="monat_jahr" class="gray-background" id="monat_jahr">
                         {% for kombination in kombinationen %}
                         <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
                             {{ kombination }}

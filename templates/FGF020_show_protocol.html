@@ -16,15 +16,15 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="von">Von:</label>
-                        <input type="date" id="von" name="von" value="{{von}}">
+                        <input type="date" class="gray-background" id="von" name="von" value="{{von}}">
                     </div>
                     <div class="form-group">
                         <label for="bis">Bis:</label>
-                        <input type="date" id="bis" name="bis" value="{{bis}}">
+                        <input type="date" class="gray-background" id="bis" name="bis" value="{{bis}}">
                     </div>
                     <div class="form-group">
                         <label for="nutzer">Ändernder Nutzer:</label>
-                        <select class="form-control" id="nutzer" name="nutzer">
+                        <select class="form-control gray-background" id="nutzer" name="nutzer">
                             <!-- Optionen werden durch Python generiert -->
                             <option value="" disabled selected>Bitte wählen</option>
                             {% for nutzer in nutzers %}
@@ -34,7 +34,7 @@
                     </div>
                     <div class="form-group">
                         <label for="eintrags_id">Eintrags ID:</label>
-                        <input type="number" id="eintrags_id" name="eintrags_id" value="{{eintrags_id}}">
+                        <input type="number" id="eintrags_id" class="gray-background" name="eintrags_id" value="{{eintrags_id}}">
                     </div>
                     <button type="submit">Filtern</button>
                 </div>
