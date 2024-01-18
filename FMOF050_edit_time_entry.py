@@ -234,7 +234,7 @@ def send_email(email, subject, body):
     msg = MIMEText(body)
 
     msg['Subject'] = subject
-    msg['From'] = 'deletetimeentry@timecarepro.de'
+    msg['From'] = 'edittimeentry@timecarepro.de'
     msg['To'] = email
 
     with smtplib.SMTP('132.231.36.210', 1103) as smtp:
