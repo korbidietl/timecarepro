@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, url_for, session
+from flask import Blueprint, render_template, url_for, session
 from db_query import get_person_data
 
 account_details_blueprint = Blueprint('account_details', __name__)
@@ -9,7 +9,6 @@ def account_details(person_id):
     return_url = session.get('url')
     # session speichern für rückleitung
     session['url'] = url_for('view_time_entries.view_time_entries', person_id=person_id)
-
 
     # Datenbankaufruf über person_id
     person_data_list = get_person_data(person_id)

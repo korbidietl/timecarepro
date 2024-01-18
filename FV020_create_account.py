@@ -2,7 +2,7 @@ import hashlib
 
 from FNAN020_password_reset import generate_random_password, send_email
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from db_query import validate_email, create_account_db, set_password_required_true
+from db_query import validate_email, create_account_db
 from datetime import datetime
 
 create_account_blueprint = Blueprint('create_account', __name__)
@@ -97,7 +97,7 @@ def create_account():
             hashed_password = sha1_hash_password(password)
             change_password = 1
             create_account_db(firstname, lastname, birthday, qualification, address, selected_role, email, phone, hashed_password, 0, change_password)
-            send_email_create_account(email,firstname, lastname, password)
+            send_email_create_account(email, firstname, lastname, password)
             flash("Account wurde erfolgreich angelegt", "success")
             return redirect(url_for('account_management.account_management'))
 

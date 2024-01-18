@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Blueprint, request, render_template, redirect, flash, session
 from db_query import edit_account_fct, get_person_data, get_current_person, get_new_person, save_change_log
 from FV020_create_account import is_valid_phone, is_valid_date
@@ -12,6 +14,20 @@ def edit_account(person_id):
     # account zustand vor änderung speichern
     current_person = get_current_person(person_id)
     person = session.get('user_id')
+
+    # Default werte für Eingaben
+    email = ""
+    locked = 0
+    role = ""
+    firstname = ""
+    lastname = ""
+    jahr = 1900
+    monat = 1
+    tag = 1
+    birthday = datetime(jahr, monat, tag)
+    qualification = ""
+    address = ""
+    phone = ""
 
     person_data_list = get_person_data(person_id)
     person_data = person_data_list[0]
@@ -37,14 +53,13 @@ def edit_account(person_id):
         qualification = request.form.get('qualification')
 
         # Überprüfen des Datentyps für Geburtstag und Telefonnummer
-        print("birthday: ", birthday)
         if birthday is not None:
             if not is_valid_date(birthday):
-                print("yallah")
                 flash('Das Geburtsdatum ist ungültig.')
                 return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
-                                       lastname=lastname, birthday=birthday, qualification=qualification, address=address,
-                                   email=email, phone=phone, locked=locked, role=role, return_url=return_url)
+                                       lastname=lastname, birthday=birthday, qualification=qualification,
+                                       address=address,
+                                       email=email, phone=phone, locked=locked, role=role, return_url=return_url)
 
         if phone is not None:
             if not is_valid_phone(phone):

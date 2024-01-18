@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from db_query import (book_zeiteintrag, get_last_buchung, get_zeiteintrag_by_id, get_name_by_id,
+from flask import Blueprint, render_template, redirect, url_for, flash, session
+from db_query import (book_zeiteintrag, get_last_buchung,
                       get_zeiteintrag_for_client, get_first_te, check_and_return_signatures)
 from datetime import datetime
 
@@ -58,11 +58,12 @@ def book_client_time_entry(client_id):
     month_str = month_number_to_name(next_month)
 
     # Überprüfen, ob alle Unterschriften vorhanden sind
-    unvollständige_te = check_and_return_signatures(client_id, next_month, next_year)
-    if unvollständige_te is True:
+    unvollstaendige_te = check_and_return_signatures(client_id, next_month, next_year)
+    if unvollstaendige_te is True:
         # Überprüfen, ob Zeiteinträge für den nächsten Monat existieren
         if not get_zeiteintrag_for_client(client_id, next_month, next_year):
-            return render_template("FV120_book_time_entries.html", month_str=month_str, return_url=return_url, client_id=client_id)
+            return render_template("FV120_book_time_entries.html", month_str=month_str,
+                                   return_url=return_url, client_id=client_id)
         # Berechnen von Salden und Durchführen der Buchung
         if book_zeiteintrag(client_id):
             print("gebucht")
@@ -73,10 +74,11 @@ def book_client_time_entry(client_id):
             url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id))
     else:
         messages = []
-        for entry in unvollständige_te:
+        for entry in unvollstaendige_te:
             entry_id = entry['id']
             missing = ' und '.join(entry['missing'])  # Konvertiert die Liste in einen String
-            message = f"Unterschrift von {missing} in Eintrag {entry_id} fehlt. Buchung konnte nicht durchgeführt werden."
+            message = (f"Unterschrift von {missing} in Eintrag {entry_id} fehlt. Buchung konnte nicht durchgeführt "
+                       f"werden.")
             messages.append(message)
 
         final_message = " ".join(messages)
@@ -95,6 +97,3 @@ def confirm_booking(client_id):
         flash("Fehler bei der Buchung.")
     return redirect(
         url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id))
-
-
-

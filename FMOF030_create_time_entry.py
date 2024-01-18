@@ -1,8 +1,8 @@
 import base64
 
 from flask import Blueprint, request, redirect, url_for, render_template, flash, session
-from db_query import (add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag, check_month_booked, client_dropdown,
-                      get_klient_data)
+from db_query import (add_zeiteintrag, add_fahrt, check_for_overlapping_zeiteintrag, check_month_booked,
+                      client_dropdown, get_klient_data)
 from datetime import datetime
 
 create_time_entry_blueprint = Blueprint('/create_time_entry', __name__)

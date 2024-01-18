@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-from flask import Blueprint, render_template, request, session, json
-from db_query import get_client_table, get_client_table_sb, get_protokoll, person_dropdown
+from flask import Blueprint, render_template, request, json
+from db_query import get_protokoll, person_dropdown
 
 show_protocol_blueprint = Blueprint("show_protocol", __name__)
 
@@ -35,11 +35,13 @@ def show_protocol():
             entry.append((data_dict_alt, data_dict_neu))
 
         if not protocols:
-                return render_template('FGF020_show_protocol.html',
-                                       protocols=[], nutzers=nutzers, von=von, bis=bis, nutzer= aendernder_nutzer, eintrags_id=eintrags_id)
+            return render_template('FGF020_show_protocol.html',
+                                   protocols=[], nutzers=nutzers, von=von, bis=bis, nutzer=aendernder_nutzer,
+                                   eintrags_id=eintrags_id)
 
         kombinierte_liste = zip(protocols, entry)
-        return render_template('FGF020_show_protocol.html', kombinierte_liste=kombinierte_liste, nutzers=nutzers, von=von, bis=bis, nutzer= aendernder_nutzer, eintrags_id=eintrags_id)
+        return render_template('FGF020_show_protocol.html', kombinierte_liste=kombinierte_liste, nutzers=nutzers,
+                               von=von, bis=bis, nutzer=aendernder_nutzer, eintrags_id=eintrags_id)
 
     else:
         heute = datetime.now()
@@ -50,7 +52,7 @@ def show_protocol():
         von = erster_des_monats.strftime('%Y-%m-%d')
         bis = heute.strftime('%Y-%m-%d')
         # Bis um 1 Tag erhöhen damit akuteller angezeigt wird
-        bis_datum = datetime.strptime(bis, '%Y-%m-%d')if isinstance(bis, str) else bis
+        bis_datum = datetime.strptime(bis, '%Y-%m-%d') if isinstance(bis, str) else bis
         bis_datum += timedelta(days=1)
         bis_str = bis_datum.strftime('%Y-%m-%d')
 
@@ -66,4 +68,5 @@ def show_protocol():
             entry.append((data_dict_alt, data_dict_neu))
 
         kombinierte_liste = zip(protocols, entry)
-        return render_template('FGF020_show_protocol.html', kombinierte_liste=kombinierte_liste, nutzers=nutzers, von=von, bis=bis)
+        return render_template('FGF020_show_protocol.html', kombinierte_liste=kombinierte_liste, nutzers=nutzers,
+                               von=von, bis=bis)

@@ -4,7 +4,7 @@ from datetime import datetime
 from email.mime.text import MIMEText
 
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session
-from db_query import get_zeiteintrag_with_fahrten_by_id, edit_zeiteintrag, get_email_by_zeiteintrag, \
+from db_query import edit_zeiteintrag, get_email_by_zeiteintrag, \
     get_lastname_by_email, check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id, get_fahrt_by_zeiteintrag, \
     get_klient_data, get_firstname_by_email
 
@@ -84,7 +84,7 @@ def edit_time_entry(zeiteintrag_id):
         edit_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime, klient_id, fachkraft,
                          beschreibung, interne_notiz, absage)
 
-        if check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_datetime, end_datetime):
+        if check_for_overlapping_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime):
             return redirect(url_for('/check_overlapping_time', zeiteintrag_id=zeiteintrag_id))
 
         send_email_edit_time_entry(email, firstname, lastname, zeiteintrag_id)

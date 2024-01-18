@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from flask import Blueprint, request, render_template, session
 
 from FMOF050_edit_time_entry import save_after_overlapping
@@ -27,7 +25,7 @@ def overlapping_time(zeiteintrag_id):
             klient_id = zeiteintrag_data['klient_id']
             mitarbeiter_id = zeiteintrag_data['mitarbeiter_id']
 
-            overlapping_ids = check_for_overlapping_zeiteintrag(zeiteintrag_id, klient_id, start_zeit_datetime,
+            overlapping_ids = check_for_overlapping_zeiteintrag(zeiteintrag_id, start_zeit_datetime,
                                                                 end_zeit_datetime)
             matching_entries = []
             for entry_id in overlapping_ids:

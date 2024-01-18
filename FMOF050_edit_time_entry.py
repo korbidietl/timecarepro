@@ -127,7 +127,6 @@ def edit_time_entry(zeiteintrag_id):
                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
                                    highest_fahrt_id=highest_fahrt_id, return_url=return_url)
 
-
         fahrt_data_list = []
         form_data = request.form
         existing_fahrten_ids = get_fahrt_ids_from_form(form_data)

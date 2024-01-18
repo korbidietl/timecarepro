@@ -2,7 +2,8 @@ import smtplib
 from email.mime.text import MIMEText
 
 from flask import Blueprint, request, flash, redirect, url_for, render_template, session
-from db_query import check_booked, delete_zeiteintrag, get_email_by_zeiteintrag, get_lastname_by_email, get_firstname_by_email
+from db_query import (check_booked, delete_zeiteintrag, get_email_by_zeiteintrag, get_lastname_by_email,
+                      get_firstname_by_email)
 
 delete_time_entry_fv_blueprint = Blueprint("delete", __name__)
 
@@ -19,10 +20,10 @@ def send_email(email, subject, body):
         smtp.sendmail('deletetimeentry@timecarepro.de', [email], msg.as_string())
 
 
-def send_email_delete_time_entry(email,firstname, lastname, id):
+def send_email_delete_time_entry(email, firstname, lastname, z_id):
     subject = "Gelöschter Zeiteintrag"
     body = (f"Sehr geehrte/r {firstname} {lastname}, \n\n"
-            f"Ihr Zeiteintrag {id} wurde von der Verwaltung gelöscht.\n\n"
+            f"Ihr Zeiteintrag {z_id} wurde von der Verwaltung gelöscht.\n\n"
             f"Freundliche Grüße\n"
             f"Ihr TimeCare Pro-Team")
     send_email(email, subject, body)
@@ -48,7 +49,7 @@ def delete_time_entry_fv(zeiteintrags_id):
         else:
             # Löschen der Zeiteinträge und dazugehörigen Fahrten
             delete_zeiteintrag(zeiteintrags_id)
-            send_email_delete_time_entry(email,firstname,  lastname, zeiteintrags_id)
+            send_email_delete_time_entry(email, firstname, lastname, zeiteintrags_id)
             # Erfolgsmeldung
             success_message = "Eintrag erfolgreich gelöscht."
             flash(success_message, 'success')

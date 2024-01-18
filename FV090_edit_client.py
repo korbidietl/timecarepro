@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, session, flash, redirect, url_for
+from flask import Blueprint, request, render_template, session, flash, redirect
 from db_query import edit_klient_fct, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data, \
     get_current_client, get_new_client, save_change_log
 
@@ -29,7 +29,7 @@ def edit_client(client_id):
     fallverantwortung = mitarbeiter_dropdown()
 
     if request.method == 'POST':
-        #Auslesen Daten aus Forumluar
+        # Auslesen Daten aus Forumluar
         vorname = request.form.get('vorname')
         nachname = request.form.get('nachname')
         geburtsdatum = request.form.get('geburtsdatum')
@@ -75,6 +75,7 @@ def edit_client(client_id):
             fallverantwortung_name = '-'
 
         return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, sb_id=sb_id,
-                               fallverantwortung=fallverantwortung, fv_id=fv_id, client_id=client_id, firstname=firstname,
-                               lastname=lastname, birthday=birthday,
-                               phone=phone, sb=sachbearbeiter, address=address, fk=fk, hk=hk, fv=fallverantwortung_name, return_url=return_url)
+                               fallverantwortung=fallverantwortung, fv_id=fv_id, client_id=client_id,
+                               firstname=firstname, lastname=lastname, birthday=birthday,
+                               phone=phone, sb=sachbearbeiter, address=address, fk=fk, hk=hk, fv=fallverantwortung_name,
+                               return_url=return_url)

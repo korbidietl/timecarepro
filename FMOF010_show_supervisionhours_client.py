@@ -4,8 +4,8 @@ import datetime
 from flask import Blueprint, render_template, request, session, url_for
 from datetime import datetime
 from db_query import get_client_name, get_sachbearbeiter_name, get_fallverantwortung_id, \
-    get_zeiteintrag_for_client_and_person, check_for_overlapping_zeiteintrag, check_booked, get_zeiteintrag_for_client, \
-    sum_hours_klient, sum_km_klient_ges
+    get_zeiteintrag_for_client_and_person, check_for_overlapping_zeiteintrag, check_booked, \
+    get_zeiteintrag_for_client, sum_hours_klient, sum_km_klient_ges
 
 client_hours_blueprint = Blueprint('client_hours_blueprint', __name__, template_folder='templates')
 
@@ -165,7 +165,7 @@ def client_supervision_hours(client_id):
             sum_hours = sum_hours_list[0]
 
         # Gesamt Kilometer auslesen
-        sum_km_list = sum_km_klient_ges(client_id,month, year, user_id)
+        sum_km_list = sum_km_klient_ges(client_id, month, year, user_id)
         sum_km = []
         if sum_km_list:
             sum_km = sum_km_list[0]

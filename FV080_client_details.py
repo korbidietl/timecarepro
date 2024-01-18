@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, url_for, session
+from flask import Blueprint, render_template, session
 from db_query import get_klient_data, get_name_by_id
 
 client_details_blueprint = Blueprint('client_details', __name__)
@@ -32,4 +32,3 @@ def client_details(client_id):
 
     # Rendern der Vorlage, auch wenn keine Daten gefunden wurden
     return render_template('FV080_client_details.html', client_id=client_id, return_url=return_url)
-

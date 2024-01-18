@@ -1,7 +1,6 @@
 from flask import request, session, Blueprint, jsonify
 from FAN040_show_client_table import generate_month_year_combinations
 from db_query import account_table, account_table_mitarbeiter, get_unbooked_clients_for_month
-from datetime import datetime
 
 show_employee_table_blueprint = Blueprint('show_employee_table', __name__)
 
@@ -35,5 +34,3 @@ def get_dropdown_data():
     kombinationen = generate_month_year_combinations()
 
     return jsonify(kombinationen)
-
-
