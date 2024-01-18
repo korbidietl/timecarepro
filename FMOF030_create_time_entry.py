@@ -131,10 +131,11 @@ def submit_arbeitsstunden(person_id):
             # prüft auf überschneidung einer bestehenden eintragung in der datenbank
             if check_for_overlapping_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime):
                 return redirect(url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id))
-        session.pop('client_id')
-        # Weiterleitung zurück zur Herkunftsfunktion
-        flash('Eintrag erfolgreich angelegt')
-        return redirect(return_url)
+
+            session.pop('client_id')
+            # Weiterleitung zurück zur Herkunftsfunktion
+            flash('Eintrag erfolgreich angelegt')
+            return redirect(return_url)
 
     return render_template('FMOF030_create_time_entry.html', klient_id=klient_id, klienten=klienten,
                            return_url=return_url, person_id=person_id)
