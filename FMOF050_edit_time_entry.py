@@ -12,24 +12,24 @@ from FMOF030_create_time_entry import base64_to_blob
 edit_time_entry_blueprint = Blueprint('edit_time_entry', __name__)
 
 
-def check_time_entry_constraints(datum, start_zeit, end_zeit, klient_id):
+def check_time_entry_constraints(datum, start_zeit, end_zeit, klient_id, zeiteintrag_id):
     # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
     jetzt = datetime.now()
     if start_zeit >= end_zeit:
         flash("Endzeitpunkt muss nach Startzeitpunkt sein.")
-        return render_template("FMOF050_edit_time_entry.html")
+        return render_template("FMOF050_edit_time_entry.html", zeiteintrag_id=zeiteintrag_id)
 
     # prüft ob startzeitpunkt in der zukunft liegt
     if (start_zeit.time() > jetzt.time() and datum.date() > jetzt.date()) or datum.date() > jetzt.date():
         flash("Startzeitpunkt muss in der Vergangenheit liegen")
-        return render_template("FMOF050_edit_time_entry.html")
+        return render_template("FMOF050_edit_time_entry.html", zeiteintrag_id=zeiteintrag_id)
 
     # prüft ob dieser monat schon gebucht wurde
     datum.strftime("%m.%Y")
     if check_month_booked(datum, klient_id):
         flash("Die Stundennachweise für diesen Monat wurden bereits gebucht, es kann kein Eintrag mehr hinzugefügt "
               "werden")
-        return render_template("FMOF050_edit_time_entry.html")
+        return render_template("FMOF050_edit_time_entry.html", zeiteintrag_id=zeiteintrag_id)
 
 
 @edit_time_entry_blueprint.route('/edit_time_entry/<int:zeiteintrag_id>', methods=['GET', 'POST'])
@@ -123,7 +123,7 @@ def edit_time_entry(zeiteintrag_id):
 
         # Überprüfen Sie, ob die Zeitbeschränkungen erfüllt sind
         if check_time_entry_constraints(datum_datetime, zeiteintrag_data['start_datetime'],
-                                        zeiteintrag_data['end_datetime'], zeiteintrag_data['klient_id']):
+                                        zeiteintrag_data['end_datetime'], zeiteintrag_data['klient_id'], zeiteintrag_id):
             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
                                    klient_id=klient_id, datum=datum, von=von, bis=bis,
                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
