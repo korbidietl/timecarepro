@@ -73,7 +73,7 @@
                 </div>
             </div>
             <input type="hidden" name="highestFahrtId" id="highestFahrtId" value="{{ highest_fahrt_id }}">
-            {% if session['user_role'] != 'Verwaltung' %}
+
                 <h3>Fahrten:</h3>
                 <div id="fahrtenContainer">
                     {% if fahrten %}
@@ -143,7 +143,7 @@
                             </div>
                         {% endif %}
                     </div>
-            {% endif %}
+
 
             <!--Unterschriften Felder -->
             <div class="form-row ">
