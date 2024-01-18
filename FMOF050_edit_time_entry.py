@@ -70,8 +70,6 @@ def edit_time_entry(zeiteintrag_id):
             'absage': "1" if request.form.get('absage') is not None else "0"
         }
 
-
-
         # Überprüfung, ob alle notwendigen Felder ausgefüllt wurden
         if session_role != "Verwaltung":
             field_names = {
@@ -123,17 +121,15 @@ def edit_time_entry(zeiteintrag_id):
 
         # Überprüfen Sie, ob die Zeitbeschränkungen erfüllt sind
         if check_time_entry_constraints(datum_datetime, zeiteintrag_data['start_datetime'],
-                                        zeiteintrag_data['end_datetime'], zeiteintrag_data['klient_id'], zeiteintrag_id):
+                                        zeiteintrag_data['end_datetime'], zeiteintrag_data['klient_id'],
+                                        zeiteintrag_id):
             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
                                    klient_id=klient_id, datum=datum, von=von, bis=bis,
                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
                                    highest_fahrt_id=highest_fahrt_id, return_url=return_url)
 
         # verwaltung kann nur tabelle zeiteintrag ändern nicht aber fahrten (laut pflichtenheft!!)
-
-
         fahrt_data_list = []
-
         if session_role != "Verwaltung":
             fahrt_data_list = []
             form_data = request.form
@@ -204,8 +200,8 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list):
             if fahrt_id_existing(fahrt_data['fahrt_id']):
                 # Aktualisiere die bestehende Fahrt
                 edit_fahrt(fahrt_data['fahrt_id'], fahrt_data['kilometer'], fahrt_data['abrechenbar'],
-                                     fahrt_data['zeiteintrag_id'], fahrt_data['start_adresse'],
-                                     fahrt_data['end_adresse'], )
+                           fahrt_data['zeiteintrag_id'], fahrt_data['start_adresse'],
+                           fahrt_data['end_adresse'], )
                 added_fahrten.append(fahrt_data['fahrt_id'])
             else:
                 # Füge neue Fahrt hinzu
@@ -218,8 +214,6 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list):
         for fahrt_id in fahrt_ids:
             found = False
             for fahrt_data in added_fahrten:
-                fahrt_1 = fahrt_id
-                fahrt_2 = fahrt_data
                 if str(fahrt_id) == fahrt_data:
                     found = True
                     break
