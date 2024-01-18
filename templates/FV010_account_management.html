@@ -74,8 +74,51 @@
         <br> <br> <br>
 
         <!-- Steuerbüro Tabelle -->
-        {% if steuerbueros %}
-            <h3>Steuerbüro</h3>
+        <div class="scrollable-container">
+            {% if steuerbueros %}
+                <h3>Steuerbüro</h3>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Vorname</th>
+                        <th>Nachname</th>
+                        <th>E-Mail</th>
+                    </tr>
+                    {% for steuerbuero in steuerbueros %}
+                    <tr>
+                        <td>{{ steuerbuero[0] }}</td> <!-- id -->
+                        <td>{{ steuerbuero[1] }}</td> <!-- vorname -->
+                        <td>{{ steuerbuero[2] }}</td> <!-- nachname -->
+                        <td>{{ steuerbuero[3] }}</td> <!-- email -->
+                        <td>
+                            <form action="/account_details/{{ steuerbuero[0] }}" method="get">
+                                <button type="submit">Details</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{{url_for('edit_account.edit_account', person_id = steuerbuero[0])}}" method="get">
+                                <button type="submit">Bearbeiten</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{{ '/account_unlock/' if steuerbuero[4] == 1 else '/account_lock/' }}{{ steuerbuero[0] }}" method="post">
+                                <button id="lock_steuer" type="submit">{{ 'Entsperren' if steuerbuero[4] == 1 else 'Sperren' }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>Keine Steuerbüros gefunden.</p>
+            {% endif %}
+        </div>
+
+        <br> <br> <br>
+
+        <!-- Sachbearbeiter/Kostenträger Tabelle -->
+        <div class="scrollable-container">
+            {% if sachbearbeiter %}
+            <h3>Sachbearbeiter/Kostenträger</h3>
             <table>
                 <tr>
                     <th>ID</th>
@@ -83,73 +126,34 @@
                     <th>Nachname</th>
                     <th>E-Mail</th>
                 </tr>
-                {% for steuerbuero in steuerbueros %}
-                <tr>
-                    <td>{{ steuerbuero[0] }}</td> <!-- id -->
-                    <td>{{ steuerbuero[1] }}</td> <!-- vorname -->
-                    <td>{{ steuerbuero[2] }}</td> <!-- nachname -->
-                    <td>{{ steuerbuero[3] }}</td> <!-- email -->
-                    <td>
-                        <form action="/account_details/{{ steuerbuero[0] }}" method="get">
+                {% for sb in sachbearbeiter %}
+                    <tr>
+                        <td>{{ sb[0] }}</td> <!-- id -->
+                        <td>{{ sb[1] }}</td> <!-- vorname -->
+                        <td>{{ sb[2] }}</td> <!-- nachname -->
+                        <td>{{ sb[3] }}</td> <!-- email -->
+                        <td>
+                            <form action="/account_details/{{ sb[0] }}" method="get">
                             <button type="submit">Details</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form action="{{url_for('edit_account.edit_account', person_id = steuerbuero[0])}}" method="get">
-                            <button type="submit">Bearbeiten</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form action="{{ '/account_unlock/' if steuerbuero[4] == 1 else '/account_lock/' }}{{ steuerbuero[0] }}" method="post">
-                            <button id="lock_steuer" type="submit">{{ 'Entsperren' if steuerbuero[4] == 1 else 'Sperren' }}</button>
-                        </form>
-                    </td>
-                </tr>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{{url_for('edit_account.edit_account', person_id = sb[0])}}" method="get">
+                                <button type="submit">Bearbeiten</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{{ '/account_unlock/' if sb[4] == 1 else '/account_lock/' }}{{ sb[0] }}" method="post">
+                                <button id="lock_sb" type="submit">{{ 'Entsperren' if sb[4] == 1 else 'Sperren' }}</button>
+                            </form>
+                        </td>
+                    </tr>
                 {% endfor %}
             </table>
-        {% else %}
-            <p>Keine Steuerbüros gefunden.</p>
-        {% endif %}
-
-        <br> <br> <br>
-
-        <!-- Sachbearbeiter/Kostenträger Tabelle -->
-        {% if sachbearbeiter %}
-        <h3>Sachbearbeiter/Kostenträger</h3>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Vorname</th>
-                <th>Nachname</th>
-                <th>E-Mail</th>
-            </tr>
-            {% for sb in sachbearbeiter %}
-                <tr>
-                    <td>{{ sb[0] }}</td> <!-- id -->
-                    <td>{{ sb[1] }}</td> <!-- vorname -->
-                    <td>{{ sb[2] }}</td> <!-- nachname -->
-                    <td>{{ sb[3] }}</td> <!-- email -->
-                    <td>
-                        <form action="/account_details/{{ sb[0] }}" method="get">
-                        <button type="submit">Details</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form action="{{url_for('edit_account.edit_account', person_id = sb[0])}}" method="get">
-                            <button type="submit">Bearbeiten</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form action="{{ '/account_unlock/' if sb[4] == 1 else '/account_lock/' }}{{ sb[0] }}" method="post">
-                            <button id="lock_sb" type="submit">{{ 'Entsperren' if sb[4] == 1 else 'Sperren' }}</button>
-                        </form>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-        {% else %}
-            <p>Keine Sachbearbeiter/Kostenträger gefunden.</p>
-        {% endif %}
+            {% else %}
+                <p>Keine Sachbearbeiter/Kostenträger gefunden.</p>
+            {% endif %}
+        </div>
     </div>
 
     <script src="{{ url_for('static', filename='FAN040_show_client_table.js') }}"></script>

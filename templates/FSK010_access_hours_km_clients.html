@@ -45,6 +45,7 @@
         {% if booked == False %}
             <p> Einträge für {{month}} nicht gebucht</p>
         {% elif kombinierte_liste %}
+        <div class="scrollable-container">
             <table id="client_hours">
                 <thead>
                     <tr>
@@ -87,6 +88,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
 
         {% else %}
             <p>Noch keine Einträge vorhanden.</p>
