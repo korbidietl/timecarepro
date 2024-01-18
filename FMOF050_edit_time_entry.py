@@ -70,23 +70,38 @@ def edit_time_entry(zeiteintrag_id):
             'absage': "1" if request.form.get('absage') is not None else "0"
         }
 
-        # Überprüfung ob alle notwendigen Felder ausgefüllt wurden
-        field_names = {
-            'datum': "Das Datum",
-            'startZeit': "Die Startzeit",
-            'endZeit': "Die Endzeit",
-            'klientDropdown': "Der Klient",
-            'signatureDataMitarbeiter': "Die Mitarbeiterunterschrift"
-        }
+
 
         # Überprüfung, ob alle notwendigen Felder ausgefüllt wurden
-        for field in field_names:
-            if not request.form.get(field):
-                flash(f'Es müssen alle Felder ausgefüllt werden. {field_names[field]} ist noch nicht ausgefüllt.')
-                return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
-                                       klient_id=klient_id, datum=datum, von=von, bis=bis,
-                                       zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
-                                       return_url=return_url)
+        if session_role != "Verwaltung":
+            field_names = {
+                'datum': "Das Datum",
+                'startZeit': "Die Startzeit",
+                'endZeit': "Die Endzeit",
+                'klientDropdown': "Der Klient",
+                'signatureDataMitarbeiter': "Die Mitarbeiterunterschrift"
+            }
+            for field in field_names:
+                if not request.form.get(field):
+                    flash(f'Es müssen alle Felder ausgefüllt werden. {field_names[field]} ist noch nicht ausgefüllt.')
+                    return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
+                                           klient_id=klient_id, datum=datum, von=von, bis=bis,
+                                           zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
+                                           return_url=return_url)
+        else:
+            field_names = {
+                'datum': "Das Datum",
+                'startZeit': "Die Startzeit",
+                'endZeit': "Die Endzeit",
+                'klientDropdown': "Der Klient",
+            }
+            for field in field_names:
+                if not request.form.get(field):
+                    flash(f'Es müssen alle Felder ausgefüllt werden. {field_names[field]} ist noch nicht ausgefüllt.')
+                    return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
+                                           klient_id=klient_id, datum=datum, von=von, bis=bis,
+                                           zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
+                                           return_url=return_url)
 
         # Konvertieren Sie die Datum- und Uhrzeitstrings in datetime-Objekte
         datum_datetime = datetime.strptime(zeiteintrag_data['datum'], '%Y-%m-%d')
@@ -115,21 +130,7 @@ def edit_time_entry(zeiteintrag_id):
                                    highest_fahrt_id=highest_fahrt_id, return_url=return_url)
 
         # verwaltung kann nur tabelle zeiteintrag ändern nicht aber fahrten (laut pflichtenheft!!)
-        #if not session_role == "Verwaltung":
 
-            # Bearbeite Fahrt-Einträge
-            #existing_fahrten_ids = request.form.getlist('fahrt_id[]')
-
-            #for fahrt_id in existing_fahrten_ids:
-                #kilometer = request.form[f'kilometer{fahrt_id}']
-                #start_adresse = request.form[f'start_adresse{fahrt_id}']
-                #end_adresse = request.form[f'end_adresse{fahrt_id}']
-               # if not (kilometer is None and start_adresse is None and end_adresse is None):
-                   # if kilometer is None or start_adresse is None or end_adresse is None:
-                        #flash("Wenn eine Fahrt angelegt wird müssen alle Felder ausgefüllt sein")
-                        #break
-
-            # new_fahrten_ids = request.form.getList('')
 
         fahrt_data_list = []
 
@@ -237,15 +238,14 @@ def send_email(email, subject, body):
     msg['To'] = email
 
     with smtplib.SMTP('132.231.36.210', 1103) as smtp:
-        smtp.starttls()
-    smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
-    smtp.sendmail('edittimeentry@timecarepro.de', [email], msg.as_string())
+        smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
+        smtp.sendmail('resetyourpassword@timecarepro.de', [email], msg.as_string())
 
 
 def send_email_edit_time_entry(email, firstname, lastname, z_id):
     subject = "Bearbeiteter Zeiteintrag"
     body = (f"Sehr geehrte/r {firstname} {lastname}, \n\n"
-            f"Ihr Zeiteintrag {z_id} wurde von der Verwaltung bearbeitet."
+            f"Ihr Zeiteintrag {z_id} wurde von der Verwaltung bearbeitet.\n"
             f"Bitte prüfen und unterschreiben Sie den geänderten Eintrag.\n\n"
             f"Freundliche Grüße\n"
             f"Ihr TimeCare Pro-Team")

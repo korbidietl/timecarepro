@@ -764,7 +764,7 @@ def edit_zeiteintrag(zeiteintrag_id, start_time=None, end_time=None, unterschrif
                        "unterschrift_Klient = NULL, klient_ID = %s, fachkraft = %s, "
                        "beschreibung = %s, interne_notiz = %s, absage = %s "
                        "WHERE ID = %s",
-                       (start_time, end_time, unterschrift_mitarbeiter, unterschrift_klient, klient_id, fachkraft,
+                       (start_time, end_time, klient_id, fachkraft,
                         beschreibung, interne_notiz, absage, zeiteintrag_id))
     connection.commit()
     cursor.close()
