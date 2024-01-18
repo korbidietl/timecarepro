@@ -81,21 +81,22 @@
             const tableContainer = document.getElementById("employee_table_container");
             const noDataMessage = document.getElementById('no-employee-message');
 
-            let alleZeilenHabenMaxDreiEintraege = true;
+            let alleZeilenHabenMaxFuenfEintraege = true;
             for (let i = 0; i < data.length; i++) {
-                if (data[i].length > 3) {
-                    alleZeilenHabenMaxDreiEintraege = false;
+                if (data[i].length > 5) {
+                    alleZeilenHabenMaxFuenfEintraege = false;
                     break; // Beendet die Schleife, sobald eine Zeile mehr als 3 Einträge hat
                 }
             }
 
             if (data.length > 0) {
                 // Check if the data is for unbooked clients
-                if (alleZeilenHabenMaxDreiEintraege) {
-                    let messageHTML = 'Fehlende Buchungen:<br>';
+                if (alleZeilenHabenMaxFuenfEintraege) {
+                    let messageHTML = '<br><h4>Fehlende Buchungen:</h4><br>';
                     data.forEach(client => {
-                        messageHTML += `Einträge für ${client[1]} ${client[2]} noch nicht gebucht.<br>`;
+                        messageHTML += `Einträge für ${client[3]}/${client[4]} und Klient ${client[1]} ${client[2]} noch nicht gebucht.<br>`;
                     });
+                    messageHTML += '<br><br><br>';
                     tableContainer.innerHTML = messageHTML;
                 } else {
                     if (noDataMessage) {
