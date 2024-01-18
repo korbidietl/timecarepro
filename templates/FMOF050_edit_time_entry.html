@@ -81,23 +81,23 @@
                         {% set index = 0 %}
                             <div class="form-row fahrt-row">
                                 <div class="form-group">
-                                    <label for="abrechenbarkeit{{ index }}">Anrechenbarkeit:</label>
+                                    <label>Anrechenbarkeit:</label>
                                 </div>
                                 <div class="form-group">
-                                    <label for="start_adresse{{ index }}">Start Adresse:</label>
+                                    <label>Start Adresse:</label>
                                 </div>
                                 <div class="form-group">
-                                    <label for="end_adresse{{ index }}">End Adresse:</label>
+                                    <label>End Adresse:</label>
                                 </div>
                                 <div class="form-group">
-                                    <label for="kilometer{{ index }}">Kilometer:</label>
+                                    <label>Kilometer:</label>
                                 </div>
                             </div>
                             {% for fahrt in fahrten %}
                                 <!-- Ursprüngliche Fahrt-Eingabezeile -->
-                                <div class="form-row fahrt-row">
+                                <div class="form-row fahrt-row fahrt-input-row">
                                     <div class="form-hidden">
-                                        <input type="hidden" id="fahrt_id{{  fahrt[0] }}" name="fahrt_id[]" {% if fahrt[0] %} value="{{ fahrt[0] }}" {% else %} value="{{ highest_fahrt_id + 1 }}" {% endif %}">
+                                        <input type="hidden" id="fahrt_id{{  fahrt[0] }}" name="fahrt_id{{  fahrt[0] }}"  value="{{ fahrt[0] }}" >
                                     </div>
                                     <div class="form-group for-non-zero-klient">
                                         <input type="checkbox" id="abrechenbarkeit{{  fahrt[0] }}" name="abrechenbarkeit{{  fahrt[0] }}" {% if fahrt[4] %} checked {% endif %}>
@@ -118,25 +118,25 @@
                             {% endfor %}
                         {% else %}
                             <!-- Leere Felder für eine neue Fahrt -->
-                            <div class="form-row fahrt-row">
+                            <div class="form-row fahrt-row fahrt-input-row">
                                 <div class="form-hidden">
-                                    <input type="hidden" id="fahrt_id0" name="fahrt_id0" value={{ highest_fahrt_id + 1 }}">
+                                    <input type="hidden" id="fahrt_id{{highest_fahrt_id}}" name="fahrt_id{{highest_fahrt_id}}" value="{{ highest_fahrt_id }}">
                                 </div>
                                 <div class="form-group for-non-zero-klient">
-                                    <label for="abrechenbarkeit{{index}}">Anrechenbarkeit:</label>
-                                    <input type="checkbox" id="abrechenbarkeit{{index}}" name="abrechenbarkeit0">
+                                    <label for="abrechenbarkeit{{highest_fahrt_id}}">Anrechenbarkeit:</label>
+                                    <input type="checkbox" id="abrechenbarkeit{{highest_fahrt_id}}" name="abrechenbarkeit{{highest_fahrt_id}}">
                                 </div>
                                 <div class="form-group">
-                                    <label for="start_adresse{{ index }}">Start Adresse:</label>
-                                    <input type="text" id="start_adresse{{ index }}" name="start_adresse0">
+                                    <label for="start_adresse{{ highest_fahrt_id }}">Start Adresse:</label>
+                                    <input type="text" id="start_adresse{{ highest_fahrt_id }}" name="start_adresse{{highest_fahrt_id}}">
                                 </div>
                                 <div class="form-group">
-                                    <label for="end_adresse0{{ index }}">End Adresse:</label>
-                                    <input type="text" id="end_adresse0{{ index }}" name="end_adresse0">
+                                    <label for="end_adresse0{{ highest_fahrt_id }}">End Adresse:</label>
+                                    <input type="text" id="end_adresse0{{ highest_fahrt_id }}" name="end_adresse{{highest_fahrt_id}}">
                                 </div>
                                 <div class="form-group">
-                                    <label for="kilometer{{ index }}">Kilometer:</label>
-                                    <input type="text" id="kilometer{{ index }}" name="kilometer0">
+                                    <label for="kilometer{{ highest_fahrt_id }}">Kilometer:</label>
+                                    <input type="text" id="kilometer{{ highest_fahrt_id }}" name="kilometer{{highest_fahrt_id}}">
                                 </div>
                                 <button type="button" onclick="addFahrt()">+</button>
                                 <button type="button" onclick="removeFahrt(this)">-</button>
@@ -197,13 +197,11 @@
                     const fahrtContainer = document.getElementById('fahrtenContainer');
                     const highest_fahrt_id_row = document.getElementById('highestFahrtId'); // Wert von highest_fahrt_id auslesen
                     let highest_fahrt_id = parseInt(highest_fahrt_id_row.value);
-                    console.log(highest_fahrt_id)
                     highest_fahrt_id++;
-                    console.log(highest_fahrt_id)
                     const next_fahrt_id = highest_fahrt_id
 
                     const newFahrtRow = document.createElement('div');
-                    newFahrtRow.classList.add('form-row', 'fahrt-row');
+                    newFahrtRow.classList.add('form-row', 'fahrt-row', 'fahrt-input-row');
 
 
                     newFahrtRow.innerHTML = `
@@ -234,13 +232,23 @@
 
                 function removeFahrt(buttonElement) {
                     const fahrtContainer = document.getElementById('fahrtenContainer');
-                    const fahrtRows = fahrtContainer.getElementsByClassName('fahrt-row');
+                    const fahrtRows = fahrtContainer.getElementsByClassName('fahrt-input-row');
 
                     if (fahrtRows.length > 1) {
-                        const fahrtRow = buttonElement.closest('.fahrt-row');
+                        const fahrtRow = buttonElement.closest('.fahrt-input-row');
                         fahrtRow.remove();
                         fahrtCounter--;
                         document.getElementById('fahrtCounterInput').value = fahrtCounter;
+                    } else {
+                        // Wenn dies die letzte Eingabezeile ist, löschen Sie nur die Inhalte der Felder.
+                        const fahrtRow = buttonElement.closest('.fahrt-input-row');
+                        fahrtRow.querySelectorAll('input').forEach(input => {
+                            if (input.type === 'checkbox') {
+                                input.checked = false;
+                            } else {
+                                input.value = '';
+                            }
+                        });
                     }
 
                 }

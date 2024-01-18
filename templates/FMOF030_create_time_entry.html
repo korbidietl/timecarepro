@@ -174,9 +174,6 @@
             newFahrtRow.classList.add('form-row', 'fahrt-row');
             newFahrtRow.innerHTML = `
                         <div class="form-group">
-                           <input type="checkbox" id="abrechenbarkeit${fahrtCounter}" name="abrechenbarkeit${fahrtCounter}">
-                        </div>
-                        <div class="form-group">
                             <input type="text" id="start_adresse${fahrtCounter}" name="start_adresse${fahrtCounter}">
                         </div>
                         <div class="form-group">
@@ -201,7 +198,17 @@
                 const fahrtRow = buttonElement.closest('.fahrt-row');
                 fahrtRow.remove();
                 fahrtCounter--; // Reduziere den Zähler nur, wenn eine Zeile entfernt wurde
-                }
+            } else {
+                // Wenn dies die letzte Eingabezeile ist, löschen Sie nur die Inhalte der Felder.
+                const fahrtRow = buttonElement.closest('.fahrt-row');
+                fahrtRow.querySelectorAll('input').forEach(input => {
+                    if (input.type === 'checkbox') {
+                        input.checked = false; // Checkboxen werden nicht gecheckt
+                    } else {
+                        input.value = ''; // Andere Felder werden geleert
+                    }
+                });
+            }
         }
 
 

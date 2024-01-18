@@ -42,7 +42,7 @@ def edit_time_entry(zeiteintrag_id):
     # klienten für client_dropdown
     klienten = client_dropdown()
 
-    highest_fahrt_id = get_highest_fahrt_id()
+    highest_fahrt_id = get_highest_fahrt_id() + 1
 
     zeiteintrag_liste = get_zeiteintrag_by_id(zeiteintrag_id)
     zeiteintrag = zeiteintrag_liste[0]
@@ -115,19 +115,19 @@ def edit_time_entry(zeiteintrag_id):
                                    highest_fahrt_id=highest_fahrt_id, return_url=return_url)
 
         # verwaltung kann nur tabelle zeiteintrag ändern nicht aber fahrten (laut pflichtenheft!!)
-        if not session_role == "Verwaltung":
+        #if not session_role == "Verwaltung":
 
             # Bearbeite Fahrt-Einträge
-            existing_fahrten_ids = request.form.getlist('fahrt_id[]')
+            #existing_fahrten_ids = request.form.getlist('fahrt_id[]')
 
-            for fahrt_id in existing_fahrten_ids:
-                kilometer = request.form[f'kilometer{fahrt_id}']
-                start_adresse = request.form[f'start_adresse{fahrt_id}']
-                end_adresse = request.form[f'end_adresse{fahrt_id}']
-                if not (kilometer is None and start_adresse is None and end_adresse is None):
-                    if kilometer is None or start_adresse is None or end_adresse is None:
-                        flash("Wenn eine Fahrt angelegt wird müssen alle Felder ausgefüllt sein")
-                        break
+            #for fahrt_id in existing_fahrten_ids:
+                #kilometer = request.form[f'kilometer{fahrt_id}']
+                #start_adresse = request.form[f'start_adresse{fahrt_id}']
+                #end_adresse = request.form[f'end_adresse{fahrt_id}']
+               # if not (kilometer is None and start_adresse is None and end_adresse is None):
+                   # if kilometer is None or start_adresse is None or end_adresse is None:
+                        #flash("Wenn eine Fahrt angelegt wird müssen alle Felder ausgefüllt sein")
+                        #break
 
             # new_fahrten_ids = request.form.getList('')
 
@@ -135,17 +135,19 @@ def edit_time_entry(zeiteintrag_id):
 
         if session_role != "Verwaltung":
             fahrt_data_list = []
-            # existing_fahrten_ids = request.form.getlist('fahrt_id')
             form_data = request.form
             existing_fahrten_ids = get_fahrt_ids_from_form(form_data)
 
             for fahrt_id in existing_fahrten_ids:
-                print(fahrt_id)
                 int_fahrtid = int(fahrt_id)
 
-                kilometer = request.form[f'kilometer{int_fahrtid}']
-                start_adresse = request.form[f'start_adresse{int_fahrtid}']
-                end_adresse = request.form[f'end_adresse{int_fahrtid}']
+                kilometer = request.form.get(f'kilometer{int_fahrtid}', '').strip()
+                start_adresse = request.form.get(f'start_adresse{int_fahrtid}', '').strip()
+                end_adresse = request.form.get(f'end_adresse{int_fahrtid}', '').strip()
+
+                if not kilometer and not start_adresse and not end_adresse:
+                    continue
+
                 if kilometer is None or start_adresse is None or end_adresse is None:
                     flash("Wenn eine Fahrt angelegt wird, müssen alle Felder ausgefüllt sein")
                     break
@@ -155,7 +157,7 @@ def edit_time_entry(zeiteintrag_id):
                     'kilometer': kilometer,
                     'start_adresse': start_adresse,
                     'end_adresse': end_adresse,
-                    'abrechenbar': request.form.get(f'abrechenbarkeit{fahrt_id}', False),
+                    'abrechenbar': 1 if request.form.get(f'abrechenbarkeit{fahrt_id}') else 0,
                     'zeiteintrag_id': zeiteintrag_id
                 }
                 fahrt_data_list.append(fahrt_data)
@@ -164,7 +166,6 @@ def edit_time_entry(zeiteintrag_id):
                                              zeiteintrag_data['start_datetime'], zeiteintrag_data['end_datetime']):
             session['overlapping_ze'] = zeiteintrag_data
             session['overlapping_fahrten'] = fahrt_data_list
-            print("überschneidung")
             return redirect(
                 url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id))
 
@@ -183,7 +184,6 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list):
     session_role = session.get('user_role')
     klient_id = zeiteintrag_data['klient_id']
     # zeiteintrag dictionary extrahieren
-    print(7)
 
     edit_zeiteintrag(zeiteintrag_id, zeiteintrag_data['start_datetime'], zeiteintrag_data['end_datetime'],
                      zeiteintrag_data['neue_unterschrift_mitarbeiter'], zeiteintrag_data['neue_unterschrift_klient'],
@@ -191,11 +191,8 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list):
                      zeiteintrag_data['interne_notiz'], zeiteintrag_data['absage'])
 
     # wenn verwaltung ändert, muss E-Mail an mitarbeiter gesendet werden
-    print(session_role)
-    print(fahrt_data_list)
     added_fahrten = []
     if session_role == "Verwaltung":
-        print("verwaltung")
         email = get_email_by_zeiteintrag(zeiteintrag_id)
         firstname = get_firstname_by_email(email)
         lastname = get_lastname_by_email(email)
@@ -204,7 +201,6 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list):
     else:
         for fahrt_data in fahrt_data_list:
             if fahrt_id_existing(fahrt_data['fahrt_id']):
-                print(fahrt_data['fahrt_id'])
                 # Aktualisiere die bestehende Fahrt
                 edit_fahrt(fahrt_data['fahrt_id'], fahrt_data['kilometer'], fahrt_data['abrechenbar'],
                                      fahrt_data['zeiteintrag_id'], fahrt_data['start_adresse'],

@@ -827,7 +827,7 @@ def get_highest_fahrt_id():
     highest_id = cursor.fetchone()[0]
     cursor.close()
     connection.close()
-    return highest_id
+    return 0 if highest_id is None else highest_id
 
 
 # /FMOF060/
