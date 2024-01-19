@@ -8,64 +8,45 @@ check_overlapping_time_blueprint = Blueprint('check_overlapping_time', __name__)
 
 @check_overlapping_time_blueprint.route('/check_overlapping_time/<int:zeiteintrag_id>', methods=['GET', 'POST'])
 def overlapping_time(zeiteintrag_id):
-    # Rückleitung bei unerlaubter Seite
     session['secure_url'] = url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id)
-
     return_url = session.get('url_overlapping')
-    zeiteintrag_data = session.get('overlapping_ze')
+    zeiteintrag_data = get_zeiteintrag_by_id(zeiteintrag_id)
     fahrten_data_list = session.get('overlapping_fahrten')
 
-    overlapping_entries = []
-
-    # auf Button speichern geklickt
     if request.method == 'POST':
         save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrten_data_list)
-        # Redirect oder render_template hier, je nachdem, was nach dem Speichern passieren soll
         return redirect(return_url)
-    # Standartverhalten beim Aufruf der Funktion
-    overlapping_entries_details = []
+
+    overlapping_entries = []
     if zeiteintrag_data:
-        # Extrahieren der benötigten Daten aus dem ersten Ergebnis
-        start_zeit_datetime = zeiteintrag_data['start_datetime']
-        end_zeit_datetime = zeiteintrag_data['end_datetime']
-        klient_id = zeiteintrag_data['klient_id']
-        mitarbeiter_id = zeiteintrag_data['mitarbeiter_id']
+        # Füge den formatierten originalen Zeiteintrag hinzu
+        orig_entry = zeiteintrag_data[0]
+        overlapping_entries.append(format_zeiteintrag(orig_entry))
 
-        overlapping_ids = check_for_overlapping_zeiteintrag(zeiteintrag_id, start_zeit_datetime,
-                                                            end_zeit_datetime)
+        start_zeit_datetime = orig_entry[3]
+        end_zeit_datetime = orig_entry[4]
+
+        overlapping_ids = check_for_overlapping_zeiteintrag(zeiteintrag_id, start_zeit_datetime, end_zeit_datetime)
         for entry_id in overlapping_ids:
-            entry_data_list = get_zeiteintrag_by_id(entry_id)
-            if entry_data_list:
-                entry_data = entry_data_list[0]
-
-                if mitarbeiter_id == entry_data[5] or klient_id == entry_data[6]:
-                    overlapping_entries.append(entry_data[0])
-
-    for entry in overlapping_entries:
-        if entry:
-            z_id = entry[0]
-            startzeit_obj = entry[3]
-            endzeit_obj = entry[4]
-
-            # Extrahieren der Uhrzeit als String
-            startzeit = startzeit_obj.strftime('%H:%M')
-            endzeit = endzeit_obj.strftime('%H:%M')
-            datum = startzeit_obj.strftime('%Y-%m-%d')
-
-            beschreibung = entry[8]
-            mitarbeiter_id = entry[5]
-            mitarbeiter_list = get_name_by_id(mitarbeiter_id)
-            mitarbeiter = mitarbeiter_list[0]
-            m_vorname = mitarbeiter[0]
-            m_nachname = mitarbeiter[1]
-            client_id = entry[6]
-            client = get_client_name(client_id)
-            c_vorname = client[0]
-            c_nachname = client[1]
-
-            overlapping_entries.append(
-                (z_id, datum, startzeit, endzeit, beschreibung, m_vorname, m_nachname, c_vorname, c_nachname))
+            entry_data = get_zeiteintrag_by_id(entry_id)[0]
+            overlapping_entries.append(format_zeiteintrag(entry_data))
 
     return render_template('FS030_check_overlapping_time.html',
-                           overlapping_entries=overlapping_entries, original_zeiteintrag_id=zeiteintrag_id,
-                           return_url=return_url)
+                           overlapping_entries=overlapping_entries,
+                           original_zeiteintrag_id=zeiteintrag_id,
+                           return_url=return_url, fahrten_data_list=fahrten_data_list)
+
+
+def format_zeiteintrag(entry):
+    datum = entry[3].strftime('%Y-%m-%d')
+    startzeit = entry[3].strftime('%H:%M')
+    endzeit = entry[4].strftime('%H:%M')
+    mitarbeiter = get_name_by_id(entry[5])
+    m_vorname = mitarbeiter[0][0]
+    m_nachname = mitarbeiter[0][1]
+    print("mit: ", m_nachname, m_vorname)
+    client = get_client_name(entry[6])
+    c_vorname = client[0]
+    c_nachname = client[1]
+    print("klie: ", c_nachname, c_vorname)
+    return entry[0], datum, startzeit, endzeit, entry[8], m_nachname, m_vorname, c_nachname, c_vorname
