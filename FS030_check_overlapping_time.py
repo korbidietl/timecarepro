@@ -10,7 +10,7 @@ check_overlapping_time_blueprint = Blueprint('check_overlapping_time', __name__)
 def overlapping_time(zeiteintrag_id):
     session['secure_url'] = url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id)
     return_url = session.get('url_overlapping')
-    zeiteintrag_data = get_zeiteintrag_by_id(zeiteintrag_id)
+    zeiteintrag_data = session.get('overlapping_ze')
     fahrten_data_list = session.get('overlapping_fahrten')
 
     if request.method == 'POST':
