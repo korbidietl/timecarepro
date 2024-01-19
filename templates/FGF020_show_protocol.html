@@ -28,7 +28,7 @@
                             <!-- Optionen werden durch Python generiert -->
                             <option value="" disabled selected>Bitte wählen</option>
                             {% for nutzer in nutzers %}
-                            <option value="{{nutzer.id}}">{{nutzer.nachname}}</option>
+                            <option value="{{nutzer.id}}">{{nutzer.id}} - {{nutzer.nachname}}, {{nutzer.vorname}}</option>
                             {% endfor %}
                         </select>
                     </div>

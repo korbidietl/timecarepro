@@ -1776,10 +1776,10 @@ def get_protokoll(von=None, bis=None, aendernder_nutzer=None, eintrags_id=None):
 def person_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT id, nachname FROM person WHERE rolle = 'Verwaltung' OR rolle = 'Geschäftsführung'")
+    cursor.execute("SELECT id, nachname, vorname FROM person WHERE rolle = 'Verwaltung' OR rolle = 'Geschäftsführung'")
     items = []
-    for (ID, nachname) in cursor.fetchall():
-        items.append({'id': ID, 'nachname': nachname})
+    for (ID, nachname, vorname) in cursor.fetchall():
+        items.append({'id': ID, 'nachname': nachname, 'vorname': vorname})
     connection.close()
     return items
 

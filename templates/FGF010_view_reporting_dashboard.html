@@ -181,7 +181,7 @@
                         <select class="form-control gray-background" id="mitarbeiter"  name="mitarbeiter">
                             <option value="" selected disabled>Bitte auswählen</option>
                             {% for ma in mitarbeiter %}
-                            <option value="{{ma.id}}">{{ma.vorname}} {{ma.nachname}}</option>
+                            <option value="{{ma.id}}">{{ma.id}} - {{ma.nachname}}, {{ma.vorname}}</option>
                             {% endfor %}
                         </select>
                     </div>

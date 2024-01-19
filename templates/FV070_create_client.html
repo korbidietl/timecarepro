@@ -60,7 +60,7 @@
                             <!-- Optionen werden durch Python generiert -->
                             <option value="" selected disabled>Bitte auswählen</option>
                             {% for kt in kostentraeger %}
-                            <option value="{{kt.id}}">{{kt.nachname}}</option>
+                            <option value="{{kt.id}}">{{kt.id}} - {{kt.nachname}}, {{kt.vorname}}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -82,7 +82,7 @@
                             <option value="" selected disabled>Bitte auswählen</option>
                             <!-- Optionen werden durch Python generiert -->
                             {% for fv in fallverantwortung %}
-                            <option value="{{fv.id}}">{{fv.nachname}}</option>
+                            <option value="{{fv.id}}">{{fv.id}} - {{fv.nachname}}, {{fv.vorname}}</option>
                             {% endfor %}
                         </select>
                     </div>

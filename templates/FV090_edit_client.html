@@ -47,7 +47,7 @@
                             <option value="{{sb_id}}" {% if sb_id == sachbearbeiter_id %}selected{% endif %}>{{sb_id}} - {{sb}}</option>
                             {% for kt in kostentraeger %}
                             <!-- Optionen werden durch Python generiert -->
-                            <option value="{{ kt.id }}" {% if kt.id == sachbearbeiter_id %}selected{% endif %}>{{ kt.id }} - {{ kt.vorname }} {{ kt.nachname }}</option>
+                            <option value="{{ kt.id }}" {% if kt.id == sachbearbeiter_id %}selected{% endif %}>{{ kt.id }} - {{ kt.nachname }}, {{ kt.vorname }}</option>
                             {% endfor %}
                             <option value="">Keine Auswahl</option> <!-- Zusätzliche Option für keine Auswahl -->
                         </select>
@@ -70,7 +70,7 @@
                             <option value="{{ fv_id }}" {% if fv_id == fallverantwortung_id %}selected{% endif %}>{{ fv_id }} - {{ fv }}</option>
                             {% for fv in fallverantwortung %}
                             <!-- Optionen werden durch Python generiert -->
-                            <option value="{{ fv.id }}" {% if fv.id == fallverantwortung_id %}selected{% endif %}>{{ fv.id }} - {{ fv.vorname }}, {{ fv.nachname }}</option>
+                            <option value="{{ fv.id }}" {% if fv.id == fallverantwortung_id %}selected{% endif %}>{{ fv.id }} - {{ fv.nachname }}, {{ fv.vorname }}</option>
                             {% endfor %}
                             <option value="">Keine Auswahl</option> <!-- Zusätzliche Option für keine Auswahl -->
                         </select>
