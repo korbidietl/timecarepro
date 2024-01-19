@@ -20,23 +20,19 @@ def get_clients_data():
 
     if role == "Sachbearbeiter/Kostenträger":
         clients = get_client_table_sb(person, month, year)
-        print("clients:", clients)
         updated_clients = []
         for client in clients:
             client_list = list(client)  # Konvertiert das Tupel in eine Liste
             if not check_month_booked(datum, client_list[0]):
-                print("in if statement")
-                message = (f"Noch kein Saldo vorhanden. Buchung zu Klient {client_list[2]}, {client_list[1]} "
+                message = (f"Noch kein Saldo vorhanden. Buchung zu Klient {client_list[1]}, {client_list[2]} "
                            f"muss erst vorgenommen werden.")
                 client_list[5] = message
                 client_list[6] = message
-                updated_clients.append(client_list)
-            else:
-                updated_clients.append(client_list)
+            updated_clients.append(client_list)
+        return jsonify(updated_clients)
     else:
         clients = get_client_table(month, year)
-
-    return jsonify(clients)
+        return jsonify(clients)
 
 
 @show_clients_blueprint.route('/get_client_dropdown_data', methods=['GET'])
