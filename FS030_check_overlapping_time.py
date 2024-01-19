@@ -15,6 +15,8 @@ def overlapping_time(zeiteintrag_id):
     zeiteintrag_data = session.get('overlapping_ze')
     fahrten_data_list = session.get('overlapping_fahrten')
 
+    overlapping_entries = []
+
     # auf Button speichern geklickt
     if request.method == 'POST':
         save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrten_data_list)
@@ -40,7 +42,6 @@ def overlapping_time(zeiteintrag_id):
                 if mitarbeiter_id == entry_data[5] or klient_id == entry_data[6]:
                     matching_entries.append(entry_data[0])
 
-        overlapping_entries = []
         for entry in matching_entries:
             if entry:
                 z_id = entry[0]
