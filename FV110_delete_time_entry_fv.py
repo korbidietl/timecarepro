@@ -48,8 +48,8 @@ def delete_time_entry_fv(zeiteintrags_id):
 
         else:
             # Löschen der Zeiteinträge und dazugehörigen Fahrten
-            delete_zeiteintrag(zeiteintrags_id)
             send_email_delete_time_entry(email, firstname, lastname, zeiteintrags_id)
+            delete_zeiteintrag(zeiteintrags_id)
             # Erfolgsmeldung
             success_message = "Eintrag erfolgreich gelöscht."
             flash(success_message, 'success')
