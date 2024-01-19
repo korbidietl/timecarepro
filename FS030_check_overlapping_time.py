@@ -33,39 +33,38 @@ def overlapping_time(zeiteintrag_id):
 
         overlapping_ids = check_for_overlapping_zeiteintrag(zeiteintrag_id, start_zeit_datetime,
                                                             end_zeit_datetime)
-        matching_entries = []
         for entry_id in overlapping_ids:
             entry_data_list = get_zeiteintrag_by_id(entry_id)
             if entry_data_list:
                 entry_data = entry_data_list[0]
 
                 if mitarbeiter_id == entry_data[5] or klient_id == entry_data[6]:
-                    matching_entries.append(entry_data[0])
+                    overlapping_entries.append(entry_data[0])
 
-        for entry in matching_entries:
-            if entry:
-                z_id = entry[0]
-                startzeit_obj = entry[3]
-                endzeit_obj = entry[4]
+    for entry in overlapping_entries:
+        if entry:
+            z_id = entry[0]
+            startzeit_obj = entry[3]
+            endzeit_obj = entry[4]
 
-                # Extrahieren der Uhrzeit als String
-                startzeit = startzeit_obj.strftime('%H:%M')
-                endzeit = endzeit_obj.strftime('%H:%M')
-                datum = startzeit_obj.strftime('%Y-%m-%d')
+            # Extrahieren der Uhrzeit als String
+            startzeit = startzeit_obj.strftime('%H:%M')
+            endzeit = endzeit_obj.strftime('%H:%M')
+            datum = startzeit_obj.strftime('%Y-%m-%d')
 
-                beschreibung = entry[8]
-                mitarbeiter_id = entry[5]
-                mitarbeiter_list = get_name_by_id(mitarbeiter_id)
-                mitarbeiter = mitarbeiter_list[0]
-                m_vorname = mitarbeiter[0]
-                m_nachname = mitarbeiter[1]
-                client_id = entry[6]
-                client = get_client_name(client_id)
-                c_vorname = client[0]
-                c_nachname = client[1]
+            beschreibung = entry[8]
+            mitarbeiter_id = entry[5]
+            mitarbeiter_list = get_name_by_id(mitarbeiter_id)
+            mitarbeiter = mitarbeiter_list[0]
+            m_vorname = mitarbeiter[0]
+            m_nachname = mitarbeiter[1]
+            client_id = entry[6]
+            client = get_client_name(client_id)
+            c_vorname = client[0]
+            c_nachname = client[1]
 
-                overlapping_entries.append(
-                    (z_id, datum, startzeit, endzeit, beschreibung, m_vorname, m_nachname, c_vorname, c_nachname))
+            overlapping_entries.append(
+                (z_id, datum, startzeit, endzeit, beschreibung, m_vorname, m_nachname, c_vorname, c_nachname))
 
     return render_template('FS030_check_overlapping_time.html',
                            overlapping_entries=overlapping_entries, original_zeiteintrag_id=zeiteintrag_id,
