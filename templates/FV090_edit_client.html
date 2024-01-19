@@ -44,11 +44,12 @@
                     <div class="form-group2">
                         <label for="ktDropdown">Kostenträger:</label>
                         <select class="form-control" id="ktDropdown" name="ktDropdown">
-                            <!-- Optionen werden durch Python generiert -->
                             <option value="{{sb_id}}" {% if sb_id == sachbearbeiter_id %}selected{% endif %}>{{sb_id}} - {{sb}}</option>
                             {% for kt in kostentraeger %}
+                            <!-- Optionen werden durch Python generiert -->
                             <option value="{{ kt.id }}" {% if kt.id == sachbearbeiter_id %}selected{% endif %}>{{ kt.id }} - {{ kt.vorname }} {{ kt.nachname }}</option>
                             {% endfor %}
+                            <option value="">Keine Auswahl</option> <!-- Zusätzliche Option für keine Auswahl -->
                         </select>
                     </div>
                 </div>
@@ -66,11 +67,12 @@
                     <div class="form-group2">
                         <label for="fvDropdown">Fallverantwortung:</label>
                         <select class="form-control" id="fvDropdown" name="fvDropdown">
-                            <!-- Optionen werden durch Python generiert -->
                             <option value="{{ fv_id }}" {% if fv_id == fallverantwortung_id %}selected{% endif %}>{{ fv_id }} - {{ fv }}</option>
                             {% for fv in fallverantwortung %}
+                            <!-- Optionen werden durch Python generiert -->
                             <option value="{{ fv.id }}" {% if fv.id == fallverantwortung_id %}selected{% endif %}>{{ fv.id }} - {{ fv.vorname }}, {{ fv.nachname }}</option>
                             {% endfor %}
+                            <option value="">Keine Auswahl</option> <!-- Zusätzliche Option für keine Auswahl -->
                         </select>
                     </div>
                 </div>

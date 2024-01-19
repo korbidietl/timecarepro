@@ -47,8 +47,8 @@ def edit_client(client_id):
 
         print("Name2: ", vorname, nachname)
         # Klientdateils überschreiben
-        edit_klient_fct(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
-                        kontingent_hk, kontingent_fk, fallverantwortung_id)
+        edit_klient_fct(client_id, vorname, nachname, geburtsdatum, adresse, telefonnummer, sachbearbeiter_id,
+                        kontingent_fk, kontingent_hk, fallverantwortung_id)
         print(get_klient_data(client_id))
 
         # Änderungsprotokoll

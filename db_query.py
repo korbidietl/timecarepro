@@ -710,7 +710,8 @@ def create_placeholder_fahrt():
     connection = get_database_connection()
     try:
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO fahrt (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_ID) VALUES (0, '0', '0', 0, 1)")
+        cursor.execute(
+            "INSERT INTO fahrt (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_ID) VALUES (0, '0', '0', 0, 1)")
         fahrt_id = cursor.lastrowid
         connection.commit()
         return fahrt_id
@@ -973,35 +974,66 @@ def get_name_by_id(person_id):
 
 
 # /FV090/
-def edit_klient_fct(klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
-                    kontingent_hk, kontingent_fk, fallverantwortung_id):
+def edit_klient_fct(client_id, vorname, nachname, geburtsdatum, adresse, telefonnummer=None, sachbearbeiter_id=None,
+                    kontingent_fk=None, kontingent_hk=None, fallverantwortung_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
 
-    if sachbearbeiter_id == "None":
-        print("true")
-        sachbearbeiter_id_value = 'NULL'
+    query = "UPDATE klient SET "
+    parameters = []
+
+    # Diese Felder sind immer vorhanden
+    query += "vorname = %s, nachname = %s, geburtsdatum = %s, adresse = %s, "
+    parameters += [vorname, nachname, geburtsdatum, adresse]
+
+    telefonnummer = None if telefonnummer == '' else telefonnummer
+    sachbearbeiter_id = None if sachbearbeiter_id == '' else sachbearbeiter_id
+    kontingent_fk = None if kontingent_fk == '' else kontingent_fk
+    kontingent_hk = None if kontingent_hk == '' else kontingent_hk
+    fallverantwortung_id = None if fallverantwortung_id == '' else fallverantwortung_id
+
+    # Optionale Felder, können None sein
+    if telefonnummer is not None:
+        query += "telefonnummer = %s, "
+        parameters.append(telefonnummer)
     else:
-        print("false")
-        sachbearbeiter_id_value = sachbearbeiter_id
+        query += "telefonnummer = NULL, "
 
-    if fallverantwortung_id == "None":
-        print("true")
-        fallverantwortung_id_value = 'NULL'
+    if sachbearbeiter_id is not None:
+        query += "sachbearbeiter_id = %s, "
+        parameters.append(sachbearbeiter_id)
     else:
-        print("false")
-        fallverantwortung_id_value = fallverantwortung_id
+        query += "sachbearbeiter_id = NULL, "
 
-    print(sachbearbeiter_id_value)
-    print(fallverantwortung_id_value)
+    if kontingent_fk is not None:
+        query += "kontingent_fk = %s, "
+        parameters.append(kontingent_fk)
+    else:
+        query += "kontingent_fk = NULL, "
 
-    # Klienten bearbeiten
-    cursor.execute("UPDATE klient SET vorname = %s, nachname = %s, geburtsdatum = %s, telefonnummer = %s, "
-                   "sachbearbeiter_ID = %s, adresse = %s, kontingent_HK = %s, kontingent_FK = %s, "
-                   "fallverantwortung_ID = %s WHERE ID = %s",
-                   (vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id_value, adresse,
-                    kontingent_hk, kontingent_fk, fallverantwortung_id_value, klient_id))
+    if kontingent_hk is not None:
+        query += "kontingent_hk = %s, "
+        parameters.append(kontingent_hk)
+    else:
+        query += "kontingent_hk = NULL, "
+
+    if fallverantwortung_id is not None:
+        query += "fallverantwortung_id = %s, "
+        parameters.append(fallverantwortung_id)
+    else:
+        query += "fallverantwortung_id = NULL, "
+
+    # Letztes Komma und Leerzeichen entfernen
+    query = query[:-2]
+
+    # WHERE-Klausel hinzufügen
+    query += " WHERE id = %s"
+    parameters.append(client_id)
+
+    cursor.execute(query, parameters)
     connection.commit()
+    cursor.close()
+    connection.close()
 
 
 # /FV100/
