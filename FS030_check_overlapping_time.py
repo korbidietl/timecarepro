@@ -65,5 +65,5 @@ def overlapping_time(zeiteintrag_id):
                     overlapping_entries.append(
                         (z_id, datum, startzeit, endzeit, beschreibung, m_vorname, m_nachname, c_vorname, c_nachname))
 
-                    return render_template('FS030_check_overlapping_time.html', overlapping_entries=overlapping_entries,
-                                           original_zeiteintrag_id=zeiteintrag_id, return_url=return_url)
+            return render_template('FS030_check_overlapping_time.html', overlapping_entries=overlapping_entries,
+                                   original_zeiteintrag_id=zeiteintrag_id, return_url=return_url)
