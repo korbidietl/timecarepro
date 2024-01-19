@@ -41,7 +41,7 @@ def overlapping_time(zeiteintrag_id):
                     matching_entries.append(entry_data[0])
 
         overlapping_entries = []
-        for entry in overlapping_entries:
+        for entry in matching_entries:
             if entry:
                 z_id = entry[0]
                 startzeit_obj = entry[3]
