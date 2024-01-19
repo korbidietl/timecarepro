@@ -1038,6 +1038,45 @@ def edit_klient_fct(client_id, vorname, nachname, geburtsdatum, adresse, telefon
     connection.close()
 
 
+def edit_klient(klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse, kontingent_hk,
+                kontingent_fk, fallverantwortung_id):
+    # Stellen Sie hier die Verbindung zur Datenbank her
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    # Bereite die Werte für die SQL-Anweisung vor
+    sachbearbeiter_value = "NULL" if sachbearbeiter_id in [None, ''] else "%s"
+    fallverantwortung_value = "NULL" if fallverantwortung_id in [None, ''] else "%s"
+
+    # SQL-Update-Anweisung mit bedingten Platzhaltern
+    update_query = f"""
+           UPDATE klient 
+           SET vorname = %s, 
+               nachname = %s, 
+               geburtsdatum = %s, 
+               telefonnummer = %s, 
+               sachbearbeiter_ID = {sachbearbeiter_value}, 
+               adresse = %s, 
+               kontingent_HK = %s, 
+               kontingent_FK = %s, 
+               fallverantwortung_ID = {fallverantwortung_value} 
+           WHERE ID = %s
+       """
+
+    # Erstelle eine Liste der Parameter und schließe None-Werte aus
+    params = [vorname, nachname, geburtsdatum, telefonnummer, adresse, kontingent_hk, kontingent_fk, klient_id]
+    if sachbearbeiter_value != "NULL":
+        params.insert(4, sachbearbeiter_id)
+    if fallverantwortung_value != "NULL":
+        params.insert(-2, fallverantwortung_id)
+
+    cursor.execute(update_query, tuple(params))
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+
 # /FV100/
 # /FV110/
 def get_email_by_zeiteintrag(zeiteintrag_id):
