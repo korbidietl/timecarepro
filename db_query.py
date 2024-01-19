@@ -222,7 +222,8 @@ def account_table_mitarbeiter(monat, year, person_id):
             p.nachname, 
             p.vorname,
             COALESCE(SUM(TIMESTAMPDIFF(MINUTE , z.start_zeit, z.end_zeit)), 0) AS geleistete_minuten,
-            COALESCE(SUM(f.kilometer), 0) AS gefahrene_kilometer
+            COALESCE(SUM(f.kilometer), 0) AS gefahrene_kilometer,
+            p.sperre
         FROM person p
         LEFT JOIN zeiteintrag z ON p.ID = z.mitarbeiter_ID AND EXTRACT(MONTH FROM z.end_zeit) = %s AND EXTRACT(YEAR FROM z.end_zeit) = %s
         LEFT JOIN fahrt f ON z.ID = f.zeiteintrag_ID
@@ -244,6 +245,7 @@ def account_table_mitarbeiter(monat, year, person_id):
                 row[2],  # Vorname
                 f"{stunden}h {minuten}min",  # Geleistete Stunden
                 row[4],  # Gefahrene Kilometer
+                row[5],
             )
         )
 
