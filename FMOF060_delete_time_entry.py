@@ -15,6 +15,9 @@ def delete_te(zeiteintrags_id):
 
     return_url = session.get('url')
     session_role = session.get('user_role')
+    email = get_email_by_zeiteintrag(zeiteintrags_id)
+    firstname = get_firstname_by_email(email)
+    lastname = get_lastname_by_email(email)
     if request.method == 'POST':
         # Zeiteintrag wurde schon gebucht
         if check_booked(zeiteintrags_id):
@@ -28,9 +31,6 @@ def delete_te(zeiteintrags_id):
             delete_zeiteintrag(zeiteintrags_id)
             # wenn rolle verwaltung löscht, muss E-Mail gesendet werden
             if session_role == "Verwaltung":
-                email = get_email_by_zeiteintrag(zeiteintrags_id)
-                firstname = get_firstname_by_email(email)
-                lastname = get_lastname_by_email(email)
                 send_email_delete_time_entry(email, firstname, lastname, zeiteintrags_id)
             # Erfolgsmeldung
             success_message = "Eintrag erfolgreich gelöscht."
