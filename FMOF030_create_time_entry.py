@@ -62,16 +62,18 @@ def submit_arbeitsstunden(person_id):
 
     if request.method == 'POST':
         # Eingabedaten aus dem Formular holen
-        datum = request.form.get('datum')
-        start_zeit = request.form.get('startZeit')
-        end_zeit = request.form.get('endZeit')
-        fachkraft = "1" if request.form.get('fachkraft') is not None else "0"
-        klient_id = request.form.get('klientDropdown')
-        beschreibung = request.form.get('beschreibung')
-        interne_notiz = request.form.get('interneNotiz')
-        unterschrift_klient = request.form.get('signatureDataKlient')
-        unterschrift_mitarbeiter = request.form.get('signatureDataMitarbeiter')
-        absage = "1" if request.form.get('absage') is not None else "0"
+        zeiteintrag_data = {
+            'datum': request.form.get('datum'),
+            'start_zeit': request.form.get('startZeit'),
+            'end_zeit': request.form.get('endZeit'),
+            'fachkraft': "1" if request.form.get('fachkraft') is not None else "0",
+            'klient_id': request.form.get('klientDropdown'),
+            'beschreibung': request.form.get('beschreibung'),
+            'interne_notiz': request.form.get('interneNotiz'),
+            'unterschrift_klient': request.form.get('signatureDataKlient'),
+            'unterschrift_mitarbeiter': request.form.get('signatureDataMitarbeiter'),
+            'absage': "1" if request.form.get('absage') is not None else "0"
+        }
 
         # Überprüfung ob alle notwendigen Felder ausgefüllt wurden
         field_names = {
@@ -89,33 +91,37 @@ def submit_arbeitsstunden(person_id):
                 return render_template('FMOF030_create_time_entry.html', klienten=klienten)
 
         # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
-        datum_datetime = datetime.strptime(datum, '%Y-%m-%d')
-        start_zeit_datetime = datetime.strptime(start_zeit, '%H:%M').time()
-        end_zeit_datetime = datetime.strptime(end_zeit, '%H:%M').time()
+        datum_datetime = datetime.strptime(zeiteintrag_data['datum'], '%Y-%m-%d')
+        start_zeit_datetime = datetime.strptime(zeiteintrag_data['start_zeit'], '%H:%M').time()
+        end_zeit_datetime = datetime.strptime(add_zeiteintrag(['end_zeit']), '%H:%M').time()
 
         start_datetime = datetime.combine(datum_datetime, start_zeit_datetime)
         end_datetime = datetime.combine(datum_datetime, end_zeit_datetime)
 
         # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
-        if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, klient_id, person_id):
+        if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, zeiteintrag_data['klient_id'],
+                                            person_id):
 
             # Umwandlung der Unterschriften
-            if unterschrift_klient:
-                unterschrift_klient = base64_to_blob(unterschrift_klient)
+            if zeiteintrag_data['unterschrift_klient']:
+                unterschrift_klient = base64_to_blob(zeiteintrag_data['unterschrift_klient'])
 
-            if unterschrift_mitarbeiter:
-                unterschrift_mitarbeiter = base64_to_blob(unterschrift_mitarbeiter)
+            if zeiteintrag_data['unterschrift_mitarbeiter']:
+                unterschrift_mitarbeiter = base64_to_blob(zeiteintrag_data['unterschrift_mitarbeiter'])
 
             # Füge neuen Zeiteintrag hinzu und erhalte die ID
-            zeiteintrag_id = add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_datetime,
-                                             end_datetime, klient_id, fachkraft, beschreibung, interne_notiz,
-                                             absage)
+            zeiteintrag_id = add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient,
+                                             zeiteintrag_data['start_zeit'], zeiteintrag_data['end_zeit'],
+                                             zeiteintrag_data['klient_id'], zeiteintrag_data['fachkraft'],
+                                             zeiteintrag_data['beschreibung'], zeiteintrag_data['interne_notiz'],
+                                             zeiteintrag_data['absage'])
 
             # Iteriere über alle Fahrt-Einträge und füge sie hinzu
             fahrt_index = 0
+            fahrt_data_list = []
             while True:
                 # Werte für jede Fahrt auslesen
-                abrechenbarkeit = request.form.get(f'abrechenbarkeit{fahrt_index}') == 'on'
+                abrechenbarkeit = 1 if request.form.get(f'abrechenbarkeit{fahrt_index}') else 0
                 start_adresse = request.form.get(f'start_adresse{fahrt_index}')
                 end_adresse = request.form.get(f'end_adresse{fahrt_index}')
                 kilometer = request.form.get(f'kilometer{fahrt_index}')
@@ -130,6 +136,15 @@ def submit_arbeitsstunden(person_id):
                     except ValueError:
                         continue  # Überspringt den aktuellen Eintrag, wenn Kilometer keine gültige Zahl ist
 
+                    fahrt_data = {
+                        'kilometer': kilometer,
+                        'start_adresse': start_adresse,
+                        'end_adresse': end_adresse,
+                        'abrechenbar': abrechenbarkeit,
+                        'zeiteintrag_id': zeiteintrag_id
+                    }
+                    fahrt_data_list.append(fahrt_data)
+
                     # Datenbankabruf, um die Fahrt hinzuzufügen
                     add_fahrt(kilometer, start_adresse, end_adresse, abrechenbarkeit, zeiteintrag_id)
 
@@ -139,6 +154,9 @@ def submit_arbeitsstunden(person_id):
                         break  # Beendet die Schleife, wenn keine weiteren Fahrten vorhanden sind
 
                 fahrt_index += 1
+
+            session['overlapping_ze'] = zeiteintrag_data
+            session['overlapping_fahrten'] = fahrt_data_list
 
             # prüft auf überschneidung einer bestehenden eintragung in der datenbank
             if check_for_overlapping_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime):
