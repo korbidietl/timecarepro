@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from flask import render_template, request, Blueprint, flash, redirect, url_for, session
 from db_query import mitarbeiter_dropdown, create_klient, validate_client, kostentraeger_dropdown
+from FV020_create_account import is_valid_date, is_valid_phone
 
 create_client_blueprint = Blueprint("create_client", __name__)
 
@@ -23,8 +26,15 @@ def register_client():
         required_fields = ['lastname', 'firstname', 'birthday', 'address']
 
         for field in required_fields:
+            value = request.form.get(field)
             if not request.form.get(field):
                 flash('Es müssen alle Felder ausgefüllt werden.')
+                return render_template('FV070_create_client.html')
+            if field == 'birthday' and not is_valid_date(value):
+                flash(f'Eingabe in Feld {field} ungültig. Bitte geben Sie ein gültiges Datum ein.')
+                return render_template('FV070_create_client.html')
+            elif field == 'phone' and not is_valid_phone(value):
+                flash(f'Eingabe in Feld {field} ungültig. Bitte geben Sie eine gültige Telefonnummer ein.')
                 return render_template('FV070_create_client.html')
 
         if kontingent_fk_:

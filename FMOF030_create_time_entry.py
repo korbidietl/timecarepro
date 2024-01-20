@@ -88,7 +88,7 @@ def submit_arbeitsstunden(person_id):
         for field in field_names:
             if not request.form.get(field):
                 flash(f'Es müssen alle Felder ausgefüllt werden. {field_names[field]} ist noch nicht ausgefüllt.')
-                return render_template('FMOF030_create_time_entry.html', klienten=klienten)
+                return render_template('FMOF030_create_time_entry.html', klienten=klienten, person_id=person_id)
 
         # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
         datum_datetime = datetime.strptime(zeiteintrag_data['datum'], '%Y-%m-%d')

@@ -1,6 +1,8 @@
 from flask import Blueprint, request, render_template, session, flash, redirect, url_for
 from db_query import edit_klient_fct, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data, \
     get_current_client, get_new_client, save_change_log, edit_klient
+from FV020_create_account import is_valid_date, is_valid_phone
+
 
 edit_client_blueprint = Blueprint('edit_client', __name__)
 
@@ -46,6 +48,35 @@ def edit_client(client_id):
         print("geb: ", geburtsdatum)
         print("sachbearbeiter: ", sachbearbeiter_id)
         print("fallverantwortung: ", fallverantwortung_id)
+
+        required_fields = ['nachname', 'vorname', 'geburtsdatum', 'adresse']
+
+        for field in required_fields:
+            value = request.form.get(field)
+            if not request.form.get(field):
+                flash(f'Es müssen alle Felder ausgefüllt werden.')
+                return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, sb_id=sb_id,
+                                       fallverantwortung=fallverantwortung, fv_id=fv_id, client_id=client_id,
+                                       firstname=firstname, lastname=lastname, birthday=birthday,
+                                       phone=phone, sb=sachbearbeiter_id, address=address, fk=fk, hk=hk,
+                                       fv=fallverantwortung_id,
+                                       return_url=return_url)
+            if field == 'geburtsdatum' and not is_valid_date(value):
+                flash(f'Eingabe in Feld {field} ungültig. Bitte geben Sie ein gültiges Datum ein.')
+                return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, sb_id=sb_id,
+                                       fallverantwortung=fallverantwortung, fv_id=fv_id, client_id=client_id,
+                                       firstname=firstname, lastname=lastname, birthday=birthday,
+                                       phone=phone, sb=sachbearbeiter_id, address=address, fk=fk, hk=hk,
+                                       fv=fallverantwortung_id,
+                                       return_url=return_url)
+            elif field == 'telefonnummer' and not is_valid_phone(value):
+                flash(f'Eingabe in Feld {field} ungültig. Bitte geben Sie eine gültige Telefonnummer ein.')
+                return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, sb_id=sb_id,
+                                       fallverantwortung=fallverantwortung, fv_id=fv_id, client_id=client_id,
+                                       firstname=firstname, lastname=lastname, birthday=birthday,
+                                       phone=phone, sb=sachbearbeiter_id, address=address, fk=fk, hk=hk,
+                                       fv=fallverantwortung_id,
+                                       return_url=return_url)
 
         print("Name2: ", vorname, nachname)
         # Klientdateils überschreiben
