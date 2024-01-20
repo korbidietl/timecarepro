@@ -63,7 +63,6 @@ def submit_arbeitsstunden(person_id):
     if request.method == 'POST':
         # Eingabedaten aus dem Formular holen
         zeiteintrag_data = {
-            'zeiteintrag_id': 0,
             'datum': request.form.get('datum'),
             'start_zeit': request.form.get('startZeit'),
             'end_zeit': request.form.get('endZeit'),
@@ -117,8 +116,6 @@ def submit_arbeitsstunden(person_id):
                                              zeiteintrag_data['beschreibung'], zeiteintrag_data['interne_notiz'],
                                              zeiteintrag_data['absage'])
 
-            zeiteintrag_data['zeiteintrag_id'] = zeiteintrag_id
-
             # Iteriere über alle Fahrt-Einträge und füge sie hinzu
             fahrt_index = 0
             fahrt_data_list = []
@@ -157,6 +154,9 @@ def submit_arbeitsstunden(person_id):
                         break  # Beendet die Schleife, wenn keine weiteren Fahrten vorhanden sind
 
                 fahrt_index += 1
+
+            zeiteintrag_data['zeiteintrag_id'] = zeiteintrag_id
+            zeiteintrag_data['mitarbeiter_id'] = person_id
 
             session['overlapping_ze'] = zeiteintrag_data
             session['overlapping_fahrten'] = fahrt_data_list
