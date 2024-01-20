@@ -70,8 +70,8 @@ def submit_arbeitsstunden(person_id):
             'klient_id': request.form.get('klientDropdown'),
             'beschreibung': request.form.get('beschreibung'),
             'interne_notiz': request.form.get('interneNotiz'),
-            'unterschrift_klient': request.form.get('signatureDataKlient'),
-            'unterschrift_mitarbeiter': request.form.get('signatureDataMitarbeiter'),
+            'neue_unterschrift_klient': request.form.get('signatureDataKlient'),
+            'neue_unterschrift_mitarbeiter': request.form.get('signatureDataMitarbeiter'),
             'absage': "1" if request.form.get('absage') is not None else "0"
         }
 
@@ -97,20 +97,22 @@ def submit_arbeitsstunden(person_id):
 
         start_datetime = datetime.combine(datum_datetime, start_zeit_datetime)
         end_datetime = datetime.combine(datum_datetime, end_zeit_datetime)
+        zeiteintrag_data['start_datetime'] = start_datetime
+        zeiteintrag_data['end_datetime'] = end_datetime
 
         # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
         if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, zeiteintrag_data['klient_id'],
                                             person_id):
 
             # Umwandlung der Unterschriften
-            if zeiteintrag_data['unterschrift_klient']:
-                zeiteintrag_data['unterschrift_klient'] = base64_to_blob(zeiteintrag_data['unterschrift_klient'])
+            if zeiteintrag_data['neue_unterschrift_klient']:
+                zeiteintrag_data['neue_unterschrift_klient'] = base64_to_blob(zeiteintrag_data['neue_unterschrift_klient'])
 
-            if zeiteintrag_data['unterschrift_mitarbeiter']:
-                zeiteintrag_data['unterschrift_mitarbeiter'] = base64_to_blob(zeiteintrag_data['unterschrift_mitarbeiter'])
+            if zeiteintrag_data['neue_unterschrift_mitarbeiter']:
+                zeiteintrag_data['neue_unterschrift_mitarbeiter'] = base64_to_blob(zeiteintrag_data['neue_unterschrift_mitarbeiter'])
 
             # Füge neuen Zeiteintrag hinzu und erhalte die ID
-            zeiteintrag_id = add_zeiteintrag(zeiteintrag_data['unterschrift_mitarbeiter'], zeiteintrag_data['unterschrift_klient'],
+            zeiteintrag_id = add_zeiteintrag(zeiteintrag_data['neue_unterschrift_mitarbeiter'], zeiteintrag_data['neue_unterschrift_klient'],
                                              start_datetime, end_datetime,
                                              zeiteintrag_data['klient_id'], zeiteintrag_data['fachkraft'],
                                              zeiteintrag_data['beschreibung'], zeiteintrag_data['interne_notiz'],
