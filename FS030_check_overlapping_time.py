@@ -19,17 +19,19 @@ def overlapping_time(zeiteintrag_id):
 
     overlapping_entries = []
     if zeiteintrag_data:
+        print("datum: ", zeiteintrag_data['datum'])
         # Füge den formatierten originalen Zeiteintrag hinzu
-        orig_entry = zeiteintrag_data[0]
-        overlapping_entries.append(format_zeiteintrag(orig_entry))
+        print("zeiteintrag: ", zeiteintrag_data)
+        overlapping_entries.append(format_zeiteintrag(zeiteintrag_data))
 
-        start_zeit_datetime = orig_entry[3]
-        end_zeit_datetime = orig_entry[4]
+        start_zeit_datetime = zeiteintrag_data['start_datetime']
+        print("start: ", start_zeit_datetime)
+        end_zeit_datetime = zeiteintrag_data['end_datetime']
 
         overlapping_ids = check_for_overlapping_zeiteintrag(zeiteintrag_id, start_zeit_datetime, end_zeit_datetime)
         for entry_id in overlapping_ids:
             entry_data = get_zeiteintrag_by_id(entry_id)[0]
-            overlapping_entries.append(format_zeiteintrag(entry_data))
+            overlapping_entries.append(format_zeiteintrag_new(entry_data))
 
     return render_template('FS030_check_overlapping_time.html',
                            overlapping_entries=overlapping_entries,
@@ -38,6 +40,24 @@ def overlapping_time(zeiteintrag_id):
 
 
 def format_zeiteintrag(entry):
+    datum = entry['datum']
+    print(datum)
+    startzeit = entry['start_zeit']
+    print(startzeit)
+    endzeit = entry['end_zeit']
+    mitarbeiter = get_name_by_id(entry['mitarbeiter_id'])
+    m_vorname = mitarbeiter[0][0]
+    m_nachname = mitarbeiter[0][1]
+    print("mit: ", m_nachname, m_vorname)
+    client = get_client_name(entry['klient_id'])
+    c_vorname = client[0]
+    c_nachname = client[1]
+    print("klie: ", c_nachname, c_vorname)
+    zeiteintrag_id = entry['zeiteintrag_id']
+    beschreibung = entry['beschreibung']
+    return zeiteintrag_id, datum, startzeit, endzeit, beschreibung, m_nachname, m_vorname, c_nachname, c_vorname
+
+def format_zeiteintrag_new(entry):
     datum = entry[3].strftime('%Y-%m-%d')
     startzeit = entry[3].strftime('%H:%M')
     endzeit = entry[4].strftime('%H:%M')

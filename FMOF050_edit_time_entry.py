@@ -70,7 +70,8 @@ def edit_time_entry(zeiteintrag_id):
             'interne_notiz': request.form.get('interneNotiz'),
             'neue_unterschrift_klient': request.form.get('signatureDataKlient'),
             'neue_unterschrift_mitarbeiter': request.form.get('signatureDataMitarbeiter'),
-            'absage': "1" if request.form.get('absage') is not None else "0"
+            'absage': "1" if request.form.get('absage') is not None else "0",
+            'zeiteintrag_id': zeiteintrag_id
         }
 
         # Überprüfung, ob alle notwendigen Felder ausgefüllt wurden

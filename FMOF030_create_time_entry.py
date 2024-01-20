@@ -63,6 +63,7 @@ def submit_arbeitsstunden(person_id):
     if request.method == 'POST':
         # Eingabedaten aus dem Formular holen
         zeiteintrag_data = {
+            'zeiteintrag_id': 0,
             'datum': request.form.get('datum'),
             'start_zeit': request.form.get('startZeit'),
             'end_zeit': request.form.get('endZeit'),
@@ -93,7 +94,7 @@ def submit_arbeitsstunden(person_id):
         # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
         datum_datetime = datetime.strptime(zeiteintrag_data['datum'], '%Y-%m-%d')
         start_zeit_datetime = datetime.strptime(zeiteintrag_data['start_zeit'], '%H:%M').time()
-        end_zeit_datetime = datetime.strptime(add_zeiteintrag(['end_zeit']), '%H:%M').time()
+        end_zeit_datetime = datetime.strptime(zeiteintrag_data['end_zeit'], '%H:%M').time()
 
         start_datetime = datetime.combine(datum_datetime, start_zeit_datetime)
         end_datetime = datetime.combine(datum_datetime, end_zeit_datetime)
@@ -104,17 +105,19 @@ def submit_arbeitsstunden(person_id):
 
             # Umwandlung der Unterschriften
             if zeiteintrag_data['unterschrift_klient']:
-                unterschrift_klient = base64_to_blob(zeiteintrag_data['unterschrift_klient'])
+                zeiteintrag_data['unterschrift_klient'] = base64_to_blob(zeiteintrag_data['unterschrift_klient'])
 
             if zeiteintrag_data['unterschrift_mitarbeiter']:
-                unterschrift_mitarbeiter = base64_to_blob(zeiteintrag_data['unterschrift_mitarbeiter'])
+                zeiteintrag_data['unterschrift_mitarbeiter'] = base64_to_blob(zeiteintrag_data['unterschrift_mitarbeiter'])
 
             # Füge neuen Zeiteintrag hinzu und erhalte die ID
-            zeiteintrag_id = add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient,
-                                             zeiteintrag_data['start_zeit'], zeiteintrag_data['end_zeit'],
+            zeiteintrag_id = add_zeiteintrag(zeiteintrag_data['unterschrift_mitarbeiter'], zeiteintrag_data['unterschrift_klient'],
+                                             start_datetime, end_datetime,
                                              zeiteintrag_data['klient_id'], zeiteintrag_data['fachkraft'],
                                              zeiteintrag_data['beschreibung'], zeiteintrag_data['interne_notiz'],
                                              zeiteintrag_data['absage'])
+
+            zeiteintrag_data['zeiteintrag_id'] = zeiteintrag_id
 
             # Iteriere über alle Fahrt-Einträge und füge sie hinzu
             fahrt_index = 0
