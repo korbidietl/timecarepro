@@ -7,7 +7,6 @@ book_time_entry_blueprint = Blueprint('book_time_entry', __name__)
 
 
 def get_next_month_to_book(last_buchung_date):
-
     if last_buchung_date:
         # Konvertieren des Datumsstrings in ein datetime-Objekt
         last_date_obj = datetime.strptime(last_buchung_date[0], '%Y-%m')
@@ -42,58 +41,80 @@ def month_number_to_name(month_number):
 
 @book_time_entry_blueprint.route('/book_time_entries/<int:client_id>', methods=['POST'])
 def book_client_time_entry(client_id):
-    return_url = session.get('url')
-    # Letzte Buchung abrufen
-    last_month_booked = get_last_buchung(client_id)
-    if last_month_booked is None:
-        next_month_to_book = get_first_te(client_id)
-    else:
-        next_month_to_book = get_next_month_to_book(last_month_booked)
-
-    # Aufteilen von next_month_to_book in Jahr und Monat
-    next_year, next_month = next_month_to_book.split('-')
-    next_month = int(next_month)
-    next_year = int(next_year)
-
-    month_str = month_number_to_name(next_month)
-
-    # Überprüfen, ob alle Unterschriften vorhanden sind
-    unvollstaendige_te = check_and_return_signatures(client_id, next_month, next_year)
-    if unvollstaendige_te is True:
-        # Überprüfen, ob Zeiteinträge für den nächsten Monat existieren
-        if not get_zeiteintrag_for_client(client_id, next_month, next_year):
-            return render_template("FV120_book_time_entries.html", month_str=month_str,
-                                   return_url=return_url, client_id=client_id)
-        # Berechnen von Salden und Durchführen der Buchung
-        if book_zeiteintrag(client_id):
-            print("gebucht")
-            flash(f"Stundennachweise für {month_str} erfolgreich gebucht.")
+    if 'user_id' in session:
+        user_role = session['user_role']
+        if user_role != 'Verwaltung' and user_role != 'Geschäftsführung':
+            flash('Sie sind nicht berechtigt diese Seite aufzurufen.')
+            return redirect(session['secure_url'])
         else:
-            flash("Fehler bei der Buchung.")
-        return redirect(
-            url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id))
+            return_url = session.get('url')
+            # Letzte Buchung abrufen
+            last_month_booked = get_last_buchung(client_id)
+            if last_month_booked is None:
+                next_month_to_book = get_first_te(client_id)
+            else:
+                next_month_to_book = get_next_month_to_book(last_month_booked)
+
+            # Aufteilen von next_month_to_book in Jahr und Monat
+            next_year, next_month = next_month_to_book.split('-')
+            next_month = int(next_month)
+            next_year = int(next_year)
+
+            month_str = month_number_to_name(next_month)
+
+            # Überprüfen, ob alle Unterschriften vorhanden sind
+            unvollstaendige_te = check_and_return_signatures(client_id, next_month, next_year)
+            if unvollstaendige_te is True:
+                # Überprüfen, ob Zeiteinträge für den nächsten Monat existieren
+                if not get_zeiteintrag_for_client(client_id, next_month, next_year):
+                    return render_template("FV120_book_time_entries.html", month_str=month_str,
+                                           return_url=return_url, client_id=client_id)
+                # Berechnen von Salden und Durchführen der Buchung
+                if book_zeiteintrag(client_id):
+                    print("gebucht")
+                    flash(f"Stundennachweise für {month_str} erfolgreich gebucht.")
+                else:
+                    flash("Fehler bei der Buchung.")
+                return redirect(
+                    url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id))
+            else:
+                messages = []
+                for entry in unvollstaendige_te:
+                    entry_id = entry['id']
+                    missing = ' und '.join(entry['missing'])  # Konvertiert die Liste in einen String
+                    message = (
+                        f"Unterschrift von {missing} in Eintrag {entry_id} fehlt. Buchung konnte nicht durchgeführt "
+                        f"werden.")
+                    messages.append(message)
+
+                final_message = " ".join(messages)
+
+                # Verwenden von flash, um die Nachricht anzuzeigen
+                flash(final_message)
+                return redirect(
+                    url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id))
     else:
-        messages = []
-        for entry in unvollstaendige_te:
-            entry_id = entry['id']
-            missing = ' und '.join(entry['missing'])  # Konvertiert die Liste in einen String
-            message = (f"Unterschrift von {missing} in Eintrag {entry_id} fehlt. Buchung konnte nicht durchgeführt "
-                       f"werden.")
-            messages.append(message)
-
-        final_message = " ".join(messages)
-
-        # Verwenden von flash, um die Nachricht anzuzeigen
-        flash(final_message)
-        return redirect(
-            url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id))
+        # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite
+        flash('Sie müssen sich anmelden.')
+        return redirect(url_for('login.login'))
 
 
 @book_time_entry_blueprint.route('/confirm_booking/<int:client_id>', methods=['POST'])
 def confirm_booking(client_id):
-    if book_zeiteintrag(client_id):
-        flash(f"Stundennachweise erfolgreich gebucht.")
+    if 'user_id' in session:
+        user_role = session['user_role']
+        if user_role != 'Verwaltung' and user_role != 'Geschäftsführung':
+            flash('Sie sind nicht berechtigt diese Seite aufzurufen.')
+            return redirect(session['secure_url'])
+        else:
+            if book_zeiteintrag(client_id):
+                flash(f"Stundennachweise erfolgreich gebucht.")
+            else:
+                flash("Fehler bei der Buchung.")
+            return redirect(
+                url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id))
+
     else:
-        flash("Fehler bei der Buchung.")
-    return redirect(
-        url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id))
+        # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite
+        flash('Sie müssen sich anmelden.')
+        return redirect(url_for('login.login'))

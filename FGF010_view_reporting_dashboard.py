@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from flask import Blueprint, render_template, request, flash, session, url_for
+from flask import Blueprint, render_template, request, flash, session, url_for, redirect
 from db_query import mitarbeiter_dropdown, client_dropdown, sum_mitarbeiter, sum_hours_mitarbeiter_zeitspanne, \
     sum_hours_klient_zeitspanne, \
     sum_absage_mitarbeiter, sum_absage_klient, sum_km_mitarbeiter, sum_km_klient, get_report_zeiteintrag, \
@@ -12,155 +12,164 @@ reporting_dachboard_blueprint = Blueprint('view_reporting_dashboard', __name__)
 
 @reporting_dachboard_blueprint.route('/reporting_dashboard', methods={'GET', 'POST'})
 def reporting_dashboard():
-    # Rückleitung bei unerlaubter Seite
-    session['secure_url'] = url_for('view_reporting_dashboard.reporting_dashboard')
+    if 'user_id' in session:
+        user_role = session['user_role']
+        if user_role != 'Geschäftsführung':
+            flash('Sie sind nicht berechtigt diese Seite aufzurufen.')
+            return redirect(session['secure_url'])
+        else:
+            # Rückleitung bei unerlaubter Seite
+            session['secure_url'] = url_for('view_reporting_dashboard.reporting_dashboard')
 
-    # Dropdown Felder
-    mitarbeiter = mitarbeiter_dropdown()
-    ma = {'mitarbeiter': mitarbeiter}
+            # Dropdown Felder
+            mitarbeiter = mitarbeiter_dropdown()
+            ma = {'mitarbeiter': mitarbeiter}
 
-    client = client_dropdown()
-    cl = {'klient': client}
+            client = client_dropdown()
+            cl = {'klient': client}
 
-    stundendaten = []
-    km_diagramm = []
-    absagen_diagramm = []
+            stundendaten = []
+            km_diagramm = []
+            absagen_diagramm = []
 
-    # Default Werten aktuelles Monat
-    date_format = "%Y-%m-%d"
-    heute = datetime.now()
-    erster_dieses_monats = datetime(heute.year, heute.month, 1)
-    von = erster_dieses_monats.strftime(date_format)
-    bis = heute.strftime(date_format)
+            # Default Werten aktuelles Monat
+            date_format = "%Y-%m-%d"
+            heute = datetime.now()
+            erster_dieses_monats = datetime(heute.year, heute.month, 1)
+            von = erster_dieses_monats.strftime(date_format)
+            bis = heute.strftime(date_format)
 
-    # Default Werte Jahr
-    jahr = datetime.now().year
-    start = datetime(jahr, 1, 1)
-    end = datetime(jahr, 12, 31)
-    start_datum = start.strftime(date_format)
-    end_datum = end.strftime(date_format)
+            # Default Werte Jahr
+            jahr = datetime.now().year
+            start = datetime(jahr, 1, 1)
+            end = datetime(jahr, 12, 31)
+            start_datum = start.strftime(date_format)
+            end_datum = end.strftime(date_format)
 
-    if request.method == 'POST':
-        # Filter auslesen
-        von_ = request.form.get('von')
-        bis_ = request.form.get('bis')
-        mitarbeiter = request.form.get('mitarbeiter')
-        klient = request.form.get('klient')
+            if request.method == 'POST':
+                # Filter auslesen
+                von_ = request.form.get('von')
+                bis_ = request.form.get('bis')
+                mitarbeiter = request.form.get('mitarbeiter')
+                klient = request.form.get('klient')
 
-        # Überprüfung Eingaben
-        valid = True
+                # Überprüfung Eingaben
+                valid = True
 
-        try:
-            if von_:
-                datetime.strptime(von_, date_format)
-        except ValueError:
-            flash(f"Eingabe in Feld 'von' ungültig.", "error")
-            valid = False
-
-        try:
-            if bis_:
-                datetime.strptime(bis_, date_format)
-        except ValueError:
-            flash(f"Eingabe in Feld 'bis' ungültig.", "error")
-            valid = False
-
-        ma_ids = [mitarbeiter_dict['id'] for mitarbeiter_dict in ma['mitarbeiter']]
-        if mitarbeiter:
-            try:
-                mitarbeiter_id = int(mitarbeiter)  # Versucht, 'mitarbeiter' in eine Zahl umzuwandeln
-            except ValueError:
-                flash(f"Eingabe in Feld 'Mitarbeiter' ungültig.", "error")
-                valid = False
-            else:
-                if mitarbeiter_id not in ma_ids:
-                    flash(f"Eingabe in Feld 'Mitarbeiter' ungültig.", "error")
+                try:
+                    if von_:
+                        datetime.strptime(von_, date_format)
+                except ValueError:
+                    flash(f"Eingabe in Feld 'von' ungültig.", "error")
                     valid = False
 
-        cl_ids = [client_dict['id'] for client_dict in cl['klient']]
-        if klient:
-            try:
-                klient_id = int(klient)  # Versucht, 'mitarbeiter' in eine Zahl umzuwandeln
-            except ValueError:
-                flash(f"Eingabe in Feld 'Klient' ungültig.", "error")
-                valid = False
-            else:
-                if klient_id not in cl_ids:
-                    flash(f"Eingabe in Feld 'Klient' ungültig.", "error")
+                try:
+                    if bis_:
+                        datetime.strptime(bis_, date_format)
+                except ValueError:
+                    flash(f"Eingabe in Feld 'bis' ungültig.", "error")
                     valid = False
 
-        # Wenn ein Feld ungültig ist erneutes Laden der Seite mit Flash nachricht
-        if not valid:
-            return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, stundendaten=stundendaten,
-                                   terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm)
+                ma_ids = [mitarbeiter_dict['id'] for mitarbeiter_dict in ma['mitarbeiter']]
+                if mitarbeiter:
+                    try:
+                        mitarbeiter_id = int(mitarbeiter)  # Versucht, 'mitarbeiter' in eine Zahl umzuwandeln
+                    except ValueError:
+                        flash(f"Eingabe in Feld 'Mitarbeiter' ungültig.", "error")
+                        valid = False
+                    else:
+                        if mitarbeiter_id not in ma_ids:
+                            flash(f"Eingabe in Feld 'Mitarbeiter' ungültig.", "error")
+                            valid = False
 
-        # Auswerten des Datums zur weiterverwendung
-        if von_:
-            von_date = von_
-            start_datum = von_date
-        else:
-            von_date = von
+                cl_ids = [client_dict['id'] for client_dict in cl['klient']]
+                if klient:
+                    try:
+                        klient_id = int(klient)  # Versucht, 'mitarbeiter' in eine Zahl umzuwandeln
+                    except ValueError:
+                        flash(f"Eingabe in Feld 'Klient' ungültig.", "error")
+                        valid = False
+                    else:
+                        if klient_id not in cl_ids:
+                            flash(f"Eingabe in Feld 'Klient' ungültig.", "error")
+                            valid = False
 
-        if bis_:
-            bis_date = bis_
-            end_datum = bis_date
-        else:
-            bis_date = bis
+                # Wenn ein Feld ungültig ist erneutes Laden der Seite mit Flash nachricht
+                if not valid:
+                    return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, stundendaten=stundendaten,
+                                           terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm)
 
-        # Umwandlung Filter Werte
-        von_formatiert, bis_formatiert = eingabe_formatieren(von_date, bis_date)
-        start_datum_formatiert, end_datum_formatiert = eingabe_formatieren(start_datum, end_datum)
+                # Auswerten des Datums zur weiterverwendung
+                if von_:
+                    von_date = von_
+                    start_datum = von_date
+                else:
+                    von_date = von
 
-        # Überprüfung innerhalb eines Jahres
-        if von_formatiert.year != bis_formatiert.year:
-            flash("Die Datumsangaben müssen innerhalb des gleichen Jahres liegen.", "error")
-            valid = False
+                if bis_:
+                    bis_date = bis_
+                    end_datum = bis_date
+                else:
+                    bis_date = bis
 
-        # Ausgabe Tabellen
-        kl_tabelle_gesamt = klienten_tabelle(von_formatiert, bis_formatiert, klient, mitarbeiter)
-        klienten_liste = get_report_klient(von_formatiert, bis_formatiert, klient, mitarbeiter)
-        ma_tabelle_gesamt = mitarbeiter_tabelle(von_formatiert, bis_formatiert, klient, mitarbeiter)
-        mitarbeiter_liste = get_report_mitarbeiter(von_formatiert, bis_formatiert, klient, mitarbeiter)
-        zeiteintraege_liste = get_report_zeiteintrag(von_formatiert, bis_formatiert, klient, mitarbeiter)
-        ze_tabelle_gesamt = zeiteintraege_tabelle(von_formatiert, bis_formatiert, klient, mitarbeiter)
+                # Umwandlung Filter Werte
+                von_formatiert, bis_formatiert = eingabe_formatieren(von_date, bis_date)
+                start_datum_formatiert, end_datum_formatiert = eingabe_formatieren(start_datum, end_datum)
 
-        # Ausgabe Diagramme
-        maanzahl = mitarbeiter_anzahl()
-        stunden_diagramm = monatliche_gesamtstunden(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
-        stundendaten = [float(d) if isinstance(d, Decimal) else d for d in stunden_diagramm]
-        absagen_diagramm = sum_absagen_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
-        km_diagramm = sum_km_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
+                # Überprüfung innerhalb eines Jahres
+                if von_formatiert.year != bis_formatiert.year:
+                    flash("Die Datumsangaben müssen innerhalb des gleichen Jahres liegen.", "error")
+                    valid = False
 
-        return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, klienten_daten=klienten_liste,
-                               mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste,
-                               klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt,
-                               stundendaten=stundendaten, ze_gesamt=ze_tabelle_gesamt,
-                               terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
+                # Ausgabe Tabellen
+                kl_tabelle_gesamt = klienten_tabelle(von_formatiert, bis_formatiert, klient, mitarbeiter)
+                klienten_liste = get_report_klient(von_formatiert, bis_formatiert, klient, mitarbeiter)
+                ma_tabelle_gesamt = mitarbeiter_tabelle(von_formatiert, bis_formatiert, klient, mitarbeiter)
+                mitarbeiter_liste = get_report_mitarbeiter(von_formatiert, bis_formatiert, klient, mitarbeiter)
+                zeiteintraege_liste = get_report_zeiteintrag(von_formatiert, bis_formatiert, klient, mitarbeiter)
+                ze_tabelle_gesamt = zeiteintraege_tabelle(von_formatiert, bis_formatiert, klient, mitarbeiter)
 
-    # Umwandlung Default Werte
-    von_formatiert, bis_formatiert = eingabe_formatieren(von, bis)
-    start_datum_formatiert, end_datum_formatiert = eingabe_formatieren(start_datum, end_datum
-                                                                       )
-    # Ausgaben Tabellen
-    kl_tabelle_gesamt = klienten_tabelle(von_formatiert, bis_formatiert, None, None)
-    klienten_liste = get_report_klient(von_formatiert, bis_formatiert)
-    ma_tabelle_gesamt = mitarbeiter_tabelle(von_formatiert, bis_formatiert, None, None)
-    mitarbeiter_liste = get_report_mitarbeiter(von_formatiert, bis_formatiert)
-    zeiteintraege_liste = get_report_zeiteintrag(von_formatiert, bis_formatiert)
-    ze_tabelle = zeiteintraege_tabelle(von_formatiert, bis_formatiert, None, None)
+                # Ausgabe Diagramme
+                maanzahl = mitarbeiter_anzahl()
+                stunden_diagramm = monatliche_gesamtstunden(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
+                stundendaten = [float(d) if isinstance(d, Decimal) else d for d in stunden_diagramm]
+                absagen_diagramm = sum_absagen_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
+                km_diagramm = sum_km_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
 
-    # Ausgabe Diagramme
-    maanzahl = mitarbeiter_anzahl()
-    stunden_diagramm = monatliche_gesamtstunden(start_datum_formatiert, end_datum_formatiert)
-    stundendaten = [float(d) if isinstance(d, Decimal) else d for d in stunden_diagramm]
-    absagen_diagramm = sum_absagen_monatlich(start_datum_formatiert, end_datum_formatiert)
-    km_diagramm = sum_km_monatlich(start_datum_formatiert, end_datum_formatiert)
+                return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, klienten_daten=klienten_liste,
+                                       mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste,
+                                       klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt,
+                                       stundendaten=stundendaten, ze_gesamt=ze_tabelle_gesamt,
+                                       terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
 
-    return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, klienten_daten=klienten_liste,
-                           mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste,
-                           klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt,
-                           stundendaten=stundendaten, ze_gesamt=ze_tabelle,
-                           terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
+            # Umwandlung Default Werte
+            von_formatiert, bis_formatiert = eingabe_formatieren(von, bis)
+            start_datum_formatiert, end_datum_formatiert = eingabe_formatieren(start_datum, end_datum
+                                                                               )
+            # Ausgaben Tabellen
+            kl_tabelle_gesamt = klienten_tabelle(von_formatiert, bis_formatiert, None, None)
+            klienten_liste = get_report_klient(von_formatiert, bis_formatiert)
+            ma_tabelle_gesamt = mitarbeiter_tabelle(von_formatiert, bis_formatiert, None, None)
+            mitarbeiter_liste = get_report_mitarbeiter(von_formatiert, bis_formatiert)
+            zeiteintraege_liste = get_report_zeiteintrag(von_formatiert, bis_formatiert)
+            ze_tabelle = zeiteintraege_tabelle(von_formatiert, bis_formatiert, None, None)
 
+            # Ausgabe Diagramme
+            maanzahl = mitarbeiter_anzahl()
+            stunden_diagramm = monatliche_gesamtstunden(start_datum_formatiert, end_datum_formatiert)
+            stundendaten = [float(d) if isinstance(d, Decimal) else d for d in stunden_diagramm]
+            absagen_diagramm = sum_absagen_monatlich(start_datum_formatiert, end_datum_formatiert)
+            km_diagramm = sum_km_monatlich(start_datum_formatiert, end_datum_formatiert)
+
+            return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, klienten_daten=klienten_liste,
+                                   mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste,
+                                   klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt,
+                                   stundendaten=stundendaten, ze_gesamt=ze_tabelle,
+                                   terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm, mazahl=maanzahl)
+    else:
+        # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite
+        flash('Sie müssen sich anmelden.')
+        return redirect(url_for('login.login'))
 
 def eingabe_formatieren(von, bis):
     von_date = datetime.strptime(von, '%Y-%m-%d').date()

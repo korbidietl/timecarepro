@@ -1,7 +1,7 @@
 import base64
 import datetime
 
-from flask import Blueprint, render_template, request, session, url_for
+from flask import Blueprint, render_template, request, session, url_for, flash, redirect
 from datetime import datetime
 from db_query import get_client_name, get_sachbearbeiter_name, get_fallverantwortung_id, \
     get_zeiteintrag_for_client_and_person, check_for_overlapping_zeiteintrag, check_booked, \
@@ -95,98 +95,104 @@ def unterschriften_liste(zeiteintraege_liste):
 
 @client_hours_blueprint.route('/client_supervision_hours/<int:client_id>', methods=['POST', 'GET'])
 def client_supervision_hours(client_id):
-    # Rückleitung bei unerlaubter Seite
-    session['secure_url'] = url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id)
+    if 'user_id' in session:
+        # Rückleitung bei unerlaubter Seite
+        session['secure_url'] = url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id)
 
-    # Für Rückleitung
-    session['url'] = url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id)
-    session['client_id'] = client_id
+        # Für Rückleitung
+        session['url'] = url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id)
+        session['client_id'] = client_id
 
-    # Rolle und ID aus der Session
-    user_id = session.get('user_id')
-    user_role = session.get('user_role')
+        # Rolle und ID aus der Session
+        user_id = session.get('user_id')
+        user_role = session.get('user_role')
 
-    kombinationen = generate_month_year_combinations()
-    aktuelles_jahr = datetime.now().year
-    aktueller_monat = datetime.now().month
+        kombinationen = generate_month_year_combinations()
+        aktuelles_jahr = datetime.now().year
+        aktueller_monat = datetime.now().month
 
-    # Auswahl des angezeigten Zeitraums
-    if request.method == 'POST':
-        gewaehlte_kombination = request.form.get('monat_jahr')
+        # Auswahl des angezeigten Zeitraums
+        if request.method == 'POST':
+            gewaehlte_kombination = request.form.get('monat_jahr')
+        else:
+            # Standardmäßig aktuelles Monat und Jahr
+            monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+                      'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
+
+            gewaehlte_kombination = f"{monate[aktueller_monat - 1]} {aktuelles_jahr}"
+
+        month, year = extrahiere_jahr_und_monat(gewaehlte_kombination)
+
+        # Abrufe aus der Datenbank
+        client_name = get_client_name(client_id)
+        client_sachbearbeiter_name = get_sachbearbeiter_name(client_id)
+        fallverantwortung_id = get_fallverantwortung_id(client_id)
+        fallverantwortung = user_id == fallverantwortung_id
+
+        # Überprüfen ob Fallverantwortung hat
+        if fallverantwortung or user_role in ['Verwaltung', 'Geschäftsführung']:
+            # Gesamt Stunden auslesen
+            sum_hours_list = sum_hours_klient(client_id, month, year)
+            sum_hours = []
+            if sum_hours_list:
+                sum_hours = sum_hours_list[0]
+
+            # Gesamt Kilometer auslesen
+            sum_km_list = sum_km_klient_ges(client_id, month, year)
+            sum_km = []
+            if sum_km_list:
+                sum_km = sum_km_list[0]
+
+            # Listen erstellen
+            zeiteintraege_liste = get_zeiteintrag_for_client(client_id, month, year)
+            u_liste = unterschriften_liste(zeiteintraege_liste)
+            ueberschneidung_liste = check_ueberschneidung_liste(zeiteintraege_liste, client_id)
+            booked_liste = check_booked_liste(zeiteintraege_liste)
+
+            # Listen kombinieren
+            kombinierte_liste = list(zip(zeiteintraege_liste, ueberschneidung_liste, booked_liste, u_liste))
+
+            return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id,
+                                   client_id=client_id,
+                                   kombinierte_liste=kombinierte_liste,
+                                   client_name=client_name,
+                                   client_sachbearbeiter=client_sachbearbeiter_name,
+                                   user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
+                                   kombinationen=kombinationen, sum_km=sum_km, sum_hours=sum_hours,
+                                   fallverantwortung=fallverantwortung)
+
+        else:
+            # Gesamt Stunden auslesen
+            sum_hours_list = sum_hours_klient(client_id, month, year, user_id)
+            sum_hours = []
+            if sum_hours_list:
+                sum_hours = sum_hours_list[0]
+
+            # Gesamt Kilometer auslesen
+            sum_km_list = sum_km_klient_ges(client_id, month, year, user_id)
+            sum_km = []
+            if sum_km_list:
+                sum_km = sum_km_list[0]
+            # Listen erstellen
+            zeiteintraege_liste = get_zeiteintrag_for_client_and_person(client_id, user_id, month, year)
+            u_liste = unterschriften_liste(zeiteintraege_liste)
+            ueberschneidung_liste = check_ueberschneidung_liste(zeiteintraege_liste, client_id)
+            booked_liste = check_booked_liste(zeiteintraege_liste)
+
+            # Listen kombinieren
+            kombinierte_liste = list(zip(zeiteintraege_liste, ueberschneidung_liste, booked_liste, u_liste))
+            print(kombinierte_liste)
+
+            return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id,
+                                   client_id=client_id,
+                                   kombinierte_liste=kombinierte_liste,
+                                   client_name=client_name,
+                                   client_sachbearbeiter=client_sachbearbeiter_name,
+                                   fallverantwortung=fallverantwortung,
+                                   user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
+                                   kombinationen=kombinationen, sum_km=sum_km, sum_hours=sum_hours)
+
     else:
-        # Standardmäßig aktuelles Monat und Jahr
-        monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-                  'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
-
-        gewaehlte_kombination = f"{monate[aktueller_monat - 1]} {aktuelles_jahr}"
-
-    month, year = extrahiere_jahr_und_monat(gewaehlte_kombination)
-
-    # Abrufe aus der Datenbank
-    client_name = get_client_name(client_id)
-    client_sachbearbeiter_name = get_sachbearbeiter_name(client_id)
-    fallverantwortung_id = get_fallverantwortung_id(client_id)
-    fallverantwortung = user_id == fallverantwortung_id
-
-    # Überprüfen ob Fallverantwortung hat
-    if fallverantwortung or user_role in ['Verwaltung', 'Geschäftsführung']:
-        # Gesamt Stunden auslesen
-        sum_hours_list = sum_hours_klient(client_id, month, year)
-        sum_hours = []
-        if sum_hours_list:
-            sum_hours = sum_hours_list[0]
-
-        # Gesamt Kilometer auslesen
-        sum_km_list = sum_km_klient_ges(client_id, month, year)
-        sum_km = []
-        if sum_km_list:
-            sum_km = sum_km_list[0]
-
-        # Listen erstellen
-        zeiteintraege_liste = get_zeiteintrag_for_client(client_id, month, year)
-        u_liste = unterschriften_liste(zeiteintraege_liste)
-        ueberschneidung_liste = check_ueberschneidung_liste(zeiteintraege_liste, client_id)
-        booked_liste = check_booked_liste(zeiteintraege_liste)
-
-        # Listen kombinieren
-        kombinierte_liste = list(zip(zeiteintraege_liste, ueberschneidung_liste, booked_liste, u_liste))
-
-        return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id,
-                               client_id=client_id,
-                               kombinierte_liste=kombinierte_liste,
-                               client_name=client_name,
-                               client_sachbearbeiter=client_sachbearbeiter_name,
-                               user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
-                               kombinationen=kombinationen, sum_km=sum_km, sum_hours=sum_hours,
-                               fallverantwortung=fallverantwortung)
-
-    else:
-        # Gesamt Stunden auslesen
-        sum_hours_list = sum_hours_klient(client_id, month, year, user_id)
-        sum_hours = []
-        if sum_hours_list:
-            sum_hours = sum_hours_list[0]
-
-        # Gesamt Kilometer auslesen
-        sum_km_list = sum_km_klient_ges(client_id, month, year, user_id)
-        sum_km = []
-        if sum_km_list:
-            sum_km = sum_km_list[0]
-        # Listen erstellen
-        zeiteintraege_liste = get_zeiteintrag_for_client_and_person(client_id, user_id, month, year)
-        u_liste = unterschriften_liste(zeiteintraege_liste)
-        ueberschneidung_liste = check_ueberschneidung_liste(zeiteintraege_liste, client_id)
-        booked_liste = check_booked_liste(zeiteintraege_liste)
-
-        # Listen kombinieren
-        kombinierte_liste = list(zip(zeiteintraege_liste, ueberschneidung_liste, booked_liste, u_liste))
-        print(kombinierte_liste)
-
-        return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id,
-                               client_id=client_id,
-                               kombinierte_liste=kombinierte_liste,
-                               client_name=client_name,
-                               client_sachbearbeiter=client_sachbearbeiter_name,
-                               fallverantwortung=fallverantwortung,
-                               user_role=user_role, gewaehlte_kombination=gewaehlte_kombination,
-                               kombinationen=kombinationen, sum_km=sum_km, sum_hours=sum_hours)
+        # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite
+        flash('Sie müssen sich anmelden.')
+        return redirect(url_for('login.login'))

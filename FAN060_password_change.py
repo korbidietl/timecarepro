@@ -21,49 +21,55 @@ def send_email_passwort_change(email, firstname, lastname):
 
 @password_change_blueprint.route('/password_change', methods=['POST', 'GET'])
 def change_password():
-    # Rückleitung bei unerlaubter Seite
-    session['secure_url'] = url_for('password_change.change_password')
+    if 'user_id' in session:
+        # Rückleitung bei unerlaubter Seite
+        session['secure_url'] = url_for('password_change.change_password')
 
-    if request.method == "POST":
+        if request.method == "POST":
 
-        current_password = request.form["current_password"]
-        new_password = request.form["new_password"]
-        confirm_password = request.form["confirm_password"]
+            current_password = request.form["current_password"]
+            new_password = request.form["new_password"]
+            confirm_password = request.form["confirm_password"]
 
-        # Peröhnliche Daten für Email
-        email = session.get('user_email')
-        firstname = get_firstname_by_email(email)
-        lastname = get_lastname_by_email(email)
+            # Peröhnliche Daten für Email
+            email = session.get('user_email')
+            firstname = get_firstname_by_email(email)
+            lastname = get_lastname_by_email(email)
 
-        # Prüfen, ob alle Felder ausgefüllt sind
-        if not current_password or not new_password or not confirm_password:
-            flash("Alle Felder müssen ausgefüllt werden.")
-            return render_template("FAN060_password_change.html")
+            # Prüfen, ob alle Felder ausgefüllt sind
+            if not current_password or not new_password or not confirm_password:
+                flash("Alle Felder müssen ausgefüllt werden.")
+                return render_template("FAN060_password_change.html")
 
-        # Prüfen, ob die neuen Passwörter übereinstimmen
-        elif new_password != confirm_password:
-            flash("Die Felder „Neues Passwort“ und „Neues Passwort bestätigen“ müssen übereinstimmen.")
-            return render_template("FAN060_password_change.html")
+            # Prüfen, ob die neuen Passwörter übereinstimmen
+            elif new_password != confirm_password:
+                flash("Die Felder „Neues Passwort“ und „Neues Passwort bestätigen“ müssen übereinstimmen.")
+                return render_template("FAN060_password_change.html")
 
-        # Prüfen, ob das neue Passwort den Anforderungen entspricht
-        elif not validate_password(new_password):
-            flash("Das neue Passwort muss mindestens 10 Zeichen enthalten.")
-            return render_template("FAN060_password_change.html")
+            # Prüfen, ob das neue Passwort den Anforderungen entspricht
+            elif not validate_password(new_password):
+                flash("Das neue Passwort muss mindestens 10 Zeichen enthalten.")
+                return render_template("FAN060_password_change.html")
 
-        # Überprüfen, ob das aktuelle Passwort korrekt ist
-        elif not validate_login(session['user_email'], current_password):
-            flash("Das aktuelle Passwort ist nicht korrekt.")
-            return render_template("FAN060_password_change.html")
+            # Überprüfen, ob das aktuelle Passwort korrekt ist
+            elif not validate_login(session['user_email'], current_password):
+                flash("Das aktuelle Passwort ist nicht korrekt.")
+                return render_template("FAN060_password_change.html")
 
-        # Aktualisieren des Passworts
-        else:
-            set_password_required_false(email)
-            set_password_mail(email, new_password)
-            send_email_passwort_change(email, firstname, lastname)
-            flash(
-                "Das Passwort wurde erfolgreich geändert und eine Bestätigungs-Mail versendet.",
-                "success")
+            # Aktualisieren des Passworts
+            else:
+                set_password_required_false(email)
+                set_password_mail(email, new_password)
+                send_email_passwort_change(email, firstname, lastname)
+                flash(
+                    "Das Passwort wurde erfolgreich geändert und eine Bestätigungs-Mail versendet.",
+                    "success")
 
-            return redirect(url_for('home.home'))
+                return redirect(url_for('home.home'))
 
-    return render_template("FAN060_password_change.html")
+        return render_template("FAN060_password_change.html")
+
+    else:
+        # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite
+        flash('Sie müssen sich anmelden.')
+        return redirect(url_for('login.login'))
