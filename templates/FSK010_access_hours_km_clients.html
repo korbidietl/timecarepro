@@ -8,17 +8,27 @@
 <body>
     {% include 'FAN020_navbar.html' %}
 
+    <!-- Flash Nachrichten anzeigen -->
+    <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
     <div class="table-form">
-
         <h2>Zeiteinträge deiner Klienten</h2>
-        <br>
-        <br>
-
+        <br><br>
         <div class="form-row" style="justify-content: start;">
             <h2 style="margin: 0; font-size: 1.5em; line-height: 1.2em;">Klient: {{client_name[0]}} {{client_name[1]}}</h2>
             <div style="margin-left: 40px; font-weight: normal; font-size: 1.5em; line-height: 1.2em;">Sachbearbeiter: {{sb_name[0]}} {{sb_name[1]}}</div>
         </div>
-
         <div class="leerzeile"></div>
 
         <form action="{{ url_for('access_hours_km_clients.view_time_entries', client_id=client_id) }}" method="post">
@@ -94,32 +104,55 @@
             <p>Noch keine Einträge vorhanden.</p>
         {% endif %}
     </div>
+        <script>
+        window.onload = function() {
+            // Überprüfen, ob Nachrichten vorhanden sind
+            {% if get_flashed_messages() %}
+                let modal = document.getElementById("flashModal");
+                let span = document.getElementsByClassName("close")[0];
 
+                // Modal anzeigen
+                modal.style.display = "block";
+
+                // Schließen, wenn das "X" geklickt wird
+                span.onclick = function() {
+                    modal.style.display = "none";
+                };
+
+                // Schließen, wenn außerhalb des Modals geklickt wird
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                };
+            {% endif %}
+        }
+    </script>
     <script>
-function exportTableToCSV() {
-    var csv = [];
-    var rows = document.querySelectorAll("table tr");
+        function exportTableToCSV() {
+            var csv = [];
+            var rows = document.querySelectorAll("table tr");
 
-    for (var i = 0; i < rows.length; i++) {
-        var row = [], cols = rows[i].querySelectorAll("td, th");
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll("td, th");
 
-        for (var j = 0; j < cols.length; j++)
-            row.push(cols[j].innerText);
+                for (var j = 0; j < cols.length; j++)
+                    row.push(cols[j].innerText);
 
-        csv.push(row.join(","));
-    }
+                csv.push(row.join(","));
+            }
 
-    // Download CSV file
-    var csvContent = csv.join("\n");
-    var encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
-    var link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "export.csv");
-    document.body.appendChild(link); // Required for FF
+            // Download CSV file
+            var csvContent = csv.join("\n");
+            var encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "export.csv");
+            document.body.appendChild(link); // Required for FF
 
-    link.click(); // This will download the data file named "my_data.csv".
-}
-</script>
+            link.click(); // This will download the data file named "my_data.csv".
+        }
+    </script>
 
 </body>
 </html>

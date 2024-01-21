@@ -6,7 +6,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+    <!-- Menüleiste einbinden-->
+    {% include 'FAN020_navbar.html' %}
 
+    <!-- Flash Nachrichten anzeigen -->
     <div id="flashModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -19,9 +22,6 @@
             {% endwith %}
         </div>
     </div>
-
-    <!-- Menüleiste einbinden-->
-    {% include 'FAN020_navbar.html' %}
 
     <div class = "registration-form_2">
         <h2>Klient anlegen</h2>
