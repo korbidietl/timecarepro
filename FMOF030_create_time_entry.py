@@ -50,7 +50,6 @@ def submit_arbeitsstunden(person_id):
 
             # return url zur rückleitung
             klient_id = session.get('client_id', None)
-            print("klientid: ", klient_id)
             return_url = session.get('url')
 
             # session speichern für rückleitung
@@ -64,7 +63,6 @@ def submit_arbeitsstunden(person_id):
                 client_data = get_klient_data(klient_id)
                 if client_data[0][9] == person_id:
                     fachkraft = "1"
-            print("fachkraft: ", fachkraft)
 
             if request.method == 'POST':
                 # Eingabedaten aus dem Formular holen
@@ -93,7 +91,8 @@ def submit_arbeitsstunden(person_id):
                 # Überprüfung, ob alle notwendigen Felder ausgefüllt wurden
                 for field in field_names:
                     if not request.form.get(field):
-                        flash(f'Es müssen alle Felder ausgefüllt werden. {field_names[field]} ist noch nicht ausgefüllt.')
+                        flash(f'Es müssen alle Felder ausgefüllt werden. '
+                              f'{field_names[field]} ist noch nicht ausgefüllt.')
                         return render_template('FMOF030_create_time_entry.html', klienten=klienten, person_id=person_id)
 
                 # Konvertiere Datum und Uhrzeit in ein datetime-Objekt
@@ -107,8 +106,8 @@ def submit_arbeitsstunden(person_id):
                 zeiteintrag_data['end_datetime'] = end_datetime
 
                 # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
-                if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime, zeiteintrag_data['klient_id'],
-                                                    person_id):
+                if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime,
+                                                    zeiteintrag_data['klient_id'], person_id):
 
                     # Umwandlung der Unterschriften
                     if zeiteintrag_data['neue_unterschrift_klient']:
@@ -118,10 +117,13 @@ def submit_arbeitsstunden(person_id):
                         zeiteintrag_data['neue_unterschrift_mitarbeiter'] = base64_to_blob(zeiteintrag_data['neue_unterschrift_mitarbeiter'])
 
                     # Füge neuen Zeiteintrag hinzu und erhalte die ID
-                    zeiteintrag_id = add_zeiteintrag(zeiteintrag_data['neue_unterschrift_mitarbeiter'], zeiteintrag_data['neue_unterschrift_klient'],
+                    zeiteintrag_id = add_zeiteintrag(zeiteintrag_data['neue_unterschrift_mitarbeiter'],
+                                                     zeiteintrag_data['neue_unterschrift_klient'],
                                                      start_datetime, end_datetime,
-                                                     zeiteintrag_data['klient_id'], zeiteintrag_data['fachkraft'],
-                                                     zeiteintrag_data['beschreibung'], zeiteintrag_data['interne_notiz'],
+                                                     zeiteintrag_data['klient_id'],
+                                                     zeiteintrag_data['fachkraft'],
+                                                     zeiteintrag_data['beschreibung'],
+                                                     zeiteintrag_data['interne_notiz'],
                                                      zeiteintrag_data['absage'])
 
                     # Iteriere über alle Fahrt-Einträge und füge sie hinzu
@@ -171,7 +173,8 @@ def submit_arbeitsstunden(person_id):
 
                     # prüft auf überschneidung einer bestehenden eintragung in der datenbank
                     if check_for_overlapping_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime):
-                        return redirect(url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id))
+                        return redirect(url_for('check_overlapping_time.overlapping_time',
+                                                zeiteintrag_id=zeiteintrag_id))
 
                     session.pop('client_id')
                     # Weiterleitung zurück zur Herkunftsfunktion

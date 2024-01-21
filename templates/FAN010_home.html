@@ -27,26 +27,27 @@
 
          <h2>Startseite</h2>
          <br> <br>
+
         <!-- Kliententabelle -->
         {% if role != 'Steuerbüro'%}
-        <h3>Kliententabelle</h3>
-        <div id="userRole_k" data-role="{{ role }}"></div>
-        <label for="monat_jahr_dropdown_k"></label>
-        <select id="monat_jahr_dropdown_k" class="gray-background" style="padding: 8px; border: 1px solid #ccc;border-radius: 4px; margin-right: 20px; margin-bottom: 20px">
-            {% for kombination in kombinationen %}
-                <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
-                    {{ kombination }}
-                </option>
-            {% endfor %}
-        </select>
-        <button type="button" id="anzeigenButton_k">Anzeigen</button>
+            <h3>Kliententabelle</h3>
+            <div id="userRole_k" data-role="{{ role }}"></div>
+            <label for="monat_jahr_dropdown_k"></label>
+            <select id="monat_jahr_dropdown_k" class="gray-background" style="padding: 8px; border: 1px solid #ccc;border-radius: 4px; margin-right: 20px; margin-bottom: 20px">
+                {% for kombination in kombinationen %}
+                    <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
+                        {{ kombination }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="button" id="anzeigenButton_k">Anzeigen</button>
 
-        <div class="scrollable-container">
-            <div id="clients_table_container"></div>
-        </div>
-        <p id="no-clients-message" style="display: none;">Keine Klienten gefunden.</p>
+            <div class="scrollable-container">
+                <div id="clients_table_container"></div>
+            </div>
 
-        <br> <br> <br>
+            <p id="no-clients-message" style="display: none;">Keine Klienten gefunden.</p>
+            <br> <br> <br>
         {% endif %}
 
         <!--Mitarbeitertabelle -->

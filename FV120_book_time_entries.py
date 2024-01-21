@@ -71,7 +71,6 @@ def book_client_time_entry(client_id):
                                            return_url=return_url, client_id=client_id)
                 # Berechnen von Salden und Durchführen der Buchung
                 if book_zeiteintrag(client_id):
-                    print("gebucht")
                     flash(f"Stundennachweise für {month_str} erfolgreich gebucht.")
                 else:
                     flash("Fehler bei der Buchung.")

@@ -1,8 +1,7 @@
 from flask import Blueprint, request, render_template, session, flash, redirect, url_for
 from db_query import edit_klient_fct, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data, \
-    get_current_client, get_new_client, save_change_log, edit_klient
+    get_current_client, get_new_client, save_change_log
 from FV020_create_account import is_valid_date, is_valid_phone
-
 
 edit_client_blueprint = Blueprint('edit_client', __name__)
 
@@ -50,10 +49,6 @@ def edit_client(client_id):
                 kontingent_hk = request.form.get('kontingent_hk')
                 kontingent_fk = request.form.get('kontingent_fk')
                 fallverantwortung_id = request.form.get('fvDropdown')
-                print("Name: ", vorname, nachname)
-                print("geb: ", geburtsdatum)
-                print("sachbearbeiter: ", sachbearbeiter_id)
-                print("fallverantwortung: ", fallverantwortung_id)
 
                 required_fields = ['nachname', 'vorname', 'geburtsdatum', 'adresse']
 
@@ -84,13 +79,9 @@ def edit_client(client_id):
                                                fv=fallverantwortung_id,
                                                return_url=return_url)
 
-                print("Name2: ", vorname, nachname)
                 # Klientdateils überschreiben
                 edit_klient_fct(client_id, vorname, nachname, geburtsdatum, adresse, telefonnummer, sachbearbeiter_id,
                                 kontingent_fk, kontingent_hk, fallverantwortung_id)
-                # edit_klient(client_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse,
-                            # kontingent_hk, kontingent_fk, fallverantwortung_id)
-                print(get_klient_data(client_id))
 
                 # Änderungsprotokoll
                 new_client = get_new_client(client_id)
@@ -121,7 +112,8 @@ def edit_client(client_id):
                 return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, sb_id=sb_id,
                                        fallverantwortung=fallverantwortung, fv_id=fv_id, client_id=client_id,
                                        firstname=firstname, lastname=lastname, birthday=birthday,
-                                       phone=phone, sb=sachbearbeiter, address=address, fk=fk, hk=hk, fv=fallverantwortung_name,
+                                       phone=phone, sb=sachbearbeiter, address=address, fk=fk, hk=hk,
+                                       fv=fallverantwortung_name,
                                        return_url=return_url)
 
     else:

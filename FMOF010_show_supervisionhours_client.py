@@ -1,6 +1,5 @@
 import base64
 import datetime
-
 from flask import Blueprint, render_template, request, session, url_for, flash, redirect
 from datetime import datetime
 from db_query import get_client_name, get_sachbearbeiter_name, get_fallverantwortung_id, \
@@ -45,7 +44,7 @@ def check_booked_liste(zeiteintraege_liste):
     return booked_liste
 
 
-def check_ueberschneidung_liste(zeiteintraege_liste, client_id):
+def check_ueberschneidung_liste(zeiteintraege_liste):
     # Liste für Überschneidungen
     ueberschneidung_liste = []
     for zeiteintrag in zeiteintraege_liste:
@@ -146,7 +145,7 @@ def client_supervision_hours(client_id):
             # Listen erstellen
             zeiteintraege_liste = get_zeiteintrag_for_client(client_id, month, year)
             u_liste = unterschriften_liste(zeiteintraege_liste)
-            ueberschneidung_liste = check_ueberschneidung_liste(zeiteintraege_liste, client_id)
+            ueberschneidung_liste = check_ueberschneidung_liste(zeiteintraege_liste)
             booked_liste = check_booked_liste(zeiteintraege_liste)
 
             # Listen kombinieren
@@ -176,12 +175,11 @@ def client_supervision_hours(client_id):
             # Listen erstellen
             zeiteintraege_liste = get_zeiteintrag_for_client_and_person(client_id, user_id, month, year)
             u_liste = unterschriften_liste(zeiteintraege_liste)
-            ueberschneidung_liste = check_ueberschneidung_liste(zeiteintraege_liste, client_id)
+            ueberschneidung_liste = check_ueberschneidung_liste(zeiteintraege_liste)
             booked_liste = check_booked_liste(zeiteintraege_liste)
 
             # Listen kombinieren
             kombinierte_liste = list(zip(zeiteintraege_liste, ueberschneidung_liste, booked_liste, u_liste))
-            print(kombinierte_liste)
 
             return render_template('FMOF010_show_supervisionhours_client.html', user_id=user_id,
                                    client_id=client_id,

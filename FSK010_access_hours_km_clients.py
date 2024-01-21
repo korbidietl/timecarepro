@@ -57,7 +57,7 @@ def view_time_entries(client_id):
             sb_name = get_sachbearbeiter_name(client_id)
             zeiteintrag_ids = get_client_table_client_sb(client_id, user_id, month, year)
             u_liste = unterschriften_liste(zeiteintrag_ids)
-            ueberschneidung_liste = check_ueberschneidung_liste(zeiteintrag_ids, client_id)
+            ueberschneidung_liste = check_ueberschneidung_liste(zeiteintrag_ids)
             booked_liste = check_booked_liste(zeiteintrag_ids)
             for entry in booked_liste:
                 if entry is True:
@@ -70,9 +70,8 @@ def view_time_entries(client_id):
 
             return render_template('FSK010_access_hours_km_clients.html',
                                    client_id=client_id, kombinierte_liste=kombinierte_liste, client_name=client_name,
-                                   sb_name=sb_name,
-                                   gewaehlte_kombination=gewaehlte_kombination, kombinationen=kombinationen, booked=booked,
-                                   month=gewaehlte_kombination)
+                                   sb_name=sb_name, gewaehlte_kombination=gewaehlte_kombination,
+                                   kombinationen=kombinationen, booked=booked, month=gewaehlte_kombination)
 
     else:
         # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite

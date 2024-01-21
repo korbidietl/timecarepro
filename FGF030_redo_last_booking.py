@@ -23,7 +23,6 @@ def revidieren_buchung(client_id):
 
                 year, month = last_buchung_month.split('-')
                 month_int = int(month)
-                print(last_buchung_month)
 
                 month_str = month_number_to_name(month_int)
 

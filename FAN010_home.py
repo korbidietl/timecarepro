@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, session, url_for, request, Respons
 import csv
 import io
 
-
 home_blueprint = Blueprint('home', __name__)
 
 

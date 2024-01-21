@@ -36,8 +36,8 @@ def client_details(client_id):
                 fallverantwortung = get_name_by_id(fv_id)[0] if fv_id else "N/A"
 
                 return render_template('FV080_client_details.html', client_id=client_id, firstname=firstname,
-                                       lastname=lastname, birthday=birthday, phone=phone, sb=sachbearbeiter, address=address,
-                                       fk=fk, hk=hk, fv=fallverantwortung, return_url=return_url)
+                                       lastname=lastname, birthday=birthday, phone=phone, sb=sachbearbeiter,
+                                       address=address, fk=fk, hk=hk, fv=fallverantwortung, return_url=return_url)
 
             # Rendern der Vorlage, auch wenn keine Daten gefunden wurden
             return render_template('FV080_client_details.html', client_id=client_id, return_url=return_url)

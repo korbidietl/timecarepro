@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-
 from flask import Blueprint, render_template, request, json, session, url_for, flash, redirect
 from db_query import get_protokoll, person_dropdown
 
@@ -49,8 +48,9 @@ def show_protocol():
                                            eintrags_id=eintrags_id)
 
                 kombinierte_liste = zip(protocols, entry)
-                return render_template('FGF020_show_protocol.html', kombinierte_liste=kombinierte_liste, nutzers=nutzers,
-                                       von=von, bis=bis, nutzer=aendernder_nutzer, eintrags_id=eintrags_id)
+                return render_template('FGF020_show_protocol.html', kombinierte_liste=kombinierte_liste,
+                                       nutzers=nutzers, von=von, bis=bis, nutzer=aendernder_nutzer,
+                                       eintrags_id=eintrags_id)
 
             else:
                 heute = datetime.now()
@@ -77,8 +77,8 @@ def show_protocol():
                     entry.append((data_dict_alt, data_dict_neu))
 
                 kombinierte_liste = zip(protocols, entry)
-                return render_template('FGF020_show_protocol.html', kombinierte_liste=kombinierte_liste, nutzers=nutzers,
-                                       von=von, bis=bis)
+                return render_template('FGF020_show_protocol.html', kombinierte_liste=kombinierte_liste,
+                                       nutzers=nutzers, von=von, bis=bis)
 
     else:
         # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite

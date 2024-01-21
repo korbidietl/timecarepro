@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from flask import render_template, request, Blueprint, flash, redirect, url_for, session
 from db_query import mitarbeiter_dropdown, create_klient, validate_client, kostentraeger_dropdown
 from FV020_create_account import is_valid_date, is_valid_phone

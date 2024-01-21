@@ -57,6 +57,3 @@ def generate_month_year_combinations():
                          not (k.endswith(str(aktuelles_jahr)) and monate.index(k.split(" ")[0]) >= aktueller_monat)]
 
     return kombinationen
-
-
-# test

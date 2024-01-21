@@ -91,9 +91,10 @@ def edit_time_entry(zeiteintrag_id):
                     }
                     for field in field_names:
                         if not request.form.get(field):
-                            flash(f'Es müssen alle Felder ausgefüllt werden. {field_names[field]} ist noch nicht ausgefüllt.')
-                            return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
-                                                   klient_id=klient_id, datum=datum, von=von, bis=bis,
+                            flash(f'Es müssen alle Felder ausgefüllt werden. '
+                                  f'{field_names[field]} ist noch nicht ausgefüllt.')
+                            return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag,
+                                                   fahrten=fahrten, klient_id=klient_id, datum=datum, von=von, bis=bis,
                                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
                                                    return_url=return_url)
                 else:
@@ -105,9 +106,10 @@ def edit_time_entry(zeiteintrag_id):
                     }
                     for field in field_names:
                         if not request.form.get(field):
-                            flash(f'Es müssen alle Felder ausgefüllt werden. {field_names[field]} ist noch nicht ausgefüllt.')
-                            return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
-                                                   klient_id=klient_id, datum=datum, von=von, bis=bis,
+                            flash(f'Es müssen alle Felder ausgefüllt werden. '
+                                  f'{field_names[field]} ist noch nicht ausgefüllt.')
+                            return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag,
+                                                   fahrten=fahrten, klient_id=klient_id, datum=datum, von=von, bis=bis,
                                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
                                                    return_url=return_url)
 
@@ -165,8 +167,8 @@ def edit_time_entry(zeiteintrag_id):
                     }
                     fahrt_data_list.append(fahrt_data)
 
-                if check_for_overlapping_zeiteintrag(zeiteintrag_id,
-                                                     zeiteintrag_data['start_datetime'], zeiteintrag_data['end_datetime']):
+                if check_for_overlapping_zeiteintrag(zeiteintrag_id, zeiteintrag_data['start_datetime'],
+                                                     zeiteintrag_data['end_datetime']):
                     session['overlapping_ze'] = zeiteintrag_data
                     session['overlapping_fahrten'] = fahrt_data_list
                     return redirect(

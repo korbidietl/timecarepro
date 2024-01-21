@@ -43,7 +43,8 @@ def delete_te(zeiteintrags_id):
 
                     # Rückleitungen zur Herkunftsfunktion und löschen aus der Session
                     return redirect(session.pop('url', None))
-            return render_template('FMOF060_delete_time_entry.html', zeiteintrags_id=zeiteintrags_id, return_url=return_url)
+            return render_template('FMOF060_delete_time_entry.html', zeiteintrags_id=zeiteintrags_id,
+                                   return_url=return_url)
     else:
         # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite
         flash('Sie müssen sich anmelden.')

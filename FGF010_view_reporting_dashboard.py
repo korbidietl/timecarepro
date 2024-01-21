@@ -7,10 +7,10 @@ from db_query import mitarbeiter_dropdown, client_dropdown, sum_mitarbeiter, sum
     get_report_mitarbeiter, get_report_klient, monatliche_gesamtstunden, sum_absagen_monatlich, sum_km_monatlich, \
     sum_km_monatlich_tabelle, sum_absage_tabelle, sum_hours_tabelle
 
-reporting_dachboard_blueprint = Blueprint('view_reporting_dashboard', __name__)
+reporting_dashboard_blueprint = Blueprint('view_reporting_dashboard', __name__)
 
 
-@reporting_dachboard_blueprint.route('/reporting_dashboard', methods={'GET', 'POST'})
+@reporting_dashboard_blueprint.route('/reporting_dashboard', methods={'GET', 'POST'})
 def reporting_dashboard():
     if 'user_id' in session:
         user_role = session['user_role']
@@ -96,7 +96,8 @@ def reporting_dashboard():
 
                 # Wenn ein Feld ungültig ist erneutes Laden der Seite mit Flash nachricht
                 if not valid:
-                    return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, stundendaten=stundendaten,
+                    return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl,
+                                           stundendaten=stundendaten,
                                            terminabsagendaten=absagen_diagramm, kmdaten=km_diagramm)
 
                 # Auswerten des Datums zur weiterverwendung
@@ -131,12 +132,15 @@ def reporting_dashboard():
 
                 # Ausgabe Diagramme
                 maanzahl = mitarbeiter_anzahl()
-                stunden_diagramm = monatliche_gesamtstunden(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
+                stunden_diagramm = monatliche_gesamtstunden(start_datum_formatiert, end_datum_formatiert, mitarbeiter,
+                                                            klient)
                 stundendaten = [float(d) if isinstance(d, Decimal) else d for d in stunden_diagramm]
-                absagen_diagramm = sum_absagen_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
+                absagen_diagramm = sum_absagen_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter,
+                                                         klient)
                 km_diagramm = sum_km_monatlich(start_datum_formatiert, end_datum_formatiert, mitarbeiter, klient)
 
-                return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl, klienten_daten=klienten_liste,
+                return render_template('FGF010_view_reporting_dashboard.html', **ma, **cl,
+                                       klienten_daten=klienten_liste,
                                        mitarbeiter_daten=mitarbeiter_liste, zeiteintraege_liste=zeiteintraege_liste,
                                        klient_gesamt=kl_tabelle_gesamt, mitarbeiter_gesamt=ma_tabelle_gesamt,
                                        stundendaten=stundendaten, ze_gesamt=ze_tabelle_gesamt,
@@ -170,6 +174,7 @@ def reporting_dashboard():
         # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite
         flash('Sie müssen sich anmelden.')
         return redirect(url_for('login.login'))
+
 
 def eingabe_formatieren(von, bis):
     von_date = datetime.strptime(von, '%Y-%m-%d').date()

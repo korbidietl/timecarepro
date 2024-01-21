@@ -21,9 +21,11 @@ def show_details(zeiteintrag_id, person_id):
             return redirect(session['secure_url'])
         else:
             # Rückleitung bei unerlaubter Seite
-            session['secure_url'] = url_for('work_hours_details.show_details', zeiteintrag_id=zeiteintrag_id, person_id=person_id)
+            session['secure_url'] = url_for('work_hours_details.show_details', zeiteintrag_id=zeiteintrag_id,
+                                            person_id=person_id)
 
-            session['url'] = url_for('work_hours_details.show_details', zeiteintrag_id=zeiteintrag_id, person_id=person_id)
+            session['url'] = url_for('work_hours_details.show_details', zeiteintrag_id=zeiteintrag_id,
+                                     person_id=person_id)
             # Datenbankaufrufe
             zeiteintrag_liste = get_zeiteintrag_by_id(zeiteintrag_id)
             zeiteintrag = zeiteintrag_liste[0]

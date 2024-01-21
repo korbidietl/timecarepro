@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from flask import Blueprint, request, render_template, redirect, flash, session, url_for
 from db_query import edit_account_fct, get_person_data, get_current_person, get_new_person, save_change_log
 from FV020_create_account import is_valid_phone, is_valid_date
@@ -16,7 +15,7 @@ def edit_account(person_id):
             return redirect(session['secure_url'])
         else:
             # Rückleitung bei unerlaubter Seite
-            session['secure_url'] = url_for('edit_account.edit_account', person_id = person_id)
+            session['secure_url'] = url_for('edit_account.edit_account', person_id=person_id)
 
             return_url = session.get('url')
 
@@ -67,16 +66,16 @@ def edit_account(person_id):
                         flash('Das Geburtsdatum ist ungültig.')
                         return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
                                                lastname=lastname, birthday=birthday, qualification=qualification,
-                                               address=address,
-                                               email=email, phone=phone, locked=locked, role=role, return_url=return_url)
+                                               address=address, email=email, phone=phone, locked=locked, role=role,
+                                               return_url=return_url)
 
                 if phone is not None:
                     if not is_valid_phone(phone):
                         flash('Die Telefonnummer ist ungültig.')
                         return render_template('FV040_edit_account.html', person_id=person_id, firstname=firstname,
                                                lastname=lastname, birthday=birthday, qualification=qualification,
-                                               address=address,
-                                               email=email, phone=phone, locked=locked, role=role, return_url=return_url)
+                                               address=address, email=email, phone=phone, locked=locked, role=role,
+                                               return_url=return_url)
 
                 # Account-Daten aktualisieren
                 edit_account_fct(firstname, lastname, birthday, qualification, address, phone, person_id)

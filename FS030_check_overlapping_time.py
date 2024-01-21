@@ -1,5 +1,4 @@
 from flask import Blueprint, request, render_template, session, url_for, redirect, flash
-
 from FMOF050_edit_time_entry import save_after_overlapping
 from db_query import (check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id, get_name_by_id, get_client_name)
 
@@ -20,13 +19,10 @@ def overlapping_time(zeiteintrag_id):
 
         overlapping_entries = []
         if zeiteintrag_data:
-            print("datum: ", zeiteintrag_data['datum'])
             # Füge den formatierten originalen Zeiteintrag hinzu
-            print("zeiteintrag: ", zeiteintrag_data)
             overlapping_entries.append(format_zeiteintrag(zeiteintrag_data))
 
             start_zeit_datetime = zeiteintrag_data['start_datetime']
-            print("start: ", start_zeit_datetime)
             end_zeit_datetime = zeiteintrag_data['end_datetime']
 
             overlapping_ids = check_for_overlapping_zeiteintrag(zeiteintrag_id, start_zeit_datetime, end_zeit_datetime)
@@ -46,18 +42,14 @@ def overlapping_time(zeiteintrag_id):
 
 def format_zeiteintrag(entry):
     datum = entry['datum']
-    print(datum)
     startzeit = entry['start_zeit']
-    print(startzeit)
     endzeit = entry['end_zeit']
     mitarbeiter = get_name_by_id(entry['mitarbeiter_id'])
     m_vorname = mitarbeiter[0][0]
     m_nachname = mitarbeiter[0][1]
-    print("mit: ", m_nachname, m_vorname)
     client = get_client_name(entry['klient_id'])
     c_vorname = client[0]
     c_nachname = client[1]
-    print("klie: ", c_nachname, c_vorname)
     zeiteintrag_id = entry['zeiteintrag_id']
     beschreibung = entry['beschreibung']
     return zeiteintrag_id, datum, startzeit, endzeit, beschreibung, m_nachname, m_vorname, c_nachname, c_vorname
@@ -70,9 +62,7 @@ def format_zeiteintrag_new(entry):
     mitarbeiter = get_name_by_id(entry[5])
     m_vorname = mitarbeiter[0][0]
     m_nachname = mitarbeiter[0][1]
-    print("mit: ", m_nachname, m_vorname)
     client = get_client_name(entry[6])
     c_vorname = client[0]
     c_nachname = client[1]
-    print("klie: ", c_nachname, c_vorname)
     return entry[0], datum, startzeit, endzeit, entry[8], m_nachname, m_vorname, c_nachname, c_vorname

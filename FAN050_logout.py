@@ -15,11 +15,7 @@ def logout():
             logged_in_users.remove(email)
 
         # Session löschen
-        session.pop('user_id', None)
-        session.pop('user_role', None)
-        session.pop('user_email', None)
-        session.pop('last_activity', None)
-        session.pop('url', None)
+        session.clear()
 
         return redirect(url_for('login.login'))
 
