@@ -169,6 +169,7 @@ def edit_time_entry(zeiteintrag_id):
 
                 if check_for_overlapping_zeiteintrag(zeiteintrag_id, zeiteintrag_data['start_datetime'],
                                                      zeiteintrag_data['end_datetime']):
+                    print(zeiteintrag_data)
                     session['overlapping_ze'] = zeiteintrag_data
                     session['overlapping_fahrten'] = fahrt_data_list
                     return redirect(

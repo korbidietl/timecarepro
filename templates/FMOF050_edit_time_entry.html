@@ -159,6 +159,8 @@
                 </div>
             </div>
 
+            <br><br>
+
             <!-- Pop-up für Unterschrift Klient -->
             <div id="signaturePopupKlient" class="signature-popup" style="display:none;">
                 <canvas id="signatureCanvasKlient" width="400" height="200" style="border:1px solid #000;"></canvas>
@@ -207,7 +209,7 @@
 
                     newFahrtRow.innerHTML = `
                                 <div class="form-hidden">
-                                   <input type="hidden" name="fahrt_id" value="${next_fahrt_id}">
+                                   <input type="hidden" id="fahrt_id${next_fahrt_id}" name="fahrt_id${next_fahrt_id}" value="${next_fahrt_id}">
                                 </div>
                                 <div class="form-group">
                                    <input type="checkbox" id="abrechenbarkeit${next_fahrt_id}" name="abrechenbarkeit${next_fahrt_id}">
