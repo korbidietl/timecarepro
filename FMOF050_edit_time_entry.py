@@ -171,8 +171,10 @@ def edit_time_entry(zeiteintrag_id):
                                                      zeiteintrag_data['end_datetime']):
                     session['overlapping_ze'] = zeiteintrag_data
                     session['overlapping_fahrten'] = fahrt_data_list
+                    ids = check_for_overlapping_zeiteintrag(zeiteintrag_id, zeiteintrag_data['start_datetime'],
+                                                     zeiteintrag_data['end_datetime'])
                     return redirect(
-                        url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id))
+                        url_for('check_overlapping_time.overlapping_time', ids=ids, zeiteintrag_id=zeiteintrag_id))
 
                 # wenn kein overlapping dann trotzdem datenbank ausführen
                 else:
