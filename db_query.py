@@ -1038,6 +1038,7 @@ def edit_klient_fct(client_id, vorname, nachname, geburtsdatum, adresse, telefon
     connection.close()
 
 
+# /FV090/
 def edit_klient(klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse, kontingent_hk,
                 kontingent_fk, fallverantwortung_id):
     # Stellen Sie hier die Verbindung zur Datenbank her

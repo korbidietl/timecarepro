@@ -22,7 +22,6 @@
             {% endwith %}
         </div>
     </div>
-
     <div class = "registration-form_2">
         <h2>Klient bearbeiten</h2>
         <div class="mein-eindeutiges-formular">
@@ -57,15 +56,25 @@
 
                     <div class="form-group2">
                         <label for="ktDropdown">Kostenträger:</label>
-                        <select class="form-control" id="ktDropdown" name="ktDropdown">
-                            <option value="{{sb_id}}" {% if sb_id == sachbearbeiter_id %}selected{% endif %}>{{sb_id}} - {{sb}}</option>
+                        <!-- <select class="form-control" id="ktDropdown" name="ktDropdown">
+                            <option value="{{kt_id}}" {% if kt_id == sachbearbeiter_id %}selected{% endif %}>{{kt_id}} - {{kt}}</option>
                             {% for kt in kostentraeger %}
-                            <!-- Optionen werden durch Python generiert -->
+                            !-- Optionen werden durch Python generiert --
                             <option value="{{ kt.id }}" {% if kt.id == sachbearbeiter_id %}selected{% endif %}>{{ kt.id }} - {{ kt.nachname }}, {{ kt.vorname }}</option>
                             {% endfor %}
-                            <option value="">Keine Auswahl</option> <!-- Zusätzliche Option für keine Auswahl -->
+                            <option value="">Keine Auswahl</option> !-- Zusätzliche Option für keine Auswahl --
+                        </select> -->
+                        <select class="form-control" id="ktDropdown" name="ktDropdown">
+                            <option value="" {% if not kt_id %}selected{% endif %}>Keine Auswahl</option>
+                            {% for kt in kostentraeger %}
+                                <option value="{{ kt.id }}" {% if kt.id == kt_id %}selected{% endif %}>
+                                    {{ kt.id }} - {{ kt.nachname }}, {{ kt.vorname }}
+                                </option>
+                            {% endfor %}
                         </select>
+
                     </div>
+
                 </div>
                 <div class="form-row">
                     <div class="form-group2">
@@ -80,13 +89,22 @@
 
                     <div class="form-group2">
                         <label for="fvDropdown">Fallverantwortung:</label>
-                        <select class="form-control" id="fvDropdown" name="fvDropdown">
+                        <!--<select class="form-control" id="fvDropdown" name="fvDropdown">
                             <option value="{{ fv_id }}" {% if fv_id == fallverantwortung_id %}selected{% endif %}>{{ fv_id }} - {{ fv }}</option>
                             {% for fv in fallverantwortung %}
-                            <!-- Optionen werden durch Python generiert -->
+                            !-- Optionen werden durch Python generiert --
                             <option value="{{ fv.id }}" {% if fv.id == fallverantwortung_id %}selected{% endif %}>{{ fv.id }} - {{ fv.nachname }}, {{ fv.vorname }}</option>
                             {% endfor %}
-                            <option value="">Keine Auswahl</option> <!-- Zusätzliche Option für keine Auswahl -->
+                            <option value="">Keine Auswahl</option> !-- Zusätzliche Option für keine Auswahl --
+                        </select> -->
+
+                        <select class="form-control" id="fvDropdown" name="fvDropdown">
+                            <option value="" {% if not fv_id %}selected{% endif %}>Keine Auswahl</option>
+                            {% for fv in fallverantwortung %}
+                                <option value="{{ fv.id }}" {% if fv.id == fv_id %}selected{% endif %}>
+                                    {{ fv.id }} - {{ fv.nachname }}, {{ fv.vorname }}
+                                </option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
