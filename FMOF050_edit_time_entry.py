@@ -96,7 +96,7 @@ def edit_time_entry(zeiteintrag_id):
                             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag,
                                                    fahrten=fahrten, klient_id=klient_id, datum=datum, von=von, bis=bis,
                                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
-                                                   return_url=return_url)
+                                                   return_url=return_url, highest_fahrt_id=highest_fahrt_id)
                 else:
                     field_names = {
                         'datum': "Das Datum",
@@ -111,7 +111,7 @@ def edit_time_entry(zeiteintrag_id):
                             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag,
                                                    fahrten=fahrten, klient_id=klient_id, datum=datum, von=von, bis=bis,
                                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
-                                                   return_url=return_url)
+                                                   return_url=return_url, highest_fahrt_id=highest_fahrt_id)
 
                 # Konvertieren Sie die Datum- und Uhrzeitstrings in datetime-Objekte
                 datum_datetime = datetime.strptime(zeiteintrag_data['datum'], '%Y-%m-%d')
