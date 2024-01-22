@@ -28,7 +28,7 @@ def edit_client(client_id):
             lastname = client_data[2]
             birthday = client_data[3]
             phone = client_data[4]
-            sb_id = client_data[5]
+            kt_id = client_data[5]
             address = client_data[6]
             fk = client_data[7]
             hk = client_data[8]
@@ -56,7 +56,7 @@ def edit_client(client_id):
                     value = request.form.get(field)
                     if not request.form.get(field):
                         flash(f'Es müssen alle Felder ausgefüllt werden.')
-                        return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, sb_id=sb_id,
+                        return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, kt_id=kt_id,
                                                fallverantwortung=fallverantwortung, fv_id=fv_id, client_id=client_id,
                                                firstname=firstname, lastname=lastname, birthday=birthday,
                                                phone=phone, sb=sachbearbeiter_id, address=address, fk=fk, hk=hk,
@@ -64,7 +64,7 @@ def edit_client(client_id):
                                                return_url=return_url)
                     if field == 'geburtsdatum' and not is_valid_date(value):
                         flash(f'Eingabe in Feld {field} ungültig. Bitte geben Sie ein gültiges Datum ein.')
-                        return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, sb_id=sb_id,
+                        return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, kt_id=kt_id,
                                                fallverantwortung=fallverantwortung, fv_id=fv_id, client_id=client_id,
                                                firstname=firstname, lastname=lastname, birthday=birthday,
                                                phone=phone, sb=sachbearbeiter_id, address=address, fk=fk, hk=hk,
@@ -72,7 +72,7 @@ def edit_client(client_id):
                                                return_url=return_url)
                     elif field == 'telefonnummer' and not is_valid_phone(value):
                         flash(f'Eingabe in Feld {field} ungültig. Bitte geben Sie eine gültige Telefonnummer ein.')
-                        return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, sb_id=sb_id,
+                        return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, kt_id=kt_id,
                                                fallverantwortung=fallverantwortung, fv_id=fv_id, client_id=client_id,
                                                firstname=firstname, lastname=lastname, birthday=birthday,
                                                phone=phone, sb=sachbearbeiter_id, address=address, fk=fk, hk=hk,
@@ -93,15 +93,15 @@ def edit_client(client_id):
 
             else:
 
-                kostentraeger = [kt for kt in kostentraeger if kt['id'] != sb_id]
-                sachbearbeiter_data = get_name_by_id(sb_id)
+                # kostentraeger = [kt for kt in kostentraeger if kt['id'] != kt_id]
+                sachbearbeiter_data = get_name_by_id(kt_id)
                 if sachbearbeiter_data:
-                    sb = sachbearbeiter_data[0]
-                    sachbearbeiter = f"{sb[0]}, {sb[1]}"
+                    kt = sachbearbeiter_data[0]
+                    sachbearbeiter = f"{kt[0]}, {kt[1]}"
                 else:
                     sachbearbeiter = '-'
 
-                fallverantwortung = [fv for fv in fallverantwortung if fv['id'] != fv_id]
+                # fallverantwortung = [fv for fv in fallverantwortung if fv['id'] != fv_id]
                 fallverantwortung_data = get_name_by_id(fv_id)
                 if fallverantwortung_data:
                     fv = fallverantwortung_data[0]
@@ -109,7 +109,7 @@ def edit_client(client_id):
                 else:
                     fallverantwortung_name = '-'
 
-                return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, sb_id=sb_id,
+                return render_template('FV090_edit_client.html', kostentraeger=kostentraeger, kt_id=kt_id,
                                        fallverantwortung=fallverantwortung, fv_id=fv_id, client_id=client_id,
                                        firstname=firstname, lastname=lastname, birthday=birthday,
                                        phone=phone, sb=sachbearbeiter, address=address, fk=fk, hk=hk,

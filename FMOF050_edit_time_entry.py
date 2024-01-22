@@ -96,7 +96,7 @@ def edit_time_entry(zeiteintrag_id):
                             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag,
                                                    fahrten=fahrten, klient_id=klient_id, datum=datum, von=von, bis=bis,
                                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
-                                                   return_url=return_url)
+                                                   return_url=return_url, highest_fahrt_id=highest_fahrt_id)
                 else:
                     field_names = {
                         'datum': "Das Datum",
@@ -111,7 +111,7 @@ def edit_time_entry(zeiteintrag_id):
                             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag,
                                                    fahrten=fahrten, klient_id=klient_id, datum=datum, von=von, bis=bis,
                                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
-                                                   return_url=return_url)
+                                                   return_url=return_url, highest_fahrt_id=highest_fahrt_id)
 
                 # Konvertieren Sie die Datum- und Uhrzeitstrings in datetime-Objekte
                 datum_datetime = datetime.strptime(zeiteintrag_data['datum'], '%Y-%m-%d')
@@ -171,8 +171,10 @@ def edit_time_entry(zeiteintrag_id):
                                                      zeiteintrag_data['end_datetime']):
                     session['overlapping_ze'] = zeiteintrag_data
                     session['overlapping_fahrten'] = fahrt_data_list
+                    ids = check_for_overlapping_zeiteintrag(zeiteintrag_id, zeiteintrag_data['start_datetime'],
+                                                     zeiteintrag_data['end_datetime'])
                     return redirect(
-                        url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id))
+                        url_for('check_overlapping_time.overlapping_time', ids=ids, zeiteintrag_id=zeiteintrag_id))
 
                 # wenn kein overlapping dann trotzdem datenbank ausführen
                 else:
