@@ -17,10 +17,12 @@ def overlapping_time(zeiteintrag_id):
             save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrten_data_list)
             return redirect(return_url)
 
+        print("ze in overlapping: ", zeiteintrag_data)
         overlapping_entries = []
         if zeiteintrag_data:
             # Füge den formatierten originalen Zeiteintrag hinzu
             overlapping_entries.append(format_zeiteintrag(zeiteintrag_data))
+            print("in schleife")
 
             start_zeit_datetime = zeiteintrag_data['start_datetime']
             end_zeit_datetime = zeiteintrag_data['end_datetime']

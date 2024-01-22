@@ -168,7 +168,10 @@ def submit_arbeitsstunden(person_id):
                     zeiteintrag_data['zeiteintrag_id'] = zeiteintrag_id
                     zeiteintrag_data['mitarbeiter_id'] = person_id
 
+                    print("zeit: ", zeiteintrag_data)
+
                     session['overlapping_ze'] = zeiteintrag_data
+                    print("session: ", session['overlapping_ze'])
                     session['overlapping_fahrten'] = fahrt_data_list
 
                     # prüft auf überschneidung einer bestehenden eintragung in der datenbank
