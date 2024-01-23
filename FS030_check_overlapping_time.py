@@ -12,9 +12,10 @@ def overlapping_time(zeiteintrag_id):
         return_url = session.get('url_overlapping')
         zeiteintrag_data = session.get('overlapping_ze')
         fahrten_data_list = session.get('overlapping_fahrten')
+        ze_signatures = session.get['ze_signatures']
 
         if request.method == 'POST':
-            save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrten_data_list)
+            save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrten_data_list, ze_signatures)
             return redirect(return_url)
 
         print("ze in overlapping: ", zeiteintrag_data)

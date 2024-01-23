@@ -74,9 +74,12 @@ def submit_arbeitsstunden(person_id):
                     'klient_id': request.form.get('klientDropdown'),
                     'beschreibung': request.form.get('beschreibung'),
                     'interne_notiz': request.form.get('interneNotiz'),
-                    'neue_unterschrift_klient': request.form.get('signatureDataKlient'),
-                    'neue_unterschrift_mitarbeiter': request.form.get('signatureDataMitarbeiter'),
                     'absage': "1" if request.form.get('absage') is not None else "0"
+                }
+
+                ze_signatures = {
+                    'neue_unterschrift_klient': request.form.get('signatureDataKlient'),
+                    'neue_unterschrift_mitarbeiter': request.form.get('signatureDataMitarbeiter')
                 }
 
                 # Überprüfung ob alle notwendigen Felder ausgefüllt wurden
@@ -110,15 +113,15 @@ def submit_arbeitsstunden(person_id):
                                                     zeiteintrag_data['klient_id'], person_id):
 
                     # Umwandlung der Unterschriften
-                    if zeiteintrag_data['neue_unterschrift_klient']:
-                        zeiteintrag_data['neue_unterschrift_klient'] = base64_to_blob(zeiteintrag_data['neue_unterschrift_klient'])
+                    if ze_signatures['neue_unterschrift_klient']:
+                        ze_signatures['neue_unterschrift_klient'] = base64_to_blob(ze_signatures['neue_unterschrift_klient'])
 
-                    if zeiteintrag_data['neue_unterschrift_mitarbeiter']:
-                        zeiteintrag_data['neue_unterschrift_mitarbeiter'] = base64_to_blob(zeiteintrag_data['neue_unterschrift_mitarbeiter'])
+                    if ze_signatures['neue_unterschrift_mitarbeiter']:
+                        ze_signatures['neue_unterschrift_mitarbeiter'] = base64_to_blob(ze_signatures['neue_unterschrift_mitarbeiter'])
 
                     # Füge neuen Zeiteintrag hinzu und erhalte die ID
-                    zeiteintrag_id = add_zeiteintrag(zeiteintrag_data['neue_unterschrift_mitarbeiter'],
-                                                     zeiteintrag_data['neue_unterschrift_klient'],
+                    zeiteintrag_id = add_zeiteintrag(ze_signatures['neue_unterschrift_mitarbeiter'],
+                                                     ze_signatures['neue_unterschrift_klient'],
                                                      start_datetime, end_datetime,
                                                      zeiteintrag_data['klient_id'],
                                                      zeiteintrag_data['fachkraft'],
@@ -173,6 +176,7 @@ def submit_arbeitsstunden(person_id):
                     session['overlapping_ze'] = zeiteintrag_data
                     print("session: ", session['overlapping_ze'])
                     session['overlapping_fahrten'] = fahrt_data_list
+                    session['ze_signatures'] = ze_signatures
 
                     # prüft auf überschneidung einer bestehenden eintragung in der datenbank
                     if check_for_overlapping_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime):

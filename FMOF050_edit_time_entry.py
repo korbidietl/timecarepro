@@ -74,10 +74,13 @@ def edit_time_entry(zeiteintrag_id):
                     'klient_id': request.form.get('klientDropdown'),
                     'beschreibung': request.form.get('beschreibung'),
                     'interne_notiz': request.form.get('interneNotiz'),
-                    'neue_unterschrift_klient': request.form.get('signatureDataKlient'),
-                    'neue_unterschrift_mitarbeiter': request.form.get('signatureDataMitarbeiter'),
                     'absage': "1" if request.form.get('absage') is not None else "0",
                     'zeiteintrag_id': zeiteintrag_id
+                }
+
+                ze_signatures = {
+                    'neue_unterschrift_klient': request.form.get('signatureDataKlient'),
+                    'neue_unterschrift_mitarbeiter': request.form.get('signatureDataMitarbeiter')
                 }
 
                 # Überprüfung, ob alle notwendigen Felder ausgefüllt wurden
@@ -89,6 +92,7 @@ def edit_time_entry(zeiteintrag_id):
                         'klientDropdown': "Der Klient",
                         'signatureDataMitarbeiter': "Die Mitarbeiterunterschrift"
                     }
+
                     for field in field_names:
                         if not request.form.get(field):
                             flash(f'Es müssen alle Felder ausgefüllt werden. '
@@ -122,12 +126,12 @@ def edit_time_entry(zeiteintrag_id):
                 zeiteintrag_data['end_datetime'] = datetime.combine(datum_datetime, end_zeit_datetime)
 
                 # Umwandeln der Unterschriften
-                if zeiteintrag_data['neue_unterschrift_klient']:
-                    zeiteintrag_data['neue_unterschrift_klient'] = base64_to_blob(
-                        zeiteintrag_data['neue_unterschrift_klient'])
-                if zeiteintrag_data['neue_unterschrift_mitarbeiter']:
-                    zeiteintrag_data['neue_unterschrift_mitarbeiter'] = base64_to_blob(
-                        zeiteintrag_data['neue_unterschrift_mitarbeiter'])
+                if ze_signatures['neue_unterschrift_klient']:
+                    ze_signatures['neue_unterschrift_klient'] = base64_to_blob(
+                        ze_signatures['neue_unterschrift_klient'])
+                if ze_signatures['neue_unterschrift_mitarbeiter']:
+                    ze_signatures['neue_unterschrift_mitarbeiter'] = base64_to_blob(
+                        ze_signatures['neue_unterschrift_mitarbeiter'])
 
                 zeiteintrag_data['mitarbeiter_id'] = zeiteintrag[5]
 
@@ -169,15 +173,17 @@ def edit_time_entry(zeiteintrag_id):
 
                 if check_for_overlapping_zeiteintrag(zeiteintrag_id, zeiteintrag_data['start_datetime'],
                                                      zeiteintrag_data['end_datetime']):
-                    print(zeiteintrag_data)
+                    print("ZE: ", zeiteintrag_data)
+                    zeiteintrag_data['zeiteintrag_id'] = zeiteintrag_id
                     session['overlapping_ze'] = zeiteintrag_data
+                    session['ze_signatures'] = ze_signatures
                     session['overlapping_fahrten'] = fahrt_data_list
                     return redirect(
                         url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id))
 
                 # wenn kein overlapping dann trotzdem datenbank ausführen
                 else:
-                    save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list)
+                    save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, ze_signatures)
                     return redirect(url_for('client_hours_blueprint.client_supervision_hours', client_id=klient_id))
 
             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
@@ -191,13 +197,13 @@ def edit_time_entry(zeiteintrag_id):
         return redirect(url_for('login.login'))
 
 
-def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list):
+def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, ze_signatures):
     session_role = session.get('user_role')
     klient_id = zeiteintrag_data['klient_id']
     # zeiteintrag dictionary extrahieren
 
     edit_zeiteintrag(zeiteintrag_id, zeiteintrag_data['start_datetime'], zeiteintrag_data['end_datetime'],
-                     zeiteintrag_data['neue_unterschrift_mitarbeiter'], zeiteintrag_data['neue_unterschrift_klient'],
+                     ze_signatures['neue_unterschrift_mitarbeiter'], ze_signatures['neue_unterschrift_klient'],
                      zeiteintrag_data['klient_id'], zeiteintrag_data['fachkraft'], zeiteintrag_data['beschreibung'],
                      zeiteintrag_data['interne_notiz'], zeiteintrag_data['absage'])
 
