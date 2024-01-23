@@ -114,10 +114,12 @@ def submit_arbeitsstunden(person_id):
 
                     # Umwandlung der Unterschriften
                     if ze_signatures['neue_unterschrift_klient']:
-                        ze_signatures['neue_unterschrift_klient'] = base64_to_blob(ze_signatures['neue_unterschrift_klient'])
+                        ze_signatures['neue_unterschrift_klient'] = (
+                            base64_to_blob(ze_signatures['neue_unterschrift_klient']))
 
                     if ze_signatures['neue_unterschrift_mitarbeiter']:
-                        ze_signatures['neue_unterschrift_mitarbeiter'] = base64_to_blob(ze_signatures['neue_unterschrift_mitarbeiter'])
+                        ze_signatures['neue_unterschrift_mitarbeiter'] = (
+                            base64_to_blob(ze_signatures['neue_unterschrift_mitarbeiter']))
 
                     # Füge neuen Zeiteintrag hinzu und erhalte die ID
                     zeiteintrag_id = add_zeiteintrag(ze_signatures['neue_unterschrift_mitarbeiter'],
