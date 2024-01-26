@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template, session, flash, redirect, url_for
-from db_query import edit_klient_fct, mitarbeiter_dropdown, kostentraeger_dropdown, get_name_by_id, get_klient_data, \
-    get_current_client, get_new_client, save_change_log
+from model.person import get_name_by_id, mitarbeiter_dropdown, kostentraeger_dropdown
+from model.protokoll import save_change_log
+from model.klient import get_current_client, get_new_client, get_klient_data, edit_klient_fct
 from FV020_create_account import is_valid_date, is_valid_phone
 
 edit_client_blueprint = Blueprint('edit_client', __name__)

@@ -1,5 +1,6 @@
 from flask import Blueprint, request, session, jsonify
-from db_query import get_client_table, get_client_table_sb, check_month_booked
+from model.buchung import check_month_booked
+from model.klient import get_client_table_sb, get_client_table
 from datetime import datetime
 
 show_clients_blueprint = Blueprint("show_clients", __name__)

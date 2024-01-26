@@ -1,11 +1,13 @@
 from datetime import datetime
 from decimal import Decimal
 from flask import Blueprint, render_template, request, flash, session, url_for, redirect
-from db_query import mitarbeiter_dropdown, client_dropdown, sum_mitarbeiter, sum_hours_mitarbeiter_zeitspanne, \
-    sum_hours_klient_zeitspanne, \
-    sum_absage_mitarbeiter, sum_absage_klient, sum_km_mitarbeiter, sum_km_klient, get_report_zeiteintrag, \
-    get_report_mitarbeiter, get_report_klient, monatliche_gesamtstunden, sum_absagen_monatlich, sum_km_monatlich, \
-    sum_km_monatlich_tabelle, sum_absage_tabelle, sum_hours_tabelle
+from model.fahrt import sum_km_monatlich
+from model.person import sum_hours_mitarbeiter_zeitspanne, sum_absage_mitarbeiter, sum_km_mitarbeiter, \
+    mitarbeiter_dropdown
+from model.zeiteintrag import get_report_zeiteintrag, get_report_mitarbeiter, sum_mitarbeiter, sum_hours_tabelle, \
+    monatliche_gesamtstunden, sum_absage_tabelle, sum_absagen_monatlich, sum_km_monatlich_tabelle
+from model.klient import client_dropdown, get_report_klient, sum_hours_klient_zeitspanne, sum_absage_klient, \
+    sum_km_klient
 
 reporting_dashboard_blueprint = Blueprint('view_reporting_dashboard', __name__)
 

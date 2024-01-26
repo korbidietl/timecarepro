@@ -1,6 +1,8 @@
 from flask import Blueprint, request, render_template, session, url_for, redirect, flash
 from FMOF050_edit_time_entry import save_after_overlapping
-from db_query import (check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id, get_name_by_id, get_client_name)
+from model.klient import get_client_name
+from model.person import get_name_by_id
+from model.zeiteintrag import check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id
 
 check_overlapping_time_blueprint = Blueprint('check_overlapping_time', __name__)
 

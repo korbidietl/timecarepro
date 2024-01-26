@@ -1,8 +1,8 @@
 import smtplib
 from email.mime.text import MIMEText
 from flask import Blueprint, request, flash, redirect, render_template, session, url_for
-from db_query import delete_zeiteintrag, check_booked, get_email_by_zeiteintrag, get_firstname_by_email, \
-    get_lastname_by_email
+from model.person import get_firstname_by_email, get_lastname_by_email
+from model.zeiteintrag import check_booked, delete_zeiteintrag, get_email_by_zeiteintrag
 
 delete_time_entry_blueprint = Blueprint("delete_te", __name__)
 

@@ -1,7 +1,9 @@
 import base64
 
 from flask import Blueprint, render_template, session, url_for, flash, redirect
-from db_query import get_zeiteintrag_by_id, get_fahrt_by_zeiteintrag, get_klient_data
+from model.klient import get_klient_data
+from model.fahrt import get_fahrt_by_zeiteintrag
+from model.zeiteintrag import get_zeiteintrag_by_id
 
 work_hours_details_blueprint = Blueprint('work_hours_details', __name__)
 

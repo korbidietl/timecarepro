@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for, flash
-from db_query import edit_account_lock, edit_account_unlock, get_steuerbuero_table, get_sachbearbeiter_table
+from model.person import get_steuerbuero_table, get_sachbearbeiter_table, edit_account_lock, edit_account_unlock
 
 account_management_blueprint = Blueprint("account_management", __name__)
 

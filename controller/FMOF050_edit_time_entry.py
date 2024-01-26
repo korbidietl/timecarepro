@@ -1,9 +1,11 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
-from db_query import (edit_zeiteintrag, delete_fahrt, add_fahrt, edit_fahrt,
-                      fahrt_id_existing, check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id,
-                      get_fahrt_by_zeiteintrag, client_dropdown, get_email_by_zeiteintrag,
-                      get_firstname_by_email, get_lastname_by_email, get_highest_fahrt_id, check_month_booked,
-                      fahrt_ids_list)
+from model.buchung import check_month_booked
+from model.person import get_firstname_by_email, get_lastname_by_email
+from model.klient import client_dropdown
+from model.fahrt import add_fahrt, get_fahrt_by_zeiteintrag, edit_fahrt, delete_fahrt, get_highest_fahrt_id, \
+    fahrt_id_existing, fahrt_ids_list
+from model.zeiteintrag import check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id, edit_zeiteintrag, \
+    get_email_by_zeiteintrag
 from datetime import datetime
 from email.mime.text import MIMEText
 import smtplib

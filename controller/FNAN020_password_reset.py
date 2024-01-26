@@ -3,8 +3,8 @@ import random
 import string
 import smtplib
 from email.mime.text import MIMEText
-from db_query import validate_email, check_account_locked, set_password_mail, set_password_required_true, \
-    get_lastname_by_email, get_firstname_by_email
+from model.person import check_account_locked, set_password_mail, validate_email, set_password_required_true, \
+    get_firstname_by_email, get_lastname_by_email
 
 password_reset_blueprint = Blueprint("password_reset", __name__)
 

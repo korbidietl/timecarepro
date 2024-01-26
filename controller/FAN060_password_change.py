@@ -1,5 +1,6 @@
 from flask import render_template, request, Blueprint, session, flash, redirect, url_for
-from db_query import validate_login, set_password_mail, get_firstname_by_email, get_lastname_by_email, set_password_required_false
+from model.person import validate_login, set_password_mail, set_password_required_false, get_firstname_by_email, \
+    get_lastname_by_email
 from FNAN020_password_reset import send_email
 
 password_change_blueprint = Blueprint("password_change", __name__)

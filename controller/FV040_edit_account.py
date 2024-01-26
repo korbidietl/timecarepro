@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import Blueprint, request, render_template, redirect, flash, session, url_for
-from db_query import edit_account_fct, get_person_data, get_current_person, get_new_person, save_change_log
+from model.protokoll import save_change_log
+from model.person import get_current_person, get_new_person, get_person_data, edit_account_fct
 from FV020_create_account import is_valid_phone, is_valid_date
 
 edit_account_blueprint = Blueprint('edit_account', __name__)

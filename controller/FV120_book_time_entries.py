@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session
-from db_query import (book_zeiteintrag, get_last_buchung,
-                      get_zeiteintrag_for_client, get_first_te, check_and_return_signatures)
+from model.buchung import get_last_buchung
+from model.zeiteintrag import get_zeiteintrag_for_client, check_and_return_signatures, get_first_te, book_zeiteintrag
 from datetime import datetime
 
 book_time_entry_blueprint = Blueprint('book_time_entry', __name__)

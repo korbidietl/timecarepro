@@ -1,5 +1,6 @@
 from flask import render_template, request, Blueprint, flash, redirect, url_for, session
-from db_query import mitarbeiter_dropdown, create_klient, validate_client, kostentraeger_dropdown
+from model.person import mitarbeiter_dropdown, kostentraeger_dropdown
+from model.klient import create_klient, validate_client
 from FV020_create_account import is_valid_date, is_valid_phone
 
 create_client_blueprint = Blueprint("create_client", __name__)

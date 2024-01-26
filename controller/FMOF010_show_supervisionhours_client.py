@@ -2,11 +2,12 @@ import base64
 import datetime
 from flask import Blueprint, render_template, request, session, url_for, flash, redirect
 from datetime import datetime
-from db_query import get_client_name, get_sachbearbeiter_name, get_fallverantwortung_id, \
-    get_zeiteintrag_for_client_and_person, check_for_overlapping_zeiteintrag, check_booked, \
-    get_zeiteintrag_for_client, sum_hours_klient, sum_km_klient_ges
+from model.person import get_sachbearbeiter_name, get_fallverantwortung_id
+from model.klient import sum_hours_klient, sum_km_klient_ges, get_client_name
+from model.zeiteintrag import check_for_overlapping_zeiteintrag, get_zeiteintrag_for_client_and_person, \
+    get_zeiteintrag_for_client, check_booked
 
-client_hours_blueprint = Blueprint('client_hours_blueprint', __name__, template_folder='templates')
+client_hours_blueprint = Blueprint('client_hours_blueprint', __name__, template_folder='view')
 
 
 def generate_month_year_combinations():

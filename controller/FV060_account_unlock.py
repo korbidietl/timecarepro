@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for, session
-from db_query import edit_account_unlock
+from model.person import edit_account_unlock
 
 account_unlock_blueprint = Blueprint('account_unlock', __name__)
 

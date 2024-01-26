@@ -1,6 +1,6 @@
 from flask import session, redirect, url_for, flash
 from datetime import datetime, timedelta
-from db_query import check_account_locked
+from model.person import check_account_locked
 
 
 def make_session_not_permanent():

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, url_for, session, flash, redirect
-from db_query import get_zeiteintrag_for_person, get_name_by_id, get_role_by_id
+from model.zeiteintrag import get_zeiteintrag_for_person
+from model.person import get_role_by_id, get_name_by_id
 from FMOF010_show_supervisionhours_client import generate_month_year_combinations, extrahiere_jahr_und_monat, \
     convert_blob_to_base64, check_booked_liste
 from datetime import datetime

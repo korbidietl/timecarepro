@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, session, url_for, flash, redirect
-from db_query import get_klient_data, get_name_by_id
+from model.person import get_name_by_id
+from model.klient import get_klient_data
 
 client_details_blueprint = Blueprint('client_details', __name__)
 

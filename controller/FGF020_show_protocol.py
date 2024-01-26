@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, json, session, url_for, flash, redirect
-from db_query import get_protokoll, person_dropdown
+from model.person import person_dropdown
+from model.protokoll import get_protokoll
 
 show_protocol_blueprint = Blueprint("show_protocol", __name__)
 

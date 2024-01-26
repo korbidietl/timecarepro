@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, url_for, session, flash, redirect
-from db_query import get_person_data
+from model.person import get_person_data
 
 account_details_blueprint = Blueprint('account_details', __name__)
 

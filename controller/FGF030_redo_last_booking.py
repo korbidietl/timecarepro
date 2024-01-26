@@ -1,9 +1,9 @@
 from flask import flash, redirect, Blueprint, session, request, render_template, url_for
 
 from FV120_book_time_entries import month_number_to_name
-from db_query import get_last_buchung, delete_buchung
+from model.buchung import get_last_buchung, delete_buchung
 
-redo_booking_blueprint = Blueprint('redo_booking_blueprint', __name__, template_folder='templates')
+redo_booking_blueprint = Blueprint('redo_booking_blueprint', __name__, template_folder='view')
 
 
 @redo_booking_blueprint.route('/redo_last_booking/<int:client_id>', methods=['POST', 'GET'])
