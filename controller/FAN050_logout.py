@@ -1,5 +1,5 @@
 from flask import Blueprint, session, redirect, url_for
-from FNAN010_login import logged_in_users
+from controller.FNAN010_login import logged_in_users
 
 logout_blueprint = Blueprint("logout", __name__)
 

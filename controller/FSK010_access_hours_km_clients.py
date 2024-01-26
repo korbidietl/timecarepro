@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, session, url_for, flash, redirect
 from model.person import get_sachbearbeiter_name
 from model.klient import get_client_table_client_sb, get_client_name
-from FMOF010_show_supervisionhours_client import generate_month_year_combinations, extrahiere_jahr_und_monat, \
+from controller.FMOF010_show_supervisionhours_client import generate_month_year_combinations, extrahiere_jahr_und_monat, \
     convert_blob_to_base64, check_ueberschneidung_liste, check_booked_liste
 from datetime import datetime
 

@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, session, flash, redirect,
 from model.person import get_name_by_id, mitarbeiter_dropdown, kostentraeger_dropdown
 from model.protokoll import save_change_log
 from model.klient import get_current_client, get_new_client, get_klient_data, edit_klient_fct
-from FV020_create_account import is_valid_date, is_valid_phone
+from controller.FV020_create_account import is_valid_date, is_valid_phone
 
 edit_client_blueprint = Blueprint('edit_client', __name__)
 

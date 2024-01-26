@@ -9,7 +9,7 @@ from model.zeiteintrag import check_for_overlapping_zeiteintrag, get_zeiteintrag
 from datetime import datetime
 from email.mime.text import MIMEText
 import smtplib
-from FMOF030_create_time_entry import base64_to_blob
+from controller.FMOF030_create_time_entry import base64_to_blob
 
 edit_time_entry_blueprint = Blueprint('edit_time_entry', __name__)
 

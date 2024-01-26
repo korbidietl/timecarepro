@@ -1,5 +1,5 @@
 import hashlib
-from FNAN020_password_reset import generate_random_password, send_email
+from controller.FNAN020_password_reset import generate_random_password, send_email
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from model.person import validate_email, create_account_db
 from datetime import datetime

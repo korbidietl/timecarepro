@@ -1,5 +1,5 @@
 from flask import request, session, Blueprint, jsonify
-from FAN040_show_client_table import generate_month_year_combinations
+from controller.FAN040_show_client_table import generate_month_year_combinations
 from model.klient import get_unbooked_clients_for_month
 from model.person import account_table_mitarbeiter, account_table
 
