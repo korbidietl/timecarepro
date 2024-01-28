@@ -1,3 +1,5 @@
+import os
+
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
 from model.buchung import check_month_booked
 from model.person import get_firstname_by_email, get_lastname_by_email
@@ -127,13 +129,18 @@ def edit_time_entry(zeiteintrag_id):
                 zeiteintrag_data['start_datetime'] = datetime.combine(datum_datetime, start_zeit_datetime)
                 zeiteintrag_data['end_datetime'] = datetime.combine(datum_datetime, end_zeit_datetime)
 
+                signatures_path = {}
+
                 # Umwandeln der Unterschriften
                 if ze_signatures['neue_unterschrift_klient']:
-                    ze_signatures['neue_unterschrift_klient'] = base64_to_blob(
-                        ze_signatures['neue_unterschrift_klient'])
+                    blob = base64_to_blob(ze_signatures['neue_unterschrift_klient'])
+                    path = 'path/to/storage/klient_signature.bin'  # Generieren Sie hier einen einzigartigen Pfad
+                    signatures_path['neue_unterschrift_klient'] = save_blob(blob, path)
+
                 if ze_signatures['neue_unterschrift_mitarbeiter']:
-                    ze_signatures['neue_unterschrift_mitarbeiter'] = base64_to_blob(
-                        ze_signatures['neue_unterschrift_mitarbeiter'])
+                    blob = base64_to_blob(ze_signatures['neue_unterschrift_mitarbeiter'])
+                    path = 'path/to/storage/mitarbeiter_signature.bin'  # Generieren Sie hier einen einzigartigen Pfad
+                    signatures_path['neue_unterschrift_mitarbeiter'] = save_blob(blob, path)
 
                 zeiteintrag_data['mitarbeiter_id'] = zeiteintrag[5]
 
@@ -178,7 +185,7 @@ def edit_time_entry(zeiteintrag_id):
                     print("ZE: ", zeiteintrag_data)
                     zeiteintrag_data['zeiteintrag_id'] = zeiteintrag_id
                     session['overlapping_ze'] = zeiteintrag_data
-                    session['ze_signatures'] = ze_signatures
+                    session['ze_signatures'] = signatures_path
                     session['overlapping_fahrten'] = fahrt_data_list
                     return redirect(
                         url_for('check_overlapping_time.overlapping_time', zeiteintrag_id=zeiteintrag_id))
@@ -275,3 +282,14 @@ def get_fahrt_ids_from_form(form_data):
             # Fügt die Werte der Formularelemente hinzu, die mit 'fahrt_id' beginnen
             fahrt_ids.append(form_data[key])
     return fahrt_ids
+
+
+def save_blob(blob, path):
+    # Überprüfen, ob das Verzeichnis existiert, und wenn nicht, erstellen
+    directory = os.path.dirname(path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    with open(path, 'wb') as file:
+        file.write(blob)
+    return path

@@ -1,4 +1,5 @@
 import base64
+import os
 
 from flask import Blueprint, request, redirect, url_for, render_template, flash, session
 from model.buchung import check_month_booked
@@ -113,15 +114,19 @@ def submit_arbeitsstunden(person_id):
                 # Prüft ob, Startzeitpunkt vor Endzeitpunkt liegt.
                 if not check_time_entry_constraints(datum_datetime, start_datetime, end_datetime,
                                                     zeiteintrag_data['klient_id'], person_id):
-
                     # Umwandlung der Unterschriften
+                    signatures_path = {}
+
+                    # Umwandeln der Unterschriften
                     if ze_signatures['neue_unterschrift_klient']:
-                        ze_signatures['neue_unterschrift_klient'] = (
-                            base64_to_blob(ze_signatures['neue_unterschrift_klient']))
+                        blob = base64_to_blob(ze_signatures['neue_unterschrift_klient'])
+                        path = 'path/to/storage/klient_signature.bin'
+                        signatures_path['neue_unterschrift_klient'] = save_blob(blob, path)
 
                     if ze_signatures['neue_unterschrift_mitarbeiter']:
-                        ze_signatures['neue_unterschrift_mitarbeiter'] = (
-                            base64_to_blob(ze_signatures['neue_unterschrift_mitarbeiter']))
+                        blob = base64_to_blob(ze_signatures['neue_unterschrift_mitarbeiter'])
+                        path = 'path/to/storage/mitarbeiter_signature.bin'
+                        signatures_path['neue_unterschrift_mitarbeiter'] = save_blob(blob, path)
 
                     # Füge neuen Zeiteintrag hinzu und erhalte die ID
                     zeiteintrag_id = add_zeiteintrag(ze_signatures['neue_unterschrift_mitarbeiter'],
@@ -180,7 +185,7 @@ def submit_arbeitsstunden(person_id):
                     session['overlapping_ze'] = zeiteintrag_data
                     print("session: ", session['overlapping_ze'])
                     session['overlapping_fahrten'] = fahrt_data_list
-                    session['ze_signatures'] = ze_signatures
+                    session['ze_signatures'] = signatures_path
 
                     # prüft auf überschneidung einer bestehenden eintragung in der datenbank
                     if check_for_overlapping_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime):
@@ -198,3 +203,14 @@ def submit_arbeitsstunden(person_id):
         # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite
         flash('Sie müssen sich anmelden.')
         return redirect(url_for('login.login'))
+
+
+def save_blob(blob, path):
+    # Überprüfen, ob das Verzeichnis existiert, und wenn nicht, erstellen
+    directory = os.path.dirname(path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    with open(path, 'wb') as file:
+        file.write(blob)
+    return path
