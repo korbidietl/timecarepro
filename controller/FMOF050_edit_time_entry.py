@@ -144,7 +144,7 @@ def edit_time_entry(zeiteintrag_id):
 
                 zeiteintrag_data['mitarbeiter_id'] = zeiteintrag[5]
 
-                # Überprüfen Sie, ob die Zeitbeschränkungen erfüllt sind
+                # Überprüfen, ob die Zeitbeschränkungen erfüllt sind
                 if check_time_entry_constraints(datum_datetime, zeiteintrag_data['start_datetime'],
                                                 zeiteintrag_data['end_datetime'], zeiteintrag_data['klient_id']):
                     return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
