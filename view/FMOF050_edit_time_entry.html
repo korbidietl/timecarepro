@@ -364,7 +364,10 @@
                 };
             {% endif %}
         }
-
+        document.addEventListener('DOMContentLoaded', (event) => {
+        let heute = new Date().toISOString().split('T')[0];
+        document.getElementById("datum").setAttribute('max', heute);
+        });
     </script>
 </body>
 </html>

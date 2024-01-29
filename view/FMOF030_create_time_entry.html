@@ -305,7 +305,10 @@
             var return_url = "{{ return_url }}";
             window.location.href = return_url;
         }
-
+        document.addEventListener('DOMContentLoaded', (event) => {
+        let heute = new Date().toISOString().split('T')[0];
+        document.getElementById("datum").setAttribute('max', heute);
+        });
     </script>
 </body>
 </html>
