@@ -134,12 +134,12 @@ def edit_time_entry(zeiteintrag_id):
                 # Umwandeln der Unterschriften
                 if ze_signatures['neue_unterschrift_klient']:
                     blob = base64_to_blob(ze_signatures['neue_unterschrift_klient'])
-                    path = 'path/to/storage/klient_signature.bin'  # Generieren Sie hier einen einzigartigen Pfad
+                    path = 'path/to/storage/klient_signature.bin'
                     signatures_path['neue_unterschrift_klient'] = save_blob(blob, path)
 
                 if ze_signatures['neue_unterschrift_mitarbeiter']:
                     blob = base64_to_blob(ze_signatures['neue_unterschrift_mitarbeiter'])
-                    path = 'path/to/storage/mitarbeiter_signature.bin'  # Generieren Sie hier einen einzigartigen Pfad
+                    path = 'path/to/storage/mitarbeiter_signature.bin'
                     signatures_path['neue_unterschrift_mitarbeiter'] = save_blob(blob, path)
 
                 zeiteintrag_data['mitarbeiter_id'] = zeiteintrag[5]
