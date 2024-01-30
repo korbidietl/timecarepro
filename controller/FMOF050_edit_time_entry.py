@@ -192,7 +192,7 @@ def edit_time_entry(zeiteintrag_id):
 
                 # wenn kein overlapping dann trotzdem datenbank ausführen
                 else:
-                    save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, ze_signatures)
+                    save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, signatures_path)
                     return redirect(url_for('client_hours_blueprint.client_supervision_hours', client_id=klient_id))
 
             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
