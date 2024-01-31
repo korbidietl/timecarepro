@@ -213,10 +213,10 @@ def sum_km_klient_ges(klient_id, month, year, mitarbeiter_id=None):
 def client_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT id, vorname, nachname FROM klient")
+    cursor.execute("SELECT id, vorname, nachname, fallverantwortung_ID FROM klient")
     items = []
-    for (ID, vorname, nachname) in cursor.fetchall():
-        items.append({'id': ID, 'vorname': vorname, 'nachname': nachname})
+    for (ID, vorname, nachname, fallverantwortung_id) in cursor.fetchall():
+        items.append({'id': ID, 'vorname': vorname, 'nachname': nachname, 'fallverantwortung': fallverantwortung_id })
     connection.close()
     return items
 
