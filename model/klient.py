@@ -81,11 +81,13 @@ def get_unbooked_clients_for_month(monat, year):
             if klient_id not in unbooked_clients:
                 unbooked_clients[klient_id] = {'vorname': vorname, 'nachname': nachname}
 
-    # Convert the dictionary to a list of tuples (klient_id, vorname, nachname, monat, jahr)
-    unbooked_clients_list = [(klient_id, client['vorname'], client['nachname'], monat, year)
-                             for klient_id, client in unbooked_clients.items()]
-
-    return unbooked_clients_list
+    # Return None if unbooked_clients is empty, else return the list of unbooked clients
+    if not unbooked_clients:
+        return None
+    else:
+        unbooked_clients_list = [(klient_id, client['vorname'], client['nachname'], monat, year)
+                                 for klient_id, client in unbooked_clients.items()]
+        return unbooked_clients_list
 
 
 # /FAN040/
