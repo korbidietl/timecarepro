@@ -102,9 +102,9 @@ def get_client_table_sb(person_id, month, year):
                 k.kontingent_FK, 
                 k.kontingent_HK,
                 COALESCE(k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN 
-                TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) as fachkraftsaldo,
+                TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) * -1 as fachkraftsaldo,
                 COALESCE(k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN 
-                TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) as hilfskraftsaldo,
+                TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) * -1 as hilfskraftsaldo,
                 CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
             FROM 
                 klient k
@@ -135,9 +135,9 @@ def get_client_table(month, year):
                k.kontingent_FK, 
                k.kontingent_HK,
                COALESCE(k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN 
-               TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) as fachkraftsaldo,
+               TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) * -1 as fachkraftsaldo,
                COALESCE(k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN 
-               TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) as hilfskraftsaldo,
+               TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) * -1 as hilfskraftsaldo,
                CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
            FROM 
                klient k
