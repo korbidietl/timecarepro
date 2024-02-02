@@ -43,15 +43,15 @@
                 </div>
                 <div class="form-group for-non-zero-klient">
                     <label for="fachkraft">Fachkraft:</label>
-                    <input type="checkbox" id="fachkraft" name="fachkraft" {% if zeiteintrag[7] %} checked {% endif %} >
+                    <input type="checkbox" id="fachkraft" name="fachkraft" {% if fachkraft == '1' %} checked {% endif %}>
                 </div>
                 <div class="form-group">
                     <label for="klientDropdown">Klient:</label>
-                    <select class="form-control" id="klientDropdown" name="klientDropdown" required onchange="toggleFieldsBasedOnKlientId()">
+                    <select class="form-control" id="klientDropdown" name="klientDropdown" required onchange="toggleFieldsBasedOnKlientId(); updateFachkraftCheckboxBasedOnSelection();">
                         <!-- Optionen werden durch Python generiert -->
                         <option value="" disabled {{ 'selected' if not klient_id else '' }}>Bitte wählen</option>
                         {% for klient in klienten %}
-                        <option value="{{ klient.id }}" {{ 'selected' if klient.id == klient_id else '' }}>{{ klient.id }} - {{ klient.nachname }}, {{ klient.vorname }}</option>
+                        <option value="{{ klient.id }}" {{ 'selected' if klient.id == klient_id else '' }} fallverantwortung = "{{ klient.fallverantwortung }}">{{ klient.id }} - {{ klient.nachname }}, {{ klient.vorname }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -368,6 +368,21 @@
         let heute = new Date().toISOString().split('T')[0];
         document.getElementById("datum").setAttribute('max', heute);
         });
+
+        function updateFachkraftCheckboxBasedOnSelection() {
+            var selectedKlient = document.getElementById("klientDropdown");
+            var selectedFallverantwortung = selectedKlient.options[selectedKlient.selectedIndex].getAttribute("fallverantwortung");
+            var fachkraftCheckbox = document.getElementById("fachkraft");
+            var fallverantwortungPersonId = '{{ person_id }}'; // Diese Variable sollte mit dem Wert initialisiert werden, den Sie aus Ihrem Backend erhalten.
+
+            console.log("Ausgewählte Fallverantwortung: " + selectedFallverantwortung); // Für Debugging in der Browser-Konsole
+
+            if (selectedFallverantwortung === fallverantwortungPersonId) {
+                fachkraftCheckbox.checked = true;
+            } else {
+                fachkraftCheckbox.checked = false;
+            }
+        }
     </script>
 </body>
 </html>

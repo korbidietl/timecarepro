@@ -41,6 +41,8 @@ def check_time_entry_constraints(datum, start_zeit, end_zeit, klient_id):
 def edit_time_entry(zeiteintrag_id):
     if 'user_id' in session:
         user_role = session['user_role']
+        person_id = session['user_id']
+        print("id: ", person_id)
         if user_role == 'Steuerbüro' or user_role == 'Sachbearbeiter/Kostenträger':
             flash('Sie sind nicht berechtigt diese Seite aufzurufen.')
             return redirect(session['secure_url'])
@@ -105,7 +107,8 @@ def edit_time_entry(zeiteintrag_id):
                             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag,
                                                    fahrten=fahrten, klient_id=klient_id, datum=datum, von=von, bis=bis,
                                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
-                                                   return_url=return_url, highest_fahrt_id=highest_fahrt_id)
+                                                   return_url=return_url, highest_fahrt_id=highest_fahrt_id,
+                                                   person_id=person_id)
                 else:
                     field_names = {
                         'datum': "Das Datum",
@@ -120,7 +123,8 @@ def edit_time_entry(zeiteintrag_id):
                             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag,
                                                    fahrten=fahrten, klient_id=klient_id, datum=datum, von=von, bis=bis,
                                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
-                                                   return_url=return_url, highest_fahrt_id=highest_fahrt_id)
+                                                   return_url=return_url, highest_fahrt_id=highest_fahrt_id,
+                                                   person_id=person_id)
 
                 # Konvertieren Sie die Datum- und Uhrzeitstrings in datetime-Objekte
                 datum_datetime = datetime.strptime(zeiteintrag_data['datum'], '%Y-%m-%d')
@@ -151,7 +155,8 @@ def edit_time_entry(zeiteintrag_id):
                     return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
                                            klient_id=klient_id, datum=datum, von=von, bis=bis,
                                            zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
-                                           highest_fahrt_id=highest_fahrt_id, return_url=return_url)
+                                           highest_fahrt_id=highest_fahrt_id, return_url=return_url,
+                                           person_id=person_id)
 
                 fahrt_data_list = []
                 form_data = request.form
@@ -199,7 +204,7 @@ def edit_time_entry(zeiteintrag_id):
             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
                                    klient_id=klient_id, datum=datum, von=von, bis=bis,
                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
-                                   highest_fahrt_id=highest_fahrt_id, return_url=return_url)
+                                   highest_fahrt_id=highest_fahrt_id, return_url=return_url, person_id=person_id)
 
     else:
         # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite
