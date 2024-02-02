@@ -1,6 +1,8 @@
 import smtplib
 from email.mime.text import MIMEText
 from flask import Blueprint, request, flash, redirect, render_template, session, url_for
+
+from model.mailserver_connection import send_email
 from model.person import get_firstname_by_email, get_lastname_by_email
 from model.zeiteintrag import check_booked, delete_zeiteintrag, get_email_by_zeiteintrag
 
@@ -49,18 +51,6 @@ def delete_te(zeiteintrags_id):
         # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite
         flash('Sie müssen sich anmelden.')
         return redirect(url_for('login.login'))
-
-
-def send_email(email, subject, body):
-    msg = MIMEText(body)
-
-    msg['Subject'] = subject
-    msg['From'] = 'deletetimeentry@timecarepro.de'
-    msg['To'] = email
-
-    with smtplib.SMTP('132.231.36.210', 1103) as smtp:
-        smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
-        smtp.sendmail('deletetimeentry@timecarepro.de', [email], msg.as_string())
 
 
 def send_email_delete_time_entry(email, firstname, lastname, zeiteintrag_id):

@@ -2,6 +2,7 @@ import os
 
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
 from model.buchung import check_month_booked
+from model.mailserver_connection import send_email
 from model.person import get_firstname_by_email, get_lastname_by_email
 from model.klient import client_dropdown
 from model.fahrt import add_fahrt, get_fahrt_by_zeiteintrag, edit_fahrt, delete_fahrt, get_highest_fahrt_id, \
@@ -253,18 +254,6 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, ze
 
     flash('Eintrag erfolgreich gespeichert')
     return redirect(url_for('client_hours_blueprint.client_supervision_hours', client_id=klient_id))
-
-
-def send_email(email, subject, body):
-    msg = MIMEText(body)
-
-    msg['Subject'] = subject
-    msg['From'] = 'support@timecarepro.de'
-    msg['To'] = email
-
-    with smtplib.SMTP('132.231.36.210', 1103) as smtp:
-        smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
-        smtp.sendmail('support@timecarepro.de', [email], msg.as_string())
 
 
 def send_email_edit_time_entry(email, firstname, lastname, z_id):

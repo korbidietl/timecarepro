@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 import random
 import string
-import smtplib
-from email.mime.text import MIMEText
+
+from model.mailserver_connection import send_email
 from model.person import check_account_locked, set_password_mail, validate_email, set_password_required_true, \
     get_firstname_by_email, get_lastname_by_email
 
@@ -13,19 +13,6 @@ password_reset_blueprint = Blueprint("password_reset", __name__)
 def generate_random_password(length=10):
     characters = string.ascii_letters + string.digits + string.punctuation
     return ''.join(random.choice(characters) for _ in range(length))
-
-
-# Versand Email
-def send_email(email, subject, body):
-    msg = MIMEText(body)
-
-    msg['Subject'] = subject
-    msg['From'] = 'support@timecarepro.de'
-    msg['To'] = email
-
-    with smtplib.SMTP('132.231.36.210', 1103) as smtp:
-        smtp.login('mailhog_grup3', 'Uni75Winfo17Master')
-        smtp.sendmail('support@timecarepro.de', [email], msg.as_string())
 
 
 # Nachricht wird erzeugt
