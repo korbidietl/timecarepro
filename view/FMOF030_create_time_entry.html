@@ -49,11 +49,11 @@
                 </div>
                 <div class="form-group">
                     <label for="klientDropdown">Klient:</label>
-                    <select class="form-control" id="klientDropdown" name="klientDropdown" required onchange="toggleFieldsBasedOnKlientId()">
+                    <select class="form-control" id="klientDropdown" name="klientDropdown" required onchange="toggleFieldsBasedOnKlientId(); updateFachkraftCheckboxBasedOnSelection();">
                         <!-- Optionen werden durch Python generiert -->
                         <option value="" disabled {{ 'selected' if not klient_id else '' }}>Bitte wählen</option>
                         {% for klient in klienten %}
-                        <option value="{{ klient.id }}" {{ 'selected' if klient.id == klient_id else '' }}>{{ klient.id }} - {{ klient.nachname }}, {{ klient.vorname }}</option>
+                        <option fallverantwortung="{{ klient.fallverantwortung }}" value="{{ klient.id }}" {{ 'selected' if klient.id == klient_id else '' }}>{{ klient.id }} - {{ klient.nachname }}, {{ klient.vorname }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -309,6 +309,21 @@
         let heute = new Date().toISOString().split('T')[0];
         document.getElementById("datum").setAttribute('max', heute);
         });
+    </script>
+    <script>
+        let fallverantwortungPersonId = '{{ person_id }}';
+
+        function updateFachkraftCheckboxBasedOnSelection() {
+            let selectedKlient = document.getElementById("klientDropdown");
+            let selectedFallverantwortung = selectedKlient.options[selectedKlient.selectedIndex].getAttribute("data-fallverantwortung");
+            let fachkraftCheckbox = document.getElementById("fachkraft");
+
+            if (selectedFallverantwortung === fallverantwortungPersonId) {
+                fachkraftCheckbox.checked = true;
+            } else {
+                fachkraftCheckbox.checked = false;
+            }
+        }
     </script>
 </body>
 </html>
