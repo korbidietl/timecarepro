@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session
 from model.buchung import get_last_buchung
+from model.klient import get_klient_data
+from model.person import get_person_data, get_steuerbuero_table, get_firstname_by_email, get_lastname_by_email
 from model.zeiteintrag import get_zeiteintrag_for_client, check_and_return_signatures, get_first_te, book_zeiteintrag
 from datetime import datetime
+from model.mailserver_connection import send_email
 
 book_time_entry_blueprint = Blueprint('book_time_entry', __name__)
 
@@ -71,6 +74,7 @@ def book_client_time_entry(client_id):
                                            return_url=return_url, client_id=client_id)
                 # Berechnen von Salden und Durchführen der Buchung
                 if book_zeiteintrag(client_id):
+                    create_and_send_email_list(client_id)
                     flash(f"Stundennachweise für {month_str} erfolgreich gebucht.")
                 else:
                     flash("Fehler bei der Buchung.")
@@ -107,6 +111,7 @@ def confirm_booking(client_id):
             return redirect(session['secure_url'])
         else:
             if book_zeiteintrag(client_id):
+                create_and_send_email_list(client_id)
                 flash(f"Stundennachweise erfolgreich gebucht.")
             else:
                 flash("Fehler bei der Buchung.")
@@ -117,3 +122,48 @@ def confirm_booking(client_id):
         # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite
         flash('Sie müssen sich anmelden.')
         return redirect(url_for('login.login'))
+
+
+def create_and_send_email_list(client_id):
+    client_data = get_klient_data(client_id)
+    client_first_name = client_data[0][1]
+    client_last_name = client_data[0][2]
+    booked_date = get_last_buchung(client_id)
+    email_list = []
+    date_str = booked_date[0]  # Angenommen, das Datum ist der erste Wert in der Rückgabe
+    year, month = date_str.split('-')
+    print("jahr: ", year, "month: ", month)
+    time_entries = get_zeiteintrag_for_client(client_id, month, year)
+    # alle mitarbeiter emails der zeiteinträge hinzufügen
+    for ze in time_entries:
+        employee = ze[8]
+        employee_data = list(get_person_data(employee))
+        employee_email = employee_data[0][7]
+        print("emp mail: ", employee_email)
+        email_list.append(employee_email)
+    # kostenträger mail hinzufügen
+    kosten_id = client_data[0][5]
+    kosten_data = get_person_data(kosten_id)
+    kosten_email = kosten_data[0][7]
+    print("kosten mail: ", kosten_email)
+    email_list.append(kosten_email)
+    # steuerbüro mail hinzufügen
+    steuer_liste = get_steuerbuero_table()
+    for steuer in steuer_liste:
+        steuer_id = steuer[0]
+        steuer_data = get_person_data(steuer_id)
+        steuer_email = steuer_data[0][7]
+        email_list.append(steuer_email)
+    print("email liste: ", email_list)
+    subject = f"Zeiteintragbuchung, {client_first_name} {client_last_name}, {month}/{year}"
+    print(subject)
+    for email_adresse in email_list:
+        firstname = get_firstname_by_email(email_adresse)
+        lastname = get_lastname_by_email(email_adresse)
+        body = (f"Sehr geehrte/r {firstname} {lastname}, \n\n"
+                f"Die Zeiteinträge des Klienten {client_last_name}, {client_first_name} wurden für den Monat "
+                f"{month}/{year} gebucht. \n\n"
+                f"Freundliche Grüße\n"
+                f"Ihr TimeCare Pro-Team")
+        print(body)
+        send_email(email_adresse, subject, body)
