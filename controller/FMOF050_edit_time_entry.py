@@ -211,9 +211,12 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, ze
     session_role = session.get('user_role')
     klient_id = zeiteintrag_data['klient_id']
     signature_mitarbeiter = load_blob(ze_signatures['neue_unterschrift_mitarbeiter'])
-    signature_klient = load_blob(ze_signatures['neue_unterschrift_klient'])
+    neue_unterschrift_klient = ze_signatures.get('neue_unterschrift_klient', None)
+    if neue_unterschrift_klient:
+        signature_klient = load_blob(ze_signatures['neue_unterschrift_klient'])
+    else:
+        signature_klient = None
     # zeiteintrag dictionary extrahieren
-
     edit_zeiteintrag(zeiteintrag_id, zeiteintrag_data['start_datetime'], zeiteintrag_data['end_datetime'],
                      signature_mitarbeiter, signature_klient,
                      zeiteintrag_data['klient_id'], zeiteintrag_data['fachkraft'], zeiteintrag_data['beschreibung'],
