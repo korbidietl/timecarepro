@@ -134,17 +134,17 @@ def edit_time_entry(zeiteintrag_id):
                 # Umwandeln der Unterschriften
                 if ze_signatures['neue_unterschrift_klient']:
                     blob = base64_to_blob(ze_signatures['neue_unterschrift_klient'])
-                    path = 'path/to/storage/klient_signature.bin'  # Generieren Sie hier einen einzigartigen Pfad
+                    path = 'path/to/storage/klient_signature.bin'
                     signatures_path['neue_unterschrift_klient'] = save_blob(blob, path)
 
                 if ze_signatures['neue_unterschrift_mitarbeiter']:
                     blob = base64_to_blob(ze_signatures['neue_unterschrift_mitarbeiter'])
-                    path = 'path/to/storage/mitarbeiter_signature.bin'  # Generieren Sie hier einen einzigartigen Pfad
+                    path = 'path/to/storage/mitarbeiter_signature.bin'
                     signatures_path['neue_unterschrift_mitarbeiter'] = save_blob(blob, path)
 
                 zeiteintrag_data['mitarbeiter_id'] = zeiteintrag[5]
 
-                # Überprüfen Sie, ob die Zeitbeschränkungen erfüllt sind
+                # Überprüfen, ob die Zeitbeschränkungen erfüllt sind
                 if check_time_entry_constraints(datum_datetime, zeiteintrag_data['start_datetime'],
                                                 zeiteintrag_data['end_datetime'], zeiteintrag_data['klient_id']):
                     return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
@@ -192,7 +192,7 @@ def edit_time_entry(zeiteintrag_id):
 
                 # wenn kein overlapping dann trotzdem datenbank ausführen
                 else:
-                    save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, ze_signatures)
+                    save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, signatures_path)
                     return redirect(url_for('client_hours_blueprint.client_supervision_hours', client_id=klient_id))
 
             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
@@ -209,10 +209,12 @@ def edit_time_entry(zeiteintrag_id):
 def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, ze_signatures):
     session_role = session.get('user_role')
     klient_id = zeiteintrag_data['klient_id']
+    signature_mitarbeiter = load_blob(ze_signatures['neue_unterschrift_mitarbeiter'])
+    signature_klient = load_blob(ze_signatures['neue_unterschrift_klient'])
     # zeiteintrag dictionary extrahieren
 
     edit_zeiteintrag(zeiteintrag_id, zeiteintrag_data['start_datetime'], zeiteintrag_data['end_datetime'],
-                     ze_signatures['neue_unterschrift_mitarbeiter'], ze_signatures['neue_unterschrift_klient'],
+                     signature_mitarbeiter, signature_klient,
                      zeiteintrag_data['klient_id'], zeiteintrag_data['fachkraft'], zeiteintrag_data['beschreibung'],
                      zeiteintrag_data['interne_notiz'], zeiteintrag_data['absage'])
 
@@ -293,3 +295,9 @@ def save_blob(blob, path):
     with open(path, 'wb') as file:
         file.write(blob)
     return path
+
+
+def load_blob(path):
+    with open(path, 'rb') as file:
+        blob = file.read()
+    return blob

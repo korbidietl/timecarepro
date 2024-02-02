@@ -81,11 +81,13 @@ def get_unbooked_clients_for_month(monat, year):
             if klient_id not in unbooked_clients:
                 unbooked_clients[klient_id] = {'vorname': vorname, 'nachname': nachname}
 
-    # Convert the dictionary to a list of tuples (klient_id, vorname, nachname, monat, jahr)
-    unbooked_clients_list = [(klient_id, client['vorname'], client['nachname'], monat, year)
-                             for klient_id, client in unbooked_clients.items()]
-
-    return unbooked_clients_list
+    # Return None if unbooked_clients is empty, else return the list of unbooked clients
+    if not unbooked_clients:
+        return None
+    else:
+        unbooked_clients_list = [(klient_id, client['vorname'], client['nachname'], monat, year)
+                                 for klient_id, client in unbooked_clients.items()]
+        return unbooked_clients_list
 
 
 # /FAN040/
@@ -100,9 +102,9 @@ def get_client_table_sb(person_id, month, year):
                 k.kontingent_FK, 
                 k.kontingent_HK,
                 COALESCE(k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN 
-                TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) as fachkraftsaldo,
+                TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) * -1 as fachkraftsaldo,
                 COALESCE(k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN 
-                TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) as hilfskraftsaldo,
+                TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) * -1 as hilfskraftsaldo,
                 CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
             FROM 
                 klient k
@@ -133,9 +135,9 @@ def get_client_table(month, year):
                k.kontingent_FK, 
                k.kontingent_HK,
                COALESCE(k.kontingent_FK - SUM(CASE WHEN z.fachkraft = 1 THEN 
-               TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) as fachkraftsaldo,
+               TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_FK) * -1 as fachkraftsaldo,
                COALESCE(k.kontingent_HK - SUM(CASE WHEN z.fachkraft = 0 THEN 
-               TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) as hilfskraftsaldo,
+               TIMESTAMPDIFF(HOUR, z.start_zeit, z.end_zeit) ELSE 0 END), k.kontingent_HK) * -1 as hilfskraftsaldo,
                CONCAT(p.vorname, ' ', p.nachname) AS Fallverantwortung
            FROM 
                klient k
@@ -211,10 +213,10 @@ def sum_km_klient_ges(klient_id, month, year, mitarbeiter_id=None):
 def client_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT id, vorname, nachname FROM klient")
+    cursor.execute("SELECT id, vorname, nachname, fallverantwortung_ID FROM klient")
     items = []
-    for (ID, vorname, nachname) in cursor.fetchall():
-        items.append({'id': ID, 'vorname': vorname, 'nachname': nachname})
+    for (ID, vorname, nachname, fallverantwortung_id) in cursor.fetchall():
+        items.append({'id': ID, 'vorname': vorname, 'nachname': nachname, 'fallverantwortung': fallverantwortung_id })
     connection.close()
     return items
 

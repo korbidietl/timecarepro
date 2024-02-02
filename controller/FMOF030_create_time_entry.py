@@ -119,18 +119,17 @@ def submit_arbeitsstunden(person_id):
 
                     # Umwandeln der Unterschriften
                     if ze_signatures['neue_unterschrift_klient']:
-                        blob = base64_to_blob(ze_signatures['neue_unterschrift_klient'])
+                        blob_kli = base64_to_blob(ze_signatures['neue_unterschrift_klient'])
                         path = 'path/to/storage/klient_signature.bin'
-                        signatures_path['neue_unterschrift_klient'] = save_blob(blob, path)
+                        signatures_path['neue_unterschrift_klient'] = save_blob(blob_kli, path)
 
                     if ze_signatures['neue_unterschrift_mitarbeiter']:
-                        blob = base64_to_blob(ze_signatures['neue_unterschrift_mitarbeiter'])
+                        blob_mit = base64_to_blob(ze_signatures['neue_unterschrift_mitarbeiter'])
                         path = 'path/to/storage/mitarbeiter_signature.bin'
-                        signatures_path['neue_unterschrift_mitarbeiter'] = save_blob(blob, path)
+                        signatures_path['neue_unterschrift_mitarbeiter'] = save_blob(blob_mit, path)
 
                     # Füge neuen Zeiteintrag hinzu und erhalte die ID
-                    zeiteintrag_id = add_zeiteintrag(ze_signatures['neue_unterschrift_mitarbeiter'],
-                                                     ze_signatures['neue_unterschrift_klient'],
+                    zeiteintrag_id = add_zeiteintrag(blob_mit, blob_kli,
                                                      start_datetime, end_datetime,
                                                      zeiteintrag_data['klient_id'],
                                                      zeiteintrag_data['fachkraft'],
