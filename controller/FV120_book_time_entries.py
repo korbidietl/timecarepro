@@ -132,20 +132,17 @@ def create_and_send_email_list(client_id):
     email_list = []
     date_str = booked_date[0]  # Angenommen, das Datum ist der erste Wert in der Rückgabe
     year, month = date_str.split('-')
-    print("jahr: ", year, "month: ", month)
     time_entries = get_zeiteintrag_for_client(client_id, month, year)
     # alle mitarbeiter emails der zeiteinträge hinzufügen
     for ze in time_entries:
         employee = ze[8]
         employee_data = list(get_person_data(employee))
         employee_email = employee_data[0][7]
-        print("emp mail: ", employee_email)
         email_list.append(employee_email)
     # kostenträger mail hinzufügen
     kosten_id = client_data[0][5]
     kosten_data = get_person_data(kosten_id)
     kosten_email = kosten_data[0][7]
-    print("kosten mail: ", kosten_email)
     email_list.append(kosten_email)
     # steuerbüro mail hinzufügen
     steuer_liste = get_steuerbuero_table()
@@ -154,9 +151,7 @@ def create_and_send_email_list(client_id):
         steuer_data = get_person_data(steuer_id)
         steuer_email = steuer_data[0][7]
         email_list.append(steuer_email)
-    print("email liste: ", email_list)
     subject = f"Zeiteintragbuchung, {client_first_name} {client_last_name}, {month}/{year}"
-    print(subject)
     for email_adresse in email_list:
         firstname = get_firstname_by_email(email_adresse)
         lastname = get_lastname_by_email(email_adresse)
@@ -165,5 +160,4 @@ def create_and_send_email_list(client_id):
                 f"{month}/{year} gebucht. \n\n"
                 f"Freundliche Grüße\n"
                 f"Ihr TimeCare Pro-Team")
-        print(body)
         send_email(email_adresse, subject, body)
