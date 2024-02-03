@@ -152,7 +152,7 @@ def create_and_send_email_list(client_id):
         steuer_data = get_person_data(steuer_id)
         steuer_email = steuer_data[0][7]
         email_list.append(steuer_email)
-    subject = f"Zeiteintragbuchung, {client_first_name} {client_last_name}, {month}/{year}"
+    subject = f"Zeiteintragbuchung {client_first_name} {client_last_name}, {month}/{year}"
     for email_adresse in email_list:
         firstname = get_firstname_by_email(email_adresse)
         lastname = get_lastname_by_email(email_adresse)
