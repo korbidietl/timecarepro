@@ -121,7 +121,7 @@
                     }
                     else {
                         tableHTML += `<td>
-                                        <button onclick="window.location.href='/client_supervision_hours/${client[0]}'">Zeiteintrag ansehen</button>
+                                        <button style="white-space: nowrap;" onclick="window.location.href='/client_supervision_hours/${client[0]}'">Zeiteintrag ansehen</button>
                                       </td>`;
                     }
 
