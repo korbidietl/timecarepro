@@ -141,9 +141,10 @@ def create_and_send_email_list(client_id):
         email_list.append(employee_email)
     # kostenträger mail hinzufügen
     kosten_id = client_data[0][5]
-    kosten_data = get_person_data(kosten_id)
-    kosten_email = kosten_data[0][7]
-    email_list.append(kosten_email)
+    if kosten_id:
+        kosten_data = get_person_data(kosten_id)
+        kosten_email = kosten_data[0][7]
+        email_list.append(kosten_email)
     # steuerbüro mail hinzufügen
     steuer_liste = get_steuerbuero_table()
     for steuer in steuer_liste:

@@ -298,10 +298,16 @@ def check_and_return_signatures(client_id, month, year):
 
     for result in results:
         missing = []
-        if not result[1]:  # Überprüfen, ob die Unterschrift des Klienten fehlt
-            missing.append('Klient')
-        if not result[2]:  # Überprüfen, ob die Unterschrift des Mitarbeiters fehlt
-            missing.append('Mitarbeiter')
+        # Wenn die Klient-ID gleich 1 ist, wird nur die Mitarbeiter-Unterschrift überprüft
+        if client_id == 1:
+            if not result[2]:  # Überprüfen, ob die Unterschrift des Mitarbeiters fehlt
+                missing.append('Mitarbeiter')
+        else:
+            # Für alle anderen Klienten werden beide Unterschriften überprüft
+            if not result[1]:  # Überprüfen, ob die Unterschrift des Klienten fehlt
+                missing.append('Klient')
+            if not result[2]:  # Überprüfen, ob die Unterschrift des Mitarbeiters fehlt
+                missing.append('Mitarbeiter')
 
         if missing:
             missing_signatures.append({'id': result[0], 'missing': missing})
