@@ -1,7 +1,4 @@
-import smtplib
-from email.mime.text import MIMEText
 from flask import Blueprint, request, flash, redirect, render_template, session, url_for
-
 from model.mailserver_connection import send_email
 from model.person import get_firstname_by_email, get_lastname_by_email
 from model.zeiteintrag import check_booked, delete_zeiteintrag, get_email_by_zeiteintrag

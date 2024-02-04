@@ -1,5 +1,4 @@
 from flask import flash, redirect, Blueprint, session, request, render_template, url_for
-
 from controller.FV120_book_time_entries import month_number_to_name
 from model.buchung import get_last_buchung, delete_buchung
 
