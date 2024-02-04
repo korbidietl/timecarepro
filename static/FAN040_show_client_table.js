@@ -101,12 +101,25 @@
                     tableHTML += `<tr>
                                     <td>${client[0]}</td>
                                     <td>${client[2]}</td>
-                                    <td>${client[1]}</td>
-                                    <td>${client[3]}</td>
-                                    <td>${client[4]}</td>
-                                    <td>${client[5]}</td>
-                                    <td>${client[6]}</td>
-                                    <td>${client[7]}</td>`;
+                                    <td>${client[1]}</td>`;
+
+                    if (client[0] === 1) {
+                        // Wenn client[0] gleich 1 ist, setze die Felder von 3 bis 7 leer
+                        tableHTML += `<td></td>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>`;
+                    } else {
+                        // Andernfalls fülle diese Felder mit den entsprechenden Werten
+                        tableHTML += `<td>${client[3]}</td>
+                                      <td>${client[4]}</td>
+                                      <td>${client[5]}</td>
+                                      <td>${client[6]}</td>
+                                      <td>${client[7]}</td>`;
+                    }
+
+
 
                     if (userRole === 'Verwaltung' || userRole === 'Geschäftsführung') {
                         tableHTML += `<td>
