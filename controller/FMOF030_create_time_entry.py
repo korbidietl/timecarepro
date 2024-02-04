@@ -1,6 +1,5 @@
 import base64
 import os
-
 from flask import Blueprint, request, redirect, url_for, render_template, flash, session
 from model.buchung import check_month_booked
 from model.klient import client_dropdown, get_klient_data
@@ -59,6 +58,8 @@ def submit_arbeitsstunden(person_id):
             session['url_overlapping'] = url_for('/create_time_entry.submit_arbeitsstunden', person_id=person_id)
 
             fachkraft = 0
+            blob_kli = None
+            blob_mit = None
 
             # klienten für client_dropdown
             klienten = client_dropdown()
@@ -179,10 +180,7 @@ def submit_arbeitsstunden(person_id):
                     zeiteintrag_data['zeiteintrag_id'] = zeiteintrag_id
                     zeiteintrag_data['mitarbeiter_id'] = person_id
 
-                    print("zeit: ", zeiteintrag_data)
-
                     session['overlapping_ze'] = zeiteintrag_data
-                    print("session: ", session['overlapping_ze'])
                     session['overlapping_fahrten'] = fahrt_data_list
                     session['ze_signatures'] = signatures_path
 
@@ -191,7 +189,6 @@ def submit_arbeitsstunden(person_id):
                         return redirect(url_for('check_overlapping_time.overlapping_time',
                                                 zeiteintrag_id=zeiteintrag_id))
 
-                    session.pop('client_id')
                     # Weiterleitung zurück zur Herkunftsfunktion
                     flash('Eintrag erfolgreich angelegt')
                     return redirect(return_url)
