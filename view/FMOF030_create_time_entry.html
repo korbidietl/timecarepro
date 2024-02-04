@@ -29,6 +29,7 @@
 
     <div class="registration-form">
         <h2>Zeiteintrag hinzufügen</h2>
+        <div class="new-row"></div>
         <form action="{{url_for('/create_time_entry.submit_arbeitsstunden', person_id=person_id)}}" method="post">
             <div class="form-row">
                 <div class="form-group">
@@ -246,27 +247,73 @@
             let canvas = document.getElementById(canvasId);
             let context = canvas.getContext('2d');
             let drawing = false;
+            let lastX = 0;
+            let lastY = 0;
 
-            canvas.addEventListener('mousedown', function(e) {
+              function getMousePos(canvas, evt) {
+                let rect = canvas.getBoundingClientRect();
+                return {
+                    x: evt.clientX - rect.left,
+                    y: evt.clientY - rect.top
+                };
+            }
+
+            function getTouchPos(canvas, evt) {
+                let rect = canvas.getBoundingClientRect();
+                return {
+                    x: evt.touches[0].clientX - rect.left,
+                    y: evt.touches[0].clientY - rect.top
+                };
+            }
+
+            function mouseDownHandler(e) {
                 drawing = true;
-                context.moveTo(e.offsetX, e.offsetY);
-            });
+                let pos = getMousePos(canvas, e);
+                lastX = pos.x;
+                lastY = pos.y;
+                context.moveTo(lastX, lastY);
+            }
 
-            canvas.addEventListener('mousemove', function(e) {
+            function mouseMoveHandler(e) {
                 if (drawing) {
-                    context.lineTo(e.offsetX, e.offsetY);
+                    let pos = getMousePos(canvas, e);
+                    context.lineTo(pos.x, pos.y);
                     context.stroke();
+                    lastX = pos.x;
+                    lastY = pos.y;
                 }
-            });
+            }
 
-            canvas.addEventListener('mouseup', function(e) {
-                drawing = false;
-            });
+            function touchStartHandler(e) {
+                e.preventDefault(); // Verhindert Scrollen auf Touch-Geräten
+                drawing = true;
+                let pos = getTouchPos(canvas, e);
+                lastX = pos.x;
+                lastY = pos.y;
+                context.moveTo(lastX, lastY);
+            }
 
-            canvas.addEventListener('mouseleave', function(e) {
-                drawing = false;
-            });
+            function touchMoveHandler(e) {
+                if (drawing) {
+                    e.preventDefault(); // Verhindert Scrollen auf Touch-Geräten
+                    let pos = getTouchPos(canvas, e);
+                    context.lineTo(pos.x, pos.y);
+                    context.stroke();
+                    lastX = pos.x;
+                    lastY = pos.y;
+                }
+            }
+
+            canvas.addEventListener('mousedown', mouseDownHandler);
+            canvas.addEventListener('mousemove', mouseMoveHandler);
+            canvas.addEventListener('mouseup', () => { drawing = false; });
+            canvas.addEventListener('mouseleave', () => { drawing = false; });
+
+            canvas.addEventListener('touchstart', touchStartHandler);
+            canvas.addEventListener('touchmove', touchMoveHandler);
+            canvas.addEventListener('touchend', () => { drawing = false; });
         }
+
 
         // Initialisiere beide Canvas-Elemente
         setupCanvas('signatureCanvasKlient');

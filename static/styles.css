@@ -666,3 +666,56 @@ body {
     }
 }
 
+/* Klient anlegen */
+
+@media screen and (max-width: 600px) {
+    .registration-form_2 {
+        padding: 10px;
+    }
+
+    .form-row {
+        display: flex;
+        flex-direction: column;
+    }
+
+
+    .form-group2 {
+        width: 100%; /* Sorgt dafür, dass die Formulargruppen die volle Breite einnehmen */
+    }
+
+    .form-group2 label {
+        font-size: 16px; /* Größere Schrift für Labels */
+    }
+
+    .form-group2 input, .form-group2 select {
+        width: 90%; /* Sorgt dafür, dass Eingabefelder und Dropdowns die volle Breite einnehmen */
+        font-size: 16px; /* Größere Schrift für Eingabefelder */
+    }
+
+    .form-actions {
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: row; /* Stellt sicher, dass die Elemente nebeneinander angeordnet werden */
+        justify-content: space-between; /* Oder ein anderer Wert, der zu Ihrem Design passt */
+        align-items: center;
+    }
+
+    .form-actions button, .form-actions a {
+        box-sizing: border-box;
+        margin-right: 10px; /* Oder ein anderer Wert, der zu Ihrem Design passt */
+    }
+}
+
+/* Reporting Dashboar*/
+
+@media screen and (max-width: 600px) {
+    .dashboard-container {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-item {
+        width: 100%; /* Jedes Item nimmt die volle Breite ein */
+        margin-bottom: 10px; /* Fügt etwas Abstand zwischen den Items hinzu */
+    }
+}
+
