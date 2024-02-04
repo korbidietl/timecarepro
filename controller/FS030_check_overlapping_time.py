@@ -15,11 +15,13 @@ def overlapping_time(zeiteintrag_id):
         zeiteintrag_data = session.get('overlapping_ze')
         fahrten_data_list = session.get('overlapping_fahrten')
         ze_signatures = session.get('ze_signatures')
+        klient_id = zeiteintrag_data['klient_id']
+        print("klient id: ", klient_id)
 
         if request.method == 'POST':
             session['ueberschneidung'] = 0
             save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrten_data_list, ze_signatures)
-            return redirect(return_url)
+            return redirect(url_for('client_hours_blueprint.client_supervision_hours', client_id=klient_id))
 
         print("ze in overlapping: ", zeiteintrag_data)
         overlapping_entries = []
