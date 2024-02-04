@@ -137,9 +137,11 @@
                                           </td>`;
                         }
 
-                        tableHTML += `<td>
-                                        <button onclick="window.location.href='/view_time_entries/${arbeiter[0]}'">Zeiteintrag ansehen</button>
-                                      </td>`;
+                        if (userRole !== 'Steuerbüro') {
+                            tableHTML += `<td>
+                                            <button onclick="window.location.href='/view_time_entries/${arbeiter[0]}'">Zeiteintrag ansehen</button>
+                                          </td>`;
+                        }
 
                         if (userRole === 'Verwaltung' || userRole === 'Geschäftsführung') {
                             tableHTML += `<td>

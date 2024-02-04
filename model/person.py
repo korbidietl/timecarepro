@@ -179,6 +179,8 @@ def account_table(monat, year):
             zeiteintrag z ON p.ID = z.mitarbeiter_ID AND EXTRACT(MONTH FROM z.end_zeit) = %s AND EXTRACT(YEAR FROM z.end_zeit) = %s
         LEFT JOIN 
             fahrt f ON z.ID = f.zeiteintrag_id
+        WHERE 
+            rolle = 'Mitarbeiter'
         GROUP BY 
             p.ID
         ORDER BY 
