@@ -22,6 +22,14 @@ def is_valid_phone(phone_number):
     else:
         return False
 
+def is_valid_email(email):
+    if '@' in email:
+        local_part, domain_part = email.split('@', 1)
+        if domain_part.startswith('xn--'):
+            return True  # Punycode-Domain, wahrscheinlich Umlaute enthalten
+    return False
+
+
 
 def sha1_hash_password(password):
     # Erzeugen eines SHA-1 Hashes des Passworts
@@ -68,9 +76,9 @@ def create_account():
                     if not request.form.get(field):
                         flash('Es müssen alle Felder ausgefüllt werden.')
                         return render_template('FV020_create_account.html')
+
                 # Überprüfen ob Email Umlaute enthält
-                umlaute = {'ä', 'ö', 'ü', 'ß'}
-                if any(umlaut in email for umlaut in umlaute):
+                if is_valid_email(email):
                     flash('In der E-Mail Adresse dürfen keine Umlaute sein', 'error')
                     return render_template('FV020_create_account.html')
 
