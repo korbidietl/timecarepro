@@ -451,7 +451,7 @@ body {
 /* Style der Links innerhalb der Navigationsleiste */
 .navbar a {
     background: #FFA500;
-    float: left;
+    float: none;
     display: flex;
     justify-content: space-between;
     color: white;
@@ -607,4 +607,62 @@ body {
     background-color: lightgray;
 }
 
+/* Handy-Layout */
+
+/* Navbar */
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 30px;
+    color: white;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 600px) {
+    .navbar {
+        overflow: visible; /* Erlaubt das Anzeigen von überlappenden Inhalten */
+    }
+    .hamburger {
+        display: block;
+        width: 50px;
+    }
+    .navbar-center {
+        display: none;
+        position: absolute;
+        width: 96%;
+        background-color: #FFA500; /* Hintergrundfarbe des Menüs */
+        z-index: 1000; /* Stellt sicher, dass das Menü über anderen Inhalten liegt */
+        top: 71px; /* Positionieren Sie das Menü direkt unter Ihrer Navbar */
+        left: 2%;
+        flex-direction: column;
+        text-align: right;
+    }
+    .navbar-end {
+        display: none;
+        position: absolute;
+        width: 96%;
+        background-color: #FFA500; /* Hintergrundfarbe des Menüs */
+        z-index: 1000; /* Stellt sicher, dass das Menü über anderen Inhalten liegt */
+        top: 247px; /* Positionieren Sie das Menü direkt unter Ihrer Navbar */
+        left: 2%;
+        flex-direction: column;
+        text-align: right;
+    }
+
+    .navbar-center.active, .navbar-end.active {
+        display: flex;
+    }
+
+    .navbar a[href="/home"] {
+        justify-content: flex-end;
+    }
+
+    .navbar a {
+        width: 100%;
+        box-sizing: border-box;
+        justify-content: flex-end;
+        text-align: right;
+    }
+}
 
