@@ -1,9 +1,8 @@
 import base64
-
 from flask import Blueprint, render_template, session, url_for, flash, redirect
 from model.klient import get_klient_data
 from model.fahrt import get_fahrt_by_zeiteintrag
-from model.zeiteintrag import get_zeiteintrag_by_id
+from model.zeiteintrag import get_zeiteintrag_by_id, check_booked
 
 work_hours_details_blueprint = Blueprint('work_hours_details', __name__)
 
@@ -31,6 +30,7 @@ def show_details(zeiteintrag_id, person_id):
             # Datenbankaufrufe
             zeiteintrag_liste = get_zeiteintrag_by_id(zeiteintrag_id)
             zeiteintrag = zeiteintrag_liste[0]
+            print(zeiteintrag)
             datum = zeiteintrag[3].strftime("%Y-%m-%d")
             von = zeiteintrag[3].strftime("%H:%M")
             bis = zeiteintrag[4].strftime("%H:%M")
@@ -41,6 +41,9 @@ def show_details(zeiteintrag_id, person_id):
             klient_id = zeiteintrag[6]
             klient_data = get_klient_data(klient_id)
             klient_name = klient_data[0][1] + ' ' + klient_data[0][2]
+
+            # Überprüfung ob gebucht
+            booked = check_booked(zeiteintrag_id)
 
             # Umwandlung Unterschriften
             if zeiteintrag[1]:
@@ -57,7 +60,7 @@ def show_details(zeiteintrag_id, person_id):
                                    klient_name=klient_name, datum=datum, von=von, bis=bis,
                                    unterschrift_klient=unterschrift_klient,
                                    unterschrift_mitarbeiter=unterschrift_mitarbeiter, zeiteintrag_id=zeiteintrag_id,
-                                   person_id=person_id)
+                                   person_id=person_id, booked=booked)
 
     else:
         # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite

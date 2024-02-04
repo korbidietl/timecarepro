@@ -10,8 +10,6 @@ from model.fahrt import add_fahrt, get_fahrt_by_zeiteintrag, edit_fahrt, delete_
 from model.zeiteintrag import check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id, edit_zeiteintrag, \
     get_email_by_zeiteintrag
 from datetime import datetime
-from email.mime.text import MIMEText
-import smtplib
 from controller.FMOF030_create_time_entry import base64_to_blob
 
 edit_time_entry_blueprint = Blueprint('edit_time_entry', __name__)
@@ -42,7 +40,6 @@ def edit_time_entry(zeiteintrag_id):
     if 'user_id' in session:
         user_role = session['user_role']
         person_id = session['user_id']
-        print("id: ", person_id)
         if user_role == 'Steuerbüro' or user_role == 'Sachbearbeiter/Kostenträger':
             flash('Sie sind nicht berechtigt diese Seite aufzurufen.')
             return redirect(session['secure_url'])
@@ -188,7 +185,6 @@ def edit_time_entry(zeiteintrag_id):
 
                 if check_for_overlapping_zeiteintrag(zeiteintrag_id, zeiteintrag_data['start_datetime'],
                                                      zeiteintrag_data['end_datetime']):
-                    print("ZE: ", zeiteintrag_data)
                     zeiteintrag_data['zeiteintrag_id'] = zeiteintrag_id
                     session['overlapping_ze'] = zeiteintrag_data
                     session['ze_signatures'] = signatures_path
@@ -199,7 +195,7 @@ def edit_time_entry(zeiteintrag_id):
                 # wenn kein overlapping dann trotzdem datenbank ausführen
                 else:
                     save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, signatures_path)
-                    return redirect(url_for('client_hours_blueprint.client_supervision_hours', client_id=klient_id))
+                    return redirect(return_url)
 
             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
                                    klient_id=klient_id, datum=datum, von=von, bis=bis,

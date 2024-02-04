@@ -69,6 +69,7 @@
 
         <!-- Tabelle für Fahrten -->
         <div class="new-row">
+            {% if fahrten %}
             <h3>Fahrten:</h3>
             <div id="fahrtenContainer">
                  <div class="form-row">
@@ -104,6 +105,7 @@
                 {% set index = index + 1 %}
                 {% endfor %}
             </div>
+            {% endif %}
         </div>
 
 
@@ -123,6 +125,8 @@
 
 
         <div class="form-actions" style="margin-left: 20px;">
+
+            {% if not booked %}
             <!-- Bearbeiten Button -->
             <form action="{{ url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag_id) }}" method="get">
                 <button type="submit">Bearbeiten</button>
@@ -132,6 +136,7 @@
             <form action="{{ url_for('delete_te.delete_te', zeiteintrags_id=zeiteintrag_id) }}" method="get">
                 <button type="submit">Löschen</button>
             </form>
+            {% endif %}
 
             <!-- Schließen Button -->
             <form action="{{ url_for('view_time_entries.view_time_entries', person_id=person_id) }}" method="get">
