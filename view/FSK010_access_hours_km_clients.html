@@ -23,7 +23,7 @@
     </div>
 
     <div class="table-form">
-        <h2>Zeiteinträge deiner Klienten</h2>
+        <h2>Stundenübersicht deines Klienten</h2>
         <br><br>
         <div class="form-row" style="justify-content: start;">
             <h2 style="margin: 0; font-size: 1.5em; line-height: 1.2em;">Klient: {{client_name[0]}} {{client_name[1]}}</h2>
@@ -147,7 +147,7 @@
             var encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
             var link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "export.csv");
+            link.setAttribute("download", "stundenübersicht.csv");
             document.body.appendChild(link); // Required for FF
 
             link.click(); // This will download the data file named "my_data.csv".

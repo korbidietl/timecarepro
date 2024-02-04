@@ -26,7 +26,7 @@
     </div>
 
     <div class="table-form">
-        <h2> Betreuungsstunden Klienten</h2>
+        <h2> Stundenübersicht Klient</h2>
         <div class="leerzeile"></div>
         <div class="form-row" style="justify-content: start;">
             <h2 style="margin: 0; font-size: 1.5em; line-height: 1.2em;">Klient: {{client_name[0]}} {{client_name[1]}}</h2>
@@ -195,7 +195,7 @@
             var link = document.createElement("a");
             link.setAttribute('target', '_blank');
             link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString));
-            link.setAttribute('download', filename);
+            link.setAttribute('download', 'stundenübersicht_klient');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
