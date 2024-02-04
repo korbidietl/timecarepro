@@ -6,7 +6,7 @@ from model.database_connection import get_database_connection
 # /FS030/
 # /FMOF010/
 # /FMOF030/
-# /FSK010/
+# /FMOF050/
 def check_for_overlapping_zeiteintrag(zeiteintrag_id, start_time, end_time):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -20,32 +20,6 @@ def check_for_overlapping_zeiteintrag(zeiteintrag_id, start_time, end_time):
     cursor.close()
     connection.close()
     return ids
-
-
-# /FAN030/
-def get_zeiteintrag_for_mitarbeiter(mitarbeiter_id, month, year):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("""
-        SELECT
-            z.ID AS Zeiteintragnr,
-            DATE_FORMAT(z.start_zeit, '%d.%m.%Y') AS Datum,
-            DATE_FORMAT(z.start_zeit, '%H:%i') AS Anfang,
-            DATE_FORMAT(z.end_zeit, '%H:%i') AS Ende
-        FROM
-            zeiteintrag z
-            LEFT JOIN person p ON z.mitarbeiter_ID = p.id
-        WHERE
-            z.mitarbeiter_ID = %s AND
-            MONTH(z.start_zeit) = %s AND
-            YEAR(z.start_zeit) = %s
-        GROUP BY
-            z.id
-    """, (mitarbeiter_id, month, year))
-    result = cursor.fetchall()
-    cursor.close()
-    connection.close()
-    return result
 
 
 # /FMOF010/
@@ -84,6 +58,7 @@ def get_zeiteintrag_for_client_and_person(client_id, person_id, month, year):
 
 
 # /FMOF010/
+# /FV120/
 def get_zeiteintrag_for_client(client_id, month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -118,9 +93,8 @@ def get_zeiteintrag_for_client(client_id, month, year):
 
 
 # /FMOF010/
-# /FMOF020/
-# /FGF030/
-# /FSK010/
+# /FMOF040/
+# /FMOF060/
 def check_booked(zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -191,30 +165,9 @@ def add_zeiteintrag(unterschrift_mitarbeiter, unterschrift_klient, start_time, e
     return zeiteintrag_id
 
 
-# /FMOF030/
-# /FMOF050/
-def is_booked_client(client_id, monat, jahr):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("""
-    SELECT 1
-    FROM zeiteintrag z
-    JOIN klient k ON z.klient_id = k.id
-    JOIN buchung b ON b.klient_id = k.id
-    WHERE k.id = %s
-    AND EXTRACT(MONTH FROM b.monat) = %s
-    AND EXTRACT(YEAR FROM b.monat) = %s
-    LIMIT 1
-    """, (client_id, monat, jahr))
-    result = cursor.fetchone()
-    cursor.close()
-    connection.close()
-    if result:
-        return True
-    return False
-
-
 # /FMOF040/
+# /FMOF050/
+# /FS030/
 def get_zeiteintrag_by_id(zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -227,7 +180,6 @@ def get_zeiteintrag_by_id(zeiteintrag_id):
 
 
 # /FMOF050/
-# /FV100/
 def edit_zeiteintrag(zeiteintrag_id, start_time=None, end_time=None, unterschrift_mitarbeiter=None,
                      unterschrift_klient=None, klient_id=None, fachkraft=None,
                      beschreibung=None, interne_notiz=None, absage=None):
@@ -260,7 +212,6 @@ def edit_zeiteintrag(zeiteintrag_id, start_time=None, end_time=None, unterschrif
 
 
 # /FMOF060/
-# /FV110/
 def delete_zeiteintrag(zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -271,6 +222,8 @@ def delete_zeiteintrag(zeiteintrag_id):
     connection.close()
 
 
+# /FMOF050/
+# /FMOF060/
 def get_email_by_zeiteintrag(zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -283,6 +236,7 @@ def get_email_by_zeiteintrag(zeiteintrag_id):
         return None
 
 
+# /FV120/
 def check_and_return_signatures(client_id, month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -315,6 +269,7 @@ def check_and_return_signatures(client_id, month, year):
     return True  # Alle Signaturen sind vorhanden
 
 
+# /FV120/
 def get_first_te(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -336,34 +291,7 @@ def get_first_te(client_id):
         return None  # Keine Zeiteinträge gefunden
 
 
-def check_signatures(client_id, month, year):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("""
-       SELECT zeiteintrag.ID, unterschrift_Klient, unterschrift_Mitarbeiter 
-       FROM zeiteintrag 
-       WHERE Klient_ID = %s AND MONTH(end_zeit) = %s AND YEAR(end_zeit) = %s
-   """, (client_id, month, year))
-    results = cursor.fetchall()
-    missing_signatures = []
-
-    if not results:
-        return False, missing_signatures
-
-    all_signed = True
-    for result in results:
-        if result['unterschrift_Klient'] is None or result['unterschrift_Mitarbeiter'] is None:
-            all_signed = False
-            missing = []
-            if result['unterschrift_Klient'] is None:
-                missing.append('Klient')
-            if result['unterschrift_Mitarbeiter'] is None:
-                missing.append('Mitarbeiter')
-            missing_signatures.append({'zeiteintrag_id': result['ID'], 'missing': missing})
-
-    return all_signed, missing_signatures
-
-
+# /FV120/
 def book_zeiteintrag(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -441,6 +369,7 @@ def book_zeiteintrag(client_id):
     return True
 
 
+# /FGF010/
 def get_report_zeiteintrag(date_from, date_to, client_id=None, mitarbeiter_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -450,7 +379,9 @@ def get_report_zeiteintrag(date_from, date_to, client_id=None, mitarbeiter_id=No
             CONCAT(Mitarbeiter.vorname, ' ', Mitarbeiter.nachname) AS Mitarbeiter,
             CONCAT(Sachbearbeiter.vorname, ' ', Sachbearbeiter.nachname) AS Sachbearbeiter, 
             CONCAT(klient.vorname, ' ', klient.nachname) AS Klient,
-            TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit) * 60)), '%H:%i') AS geleistete_stunden,
+            TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit) * 60)), 
+            '%H:%i') 
+            AS geleistete_stunden,
             SUM(fahrt.kilometer) AS gefahrene_kilometer,
             SUM(CASE WHEN fahrt.abrechenbar THEN fahrt.kilometer ELSE 0 END) AS abrechenbare_km,
             SUM(CASE WHEN fahrt.abrechenbar THEN 0 ELSE fahrt.kilometer END) AS nicht_abrechenbare_km,
@@ -484,6 +415,7 @@ def get_report_zeiteintrag(date_from, date_to, client_id=None, mitarbeiter_id=No
     return cursor.fetchall()
 
 
+# /FGF010/
 def get_report_mitarbeiter(date_from, date_to, client_id=None, mitarbeiter_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -492,7 +424,8 @@ def get_report_mitarbeiter(date_from, date_to, client_id=None, mitarbeiter_id=No
             Mitarbeiter.id, 
             Mitarbeiter.nachname,
             Mitarbeiter.vorname,
-            TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit) * 60)), '%H:%i') AS geleistete_stunden,
+            TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit) * 60)), 
+            '%H:%i') AS geleistete_stunden,
             SUM(fahrt.kilometer) AS gefahrene_kilometer,
             SUM(CASE WHEN fahrt.abrechenbar THEN fahrt.kilometer ELSE 0 END) AS abrechenbare_km,
             SUM(CASE WHEN fahrt.abrechenbar THEN 0 ELSE fahrt.kilometer END) AS nicht_abrechenbare_km,
@@ -521,6 +454,7 @@ def get_report_mitarbeiter(date_from, date_to, client_id=None, mitarbeiter_id=No
     return cursor.fetchall()
 
 
+# /FGF010/
 def sum_mitarbeiter(month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -533,6 +467,7 @@ def sum_mitarbeiter(month, year):
     return len(mitarbeiter_ids)
 
 
+# /FGF010/
 def sum_hours_tabelle(start_date, end_date, client_id, user_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -562,6 +497,7 @@ def sum_hours_tabelle(start_date, end_date, client_id, user_id):
     return result[0] if result else "00:00"
 
 
+# /FGF010/
 def monatliche_gesamtstunden(start_date, end_date, mitarbeiter_id=None, klient_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -613,6 +549,7 @@ def monatliche_gesamtstunden(start_date, end_date, mitarbeiter_id=None, klient_i
     return monatliche_stunden
 
 
+# /FGF010/
 def sum_absage_tabelle(start_date, end_date, client_id, user_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -641,6 +578,7 @@ def sum_absage_tabelle(start_date, end_date, client_id, user_id=None):
     return result[0] if result else 0
 
 
+# /FGF010/
 def sum_absagen_monatlich(start_date, end_date, mitarbeiter_id=None, klient_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -686,6 +624,7 @@ def sum_absagen_monatlich(start_date, end_date, mitarbeiter_id=None, klient_id=N
     return absagen_pro_monat
 
 
+# /FGF010/
 def sum_km_monatlich_tabelle(start_date, end_date, klient_id=None, mitarbeiter_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -724,32 +663,3 @@ def sum_km_monatlich_tabelle(start_date, end_date, klient_id=None, mitarbeiter_i
         }
     else:
         return {'gesamt_km': 0, 'abrechenbare_km': 0, 'nicht_abrechenbare_km': 0}
-
-
-def get_zeiteintrag_id(person_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT id FROM zeiteintrag WHERE mitarbeiter_ID = %s", (person_id,))
-    result = cursor.fetchall()
-    return result
-
-
-def get_zeiteintrag_with_fahrten_by_id(zeiteintrag_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("""SELECT ze.*, fa.* FROM zeiteintrag ze 
-        LEFT JOIN fahrt fa ON ze.id = fa.zeiteintrag_id WHERE ze.id = %s""",
-                   (zeiteintrag_id,))
-    result = cursor.fetchall()
-    cursor.close()
-    connection.close()
-
-    # Group the result by Zeiteintrag entries
-    zeiteintrag_fahrten = {}
-    for row in result:
-        zeiteintrag_id = row[0]
-        if zeiteintrag_id not in zeiteintrag_fahrten:
-            zeiteintrag_fahrten[zeiteintrag_id] = {'zeiteintrag': row[:8], 'fahrten': []}
-        zeiteintrag_fahrten[zeiteintrag_id]['fahrten'].append(row[8:])
-
-    return list(zeiteintrag_fahrten.values())  # Die Ergebnisse werden dann nach Zeiteintrag-IDs gruppiert.

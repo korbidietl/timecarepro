@@ -1,10 +1,9 @@
 import datetime
-
 from model.database_connection import get_database_connection
 from model.buchung import check_month_booked
 
 
-# /FS010/
+# /FV090/
 def get_current_client(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -12,9 +11,9 @@ def get_current_client(client_id):
     result = cursor.fetchone()
     # Überprüfen, ob ein Ergebnis vorliegt
     if result is None:
-        return None
         cursor.close()
         connection.close()
+        return None
 
     # Wandeln Sie das Ergebnis in ein Dictionary um
     old_state = {}
@@ -31,16 +30,16 @@ def get_current_client(client_id):
     return old_state
 
 
-# /FS010/
+# /FV090/
 def get_new_client(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM klient WHERE ID = %s", (client_id,))
     result = cursor.fetchone()
     if result is None:
-        return None
         cursor.close()
         connection.close()
+        return None
 
     # Wandeln Sie das Ergebnis in ein Dictionary um
     new_state = {}
@@ -59,29 +58,22 @@ def get_new_client(client_id):
 
 # /FAN030/
 def get_unbooked_clients_for_month(monat, year):
-    # Connect to the database
     connection = get_database_connection()
     cursor = connection.cursor()
 
-    # Retrieve all time entries for the specified month and year, along with client details
     cursor.execute("SELECT z.start_zeit, z.klient_ID, k.vorname, k.nachname "
                    "FROM zeiteintrag z "
                    "JOIN klient k ON z.klient_ID = k.ID "
                    "WHERE EXTRACT(MONTH FROM z.start_zeit) = %s AND EXTRACT(YEAR FROM z.start_zeit) = %s",
                    (monat, year,))
 
-    # Dictionary to track the booking status of each client
+    # Wandeln Sie das Ergebnis in ein Dictionary um
     unbooked_clients = {}
-
-    # Iterate over each time entry
     for start_zeit, klient_id, vorname, nachname in cursor.fetchall():
-        # Check if the client is already booked for the month
         if not check_month_booked(start_zeit, klient_id):
-            # If not, add them to the unbooked clients list
             if klient_id not in unbooked_clients:
                 unbooked_clients[klient_id] = {'vorname': vorname, 'nachname': nachname}
 
-    # Return None if unbooked_clients is empty, else return the list of unbooked clients
     if not unbooked_clients:
         return None
     else:
@@ -216,11 +208,12 @@ def client_dropdown():
     cursor.execute("SELECT id, vorname, nachname, fallverantwortung_ID FROM klient")
     items = []
     for (ID, vorname, nachname, fallverantwortung_id) in cursor.fetchall():
-        items.append({'id': ID, 'vorname': vorname, 'nachname': nachname, 'fallverantwortung': fallverantwortung_id })
+        items.append({'id': ID, 'vorname': vorname, 'nachname': nachname, 'fallverantwortung': fallverantwortung_id})
     connection.close()
     return items
 
 
+# /FV070/
 def create_klient(vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id,
                   adresse, kontingent_hk, kontingent_fk, fallverantwortung_id):
     connection = get_database_connection()
@@ -234,6 +227,7 @@ def create_klient(vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter
     cursor.close()
 
 
+# /FV070/
 def validate_client(vorname, nachname, geburtsdatum):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -245,6 +239,11 @@ def validate_client(vorname, nachname, geburtsdatum):
     return False
 
 
+# /FMOF030/
+# /FMOF040/
+# /FV080/
+# /FV090/
+# /FV120/
 def get_klient_data(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -253,6 +252,7 @@ def get_klient_data(client_id):
     return result
 
 
+# /FV090/
 def edit_klient_fct(client_id, vorname, nachname, geburtsdatum, adresse, telefonnummer=None, sachbearbeiter_id=None,
                     kontingent_fk=None, kontingent_hk=None, fallverantwortung_id=None):
     connection = get_database_connection()
@@ -315,45 +315,7 @@ def edit_klient_fct(client_id, vorname, nachname, geburtsdatum, adresse, telefon
     connection.close()
 
 
-def edit_klient(klient_id, vorname, nachname, geburtsdatum, telefonnummer, sachbearbeiter_id, adresse, kontingent_hk,
-                kontingent_fk, fallverantwortung_id):
-    # Stellen Sie hier die Verbindung zur Datenbank her
-    connection = get_database_connection()
-    cursor = connection.cursor()
-
-    # Bereite die Werte für die SQL-Anweisung vor
-    sachbearbeiter_value = "NULL" if sachbearbeiter_id in [None, ''] else "%s"
-    fallverantwortung_value = "NULL" if fallverantwortung_id in [None, ''] else "%s"
-
-    # SQL-Update-Anweisung mit bedingten Platzhaltern
-    update_query = f"""
-           UPDATE klient 
-           SET vorname = %s, 
-               nachname = %s, 
-               geburtsdatum = %s, 
-               telefonnummer = %s, 
-               sachbearbeiter_ID = {sachbearbeiter_value}, 
-               adresse = %s, 
-               kontingent_HK = %s, 
-               kontingent_FK = %s, 
-               fallverantwortung_ID = {fallverantwortung_value} 
-           WHERE ID = %s
-       """
-
-    # Erstelle eine Liste der Parameter und schließe None-Werte aus
-    params = [vorname, nachname, geburtsdatum, telefonnummer, adresse, kontingent_hk, kontingent_fk, klient_id]
-    if sachbearbeiter_value != "NULL":
-        params.insert(4, sachbearbeiter_id)
-    if fallverantwortung_value != "NULL":
-        params.insert(-2, fallverantwortung_id)
-
-    cursor.execute(update_query, tuple(params))
-    connection.commit()
-
-    cursor.close()
-    connection.close()
-
-
+# /FGF010/
 def get_report_klient(date_from, date_to, client_id=None, mitarbeiter_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -363,7 +325,8 @@ def get_report_klient(date_from, date_to, client_id=None, mitarbeiter_id=None):
             klient.id, 
             klient.nachname,
             klient.vorname,
-            TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit) * 60)), '%H:%i') AS geleistete_stunden,
+            TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, zeiteintrag.start_zeit, zeiteintrag.end_zeit) * 60)), 
+            '%H:%i') AS geleistete_stunden,
             SUM(fahrt.kilometer) AS gefahrene_kilometer,
             SUM(CASE WHEN fahrt.abrechenbar THEN fahrt.kilometer ELSE 0 END) AS abrechenbare_km,
             SUM(CASE WHEN fahrt.abrechenbar THEN 0 ELSE fahrt.kilometer END) AS nicht_abrechenbare_km,
@@ -391,6 +354,7 @@ def get_report_klient(date_from, date_to, client_id=None, mitarbeiter_id=None):
     return cursor.fetchall()
 
 
+# /FGF010/
 def sum_hours_klient_zeitspanne(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -407,11 +371,13 @@ def sum_hours_klient_zeitspanne(start_date, end_date):
     return cursor.fetchall()
 
 
+# /FGF010/
 def sum_absage_klient(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT k.ID AS Klient_ID, z.mitarbeiter_ID AS Mitarbeiter_ID, k.Vorname, k.Nachname, COUNT(z.ID) AS anzahl_Absagen 
+        SELECT k.ID AS Klient_ID, z.mitarbeiter_ID AS Mitarbeiter_ID, k.Vorname, k.Nachname, COUNT(z.ID) 
+        AS anzahl_Absagen 
         FROM klient k 
         JOIN zeiteintrag z ON k.ID = z.Klient_ID 
         WHERE z.end_zeit BETWEEN %s AND %s AND z.absage = 1 
@@ -421,6 +387,7 @@ def sum_absage_klient(start_date, end_date):
     return cursor.fetchall()
 
 
+# /FGF010/
 def sum_km_klient(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -438,6 +405,7 @@ def sum_km_klient(start_date, end_date):
     return cursor.fetchall()
 
 
+# /FSK010/
 def get_client_table_client_sb(client_id, person_id, month, year):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -475,6 +443,9 @@ def get_client_table_client_sb(client_id, person_id, month, year):
     return result
 
 
+# /FMOF010/
+# /FS030/
+# /FSK010/
 def get_client_name(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()

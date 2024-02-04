@@ -32,7 +32,7 @@ def change_password():
             new_password = request.form["new_password"]
             confirm_password = request.form["confirm_password"]
 
-            # Peröhnliche Daten für Email
+            # Persöchnliche Daten für Email
             email = session.get('user_email')
             firstname = get_firstname_by_email(email)
             lastname = get_lastname_by_email(email)

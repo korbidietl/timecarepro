@@ -15,28 +15,8 @@ def add_fahrt(kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_id
     return fahrt_id
 
 
-def create_placeholder_fahrt():
-    connection = get_database_connection()
-    try:
-        cursor = connection.cursor()
-        cursor.execute(
-            "INSERT INTO fahrt (kilometer, start_adresse, end_adresse, abrechenbar, zeiteintrag_ID) VALUES (0, '0', '0', 0, 1)")
-        fahrt_id = cursor.lastrowid
-        connection.commit()
-        return fahrt_id
-
-    except Exception as e:
-        print(f"Fehler: {e}")
-        connection.rollback()
-        return None
-
-    finally:
-        cursor.close()
-        connection.close()
-
-
-# /FMOF040
-# /FSK010/
+# /FMOF040/
+# /FMOF050/
 def get_fahrt_by_zeiteintrag(zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -107,6 +87,7 @@ def get_highest_fahrt_id():
     return 0 if highest_id is None else highest_id
 
 
+# /FGF010/
 def sum_km_monatlich(start_date, end_date, mitarbeiter_id=None, klient_id=None):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -154,6 +135,7 @@ def sum_km_monatlich(start_date, end_date, mitarbeiter_id=None, klient_id=None):
     return km_pro_monat
 
 
+# /FMOF050/
 def fahrt_id_existing(fahrt_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -165,6 +147,7 @@ def fahrt_id_existing(fahrt_id):
     return False
 
 
+# /FMOF050/
 def fahrt_ids_list(zeiteintrag_id):
     connection = get_database_connection()
     cursor = connection.cursor()

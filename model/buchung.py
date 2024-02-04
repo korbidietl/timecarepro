@@ -1,6 +1,8 @@
 from model.database_connection import get_database_connection
 
 
+# /FGF030/
+# /FV120/
 def get_last_buchung(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -13,6 +15,7 @@ def get_last_buchung(client_id):
     return cursor.fetchone()
 
 
+# /FGF030/
 def delete_buchung(buchung_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -20,6 +23,9 @@ def delete_buchung(buchung_id):
     connection.commit()
 
 
+# /FAN040/
+# /FMOF030/
+# /FMOF050/
 def check_month_booked(datum, client_id):
     date_month = datum.strftime('%m')
     date_year = datum.strftime('%Y')

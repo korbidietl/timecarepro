@@ -24,4 +24,4 @@ def close_database_connection(conn):
         conn.close()
         print('Verbindung zur Datenbank geschlossen.')
 
-# def get_email()
+

@@ -1,10 +1,9 @@
 import datetime
 import hashlib
-from passlib.handlers.sha1_crypt import sha1_crypt
 from model.database_connection import get_database_connection
 
 
-# /FS010/
+# /FV040/
 def get_current_person(person_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -12,9 +11,9 @@ def get_current_person(person_id):
     result = cursor.fetchone()
     # Überprüfen, ob ein Ergebnis vorliegt
     if result is None:
-        return None
         cursor.close()
         connection.close()
+        return None
 
     # Wandeln Sie das Ergebnis in ein Dictionary um
     old_state = {}
@@ -31,16 +30,16 @@ def get_current_person(person_id):
     return old_state
 
 
-# /FS010/
+# /FV040/
 def get_new_person(person_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM person WHERE ID = %s", (person_id,))
     result = cursor.fetchone()
     if result is None:
-        return None
         cursor.close()
         connection.close()
+        return None
 
     # Wandeln Sie das Ergebnis in ein Dictionary um
     new_state = {}
@@ -58,6 +57,7 @@ def get_new_person(person_id):
 
 
 # /FNAN010/
+# /FAN060/
 def validate_login(email, password):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -84,6 +84,7 @@ def check_account_locked(email):
 
 
 # /FNAN020/
+# /FAN060/
 def set_password_mail(email, new_password):
     hashed_password = hashlib.sha1(new_password.encode()).hexdigest()
     connection = get_database_connection()
@@ -95,7 +96,9 @@ def set_password_mail(email, new_password):
     connection.close()
 
 
+# /FNAN010/
 # /FNAN020/
+# /FV020/
 def validate_email(email):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -106,7 +109,6 @@ def validate_email(email):
     return False
 
 
-# /FAN030/
 # /FMOF020/
 def get_role_by_id(person_id):
     connection = get_database_connection()
@@ -132,7 +134,8 @@ def account_table_mitarbeiter(monat, year, person_id):
             COALESCE(SUM(f.kilometer), 0) AS gefahrene_kilometer,
             p.sperre
         FROM person p
-        LEFT JOIN zeiteintrag z ON p.ID = z.mitarbeiter_ID AND EXTRACT(MONTH FROM z.end_zeit) = %s AND EXTRACT(YEAR FROM z.end_zeit) = %s
+        LEFT JOIN zeiteintrag z ON p.ID = z.mitarbeiter_ID AND EXTRACT(MONTH FROM z.end_zeit) = %s 
+        AND EXTRACT(YEAR FROM z.end_zeit) = %s
         LEFT JOIN fahrt f ON z.ID = f.zeiteintrag_ID
         WHERE p.ID = %s
         GROUP BY p.ID
@@ -170,13 +173,15 @@ def account_table(monat, year):
             p.ID, 
             p.nachname, 
             p.vorname,
-            COALESCE(TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i'), '00:00') AS geleistete_stunden,
+            COALESCE(TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i'),
+             '00:00') AS geleistete_stunden,
             COALESCE(SUM(f.kilometer), 0) AS gefahrene_kilometer,
             p.sperre
         FROM 
             person p
         LEFT JOIN 
-            zeiteintrag z ON p.ID = z.mitarbeiter_ID AND EXTRACT(MONTH FROM z.end_zeit) = %s AND EXTRACT(YEAR FROM z.end_zeit) = %s
+            zeiteintrag z ON p.ID = z.mitarbeiter_ID AND EXTRACT(MONTH FROM z.end_zeit) = %s 
+            AND EXTRACT(YEAR FROM z.end_zeit) = %s
         LEFT JOIN 
             fahrt f ON z.ID = f.zeiteintrag_id
         WHERE 
@@ -190,31 +195,6 @@ def account_table(monat, year):
     mitarbeiter_table = cursor.fetchall()
     cursor.close()
     return mitarbeiter_table
-
-
-# /FAN060/
-def validate_reset(person_id, password):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT passwort FROM person WHERE ID = %s", (person_id,))
-    result = cursor.fetchone()  # erstes Ergebnis wird aufgerufen
-    if result:
-        hashed_password = result[0]
-        if hashlib.sha1(password.encode()).hexdigest() == hashed_password:
-            return True
-    return False
-
-
-# /FAN060/
-def set_password_id(person_id, new_passwort):
-    hashed_password = sha1_crypt.encrypt(new_passwort)
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("UPDATE person SET passwort = %s WHERE ID = %s",
-                   (hashed_password, person_id,))
-    connection.commit()
-    cursor.close()
-    connection.close()
 
 
 # /FNAN020/
@@ -238,6 +218,7 @@ def set_password_required_false(email):
 
 
 # /FV010/
+# /FV120/
 def get_steuerbuero_table():
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -257,18 +238,6 @@ def get_sachbearbeiter_table():
 
 
 # /FV020/
-def rolle_dropdown():
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT id, rolle FROM person")
-    items = []
-    for (ID, rolle) in cursor.fetchall():
-        items.append({'id': ID, 'rolle': rolle})
-    connection.close()
-    return items
-
-
-# /FV020/
 def create_account_db(vorname, nachname, geburtsdatum, qualifikation, adresse, rolle, email,
                       telefonnummer, passwort, sperre, passwort_erzwingen):
     connection = get_database_connection()
@@ -283,6 +252,8 @@ def create_account_db(vorname, nachname, geburtsdatum, qualifikation, adresse, r
 
 
 # /FV030/
+# /FV040/
+# /FV120/
 def get_person_data(account_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -303,6 +274,7 @@ def edit_account_fct(vorname, nachname, geburtsdatum, qualifikation, adresse, te
     cursor.close()
 
 
+# /FV010/
 # /FV050/
 def edit_account_lock(person_id):
     connection = get_database_connection()
@@ -312,6 +284,7 @@ def edit_account_lock(person_id):
     cursor.close()
 
 
+# /FV010/
 # /FV060/
 def edit_account_unlock(person_id):
     connection = get_database_connection()
@@ -321,6 +294,10 @@ def edit_account_unlock(person_id):
     cursor.close()
 
 
+# /FMOF020/
+# /FS030/
+# /FS080/
+# /FS090/
 def get_name_by_id(person_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -329,6 +306,7 @@ def get_name_by_id(person_id):
     return result
 
 
+# /FGF010/
 def sum_hours_mitarbeiter_zeitspanne(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -344,6 +322,7 @@ def sum_hours_mitarbeiter_zeitspanne(start_date, end_date):
     return cursor.fetchall()
 
 
+# /FGF010/
 def sum_absage_mitarbeiter(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -358,6 +337,7 @@ def sum_absage_mitarbeiter(start_date, end_date):
     return cursor.fetchall()
 
 
+# /FGF010/
 def sum_km_mitarbeiter(start_date, end_date):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -375,6 +355,9 @@ def sum_km_mitarbeiter(start_date, end_date):
     return cursor.fetchall()
 
 
+# /FGF010/
+# /FV070/
+# /FV090/
 def mitarbeiter_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -386,6 +369,8 @@ def mitarbeiter_dropdown():
     return items
 
 
+# /FV070/
+# /FV090/
 def kostentraeger_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -397,6 +382,7 @@ def kostentraeger_dropdown():
     return items
 
 
+# /FGF020/
 def person_dropdown():
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -408,6 +394,7 @@ def person_dropdown():
     return items
 
 
+# /FNAN010/
 def get_role_by_email(email):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -417,6 +404,11 @@ def get_role_by_email(email):
     return result[0] if result else None
 
 
+# /FAN060/
+# /FMOF050/
+# /FMOF060/
+# /FNAN020/
+# /FV120/
 def get_firstname_by_email(email):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -428,6 +420,11 @@ def get_firstname_by_email(email):
         return None
 
 
+# /FAN060/
+# /FMOF050/
+# /FMOF060/
+# /FNAN020/
+# /FV120/
 def get_lastname_by_email(email):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -439,6 +436,7 @@ def get_lastname_by_email(email):
         return None
 
 
+# /FNAN010/
 def get_person_id_by_email(email):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -450,13 +448,15 @@ def get_person_id_by_email(email):
         return None
 
 
+# /FMOF010/
+# /FSK010/
 def get_sachbearbeiter_name(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT sachbearbeiter_id FROM klient WHERE ID = %s", (client_id,))
     sachbearbeiter_id = cursor.fetchone()
     if sachbearbeiter_id is not None:
-        # Get Vorname and Nachname from Account table
+        # Vorname und Nachname aus Tabelle auslesen
         cursor.execute("SELECT vorname, nachname FROM person WHERE ID = %s", (sachbearbeiter_id[0],))
         sachbearbeiter_name = cursor.fetchone()
         return sachbearbeiter_name
@@ -464,6 +464,7 @@ def get_sachbearbeiter_name(client_id):
         return None
 
 
+# /FMOF010/
 def get_fallverantwortung_id(client_id):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -476,6 +477,7 @@ def get_fallverantwortung_id(client_id):
         return None
 
 
+# /FNAN010/
 def is_password_required(email):
     connection = get_database_connection()
     cursor = connection.cursor()
@@ -486,14 +488,3 @@ def is_password_required(email):
     if result is None:
         return False
     return result[0] == 1
-
-
-def check_person_locked(person_id):
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT sperre FROM person WHERE ID = %s", (person_id,))
-    result = cursor.fetchone()
-    if result:
-        if result[0] == 1:
-            return True
-    return False

@@ -22,13 +22,13 @@ def is_valid_phone(phone_number):
     else:
         return False
 
+
 def is_valid_email(email):
     if '@' in email:
         local_part, domain_part = email.split('@', 1)
         if domain_part.startswith('xn--'):
             return True  # Punycode-Domain, wahrscheinlich Umlaute enthalten
     return False
-
 
 
 def sha1_hash_password(password):
