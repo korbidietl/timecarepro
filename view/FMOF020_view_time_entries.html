@@ -76,7 +76,7 @@
                     <td>
                         {% if unterschrift[0] %}
                         <img src="data:image/png;base64,{{ unterschrift[0] }}" alt="Unterschrift Klient" width="150"/>
-                        {% else %}
+                        {% elif entry[6] != 'Intern Unternehmen' %}
                         Keine Unterschrift vorhanden
                         {% endif %}
                     </td>

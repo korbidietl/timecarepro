@@ -34,7 +34,6 @@ def view_time_entries(person_id):
             session['secure_url'] = url_for('view_time_entries.view_time_entries', person_id=person_id)
 
             # session daten speichern
-            session.pop('client_id', None)
             session['url'] = url_for('view_time_entries.view_time_entries', person_id=person_id)
 
             # Name und Role für Überschrift
