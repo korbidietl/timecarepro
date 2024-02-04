@@ -46,7 +46,7 @@
                 <div class="form-row">
                     <div class="form-group2">
                         <label for="geburtsdatum">Geburtstag:</label>
-                        <input type="date" id="geburtsdatum" name="geburtsdatum" value="{{birthday}}">
+                        <input type="date" id="geburtsdatum" name="geburtsdatum" value="{{birthday}}" {% if client_id == 1 %}readonly{% endif %}>
                     </div>
 
                     <div class="form-group2">
@@ -56,15 +56,7 @@
 
                     <div class="form-group2">
                         <label for="ktDropdown">Kostenträger:</label>
-                        <!-- <select class="form-control" id="ktDropdown" name="ktDropdown">
-                            <option value="{{kt_id}}" {% if kt_id == sachbearbeiter_id %}selected{% endif %}>{{kt_id}} - {{kt}}</option>
-                            {% for kt in kostentraeger %}
-                            !-- Optionen werden durch Python generiert --
-                            <option value="{{ kt.id }}" {% if kt.id == sachbearbeiter_id %}selected{% endif %}>{{ kt.id }} - {{ kt.nachname }}, {{ kt.vorname }}</option>
-                            {% endfor %}
-                            <option value="">Keine Auswahl</option> !-- Zusätzliche Option für keine Auswahl --
-                        </select> -->
-                        <select class="form-control" id="ktDropdown" name="ktDropdown">
+                        <select class="form-control" id="ktDropdown" name="ktDropdown" {% if client_id == 1 %}disabled{% endif %}>
                             <option value="" {% if not kt_id %}selected{% endif %}>Keine Auswahl</option>
                             {% for kt in kostentraeger %}
                                 <option value="{{ kt.id }}" {% if kt.id == kt_id %}selected{% endif %}>
@@ -79,26 +71,17 @@
                 <div class="form-row">
                     <div class="form-group2">
                         <label for="fk">Fachkraftkontingent:</label>
-                        <input type="number" id="fk" name="kontingent_fk" value="{{fk}}">
+                        <input type="number" id="fk" name="kontingent_fk" value="{{fk}}" {% if client_id == 1 %}disabled{% endif %}>
                     </div>
 
                     <div class="form-group2">
                         <label for="hk">Hilfskraftkontingent:</label>
-                        <input type="number" id="hk" name="kontingent_hk" value="{{hk}}">
+                        <input type="number" id="hk" name="kontingent_hk" value="{{hk}}" {% if client_id == 1 %}disabled{% endif %}>
                     </div>
 
                     <div class="form-group2">
                         <label for="fvDropdown">Fallverantwortung:</label>
-                        <!--<select class="form-control" id="fvDropdown" name="fvDropdown">
-                            <option value="{{ fv_id }}" {% if fv_id == fallverantwortung_id %}selected{% endif %}>{{ fv_id }} - {{ fv }}</option>
-                            {% for fv in fallverantwortung %}
-                            !-- Optionen werden durch Python generiert --
-                            <option value="{{ fv.id }}" {% if fv.id == fallverantwortung_id %}selected{% endif %}>{{ fv.id }} - {{ fv.nachname }}, {{ fv.vorname }}</option>
-                            {% endfor %}
-                            <option value="">Keine Auswahl</option> !-- Zusätzliche Option für keine Auswahl --
-                        </select> -->
-
-                        <select class="form-control" id="fvDropdown" name="fvDropdown">
+                        <select class="form-control" id="fvDropdown" name="fvDropdown" {% if client_id == 1 %}disabled{% endif %}>
                             <option value="" {% if not fv_id %}selected{% endif %}>Keine Auswahl</option>
                             {% for fv in fallverantwortung %}
                                 <option value="{{ fv.id }}" {% if fv.id == fv_id %}selected{% endif %}>
