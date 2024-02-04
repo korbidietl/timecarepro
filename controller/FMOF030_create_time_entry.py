@@ -43,6 +43,7 @@ def base64_to_blob(base64_string):
 def submit_arbeitsstunden(person_id):
     if 'user_id' in session:
         user_role = session['user_role']
+        session['ueberschneidung'] = 0
         if user_role == 'Steuerbüro' or user_role == 'Sachbearbeiter/Kostenträger':
             flash('Sie sind nicht berechtigt diese Seite aufzurufen.')
             return redirect(session['secure_url'])
@@ -186,6 +187,7 @@ def submit_arbeitsstunden(person_id):
 
                     # prüft auf überschneidung einer bestehenden eintragung in der datenbank
                     if check_for_overlapping_zeiteintrag(zeiteintrag_id, start_datetime, end_datetime):
+                        session['ueberschneidung'] = 1
                         return redirect(url_for('check_overlapping_time.overlapping_time',
                                                 zeiteintrag_id=zeiteintrag_id))
 

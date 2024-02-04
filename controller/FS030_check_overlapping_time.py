@@ -17,6 +17,7 @@ def overlapping_time(zeiteintrag_id):
         ze_signatures = session.get('ze_signatures')
 
         if request.method == 'POST':
+            session['ueberschneidung'] = 0
             save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrten_data_list, ze_signatures)
             return redirect(return_url)
 

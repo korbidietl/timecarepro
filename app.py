@@ -56,6 +56,9 @@ def create_app():
     from controller.FMOF050_edit_time_entry import edit_time_entry_blueprint
     app.register_blueprint(edit_time_entry_blueprint)
 
+    from controller.FMOF050_edit_time_entry import delete_if_ueberschneidung_blueprint
+    app.register_blueprint(delete_if_ueberschneidung_blueprint)
+
     from controller.FMOF060_delete_time_entry import delete_time_entry_blueprint
     app.register_blueprint(delete_time_entry_blueprint)
 

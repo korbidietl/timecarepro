@@ -8,7 +8,7 @@ from model.klient import client_dropdown
 from model.fahrt import add_fahrt, get_fahrt_by_zeiteintrag, edit_fahrt, delete_fahrt, get_highest_fahrt_id, \
     fahrt_id_existing, fahrt_ids_list
 from model.zeiteintrag import check_for_overlapping_zeiteintrag, get_zeiteintrag_by_id, edit_zeiteintrag, \
-    get_email_by_zeiteintrag
+    get_email_by_zeiteintrag, delete_zeiteintrag
 from datetime import datetime
 from controller.FMOF030_create_time_entry import base64_to_blob
 
@@ -40,6 +40,7 @@ def edit_time_entry(zeiteintrag_id):
     if 'user_id' in session:
         user_role = session['user_role']
         person_id = session['user_id']
+        ueberschneidung = session['ueberschneidung']
         if user_role == 'Steuerbüro' or user_role == 'Sachbearbeiter/Kostenträger':
             flash('Sie sind nicht berechtigt diese Seite aufzurufen.')
             return redirect(session['secure_url'])
@@ -97,15 +98,16 @@ def edit_time_entry(zeiteintrag_id):
                         'signatureDataMitarbeiter': "Die Mitarbeiterunterschrift"
                     }
 
-                    for field in field_names:
-                        if not request.form.get(field):
-                            flash(f'Es müssen alle Felder ausgefüllt werden. '
-                                  f'{field_names[field]} ist noch nicht ausgefüllt.')
-                            return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag,
-                                                   fahrten=fahrten, klient_id=klient_id, datum=datum, von=von, bis=bis,
-                                                   zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
-                                                   return_url=return_url, highest_fahrt_id=highest_fahrt_id,
-                                                   person_id=person_id)
+                    if session['ueberschneidung'] != 1:
+                        for field in field_names:
+                            if not request.form.get(field):
+                                flash(f'Es müssen alle Felder ausgefüllt werden. '
+                                      f'{field_names[field]} ist noch nicht ausgefüllt.')
+                                return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag,
+                                                       fahrten=fahrten, klient_id=klient_id, datum=datum, von=von, bis=bis,
+                                                       zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
+                                                       return_url=return_url, highest_fahrt_id=highest_fahrt_id,
+                                                       person_id=person_id, ueberschneidung=ueberschneidung)
                 else:
                     field_names = {
                         'datum': "Das Datum",
@@ -121,7 +123,7 @@ def edit_time_entry(zeiteintrag_id):
                                                    fahrten=fahrten, klient_id=klient_id, datum=datum, von=von, bis=bis,
                                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
                                                    return_url=return_url, highest_fahrt_id=highest_fahrt_id,
-                                                   person_id=person_id)
+                                                   person_id=person_id, ueberschneidung=ueberschneidung)
 
                 # Konvertieren Sie die Datum- und Uhrzeitstrings in datetime-Objekte
                 datum_datetime = datetime.strptime(zeiteintrag_data['datum'], '%Y-%m-%d')
@@ -153,7 +155,7 @@ def edit_time_entry(zeiteintrag_id):
                                            klient_id=klient_id, datum=datum, von=von, bis=bis,
                                            zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
                                            highest_fahrt_id=highest_fahrt_id, return_url=return_url,
-                                           person_id=person_id)
+                                           person_id=person_id, ueberschneidung=ueberschneidung)
 
                 fahrt_data_list = []
                 form_data = request.form
@@ -185,6 +187,7 @@ def edit_time_entry(zeiteintrag_id):
 
                 if check_for_overlapping_zeiteintrag(zeiteintrag_id, zeiteintrag_data['start_datetime'],
                                                      zeiteintrag_data['end_datetime']):
+                    session['ueberschneidung'] = 1
                     zeiteintrag_data['zeiteintrag_id'] = zeiteintrag_id
                     session['overlapping_ze'] = zeiteintrag_data
                     session['ze_signatures'] = signatures_path
@@ -194,13 +197,15 @@ def edit_time_entry(zeiteintrag_id):
 
                 # wenn kein overlapping dann trotzdem datenbank ausführen
                 else:
+                    session['ueberschneidung'] = 0
                     save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, signatures_path)
                     return redirect(return_url)
 
             return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag, fahrten=fahrten,
                                    klient_id=klient_id, datum=datum, von=von, bis=bis,
                                    zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
-                                   highest_fahrt_id=highest_fahrt_id, return_url=return_url, person_id=person_id)
+                                   highest_fahrt_id=highest_fahrt_id, return_url=return_url, person_id=person_id,
+                                   ueberschneidung=ueberschneidung)
 
     else:
         # Wenn der Benutzer nicht angemeldet ist, umleiten zur Login-Seite
@@ -294,3 +299,17 @@ def load_blob(path):
     with open(path, 'rb') as file:
         blob = file.read()
     return blob
+
+
+delete_if_ueberschneidung_blueprint = Blueprint('delete_if_ueberschneidung', __name__)
+
+
+@delete_if_ueberschneidung_blueprint.route('/delete/<int:zeiteintrag_id>', methods=['POST'])
+def delete_if_ueberschneidung(zeiteintrag_id):
+    if request.method == 'POST':
+        print("wir sind da")
+        zeiteintrag_data = get_zeiteintrag_by_id(zeiteintrag_id)
+        klient_id = zeiteintrag_data[0][6]
+        delete_zeiteintrag(zeiteintrag_id)
+        session['ueberschneidung'] = 0
+        return redirect(url_for('client_hours_blueprint.client_supervision_hours', client_id=klient_id))
