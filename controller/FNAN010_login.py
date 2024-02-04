@@ -16,6 +16,7 @@ def login():
         # Auslesen aus Forumlar
         email = request.form['email']
         password = request.form['password']
+        session['ueberschneidung'] = 0
 
         # Überprüfen, ob alle Felder ausgefüllt wurden
         if not email or not password:
