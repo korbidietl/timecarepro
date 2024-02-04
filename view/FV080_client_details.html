@@ -51,7 +51,11 @@
         <div class="form-row">
             <div class="form-group2">
                 <label for="birthday">Geburtstag:</label>
-                <input type="date" id="birthday" name="birthday" value="{{birthday}}" readonly>
+                {% if client_id != 1 %}
+                    <input type="date" id="birthday" name="birthday" value="{{birthday}}" readonly>
+                {% else %}
+                    <input type="text" id="birthday" name="birthday" value="" readonly>
+                {% endif %}
             </div>
             <div class="form-group2">
                 <label for="phone">Telefonnummer:</label>
@@ -59,21 +63,37 @@
             </div>
             <div class="form-group2">
                 <label for="sb">Sachbearbeiter:</label>
-                <input type="text" id="sb" name="sb" value="{{sb[0]}}, {{sb[1]}}" readonly>
+                {% if client_id != 1 %}
+                    <input type="text" id="sb" name="sb" value="{{ sb[0] }}, {{ sb[1] }}" readonly>
+                {% else %}
+                    <input type="text" id="sb" name="sb" value="" readonly>
+                {% endif %}
             </div>
         </div>
         <div class="form-row">
             <div class="form-group2">
                 <label for="fk">Fachkraftkontingent:</label>
-                <input type="text" id="fk" name="fk" value="{{fk}}" readonly>
+                {% if client_id != 1 %}
+                    <input type="text" id="fk" name="fk" value="{{fk}}" readonly>
+                {% else %}
+                    <input type="text" id="fk" name="fk" value="" readonly>
+                {% endif %}
             </div>
             <div class="form-group2">
                 <label for="hk">Hilfskraftkontingent:</label>
-                <input type="text" id="hk" name="fk" value="{{hk}}" readonly>
+                {% if client_id != 1 %}
+                    <input type="text" id="hk" name="hk" value="{{hk}}" readonly>
+                {% else %}
+                    <input type="text" id="hk" name="hk" value="" readonly>
+                {% endif %}
             </div>
             <div class="form-group2">
                 <label for="fv">Fallverantwortung:</label>
-                <input type="text" id="fv" name="fk" value="{{fv[0]}}, {{fv[1]}}" readonly>
+                {% if client_id != 1 %}
+                    <input type="text" id="fv" name="fv" value="{{fv[0]}}, {{fv[1]}}" readonly>
+                {% else %}
+                    <input type="text" id="fv" name="fv" value="" readonly>
+                {% endif %}
             </div>
         </div>
 

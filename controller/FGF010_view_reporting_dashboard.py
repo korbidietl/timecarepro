@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from flask import Blueprint, render_template, request, flash, session, url_for, redirect
 from model.fahrt import sum_km_monatlich
@@ -182,7 +182,7 @@ def eingabe_formatieren(von, bis):
     von_date = datetime.strptime(von, '%Y-%m-%d').date()
     bis_date = datetime.strptime(bis, '%Y-%m-%d').date()
     von = datetime.combine(von_date, datetime.min.time())
-    bis = datetime.combine(bis_date, datetime.min.time())
+    bis = datetime.combine(bis_date, datetime.max.time())
     return von, bis
 
 

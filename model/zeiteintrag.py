@@ -542,6 +542,7 @@ def sum_hours_tabelle(start_date, end_date, client_id, user_id):
          TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(MINUTE, z.start_zeit, z.end_zeit) * 60)), '%H:%i') AS anzahl_Stunden
      FROM zeiteintrag z
      WHERE z.end_zeit BETWEEN %s AND %s
+     AND z.Klient_ID != 1
      """
     params = [start_date, end_date]
 
@@ -620,6 +621,7 @@ def sum_absage_tabelle(start_date, end_date, client_id, user_id=None):
         SELECT COUNT(z.ID) AS anzahl_Absagen
         FROM zeiteintrag z
         WHERE z.end_zeit BETWEEN %s AND %s AND z.absage = 1
+        AND z.Klient_ID != 1
         """
     params = [start_date, end_date]
 
@@ -696,6 +698,8 @@ def sum_km_monatlich_tabelle(start_date, end_date, klient_id=None, mitarbeiter_i
         FROM zeiteintrag z
         JOIN fahrt f ON z.ID = f.zeiteintrag_ID
         WHERE z.start_zeit BETWEEN %s AND %s
+        AND z.Klient_ID != 1
+
         """
     params = [start_date, end_date]
 
