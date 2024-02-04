@@ -1,9 +1,6 @@
 import datetime
-
 from flask import session
-
 from model.database_connection import get_database_connection
-
 
 
 # /FS030/

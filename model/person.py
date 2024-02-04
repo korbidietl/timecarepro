@@ -1,8 +1,6 @@
 import datetime
 import hashlib
-
 from passlib.handlers.sha1_crypt import sha1_crypt
-
 from model.database_connection import get_database_connection
 
 
