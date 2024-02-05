@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from flask import Blueprint, render_template, request, flash, session, url_for, redirect
 from model.fahrt import sum_km_monatlich

@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 import random
 import string
-
 from model.mailserver_connection import send_email
 from model.person import check_account_locked, set_password_mail, validate_email, set_password_required_true, \
     get_firstname_by_email, get_lastname_by_email

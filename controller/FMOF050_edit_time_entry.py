@@ -1,5 +1,4 @@
 import os
-
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
 from model.buchung import check_month_booked
 from model.mailserver_connection import send_email
@@ -104,10 +103,11 @@ def edit_time_entry(zeiteintrag_id):
                                 flash(f'Es müssen alle Felder ausgefüllt werden. '
                                       f'{field_names[field]} ist noch nicht ausgefüllt.')
                                 return render_template("FMOF050_edit_time_entry.html", zeiteintrag=zeiteintrag,
-                                                       fahrten=fahrten, klient_id=klient_id, datum=datum, von=von, bis=bis,
-                                                       zeiteintrag_id=zeiteintrag_id, klienten=klienten, role=session_role,
-                                                       return_url=return_url, highest_fahrt_id=highest_fahrt_id,
-                                                       person_id=person_id, ueberschneidung=ueberschneidung)
+                                                       fahrten=fahrten, klient_id=klient_id, datum=datum, von=von,
+                                                       bis=bis, zeiteintrag_id=zeiteintrag_id, klienten=klienten,
+                                                       role=session_role, return_url=return_url,
+                                                       highest_fahrt_id=highest_fahrt_id, person_id=person_id,
+                                                       ueberschneidung=ueberschneidung)
                 else:
                     field_names = {
                         'datum': "Das Datum",
@@ -308,7 +308,6 @@ delete_if_ueberschneidung_blueprint = Blueprint('delete_if_ueberschneidung', __n
 @delete_if_ueberschneidung_blueprint.route('/delete/<int:zeiteintrag_id>', methods=['POST'])
 def delete_if_ueberschneidung(zeiteintrag_id):
     if request.method == 'POST':
-        print("wir sind da")
         zeiteintrag_data = get_zeiteintrag_by_id(zeiteintrag_id)
         klient_id = zeiteintrag_data[0][6]
         delete_zeiteintrag(zeiteintrag_id)

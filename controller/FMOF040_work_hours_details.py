@@ -30,7 +30,6 @@ def show_details(zeiteintrag_id, person_id):
             # Datenbankaufrufe
             zeiteintrag_liste = get_zeiteintrag_by_id(zeiteintrag_id)
             zeiteintrag = zeiteintrag_liste[0]
-            print(zeiteintrag)
             datum = zeiteintrag[3].strftime("%Y-%m-%d")
             von = zeiteintrag[3].strftime("%H:%M")
             bis = zeiteintrag[4].strftime("%H:%M")
