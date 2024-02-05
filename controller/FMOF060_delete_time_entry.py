@@ -37,7 +37,7 @@ def delete_te(zeiteintrags_id):
                     # Löschen der Zeiteinträge und dazugehörigen Fahrten
                     delete_zeiteintrag(zeiteintrags_id)
                     # wenn rolle verwaltung löscht, muss E-Mail gesendet werden
-                    if session_role == "Verwaltung":
+                    if session_role == "Verwaltung" or session_role == "Geschäftsführung":
                         send_email_delete_time_entry(email, firstname, lastname, zeiteintrags_id)
                     # Erfolgsmeldung
                     success_message = "Eintrag erfolgreich gelöscht."
@@ -55,8 +55,9 @@ def delete_te(zeiteintrags_id):
 
 def send_email_delete_time_entry(email, firstname, lastname, zeiteintrag_id):
     subject = "Gelöschter Zeiteintrag"
+    role = session['user_role']
     body = (f"Sehr geehrte/r {firstname} {lastname}, \n\n"
-            f"Ihr Zeiteintrag {zeiteintrag_id} wurde von der Verwaltung gelöscht.\n\n"
+            f"Ihr Zeiteintrag {zeiteintrag_id} wurde von einem Mitarbeiter der {role} gelöscht.\n\n"
             f"Freundliche Grüße\n"
             f"Ihr TimeCare Pro-Team")
     send_email(email, subject, body)

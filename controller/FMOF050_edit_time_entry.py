@@ -230,7 +230,7 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, ze
 
     # wenn verwaltung ändert, muss E-Mail an mitarbeiter gesendet werden
     added_fahrten = []
-    if session_role == "Verwaltung":
+    if session_role == "Verwaltung" or session_role == "Geschäftsführung":
         email = get_email_by_zeiteintrag(zeiteintrag_id)
         firstname = get_firstname_by_email(email)
         lastname = get_lastname_by_email(email)
@@ -267,8 +267,9 @@ def save_after_overlapping(zeiteintrag_id, zeiteintrag_data, fahrt_data_list, ze
 
 def send_email_edit_time_entry(email, firstname, lastname, z_id):
     subject = "Bearbeiteter Zeiteintrag"
+    role = session['user_role']
     body = (f"Sehr geehrte/r {firstname} {lastname}, \n\n"
-            f"Ihr Zeiteintrag {z_id} wurde von der Verwaltung bearbeitet.\n"
+            f"Ihr Zeiteintrag {z_id} wurde von einem Mitarbeiter der {role} bearbeitet.\n"
             f"Bitte prüfen und unterschreiben Sie den geänderten Eintrag.\n\n"
             f"Freundliche Grüße\n"
             f"Ihr TimeCare Pro-Team")
