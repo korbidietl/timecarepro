@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <title>Startseite</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+<body>
+     <!-- Menüleiste einbinden -->
+    {% include 'FAN020_navbar.html' %}
+
+     <!-- Flash Nachrichten anzeigen -->
+     <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <div class="table-form">
+
+         <h2>Startseite</h2>
+         <br> <br>
+
+        <!-- Kliententabelle -->
+        {% if role != 'Steuerbüro'%}
+            <h3>Kliententabelle</h3>
+            <div id="userRole_k" data-role="{{ role }}"></div>
+            <label for="monat_jahr_dropdown_k"></label>
+            <select id="monat_jahr_dropdown_k" class="gray-background" style="padding: 8px; border: 1px solid #ccc;border-radius: 4px; margin-right: 20px; margin-bottom: 20px">
+                {% for kombination in kombinationen %}
+                    <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
+                        {{ kombination }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="button" id="anzeigenButton_k">Anzeigen</button>
+
+            <div class="scrollable-container">
+                <div id="clients_table_container"></div>
+            </div>
+
+            <p id="no-clients-message" style="display: none;">Keine Klienten gefunden.</p>
+            <br> <br> <br>
+        {% endif %}
+
+        <!--Mitarbeitertabelle -->
+        {% if role != 'Sachbearbeiter/Kostenträger'%}
+            <h3>Mitarbeitertabelle</h3>
+            <div id="userRole_m" data-role="{{ role }}"></div>
+            <label for="monat_jahr_dropdown_m"></label>
+            <select id="monat_jahr_dropdown_m" class="gray-background" style="padding: 8px; border: 1px solid #ccc;border-radius: 4px; margin-right: 20px; margin-bottom: 20px">
+                {% for kombination in kombinationen %}
+                    <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
+                        {{ kombination }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="button" id="anzeigenButton_m">Anzeigen</button>
+
+            <div class="scrollable-container">
+                <div id="employee_table_container"></div>
+            </div>
+            <p id="no-employee-message" style="display: none;">Keine Mitarbeiter gefunden.</p>
+        {% endif %}
+        {% if role == 'Steuerbüro'%}
+            <div class="accordion-button">
+                <button onclick="exportTable()">Exportieren</button>
+                <button type="button" onclick="window.print();">Drucken</button>
+            </div>
+        {% endif %}
+
+        <br> <br> <br>
+
+    </div>
+
+
+    <script src="{{ url_for('static', filename='FAN040_show_client_table.js') }}"></script>
+    <script src="{{ url_for('static', filename='FAN030_show_employee_table.js') }}"></script>
+
+    <script>
+        window.addEventListener('message', function(e) {
+            if (e.data.iframeHeight && e.data.iframeId) {
+                document.getElementById(e.data.iframeId).style.height = e.data.iframeHeight + 'px';
+            }
+        }, false);
+    </script>
+    <script>
+        window.onload = function() {
+            // Überprüfen, ob Nachrichten vorhanden sind
+            {% if get_flashed_messages() %}
+                let modal = document.getElementById("flashModal");
+                let span = document.getElementsByClassName("close")[0];
+
+                // Modal anzeigen
+                modal.style.display = "block";
+
+                // Schließen, wenn das "X" geklickt wird
+                span.onclick = function() {
+                    modal.style.display = "none";
+                };
+
+                // Schließen, wenn außerhalb des Modals geklickt wird
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                };
+            {% endif %}
+        }
+
+    </script>
+    <script>
+        function exportTable() {
+            // Prüfen, ob die Tabelle existiert
+            let tabelle = document.getElementById('employeeTable');
+            if (!tabelle) {
+                console.error('Tabelle nicht gefunden');
+                return;
+            }
+            let tableData = sammleTabellenDaten();
+
+            // Daten an den Server senden
+            fetch('/export-table', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ data: tableData })
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                // Erstellen eines Links zum Herunterladen
+                let url = window.URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = 'Mitarbeitertabelle.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            });
+        }
+        function sammleTabellenDaten() {
+            let tabelle = document.getElementById('employeeTable');
+            if (!tabelle) {
+                console.error('Tabelle nicht gefunden');
+                return [];
+            }
+            let zeilen = tabelle.getElementsByTagName('tr');
+            let daten = [];
+
+            for (let i = 0; i < zeilen.length; i++) {
+                let zellen = zeilen[i].getElementsByTagName('td');
+                let zeilenDaten = [];
+                for (let j = 0; j < zellen.length; j++) {
+                    zeilenDaten.push(zellen[j].innerText);
+                }
+                if (zeilenDaten.length > 0) {
+                    daten.push(zeilenDaten);
+                }
+            }
+            return daten;
+        }
+    </script>
+
+</body>
+</html>
+

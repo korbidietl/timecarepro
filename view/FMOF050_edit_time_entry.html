@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbeitsstunden Bearbeiten</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div id="overlay" style="display:none;"></div>
+    <!-- Menüleiste einbinden -->
+    {% include 'FAN020_navbar.html' %}
+
+    <!-- Flash Nachrichten anzeigen -->
+    <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <div class="registration-form">
+        <h2>Zeiteintrag bearbeiten</h2>
+        <div class="new-row"></div>
+        <form action="{{url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag_id)}}" method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="datum">Datum:</label>
+                    <input type="date" id="datum" name="datum" value="{{datum}}" required>
+                </div>
+                <div class="form-group">
+                    <label for="startZeit">Startzeitpunkt:</label>
+                    <input type="time" id="startZeit" name="startZeit" value="{{von}}" required>
+                </div>
+                <div class="form-group">
+                    <label for="endZeit">Endzeitpunkt:</label>
+                    <input type="time" id="endZeit" name="endZeit" value="{{bis}}" required>
+                </div>
+                <div class="form-group for-non-zero-klient">
+                    <label for="fachkraft">Fachkraft:</label>
+                    <input type="checkbox" id="fachkraft" name="fachkraft" {% if fachkraft == '1' %} checked {% endif %}>
+                </div>
+                <div class="form-group">
+                    <label for="klientDropdown">Klient:</label>
+                    <select class="form-control" id="klientDropdown" name="klientDropdown" required onchange="toggleFieldsBasedOnKlientId(); updateFachkraftCheckboxBasedOnSelection();">
+                        <!-- Optionen werden durch Python generiert -->
+                        <option value="" disabled {{ 'selected' if not klient_id else '' }}>Bitte wählen</option>
+                        {% for klient in klienten %}
+                        <option value="{{ klient.id }}" {{ 'selected' if klient.id == klient_id else '' }} fallverantwortung = "{{ klient.fallverantwortung }}">{{ klient.id }} - {{ klient.nachname }}, {{ klient.vorname }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                 <script>
+                    toggleFieldsBasedOnKlientId();  // Aufruf der Funktion direkt nach dem Dropdown-Menü
+                </script>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="beschreibung">Beschreibung:</label>
+                    <input type="text" id="beschreibung" name="beschreibung" value="{{zeiteintrag[8] if zeiteintrag[8] else ''}}" >
+                </div>
+                <div class="form-group">
+                    <label for="interneNotiz">Interne Notiz:</label>
+                    <input type="text" id="interneNotiz" name="interneNotiz" value="{{zeiteintrag[9] if zeiteintrag[9] else ''}}" >
+                </div>
+                <div class="form-group">
+                    <label for="absage">Absage:</label>
+                    <input type="checkbox" id="absage" name="absage"{% if zeiteintrag[11] %} checked {% endif %}>
+                </div>
+            </div>
+            <input type="hidden" name="highestFahrtId" id="highestFahrtId" value="{{ highest_fahrt_id }}">
+
+                <h3>Fahrten:</h3>
+                <div id="fahrtenContainer">
+                    {% if fahrten %}
+
+                        {% set index = 0 %}
+                            <div class="form-row fahrt-row">
+                                <div class="form-group">
+                                    <label>Anrechenbarkeit:</label>
+                                </div>
+                                <div class="form-group">
+                                    <label>Start Adresse:</label>
+                                </div>
+                                <div class="form-group">
+                                    <label>End Adresse:</label>
+                                </div>
+                                <div class="form-group">
+                                    <label>Kilometer:</label>
+                                </div>
+                            </div>
+                            {% for fahrt in fahrten %}
+                                <!-- Ursprüngliche Fahrt-Eingabezeile -->
+                                <div class="form-row fahrt-row fahrt-input-row">
+                                    <div class="form-hidden">
+                                        <input type="hidden" id="fahrt_id{{  fahrt[0] }}" name="fahrt_id{{  fahrt[0] }}"  value="{{ fahrt[0] }}" >
+                                    </div>
+                                    <div class="form-group for-non-zero-klient">
+                                        <input type="checkbox" id="abrechenbarkeit{{  fahrt[0] }}" name="abrechenbarkeit{{  fahrt[0] }}" {% if fahrt[4] %} checked {% endif %}>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" id="start_adresse{{  fahrt[0] }}" name="start_adresse{{  fahrt[0] }}" value="{{ fahrt[2] }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" id="end_adresse{{  fahrt[0] }}" name="end_adresse{{  fahrt[0] }}" value="{{ fahrt[3] }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" id="kilometer{{ fahrt[0] }}" name="kilometer{{ fahrt[0] }}" value="{{ fahrt[1] }}">
+                                    </div>
+                                    <button type="button" onclick="addFahrt()">+</button>
+                                    <button type="button" onclick="removeFahrt(this)">-</button>
+                                </div>
+                            {% set index = index + 1 %}
+                            {% endfor %}
+                        {% else %}
+                            <!-- Leere Felder für eine neue Fahrt -->
+                            <div class="form-row fahrt-row fahrt-input-row">
+                                <div class="form-hidden">
+                                    <input type="hidden" id="fahrt_id{{highest_fahrt_id}}" name="fahrt_id{{highest_fahrt_id}}" value="{{ highest_fahrt_id }}">
+                                </div>
+                                <div class="form-group for-non-zero-klient">
+                                    <label for="abrechenbarkeit{{highest_fahrt_id}}">Anrechenbarkeit:</label>
+                                    <input type="checkbox" id="abrechenbarkeit{{highest_fahrt_id}}" name="abrechenbarkeit{{highest_fahrt_id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="start_adresse{{ highest_fahrt_id }}">Start Adresse:</label>
+                                    <input type="text" id="start_adresse{{ highest_fahrt_id }}" name="start_adresse{{highest_fahrt_id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="end_adresse0{{ highest_fahrt_id }}">End Adresse:</label>
+                                    <input type="text" id="end_adresse0{{ highest_fahrt_id }}" name="end_adresse{{highest_fahrt_id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="kilometer{{ highest_fahrt_id }}">Kilometer:</label>
+                                    <input type="text" id="kilometer{{ highest_fahrt_id }}" name="kilometer{{highest_fahrt_id}}">
+                                </div>
+                                <button type="button" onclick="addFahrt()">+</button>
+                                <button type="button" onclick="removeFahrt(this)">-</button>
+                            </div>
+                        {% endif %}
+                    </div>
+
+
+            <!--Unterschriften Felder -->
+            <div class="form-row ">
+                <div class="signature-container for-non-zero-klient" onclick="openSignaturePopup('Klient')">
+                    <img id="signatureImageKlient" src="{{ signature_data_klient }}" alt="Unterschrift Klient" style="{% if signature_data_klient %}display: block;{% else %}display: none;{% endif %}">
+                    <p>Unterschrift Klient</p>
+                </div>
+
+                <div class="signature-container" onclick="openSignaturePopup('Mitarbeiter')">
+                     <img id="signatureImageMitarbeiter" src="{{ signature_data_mitarbeiter }}" alt="Unterschrift Mitarbeiter" style="{% if signature_data_mitarbeiter %}display: block;{% else %}display: none;{% endif %}">
+                     <p>Unterschrift Mitarbeiter</p>
+                </div>
+            </div>
+
+            <br><br>
+
+            <!-- Pop-up für Unterschrift Klient -->
+            <div id="signaturePopupKlient" class="signature-popup" style="display:none;">
+                <canvas id="signatureCanvasKlient" width="400" height="200" style="border:1px solid #000;"></canvas>
+                <div class="signature-actions">
+                    <button type="button" onclick="saveSignature('Klient')">Speichern</button>
+                    <button type="button" onclick="clearSignature('Klient')">Leeren</button>
+                    <button type="button" onclick="closePopup('Klient')">Schließen</button>
+                </div>
+            </div>
+
+
+            <!-- Pop-up für Unterschrift Mitarbeiter -->
+            <div id="signaturePopupMitarbeiter" class="signature-popup" style="display:none;">
+                <canvas id="signatureCanvasMitarbeiter" width="400" height="200" style="border:1px solid #000;"></canvas>
+                <div class="signature-actions">
+                    <button type="button" onclick="saveSignature('Mitarbeiter')">Speichern</button>
+                    <button type="button" onclick="clearSignature('Mitarbeiter')">Leeren</button>
+                    <button type="button" onclick="closePopup('Mitarbeiter')">Schließen</button>
+                </div>
+            </div>
+
+            <!-- Versteckte Formularfelder für Unterschriftsdaten -->
+            <input type="hidden" id="signatureDataKlient" name="signatureDataKlient">
+            <input type="hidden" id="signatureDataMitarbeiter" name="signatureDataMitarbeiter">
+
+
+            <div class="form-actions" style="margin-left: 20px;">
+                <button type="submit">Bestätigen</button>
+            </div>
+        </form>
+        <br>
+            <div class ="form-actions" style="margin-left: 20px">
+                <form action="{{url_for('delete_if_ueberschneidung.delete_if_ueberschneidung', zeiteintrag_id=zeiteintrag_id)}}" method="post">
+                    {% if ueberschneidung == 1 %}
+                        <button type="submit">Abbrechen</button>
+                    {% else %}
+                        <button type="button" onclick="close_window()">Abbrechen</button>
+                    {% endif %}
+                </form>
+            </div>
+            <script>
+                let fahrtCounter = 1;
+                document.getElementById('fahrtCounterInput').value = fahrtCounter;
+
+
+                function addFahrt() {
+                    const fahrtContainer = document.getElementById('fahrtenContainer');
+                    const highest_fahrt_id_row = document.getElementById('highestFahrtId'); // Wert von highest_fahrt_id auslesen
+                    let highest_fahrt_id = parseInt(highest_fahrt_id_row.value);
+                    highest_fahrt_id++;
+                    const next_fahrt_id = highest_fahrt_id
+
+                    const newFahrtRow = document.createElement('div');
+                    newFahrtRow.classList.add('form-row', 'fahrt-row', 'fahrt-input-row');
+
+
+                    newFahrtRow.innerHTML = `
+                                <div class="form-hidden">
+                                   <input type="hidden" id="fahrt_id${next_fahrt_id}" name="fahrt_id${next_fahrt_id}" value="${next_fahrt_id}">
+                                </div>
+                                <div class="form-group">
+                                   <input type="checkbox" id="abrechenbarkeit${next_fahrt_id}" name="abrechenbarkeit${next_fahrt_id}">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="start_adresse${next_fahrt_id}" name="start_adresse${next_fahrt_id}">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="end_adresse${next_fahrt_id}" name="end_adresse${next_fahrt_id}">
+                                </div>
+                                <div class="form-group">
+                                    <input type="number" id="kilometer${next_fahrt_id}" name="kilometer${next_fahrt_id}" required>
+                                </div>
+                                <button type="button" onclick="addFahrt()">+</button>
+                                <button type="button" onclick="removeFahrt(this)">-</button>
+                                </div>
+                    `;
+                    fahrtContainer.appendChild(newFahrtRow);
+                    fahrtCounter++;
+                    document.getElementById('highestFahrtId').value = highest_fahrt_id;
+                    document.getElementById('fahrtCounterInput').value = fahrtCounter;
+                }
+
+                function removeFahrt(buttonElement) {
+                    const fahrtContainer = document.getElementById('fahrtenContainer');
+                    const fahrtRows = fahrtContainer.getElementsByClassName('fahrt-input-row');
+
+                    if (fahrtRows.length > 1) {
+                        const fahrtRow = buttonElement.closest('.fahrt-input-row');
+                        fahrtRow.remove();
+                        fahrtCounter--;
+                        document.getElementById('fahrtCounterInput').value = fahrtCounter;
+                    } else {
+                        // Wenn dies die letzte Eingabezeile ist, löschen Sie nur die Inhalte der Felder.
+                        const fahrtRow = buttonElement.closest('.fahrt-input-row');
+                        fahrtRow.querySelectorAll('input').forEach(input => {
+                            if (input.type === 'checkbox') {
+                                input.checked = false;
+                            } else {
+                                input.value = '';
+                            }
+                        });
+                    }
+
+                }
+            </script>
+    </div>
+    <script>
+        function toggleFieldsBasedOnKlientId() {
+            let klientId = document.getElementById('klientDropdown').value;
+            let elements = document.getElementsByClassName('for-non-zero-klient');
+
+             for (let i = 0; i < elements.length; i++) {
+                elements[i].style.display = klientId !== '1' ? 'block' : 'none';
+            }
+         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleFieldsBasedOnKlientId();
+        });
+    </script>
+
+    <script>
+        //Einrichten des Canvas
+        function setupCanvas(canvasId) {
+            let canvas = document.getElementById(canvasId);
+            let context = canvas.getContext('2d');
+            let drawing = false;
+
+            canvas.addEventListener('mousedown', function(e) {
+                drawing = true;
+                context.moveTo(e.offsetX, e.offsetY);
+            });
+
+            canvas.addEventListener('mousemove', function(e) {
+                if (drawing) {
+                    context.lineTo(e.offsetX, e.offsetY);
+                    context.stroke();
+                }
+            });
+
+            canvas.addEventListener('mouseup', function(e) {
+                drawing = false;
+            });
+
+            canvas.addEventListener('mouseleave', function(e) {
+                drawing = false;
+            });
+        }
+
+        // Initialisiere beide Canvas-Elemente
+        setupCanvas('signatureCanvasKlient');
+        setupCanvas('signatureCanvasMitarbeiter');
+        function openSignaturePopup(type) {
+            document.getElementById(`signaturePopup${type}`).style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+        // Schließen Popup
+        function closePopup(type) {
+            event.preventDefault();
+            document.getElementById(`signaturePopup${type}`).style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+        // Leeren Popup
+        function clearSignature(type) {
+            event.preventDefault();
+            let canvas = document.getElementById(`signatureCanvas${type}`);
+            let context = canvas.getContext("2d");
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.beginPath();
+        }
+        // Speichern Popup
+        function saveSignature(type) {
+            event.preventDefault();
+            let canvas = document.getElementById(`signatureCanvas${type}`);
+            let signatureData = canvas.toDataURL();
+            document.getElementById(`signatureData${type}`).value = signatureData;
+            document.getElementById(`signatureImage${type}`).src = signatureData;
+            document.getElementById(`signatureImage${type}`).style.display = "block";
+            closePopup(type);
+        }
+
+        function close_window() {
+            var return_url = "{{ return_url }}";
+            window.location.href = return_url;
+        }
+
+    </script>
+    <script>
+
+        window.onload = function() {
+            // Überprüfen, ob Nachrichten vorhanden sind
+            {% if get_flashed_messages() %}
+                let modal = document.getElementById("flashModal");
+                let span = document.getElementsByClassName("close")[0];
+
+                // Modal anzeigen
+                modal.style.display = "block";
+
+                // Schließen, wenn das "X" geklickt wird
+                span.onclick = function() {
+                    modal.style.display = "none";
+                };
+
+                // Schließen, wenn außerhalb des Modals geklickt wird
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                };
+            {% endif %}
+        }
+        document.addEventListener('DOMContentLoaded', (event) => {
+        let heute = new Date().toISOString().split('T')[0];
+        document.getElementById("datum").setAttribute('max', heute);
+        });
+
+        function updateFachkraftCheckboxBasedOnSelection() {
+            var selectedKlient = document.getElementById("klientDropdown");
+            var selectedFallverantwortung = selectedKlient.options[selectedKlient.selectedIndex].getAttribute("fallverantwortung");
+            var fachkraftCheckbox = document.getElementById("fachkraft");
+            var fallverantwortungPersonId = '{{ person_id }}'; // Diese Variable sollte mit dem Wert initialisiert werden, den Sie aus Ihrem Backend erhalten.
+
+            console.log("Ausgewählte Fallverantwortung: " + selectedFallverantwortung); // Für Debugging in der Browser-Konsole
+
+            if (selectedFallverantwortung === fallverantwortungPersonId) {
+                fachkraftCheckbox.checked = true;
+            } else {
+                fachkraftCheckbox.checked = false;
+            }
+        }
+    </script>
+</body>
+</html>
+
+

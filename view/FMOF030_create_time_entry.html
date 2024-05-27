@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbeitsstunden Eintrag</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div id="overlay" style="display:none;"></div>
+    <!-- Menüleiste einbinden -->
+    {% include 'FAN020_navbar.html' %}
+
+    <!-- Flash Nachrichten anzeigen -->
+    <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <br><br>
+
+    <div class="registration-form">
+        <h2>Zeiteintrag hinzufügen</h2>
+        <div class="new-row"></div>
+        <form action="{{url_for('/create_time_entry.submit_arbeitsstunden', person_id=person_id)}}" method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="datum">Datum:</label>
+                    <input type="date" id="datum" name="datum" required>
+                </div>
+                <div class="form-group">
+                    <label for="startZeit">Startzeitpunkt:</label>
+                    <input type="time" id="startZeit" name="startZeit" required>
+                </div>
+                <div class="form-group">
+                    <label for="endZeit">Endzeitpunkt:</label>
+                    <input type="time" id="endZeit" name="endZeit" required>
+                </div>
+                <div class="form-group for-non-zero-klient">
+                    <label for="fachkraft">Fachkraft:</label>
+                    <input type="checkbox" id="fachkraft" name="fachkraft" {% if fachkraft == '1' %} checked {% endif %}>
+                </div>
+                <div class="form-group">
+                    <label for="klientDropdown">Klient:</label>
+                    <select class="form-control" id="klientDropdown" name="klientDropdown" required onchange="toggleFieldsBasedOnKlientId(); updateFachkraftCheckboxBasedOnSelection();">
+                        <!-- Optionen werden durch Python generiert -->
+                        <option value="" disabled {{ 'selected' if not klient_id else '' }}>Bitte wählen</option>
+                        {% for klient in klienten %}
+                        <option value="{{ klient.id }}" {{ 'selected' if klient.id == klient_id else '' }} fallverantwortung = "{{ klient.fallverantwortung }}">{{ klient.id }} - {{ klient.nachname }}, {{ klient.vorname }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <script>
+                    toggleFieldsBasedOnKlientId();  // Aufruf der Funktion direkt nach dem Dropdown-Menü
+                </script>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="beschreibung">Beschreibung:</label>
+                    <input type="text" id="beschreibung" name="beschreibung" >
+                </div>
+                <div class="form-group">
+                    <label for="interneNotiz">Interne Notiz:</label>
+                    <input type="text" id="interneNotiz" name="interneNotiz" >
+                </div>
+                <div class="form-group">
+                    <label for="absage">Absage:</label>
+                    <input type="checkbox" id="absage" name="absage">
+                </div>
+            </div>
+            <h3>Fahrten:</h3>
+            <div id="fahrtenContainer">
+                <!-- Ursprüngliche Fahrt-Eingabezeile -->
+                <div class="form-row fahrt-row">
+                    <div class="form-group for-non-zero-klient">
+                        <label for="abrechenbarkeit0">Abrechenbarkeit:</label>
+                        <input type="checkbox" id="abrechenbarkeit0" name="abrechenbarkeit0">
+                    </div>
+                    <div class="form-group">
+                        <label for="start_adresse0">Start Adresse:</label>
+                        <input type="text" id="start_adresse0" name="start_adresse0">
+                    </div>
+                    <div class="form-group">
+                        <label for="end_adresse0">End Adresse:</label>
+                        <input type="text" id="end_adresse0" name="end_adresse0">
+                    </div>
+                    <div class="form-group">
+                        <label for="kilometer0">Kilometer:</label>
+                        <input type="number" id="kilometer0" name="kilometer0">
+                    </div>
+                    <button type="button" onclick="addFahrt()">+</button>
+                    <button type="button" onclick="removeFahrt(this)">-</button>
+                </div>
+            </div>
+
+
+
+            <!-- hidden return url -->
+            <input type="hidden" name="returnurl" value="{{ return_url }}">
+
+            <!--Unterschriften Felder -->
+            <div class="form-row">
+                <div class="signature-container for-non-zero-klient" type="button" onclick="openSignaturePopup('Klient')">
+                    <img id="signatureImageKlient" src="{{ signature_data_klient }}" alt="Unterschrift Klient" style="{% if signature_data_klient %}display: block;{% else %}display: none;{% endif %}">
+                    <p>Unterschrift Klient</p>
+                </div>
+
+                <div class="signature-container" type="button" onclick="openSignaturePopup('Mitarbeiter')">
+                    <img id="signatureImageMitarbeiter" src="{{ signature_data_mitarbeiter }}" alt="Unterschrift Mitarbeiter" style="{% if signature_data_mitarbeiter %}display: block;{% else %}display: none;{% endif %}">
+                    <p>Unterschrift Mitarbeiter</p>
+                </div>
+            </div>
+
+            <!-- Pop-up für Unterschrift Klient -->
+            <div id="signaturePopupKlient" class="signature-popup" style="display:none;">
+                <canvas id="signatureCanvasKlient" width="400" height="200" style="border:1px solid #000;"></canvas>
+                <div class="signature-actions">
+                    <button type="button" onclick="saveSignature('Klient')">Speichern</button>
+                    <button type="button" onclick="clearSignature('Klient')">Leeren</button>
+                    <button type="button" onclick="closePopup('Klient')">Schließen</button>
+                </div>
+            </div>
+
+            <!-- Pop-up für Unterschrift Mitarbeiter -->
+            <div id="signaturePopupMitarbeiter" class="signature-popup" style="display:none;">
+                <canvas id="signatureCanvasMitarbeiter" width="400" height="200" style="border:1px solid #000;"></canvas>
+                <div class="signature-actions">
+                    <button type="button" onclick="saveSignature('Mitarbeiter')">Speichern</button>
+                    <button type="button" onclick="clearSignature('Mitarbeiter')">Leeren</button>
+                    <button type="button" onclick="closePopup('Mitarbeiter')">Schließen</button>
+                </div>
+            </div>
+
+            <!-- Versteckte Formularfelder für Unterschriftsdaten -->
+            <input type="hidden" id="signatureDataKlient" name="signatureDataKlient">
+            <input type="hidden" id="signatureDataMitarbeiter" name="signatureDataMitarbeiter">
+
+            <div class="form-actions" style="margin-left: 20px;">
+                <button type="submit">Eintrag hinzufügen</button>
+                <button type="button" onclick="close_window()">Abbrechen</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        function toggleFieldsBasedOnKlientId() {
+            let klientId = document.getElementById('klientDropdown').value;
+            let elements = document.getElementsByClassName('for-non-zero-klient');
+
+             for (let i = 0; i < elements.length; i++) {
+                elements[i].style.display = klientId !== '1' ? 'block' : 'none';
+            }
+         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleFieldsBasedOnKlientId();
+        });
+    </script>
+
+    <script>
+        let fahrtCounter = 1;
+
+        function addFahrt() {
+            const fahrtContainer = document.getElementById('fahrtenContainer');
+            const newFahrtRow = document.createElement('div');
+            newFahrtRow.classList.add('form-row', 'fahrt-row');
+            newFahrtRow.innerHTML = `
+                        <div class="form-group">
+                            <input type="checkbox" id="abrechenbarkeit${fahrtCounter}" name="abrechenbarkeit${fahrtCounter}">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="start_adresse${fahrtCounter}" name="start_adresse${fahrtCounter}">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="end_adresse${fahrtCounter}" name="end_adresse${fahrtCounter}">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="kilometer${fahrtCounter}" name="kilometer${fahrtCounter}">
+                        </div>
+                        <button type="button" onclick="addFahrt()">+</button>
+                        <button type="button" onclick="removeFahrt(this)">-</button>
+                        </div>
+            `;
+            fahrtContainer.appendChild(newFahrtRow);
+            fahrtCounter++;
+        }
+
+        function removeFahrt(buttonElement) {
+            const fahrtContainer = document.getElementById('fahrtenContainer');
+            const fahrtRows = fahrtContainer.getElementsByClassName('fahrt-row');
+
+            if (fahrtRows.length > 1) {
+                const fahrtRow = buttonElement.closest('.fahrt-row');
+                fahrtRow.remove();
+                fahrtCounter--; // Reduziere den Zähler nur, wenn eine Zeile entfernt wurde
+            } else {
+                // Wenn dies die letzte Eingabezeile ist, löschen Sie nur die Inhalte der Felder.
+                const fahrtRow = buttonElement.closest('.fahrt-row');
+                fahrtRow.querySelectorAll('input').forEach(input => {
+                    if (input.type === 'checkbox') {
+                        input.checked = false; // Checkboxen werden nicht gecheckt
+                    } else {
+                        input.value = ''; // Andere Felder werden geleert
+                    }
+                });
+            }
+        }
+
+
+    </script>
+    <script>
+        window.onload = function() {
+            // Überprüfen, ob Nachrichten vorhanden sind
+            {% if get_flashed_messages() %}
+                let modal = document.getElementById("flashModal");
+                let span = document.getElementsByClassName("close")[0];
+
+                // Modal anzeigen
+                modal.style.display = "block";
+
+                // Schließen, wenn das "X" geklickt wird
+                span.onclick = function() {
+                    modal.style.display = "none";
+                };
+
+                // Schließen, wenn außerhalb des Modals geklickt wird
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                };
+            {% endif %}
+        }
+    </script>
+    <script>
+        //Einrichten des Canvas
+        function setupCanvas(canvasId) {
+            let canvas = document.getElementById(canvasId);
+            let context = canvas.getContext('2d');
+            let drawing = false;
+            let lastX = 0;
+            let lastY = 0;
+
+              function getMousePos(canvas, evt) {
+                let rect = canvas.getBoundingClientRect();
+                return {
+                    x: evt.clientX - rect.left,
+                    y: evt.clientY - rect.top
+                };
+            }
+
+            function getTouchPos(canvas, evt) {
+                let rect = canvas.getBoundingClientRect();
+                return {
+                    x: evt.touches[0].clientX - rect.left,
+                    y: evt.touches[0].clientY - rect.top
+                };
+            }
+
+            function mouseDownHandler(e) {
+                drawing = true;
+                let pos = getMousePos(canvas, e);
+                lastX = pos.x;
+                lastY = pos.y;
+                context.moveTo(lastX, lastY);
+            }
+
+            function mouseMoveHandler(e) {
+                if (drawing) {
+                    let pos = getMousePos(canvas, e);
+                    context.lineTo(pos.x, pos.y);
+                    context.stroke();
+                    lastX = pos.x;
+                    lastY = pos.y;
+                }
+            }
+
+            function touchStartHandler(e) {
+                e.preventDefault(); // Verhindert Scrollen auf Touch-Geräten
+                drawing = true;
+                let pos = getTouchPos(canvas, e);
+                lastX = pos.x;
+                lastY = pos.y;
+                context.moveTo(lastX, lastY);
+            }
+
+            function touchMoveHandler(e) {
+                if (drawing) {
+                    e.preventDefault(); // Verhindert Scrollen auf Touch-Geräten
+                    let pos = getTouchPos(canvas, e);
+                    context.lineTo(pos.x, pos.y);
+                    context.stroke();
+                    lastX = pos.x;
+                    lastY = pos.y;
+                }
+            }
+
+            canvas.addEventListener('mousedown', mouseDownHandler);
+            canvas.addEventListener('mousemove', mouseMoveHandler);
+            canvas.addEventListener('mouseup', () => { drawing = false; });
+            canvas.addEventListener('mouseleave', () => { drawing = false; });
+
+            canvas.addEventListener('touchstart', touchStartHandler);
+            canvas.addEventListener('touchmove', touchMoveHandler);
+            canvas.addEventListener('touchend', () => { drawing = false; });
+        }
+
+
+        // Initialisiere beide Canvas-Elemente
+        setupCanvas('signatureCanvasKlient');
+        setupCanvas('signatureCanvasMitarbeiter');
+        function openSignaturePopup(type) {
+            document.getElementById(`signaturePopup${type}`).style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+        // Schließen Popup
+        function closePopup(type) {
+            event.preventDefault();
+            document.getElementById(`signaturePopup${type}`).style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+        // Leeren Popup
+        function clearSignature(type) {
+            event.preventDefault();
+            let canvas = document.getElementById(`signatureCanvas${type}`);
+            let context = canvas.getContext("2d");
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.beginPath();
+        }
+        //Speichern Popup
+        function saveSignature(type) {
+            event.preventDefault();
+            let canvas = document.getElementById(`signatureCanvas${type}`);
+            let signatureData = canvas.toDataURL();
+            document.getElementById(`signatureData${type}`).value = signatureData;
+            document.getElementById(`signatureImage${type}`).src = signatureData;
+            document.getElementById(`signatureImage${type}`).style.display = "block";
+            closePopup(type);
+        }
+
+
+        function close_window() {
+            var return_url = "{{ return_url }}";
+            window.location.href = return_url;
+        }
+        document.addEventListener('DOMContentLoaded', (event) => {
+        let heute = new Date().toISOString().split('T')[0];
+        document.getElementById("datum").setAttribute('max', heute);
+        });
+
+        function updateFachkraftCheckboxBasedOnSelection() {
+            var selectedKlient = document.getElementById("klientDropdown");
+            var selectedFallverantwortung = selectedKlient.options[selectedKlient.selectedIndex].getAttribute("fallverantwortung");
+            var fachkraftCheckbox = document.getElementById("fachkraft");
+            var fallverantwortungPersonId = '{{ person_id }}'; // Diese Variable sollte mit dem Wert initialisiert werden, den Sie aus Ihrem Backend erhalten.
+
+            console.log("Ausgewählte Fallverantwortung: " + selectedFallverantwortung); // Für Debugging in der Browser-Konsole
+
+            if (selectedFallverantwortung === fallverantwortungPersonId) {
+                fachkraftCheckbox.checked = true;
+            } else {
+                fachkraftCheckbox.checked = false;
+            }
+        }
+    </script>
+</body>
+</html>
+

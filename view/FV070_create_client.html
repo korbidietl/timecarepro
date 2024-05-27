@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Klient anlegen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Menüleiste einbinden-->
+    {% include 'FAN020_navbar.html' %}
+
+    <!-- Flash Nachrichten anzeigen -->
+    <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <div class = "registration-form_2">
+        <h2>Klient anlegen</h2>
+        <div class="mein-eindeutiges-formular">
+            <form action="/create_client" method="post">
+                <div class="form-row">
+                     <div class="form-group2">
+                        <label for="lastname">Nachname:</label>
+                        <input type="text" id="lastname" name="lastname" required>
+                    </div>
+
+                    <div class="form-group2">
+                        <label for="firstname">Vorname:</label>
+                        <input type="text" id="firstname" name="firstname" required>
+                    </div>
+
+                    <div class="form-group2">
+                        <label for="address">Adresse:</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group2">
+                        <label for="birthday">Geburtstag:</label>
+                        <input type="date" id="birthday" name="birthday" required>
+                    </div>
+
+                    <div class="form-group2">
+                        <label for="number">Telefonnummer:</label>
+                        <input type="text" id="number" name="number">
+                    </div>
+
+                    <div class="form-group2">
+                        <label for="ktDropdown">Kostenträger:</label>
+                        <select class="form-control" id="ktDropdown" name="ktDropdown">
+                            <!-- Optionen werden durch Python generiert -->
+                            <option value="" selected disabled>Bitte auswählen</option>
+                            {% for kt in kostentraeger %}
+                            <option value="{{kt.id}}">{{kt.id}} - {{kt.nachname}}, {{kt.vorname}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group2">
+                        <label for="fk">Fachkraftkontingent:</label>
+                        <input type="number" id="fk" name="fkontingent">
+                    </div>
+
+                    <div class="form-group2">
+                        <label for="hk">Hilfskraftkontingent:</label>
+                        <input type="number" id="hk" name="hkontingent">
+                    </div>
+
+                    <div class="form-group2">
+                        <label for="fvDropdown">Fallverantwortung:</label>
+                        <select class="form-control" id="fvDropdown" name="fvDropdown">
+                            <option value="" selected disabled>Bitte auswählen</option>
+                            <!-- Optionen werden durch Python generiert -->
+                            {% for fv in fallverantwortung %}
+                            <option value="{{fv.id}}">{{fv.id}} - {{fv.nachname}}, {{fv.vorname}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Klient anlegen</button>
+                    <a href="/account_management">Abbrechen</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        window.onload = function() {
+            // Überprüfen, ob Nachrichten vorhanden sind
+            {% if get_flashed_messages() %}
+            let modal = document.getElementById("flashModal");
+            let span = document.getElementsByClassName("close")[0];
+
+            // Modal anzeigen
+            modal.style.display = "block";
+
+            // Schließen, wenn das "X" geklickt wird
+            span.onclick = function() {
+                modal.style.display = "none";
+            };
+
+            // Schließen, wenn außerhalb des Modals geklickt wird
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            };
+            {% endif %}
+        }
+        document.addEventListener('DOMContentLoaded', (event) => {
+        let heute = new Date().toISOString().split('T')[0];
+        document.getElementById("birthday").setAttribute('max', heute);
+        });
+    </script>
+
+</body>
+
+</html>

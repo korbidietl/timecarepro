@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="de" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Accountverwaltung</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+     <!-- Menüleiste einbinden -->
+    {% include 'FAN020_navbar.html' %}
+
+     <!-- Flash Nachrichten anzeigen -->
+     <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <div class="table-form">
+        <h2>Accountverwaltung</h2>
+        <br>
+
+        <!-- Buttons Account/Klient anlegen -->
+        <button onclick="window.location.href='/create_account';">Account anlegen</button>
+        <button onclick="window.location.href='/create_client';">Klient anlegen</button>
+        <br> <br> <br>
+
+
+        <h3>Kliententabelle</h3>
+        <div id="userRole_k" data-role="{{ role }}"></div>
+        <label for="monat_jahr_dropdown_k"></label>
+        <select id="monat_jahr_dropdown_k" style="padding: 8px; border: 1px solid #ccc;border-radius: 4px; margin-right: 20px; margin-bottom: 20px">
+            {% for kombination in kombinationen %}
+                <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
+                    {{ kombination }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="button" id="anzeigenButton_k">Anzeigen</button>
+
+        <div class="scrollable-container">
+            <div id="clients_table_container"></div>
+        </div>
+        <p id="no-clients-message" style="display: none;">Keine Klienten gefunden.</p>
+
+        <br> <br> <br>
+
+        <!--Mitarbeitertabelle -->
+        {% if role != 'Sachbearbeiter/Kostenträger'%}
+            <h3>Mitarbeitertabelle</h3>
+            <div id="userRole_m" data-role="{{ role }}"></div>
+            <label for="monat_jahr_dropdown_m"></label>
+            <select id="monat_jahr_dropdown_m" style="padding: 8px; border: 1px solid #ccc;border-radius: 4px; margin-right: 20px; margin-bottom: 20px">
+                {% for kombination in kombinationen %}
+                    <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
+                        {{ kombination }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="button" id="anzeigenButton_m">Anzeigen</button>
+
+            <div class="scrollable-container">
+                <div id="employee_table_container"></div>
+            </div>
+            <p id="no-employee-message" style="display: none;">Keine Mitarbeiter gefunden.</p>
+        {% endif %}
+
+        <br> <br> <br>
+
+        <!-- Steuerbüro Tabelle -->
+        <div class="scrollable-container">
+            {% if steuerbueros %}
+                <h3>Steuerbüro</h3>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Vorname</th>
+                        <th>Nachname</th>
+                        <th>E-Mail</th>
+                    </tr>
+                    {% for steuerbuero in steuerbueros %}
+                    <tr>
+                        <td>{{ steuerbuero[0] }}</td> <!-- id -->
+                        <td>{{ steuerbuero[1] }}</td> <!-- vorname -->
+                        <td>{{ steuerbuero[2] }}</td> <!-- nachname -->
+                        <td>{{ steuerbuero[3] }}</td> <!-- email -->
+                        <td>
+                            <form action="/account_details/{{ steuerbuero[0] }}" method="get">
+                                <button type="submit">Details</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{{url_for('edit_account.edit_account', person_id = steuerbuero[0])}}" method="get">
+                                <button type="submit">Bearbeiten</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{{ '/account_unlock/' if steuerbuero[4] == 1 else '/account_lock/' }}{{ steuerbuero[0] }}" method="post">
+                                <button id="lock_steuer" type="submit">{{ 'Entsperren' if steuerbuero[4] == 1 else 'Sperren' }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>Keine Steuerbüros gefunden.</p>
+            {% endif %}
+        </div>
+
+        <br> <br> <br>
+
+        <!-- Sachbearbeiter/Kostenträger Tabelle -->
+        <div class="scrollable-container">
+            {% if sachbearbeiter %}
+            <h3>Sachbearbeiter/Kostenträger</h3>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Vorname</th>
+                    <th>Nachname</th>
+                    <th>E-Mail</th>
+                </tr>
+                {% for sb in sachbearbeiter %}
+                    <tr>
+                        <td>{{ sb[0] }}</td> <!-- id -->
+                        <td>{{ sb[1] }}</td> <!-- vorname -->
+                        <td>{{ sb[2] }}</td> <!-- nachname -->
+                        <td>{{ sb[3] }}</td> <!-- email -->
+                        <td>
+                            <form action="/account_details/{{ sb[0] }}" method="get">
+                            <button type="submit">Details</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{{url_for('edit_account.edit_account', person_id = sb[0])}}" method="get">
+                                <button type="submit">Bearbeiten</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{{ '/account_unlock/' if sb[4] == 1 else '/account_lock/' }}{{ sb[0] }}" method="post">
+                                <button id="lock_sb" type="submit">{{ 'Entsperren' if sb[4] == 1 else 'Sperren' }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+                <p>Keine Sachbearbeiter/Kostenträger gefunden.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='FAN040_show_client_table.js') }}"></script>
+    <script src="{{ url_for('static', filename='FAN030_show_employee_table.js') }}"></script>
+
+    <script>
+        window.addEventListener('message', function(e) {
+            if (e.data.iframeHeight && e.data.iframeId) {
+                document.getElementById(e.data.iframeId).style.height = e.data.iframeHeight + 'px';
+            }
+        }, false);
+    </script>
+
+
+    <script>
+        window.onload = function() {
+            // Überprüfen, ob Nachrichten vorhanden sind
+            {% if get_flashed_messages() %}
+                let modal = document.getElementById("flashModal");
+                let span = document.getElementsByClassName("close")[0];
+
+                // Modal anzeigen
+                modal.style.display = "block";
+
+                // Schließen, wenn das "X" geklickt wird
+                span.onclick = function() {
+                    modal.style.display = "none";
+                };
+
+                // Schließen, wenn außerhalb des Modals geklickt wird
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                };
+            {% endif %}
+        }
+    </script>
+</body>
+</html>

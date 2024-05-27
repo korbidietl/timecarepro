@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporting Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <!-- Menüleiste einbinden-->
+    {% include 'FAN020_navbar.html' %}
+
+    <!-- Flash Nachricht -->
+    <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <div class = "table-form">
+        <h2>Reporting Dashboard</h2>
+        <div class="leerzeile"></div>
+        <h3>Zeiteinträge</h3>
+        <!-- Tabelle der Zeiteinträge -->
+        {% if zeiteintraege_liste %}
+            <div class="scrollable-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mitarbeiter</th>
+                            <th>Sachbearbeiter</th>
+                            <th>Klient</th>
+                            <th>Geleistete Stunden</th>
+                            <th>Gefahrene km</th>
+                            <th>Abrechenbare km</th>
+                            <th>Nicht-abrechenbare km</th>
+                            <th>Absagen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for zeile in zeiteintraege_liste %}
+                        <tr>
+                            <td>{{ zeile[0] }}</td>
+                            <td>{{ zeile[1] }}</td>
+                            <td>{{ zeile[2] }}</td>
+                            <td>{{ zeile[3] }}</td>
+                            <td>{{ zeile[4] if zeile[4] is not none else '0.0' }}</td>
+                            <td>{{ zeile[5] if zeile[5] is not none else '0.0' }}</td>
+                            <td>{{ zeile[6] if zeile[6] is not none else '0.0' }}</td>
+                            <td>{{ zeile[7] }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td><strong>Gesamt</strong></td>
+                            <td colspan="2"></td>
+                            <td><strong>{{ ze_gesamt[0] }}</strong></td>
+                            <td><strong>{{ ze_gesamt[2] }}</strong></td>
+                            <td><strong>{{ ze_gesamt[3] }}</strong></td>
+                            <td><strong>{{ ze_gesamt[4] }}</strong></td>
+                            <td><strong>{{ ze_gesamt[1] }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>Keine Daten gefunden.</p>
+        {% endif %}
+        <div class="leerzeile"></div>
+        <h3>Mitarbeiter</h3>
+        <!-- Mitarbeiter Tabelle -->
+        {% if mitarbeiter_daten %}
+            <div class="scrollable-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Personalnr.</th>
+                            <th>Nachname</th>
+                            <th>Vorname</th>
+                            <th>Geleistete Stunden</th>
+                            <th>Gefahrene km</th>
+                            <th>Abrechenbare km</th>
+                            <th>Nicht-abrechenbare km</th>
+                            <th>Absagen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mitarbeiter in mitarbeiter_daten %}
+                        <tr>
+                            <td>{{ mitarbeiter[0] }}</td>
+                            <td>{{ mitarbeiter[1] }}</td>
+                            <td>{{ mitarbeiter[2] }}</td>
+                            <td>{{ mitarbeiter[3] }}</td>
+                            <td>{{ mitarbeiter[4] if mitarbeiter[4] is not none else '0.0'}}</td>
+                            <td>{{ mitarbeiter[5] if mitarbeiter[5] is not none else '0.0'}}</td>
+                            <td>{{ mitarbeiter[6] if mitarbeiter[6] is not none else '0.0'}}</td>
+                            <td>{{ mitarbeiter[7] }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td><strong>Gesamt</strong></td>
+                            <td colspan="2"></td>
+                            <td><strong>{{ mitarbeiter_gesamt[4] }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[0] }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[1] }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[2] }}</strong></td>
+                            <td><strong>{{ mitarbeiter_gesamt[3] }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>Keine Daten gefunden.</p>
+        {% endif %}
+        <div class="leerzeile"></div>
+        <h3>Klienten</h3>
+        <!-- Klienten Tabelle-->
+        {% if klienten_daten %}
+            <div class="scrollable-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nachname</th>
+                            <th>Vorname</th>
+                            <th>geleistete Stunden</th>
+                            <th>Abrechenbare km</th>
+                            <th>Nicht-abrechenbare km</th>
+                            <th>Absagen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for klient in klienten_daten %}
+                        <tr>
+                            <td>{{ klient[0] }}</td>
+                            <td>{{ klient[1] }}</td>
+                            <td>{{ klient[2] }}</td>
+                            <td>{{ klient[3] }}</td>
+                            <td>{{ klient[5] if klient[5] is not none else '0.0'}}</td>
+                            <td>{{ klient[6] if klient[6] is not none else '0.0'}}</td>
+                            <td>{{ klient[7] }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td><strong>Gesamt</strong></td>
+                            <td colspan="2"></td>
+                            <td><strong>{{ klient_gesamt[4] }}</strong></td>
+                            <td><strong>{{ klient_gesamt[1] }}</strong></td>
+                            <td><strong>{{ klient_gesamt[2] }}</strong></td>
+                            <td><strong>{{ klient_gesamt[3] }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>Keine Daten gefunden.</p>
+        {% endif %}
+        <div class="leerzeile"></div>
+
+
+        <form action="{{url_for('view_reporting_dashboard.reporting_dashboard')}}" method="POST">
+           <div class="mein-eindeutiges-formular">
+                <div class="form-row">
+                    <!-- Filter -->
+                    <div class="form-group2">
+                        <label for="von">von:</label>
+                        <input type="date" id="von" class="gray-background" name="von">
+                    </div>
+                    <div class="form-group2">
+                        <label for="bis">bis:</label>
+                        <input type="date" id="bis" class="gray-background" name="bis">
+                    </div>
+                    <div class="form-group2">
+                        <label for="mitarbeiter">Mitarbeiter:</label>
+                        <select class="form-control gray-background" id="mitarbeiter"  name="mitarbeiter">
+                            <option value="" selected disabled>Bitte auswählen</option>
+                            {% for ma in mitarbeiter %}
+                            <option value="{{ma.id}}">{{ma.id}} - {{ma.nachname}}, {{ma.vorname}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group2">
+                        <label for="klient">Klient:</label>
+                        <select class="form-control gray-background" id="klient" name="klient">
+                            <option value="" selected disabled>Bitte auswählen</option>
+                            {% for cl in klient %}
+                            <option value="{{cl.id}}">{{cl.vorname}} {{cl.nachname}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit">Filtern</button>
+                </div>
+                <div class="leerzeile"></div>
+                <div class="dashboard-container">
+                    {% if mazahl %}
+                       <div class="dashboard-item">
+                           <!-- Diagramm Mitarbeiterzahl -->
+                           <h3>Mitarbeiteranzahl</h3>
+                           <div class="dashboard-number">{{mazahl}}</div>
+                       </div>
+                    {% else %}
+                        <div class="dashboard-item">
+                           <h3>Mitarbeiteranzahl</h3>
+                           <div class="dashboard-number">{{0}}</div>
+                       </div>
+                    {% endif %}
+                    {% if stundendaten %}
+                        <div class="dashboard-item">
+                            <!-- Diagramm Studenzahl -->
+                            <h3>Stundenzahl</h3>
+                            <div class="chart-container">
+                                <canvas id="stundenChart"></canvas>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>Keine Daten gefunden.</p>
+                    {% endif %}
+                    {% if kmdaten %}
+                        <div class="dashboard-item">
+                            <!-- Diagramm Kilometeranzahl -->
+                            <h3>Kilometerzahl</h3>
+                            <div class="chart-container">
+                                <canvas id="kilometerChart"></canvas>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>Keine Daten gefunden.</p>
+                    {% endif %}
+                    {% if terminabsagendaten %}
+                        <div class="dashboard-item">
+                            <!-- Diagramm Terminabsagen -->
+                            <h3>Terminabsagen</h3>
+                            <div class="chart-container">
+                                <canvas id="terminAbsagenChart"></canvas>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>Keine Daten gefunden.</p>
+                    {% endif %}
+                </div>
+
+
+                <div class="accordion-button">
+                    <button id="exportButton" type="button">Exportieren</button>
+                    <button type="button" onclick="window.print();">Drucken</button>
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+    <script type="text/javascript">
+        var stundendaten = {{ stundendaten|tojson }}
+        var kmdaten = {{ kmdaten|tojson }}
+        var terminabsagendaten = {{ terminabsagendaten|tojson }}
+    </script>
+    <script>
+        function erstelleDiagramm(canvasId, label, daten, backgroundColor, borderColor, maxTicks) {
+            var ctx = document.getElementById(canvasId).getContext('2d');
+            return new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                    datasets: [{
+                        label: label,
+                        data: daten,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                suggestedMax: maxTicks
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            erstelleDiagramm('stundenChart', 'Stundenzahl', stundendaten, 'rgba(255, 159, 64, 0.2)', 'rgba(255, 159, 64, 1)', 50);
+            erstelleDiagramm('kilometerChart', 'Kilometeranzahl', kmdaten, 'rgba(0, 128, 0, 0.2)', 'rgba(0, 128, 0, 1)', 500);
+            erstelleDiagramm('terminAbsagenChart', 'Terminabsagen', terminabsagendaten, 'rgba(225, 0, 0, 0.2)', 'rgba(225, 0, 0, 1)', 14);
+        });
+
+    </script>
+
+
+    <script>
+        window.onload = function() {
+            // Überprüfen, ob Nachrichten vorhanden sind
+            {%if get_flashed_messages() %}
+            let modal = document.getElementById("flashModal");
+            let span = document.getElementsByClassName("close")[0];
+
+            // Modal anzeigen
+            modal.style.display = "block";
+
+            // Schließen, wenn das "X" geklickt wird
+            span.onclick = function () {
+                modal.style.display = "none";
+            };
+
+            // Schließen, wenn außerhalb des Modals geklickt wird
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            };
+            {%endif %}
+        }
+    </script>
+    <script>
+    function exportAllTablesToCSV(filename) {
+        var csv = [];
+        var tables = document.querySelectorAll("table");
+
+        tables.forEach(function(table) {
+            var rows = table.querySelectorAll("tr");
+
+            rows.forEach(function(row) {
+                var rowData = [];
+                var cols = row.querySelectorAll("td, th");
+
+                cols.forEach(function(col) {
+                    rowData.push('"' + col.innerText + '"');
+                });
+
+                csv.push(rowData.join(","));
+            });
+
+            // Fügt eine leere Zeile zwischen Tabellen hinzu
+            csv.push("");
+        });
+        // Exportieren der Diagrammdaten als zusätzliche "Tabellen"
+        csv.push("Stundendaten");
+        csv.push(stundendaten.join(","));
+        csv.push("");
+
+        csv.push("Kilometerdaten");
+        csv.push(kmdaten.join(","));
+        csv.push("");
+
+        csv.push("Terminabsagendaten");
+        csv.push(terminabsagendaten.join(","));
+        csv.push("");
+
+        // Erstellen Sie einen Link und starten Sie den Download
+        var csvString = csv.join("\n");
+        var link = document.createElement("a");
+        link.style.display = 'none';
+        link.setAttribute('target', '_blank');
+        link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString));
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    </script>
+    <script type="text/javascript">
+        document.getElementById('exportButton').addEventListener('click', function (event) {
+            event.preventDefault();
+            exportAllTablesToCSV('reporting_dashboard.csv', {{ stundendaten }}, {{ kmdaten }}, {{ terminabsagendaten}});
+        });
+    </script>
+</body>
+
+
+
+</html>

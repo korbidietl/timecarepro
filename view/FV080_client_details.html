@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Details Klienten einsehen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<style>
+.hidden {
+    display: none;
+}
+</style>
+<body>
+    <!-- menüleiste -->
+    {% include 'FAN020_navbar.html' %}
+
+    <!-- Flash Nachrichten anzeigen -->
+    <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+
+    <div class="registration-form_2">
+        <h2>Klient: {{firstname}}, {{lastname}}</h2>
+
+        <div class="form-row">
+            <div class="form-group2">
+                <label for="lastname">Nachname:</label>
+                <input type="text" id="lastname" name="lastname" value={{lastname}} readonly>
+            </div>
+            <div class="form-group2">
+                <label for="firstname">Vorname:</label>
+                <input type="text" id="firstname" name="firstname" value="{{firstname}}" readonly>
+            </div>
+
+            <div class="form-group2">
+                <label for="address">Adresse:</label>
+                <input type="text" id="address" name="address" value="{{address}}" readonly>
+            </div>
+         </div>
+
+        <div class="form-row">
+            <div class="form-group2">
+                <label for="birthday">Geburtstag:</label>
+                {% if client_id != 1 %}
+                    <input type="date" id="birthday" name="birthday" value="{{birthday}}" readonly>
+                {% else %}
+                    <input type="text" id="birthday" name="birthday" value="" readonly>
+                {% endif %}
+            </div>
+            <div class="form-group2">
+                <label for="phone">Telefonnummer:</label>
+                <input type="text" id="phone" name="phone" value="{{phone}}" readonly>
+            </div>
+            <div class="form-group2">
+                <label for="sb">Sachbearbeiter:</label>
+                {% if client_id != 1 %}
+                    <input type="text" id="sb" name="sb" value="{{ sb[0] }}, {{ sb[1] }}" readonly>
+                {% else %}
+                    <input type="text" id="sb" name="sb" value="" readonly>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group2">
+                <label for="fk">Fachkraftkontingent:</label>
+                {% if client_id != 1 %}
+                    <input type="text" id="fk" name="fk" value="{{fk}}" readonly>
+                {% else %}
+                    <input type="text" id="fk" name="fk" value="" readonly>
+                {% endif %}
+            </div>
+            <div class="form-group2">
+                <label for="hk">Hilfskraftkontingent:</label>
+                {% if client_id != 1 %}
+                    <input type="text" id="hk" name="hk" value="{{hk}}" readonly>
+                {% else %}
+                    <input type="text" id="hk" name="hk" value="" readonly>
+                {% endif %}
+            </div>
+            <div class="form-group2">
+                <label for="fv">Fallverantwortung:</label>
+                {% if client_id != 1 %}
+                    <input type="text" id="fv" name="fv" value="{{fv[0]}}, {{fv[1]}}" readonly>
+                {% else %}
+                    <input type="text" id="fv" name="fv" value="" readonly>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="form-row">
+            <form action="{{url_for('edit_client.edit_client', client_id = client_id)}}" method="get">
+                <button type="submit">Bearbeiten</button>
+            </form>
+            <button type="button" onclick="window.location.href='{{ return_url }}'">Schließen</button>
+        </div>
+    </div>
+    <script>
+        window.onload = function() {
+            // Überprüfen, ob Nachrichten vorhanden sind
+            {% if get_flashed_messages() %}
+                let modal = document.getElementById("flashModal");
+                let span = document.getElementsByClassName("close")[0];
+
+                // Modal anzeigen
+                modal.style.display = "block";
+
+                // Schließen, wenn das "X" geklickt wird
+                span.onclick = function() {
+                    modal.style.display = "none";
+                };
+
+                // Schließen, wenn außerhalb des Modals geklickt wird
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                };
+            {% endif %}
+        }
+    </script>
+</body>
+</html>

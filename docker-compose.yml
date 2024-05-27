@@ -1,13 +1,5 @@
 version: '2'
 services:
-  apachephpxdebug:
-    image: phpstorm/php-apache:8.0-xdebug3.0
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./:/var/www/html
-      - ./php.ini:/usr/local/etc/php.ini
   db:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password

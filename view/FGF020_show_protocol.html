@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Protokoll</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Menüleiste einbinden-->
+    {% include 'FAN020_navbar.html' %}
+
+    <!-- Flash Nachrichten anzeigen -->
+     <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <div class="registration-form">
+        <div class="table-container">
+            <h2>Änderungsprotokoll</h2>
+            <br> <br>
+            <form action="/show_protocol" method="post">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="von">Von:</label>
+                        <input type="date" class="gray-background" id="von" name="von" value="{{von}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="bis">Bis:</label>
+                        <input type="date" class="gray-background" id="bis" name="bis" value="{{bis}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="nutzer">Ändernder Nutzer:</label>
+                        <select class="form-control gray-background" id="nutzer" name="nutzer">
+                            <!-- Optionen werden durch Python generiert -->
+                            <option value="" disabled selected>Bitte wählen</option>
+                            {% for nutzer in nutzers %}
+                            <option value="{{nutzer.id}}">{{nutzer.id}} - {{nutzer.nachname}}, {{nutzer.vorname}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eintrags_id">Eintrags ID:</label>
+                        <input type="number" id="eintrags_id" class="gray-background" name="eintrags_id" value="{{eintrags_id}}">
+                    </div>
+                    <button type="submit">Filtern</button>
+                </div>
+            </form>
+        </div>
+        <div class="scrollable-container">
+            <br>
+            {% if kombinierte_liste %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Zeit</th>
+                        <th>Ändernder Nutzer</th>
+                        <th>Tabelle</th>
+                        <th>ID des geänderten Eintrags</th>
+                        <th>Eintrag vorher</th>
+                        <th>Eintrag nachher</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for protocol, entry in kombinierte_liste %}
+                        <tr>
+                            <td>{{ protocol[0] }}</td>
+                            <td>{{ protocol[1] }}</td>
+                            <td>{{ protocol[2] }}</td>
+                            <td>{{ protocol[3] }}</td>
+                            <td>{{ protocol[4] }}</td>
+                            <td>
+                                {% for key, value in entry[0].items() %}
+                                    <strong>{{ key }}:</strong> {{ value }}<br>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for key, value in entry[1].items() %}
+                                    <strong>{{ key }}:</strong> {{ value }}<br>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p>Keine Daten gefunden</p>
+            {% endif %}
+
+        </div>
+    </div>
+    <script>
+        window.onload = function() {
+            // Überprüfen, ob Nachrichten vorhanden sind
+            {% if get_flashed_messages() %}
+                let modal = document.getElementById("flashModal");
+                let span = document.getElementsByClassName("close")[0];
+
+                // Modal anzeigen
+                modal.style.display = "block";
+
+                // Schließen, wenn das "X" geklickt wird
+                span.onclick = function() {
+                    modal.style.display = "none";
+                };
+
+                // Schließen, wenn außerhalb des Modals geklickt wird
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                };
+            {% endif %}
+        }
+
+    </script>
+</body>
+</html>
+

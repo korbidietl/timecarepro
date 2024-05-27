@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Account anlegen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<style>
+
+</style>
+<body>
+    <!-- Menüleiste einbinden -->
+    {% include 'FAN020_navbar.html' %}
+
+    <!--Flash Nachricht -->
+    <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <div class = "registration-form_2">
+        <h2>Account anlegen</h2>
+        <div class="mein-eindeutiges-formular">
+            <form action="{{ url_for('create_account.create_account') }}" method="post" >
+                <div class="form-row">
+                    <div class="form-group2">
+                        <label for="lastname">Nachname:</label>
+                        <input type="text" id="lastname" name="lastname" required>
+                    </div>
+                    <div class="form-group2">
+                        <label for="firstname">Vorname:</label>
+                        <input type="text" id="firstname" name="firstname" required>
+                    </div>
+                    <div class="form-group2 for-mitarbeiter">
+                        <label for="address">Adresse:</label>
+                        <input type="text" id="address" name="address" >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group2">
+                        <label for="role">Rolle:</label>
+                        <select id="role" name="role" required onchange="toggleFieldsBasedOnRole()">
+                            <option value="" disabled selected>Bitte wählen</option>
+                            <option value="Mitarbeiter">Mitarbeiter</option>
+                            <option value="Verwaltung">Verwaltung</option>
+                            <option value="Geschäftsführung">Geschäftsführung</option>
+                            <option value="Steuerbüro">Steuerbüro</option>
+                            <option value="Sachbearbeiter/Kostenträger">Sachbearbeiter/Kostenträger</option>
+                        </select>
+                    </div>
+                    <div class="form-group2 for-mitarbeiter">
+                        <label for="qualification">Qualifikation:</label>
+                        <input type="text" id="qualification" name="qualification">
+                    </div>
+                    <div class="form-group2 for-mitarbeiter">
+                        <label for="phone">Telefonnummer:</label>
+                        <input type="tel" id="phone" name="phone"  pattern="[0-9]{10}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group2">
+                        <label for="email">E-Mail:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group2 for-mitarbeiter">
+                        <label for="birthday">Geburtstag:</label>
+                        <input type="date" id="birthday" name="birthday">
+                    </div>
+                </div>
+
+
+                <div class="form-actions">
+                    <button type="submit">Account anlegen</button>
+                    <a href="/account_management">Abbrechen</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+  function toggleFieldsBasedOnRole() {
+    let role = document.getElementById('role').value;
+    let elements = document.getElementsByClassName('for-mitarbeiter');
+
+    for (let i = 0; i < elements.length; i++) {
+        elements[i].style.display = role === 'Mitarbeiter' ? 'block' : 'none';
+    }
+  }
+</script>
+<script>
+    window.onload = function() {
+        // Überprüfen, ob Nachrichten vorhanden sind
+        {%if get_flashed_messages() %}
+        let modal = document.getElementById("flashModal");
+        let span = document.getElementsByClassName("close")[0];
+
+        // Modal anzeigen
+        modal.style.display = "block";
+
+        // Schließen, wenn das "X" geklickt wird
+        span.onclick = function () {
+            modal.style.display = "none";
+        };
+
+        // Schließen, wenn außerhalb des Modals geklickt wird
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+        {%endif %}
+    }
+    document.addEventListener('DOMContentLoaded', (event) => {
+        let heute = new Date().toISOString().split('T')[0];
+        document.getElementById("birthday").setAttribute('max', heute);
+        });
+</script>
+</body>
+</html>

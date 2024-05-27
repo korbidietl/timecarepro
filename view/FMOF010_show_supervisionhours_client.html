@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betreuungsstunden Klienten Übersicht</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <!-- Menüleiste einbinden -->
+    {% include 'FAN020_navbar.html' %}
+
+    <!-- Flash Nachrichten anzeigen -->
+     <div id="flashModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <div class="table-form">
+        <h2> Stundenübersicht Klient</h2>
+        <div class="leerzeile"></div>
+        <div class="form-row" style="justify-content: start;">
+            <h2 style="margin: 0; font-size: 1.5em; line-height: 1.2em;">Klient: {{client_name[0]}} {{client_name[1]}}</h2>
+            <div style="margin-left: 40px; font-weight: normal; font-size: 1.5em; line-height: 1.2em;">Sachbearbeiter: {{client_sachbearbeiter[0]}} {{client_sachbearbeiter[1]}}</div>
+        </div>
+        <div class="leerzeile"></div>
+
+        <div class="form-row">
+            <div class="mein-eindeutiges-formular">
+
+                <!-- Drop-Down für Monat auswahl, initial akutelles Monat-->
+                <form action="{{ url_for('client_hours_blueprint.client_supervision_hours', client_id=client_id) }}" method="post" style="display: flex;flex-direction: row; align-items: center; gap: 10px">
+                    <label for="monat_jahr"></label>
+                    <select name="monat_jahr" class="gray-background" id="monat_jahr">
+                        {% for kombination in kombinationen %}
+                        <option value="{{ kombination }}" {% if kombination == gewaehlte_kombination %} selected {% endif %}>
+                            {{ kombination }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Anzeigen</button>
+                </form>
+            </div>
+
+
+            <!-- Button für Buchung und Buchung revidieren -->
+            <div class="accordion-button">
+                {% if user_role in ['Verwaltung', 'Geschäftsführung'] %}
+                <form action="{{url_for('book_time_entry.book_client_time_entry', client_id=client_id)}}" method="post">
+                    <button type="submit">Buchen</button>
+                </form>
+                {% endif %}
+            </div>
+            <div class="accordion-button">
+                {% if user_role == 'Geschäftsführung' %}
+                <form action="{{url_for('redo_booking_blueprint.revidieren_buchung', client_id=client_id)}}" method="get">
+                    <button type="buchung_revidieren">Buchung revidieren</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        <div class="scrollable-container">
+            <!-- Tabelle der Zeiteinträge -->
+            {% if kombinierte_liste %}
+                <table id="client_hours">
+                    <thead>
+                        <tr>
+                            <th>Datum</th>
+                            <th>Beschreibung</th>
+                            <th>km</th>
+                            <th>Anfang</th>
+                            <th>Ende</th>
+                            <th>geleistete Stunden</th>
+                            <th>Mitarbeiter</th>
+                            {% if user_role in ['Verwaltung','Geschäftsführung'] or fallverantwortung == True %}
+                            <th>Überschneidung</th>
+                            {% endif %}
+                            <th>Unterschrift Klient</th>
+                            <th>Unterschrift Mitarbeiter</th>
+
+                        </tr>
+                    </thead>
+                    <tbody id="tableData">
+                        {% for zeiteintrag, ueberschneidungs_status, booked_status, unterschrift in kombinierte_liste %}
+                        <tr>
+                            <!-- Füllen Sie jede Zelle mit Daten aus zeiteintrag -->
+                            <td>{{ zeiteintrag[1] }}</td>
+                            <td>{{ zeiteintrag[2] | default('', true) }}</td>
+                            <td>{{ zeiteintrag[3] if zeiteintrag[3] else 0.0}}</td>
+                            <td>{{ zeiteintrag[4] }}</td>
+                            <td>{{ zeiteintrag[5] }}</td>
+                            <td>{{ zeiteintrag[6] }}</td>
+                            <td>{{ zeiteintrag[7] }}</td>
+                            {% if user_role in ['Verwaltung','Geschäftsführung'] or fallverantwortung == True %}
+                                <td>{{ ueberschneidungs_status }}</td>
+                            {% endif %}
+                            <td>
+                                {% if unterschrift[0] %}
+                                    <img src="data:image/png;base64,{{ unterschrift[0] }}" alt="Unterschrift Klient" width="150"/>
+                                {% else %}
+                                    Keine Unterschrift vorhanden
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if unterschrift[1] %}
+                                    <img src="data:image/png;base64,{{ unterschrift[1] }}" alt="Unterschrift Mitarbeiter" width="150"/>
+                                {% else %}
+                                    Keine Unterschrift vorhanden
+                                {% endif %}
+                            </td>
+
+                            <!-- Buttons Bearbeiten und Löschen in jeder Zeile -->
+                            {% if booked_status == False %}
+                                {% if (user_role == 'Mitarbeiter' and zeiteintrag[8] == user_id) or (user_role in ['Verwaltung','Geschäftsführung']) %}
+                                    <td>
+                                        <form action="{{url_for('edit_time_entry.edit_time_entry', zeiteintrag_id=zeiteintrag[0])}}" method="get">
+                                            <button type="submit">Bearbeiten</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form action="{{url_for('delete_te.delete_te', zeiteintrags_id =zeiteintrag[0], client_id = client_id)}}" method="get">
+                                            <button type="submit">Löschen</button>
+                                        </form>
+                                    </td>
+                                {% endif %}
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td><strong>Gesamt</strong></td>
+                            <td colspan="1"></td>
+                            <td>{{sum_km[3]}}</td>
+                            <td colspan="2"></td>
+                            <td>{{ sum_hours[3] }}</td>
+                            <td colspan="4"> </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            <!-- keine Daten für ausgewählten Monat -->
+            {% else %}
+                <p>Noch keine Einträge vorhanden.</p>
+            {% endif %}
+        </div>
+
+        <!-- Buttons export und drucken -->
+        <div class="leerzeile"> </div>
+            <div class="form-row">
+                <div class="accordion-button">
+                    {% if user_role in ['Verwaltung', 'Geschäftsführung', 'Steuerbüro', 'Sachbearbeiter/Kostenträger'] %}
+                        <button id="exportButton">Exportieren</button>
+                        <button onclick="window.print();">Drucken</button>
+                    {% endif %}
+                <!-- Button Zeiteintrag hinzufügen -->
+                </div>
+                {% if user_role not in ['Verwaltung', 'Steuerbüro', 'Sachbearbeiter/Kostenträger'] %}
+                    <form action="{{ url_for('/create_time_entry.submit_arbeitsstunden', person_id=user_id) }}" method="get">
+                        <button type="submit">Zeiteintrag hinzufügen</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </body>
+    <script>
+        function exportTableToCSV(tableId, filename) {
+            var csv = [];
+            var rows = document.querySelectorAll(tableId + ' tr');
+
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll("td, th");
+
+                for (var j = 0; j < cols.length; j++) {
+                    // Prüfen, ob das Element ein Button ist
+                    if (!cols[j].querySelector("button")) {
+                        row.push('"' + cols[j].innerText + '"');
+                    }
+                }
+
+                if (row.length > 0) {
+                    csv.push(row.join(","));
+                }
+            }
+
+            // Download-Link erstellen und klicken
+            var csvString = csv.join("\n");
+            var link = document.createElement("a");
+            link.setAttribute('target', '_blank');
+            link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString));
+            link.setAttribute('download', 'stundenübersicht_klient');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        document.getElementById('exportButton').addEventListener('click', function () {
+            exportTableToCSV('#client_hours', 'client_hours.csv');
+        });
+    </script>
+<script>
+
+        window.onload = function() {
+            // Überprüfen, ob Nachrichten vorhanden sind
+            {% if get_flashed_messages() %}
+                let modal = document.getElementById("flashModal");
+                let span = document.getElementsByClassName("close")[0];
+
+                // Modal anzeigen
+                modal.style.display = "block";
+
+                // Schließen, wenn das "X" geklickt wird
+                span.onclick = function() {
+                    modal.style.display = "none";
+                };
+
+                // Schließen, wenn außerhalb des Modals geklickt wird
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                };
+            {% endif %}
+        }
+
+    </script>
+
+</html>
+
